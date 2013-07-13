@@ -1,0 +1,44 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: GPL 2.0
+ *
+ * The contents of this file are subject to the GNU General Public
+ * License Version 2 or later (the "GPL").
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Initial Developer of the Original Code is
+ *   MiniG.org project members
+ *
+ * ***** END LICENSE BLOCK ***** */
+
+package fr.aliasource.webmail.client.conversations;
+
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.Label;
+
+import fr.aliasource.webmail.client.View;
+import fr.aliasource.webmail.client.shared.Conversation;
+
+public class ParticipantsWidget extends Label {
+
+	private HandlerRegistration registration;
+
+	public ParticipantsWidget(View ui, Conversation conversation,
+			ClickHandler cl) {
+		super(conversation.getParticipantsAbrev(), false);
+		setTitle(conversation.getParticipantsFull());
+		this.registration = addClickHandler(cl);
+		if (conversation.isUnread()) {
+			addStyleName("bold");
+		}
+	}
+
+	public HandlerRegistration getRegistration() {
+		return registration;
+	}
+
+}
