@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: org.minig.jetty
-Bundle-SymbolicName: org.minig.jetty
-Bundle-Version: 1.0.0
-Bundle-Vendor: minig.org
-Fragment-Host: org.eclipse.equinox.http.jetty;bundle-version="2.0.0.v20090520-1800"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.minig.jetty;uses:="org.eclipse.equinox.http.jetty"

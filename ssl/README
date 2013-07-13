@@ -1,4 +1,0 @@
-The self_signed script creates a PKCS12 keystore suitable for SSL
-enabling the minig backend. 
-
-The minig.p12 file should go to /etc/minig/minig.p12
