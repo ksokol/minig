@@ -1,8 +1,5 @@
-backend_conf.ini
-bin
-classes
-minig-backend.tar.bz2
-plugins/fr.aliasource.webmail.common.tests/data/test.properties
-plugins/fr.aliasource.webmail.common.tests/derby.log
-data
-webmail-frontend/MiniGEditor
+minig/target/
+minig/.project
+minig/.settings/
+minig/.classpath/
+

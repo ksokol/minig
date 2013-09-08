@@ -1,8 +1,0 @@
-WebmailUI.launch
-apache-tomcat-6.0*
-dist/
-run_in_shell.sh
-run_in_tomcat.sh
-extra
-soyc
-root.build.properties
