@@ -1,4 +1,0 @@
-#!/bin/sh
-APPDIR=`dirname $0`;
-java -cp "$APPDIR/src:$APPDIR/bin:${HOME}/java/gwt/gwt-user.jar:${HOME}/java/gwt/gwt-dev.jar" com.google.gwt.i18n.tools.I18NSync -out $APPDIR/src fr.aliasource.webmail.client.lang.Strings -createMessages ;
-

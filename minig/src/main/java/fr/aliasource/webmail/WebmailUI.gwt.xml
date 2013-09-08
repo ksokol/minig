@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<module rename-to="minig">
+
+	<!-- Inherit the core Web Toolkit stuff.                  -->
+	<inherits name='com.google.gwt.user.User' />
+	<inherits name='com.google.gwt.i18n.I18N' />
+	<inherits name="org.minig.theme.minig.MiniG" />
+
+	<extend-property name="locale" values="fr" />
+
+	<!-- Inherit gwt-dnd support                   -->
+	<inherits name='com.allen_sauer.gwt.dnd.gwt-dnd' />
+
+	<!-- EmiteIM support -->
+	<inherits name="com.calclab.emite.core.EmiteCore" />
+	<inherits name="com.calclab.emite.im.EmiteIM" />
+
+	<inherits name="com.google.gwt.xml.XML" />
+	<inherits name="com.google.gwt.http.HTTP" />
+
+	<!-- Specify the application entry point class. -->
+	<entry-point class='fr.aliasource.webmail.client.WebmailUI' />
+
+	<servlet path='/send' class='fr.aliasource.webmail.server.SendMessageImpl' />
+	<servlet path='/store' class='fr.aliasource.webmail.server.StoreMessageImpl' />
+	<servlet path='/getQuota' class='fr.aliasource.webmail.server.GetQuotaImpl' />
+
+	<servlet path='/attachements'
+		class='fr.aliasource.webmail.server.UploadAttachmentsImpl' />
+
+	<servlet path='/getToken' class='fr.aliasource.webmail.server.GetTokenImpl' />
+
+	<servlet path='/getInvitationInfo'
+		class='fr.aliasource.webmail.server.invitation.GetInvitationInfoProxyImpl' />
+
+	<servlet path='/goingEvent'
+		class='fr.aliasource.webmail.server.invitation.GoingInvitationProxyImpl' />
+
+
+	<servlet path="/proxy" class="fr.aliasource.webmail.server.XmppProxyServlet" />
+
+	<servlet path="/obmProxy" class="fr.aliasource.webmail.server.ObmProxyServlet" />
+
+</module>
