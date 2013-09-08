@@ -2,10 +2,10 @@ package fr.aliasource.webmail.client;
 
 import com.google.gwt.event.dom.client.ClickHandler;
 
-import fr.aliasource.webmail.client.shared.Folder;
+import fr.aliasource.webmail.client.shared.IFolder;
 
 public interface IFolderClickHandlerFactory {
 
-	ClickHandler createHandler(Folder f);
-	
+    ClickHandler createHandler(IFolder f);
+
 }

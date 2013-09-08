@@ -16,15 +16,14 @@
 
 package fr.aliasource.webmail.client;
 
-import fr.aliasource.webmail.client.shared.CloudyFolder;
-import fr.aliasource.webmail.client.shared.Folder;
+import java.util.List;
+
+import fr.aliasource.webmail.client.shared.IFolder;
 
 public interface IFolderSelectionListener {
 
-	void folderSelected(Folder f);
+    void folderSelected(IFolder f);
 
-	void foldersChanged(Folder[] folders);
-
-	void unreadCountChanged(CloudyFolder cloudyFolder);
+    void foldersChanged(List<IFolder> folders);
 
 }

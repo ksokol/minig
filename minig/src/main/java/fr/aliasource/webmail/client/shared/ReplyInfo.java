@@ -18,7 +18,6 @@ package fr.aliasource.webmail.client.shared;
 
 import java.io.Serializable;
 
-
 /**
  * Informations about the email we are replying to
  * 
@@ -27,40 +26,40 @@ import java.io.Serializable;
  */
 public class ReplyInfo implements Serializable {
 
-	private static final long serialVersionUID = -5609663487941248832L;
+    private static final long serialVersionUID = -5609663487941248832L;
 
-	private Folder origFolder;
-	private MessageId id;
-	private ConversationId convId;
+    private IFolder origFolder;
+    private String id;
+    private String convId;
 
-	public ReplyInfo() {
+    public ReplyInfo() {
 
-	}
+    }
 
-	public ReplyInfo(Folder origFolder, MessageId id, ConversationId convId) {
-		this.origFolder = origFolder;
-		this.id = id;
-		this.convId = convId;
-	}
+    public ReplyInfo(IFolder origFolder, String id, String convId) {
+        this.origFolder = origFolder;
+        this.id = id;
+        this.convId = convId;
+    }
 
-	public MessageId getId() {
-		return id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public Folder getOrigFolder() {
-		return origFolder;
-	}
+    public IFolder getOrigFolder() {
+        return origFolder;
+    }
 
-	public void setId(MessageId id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public void setOrigFolder(Folder origFolder) {
-		this.origFolder = origFolder;
-	}
+    public void setOrigFolder(IFolder origFolder) {
+        this.origFolder = origFolder;
+    }
 
-	public ConversationId getConvId() {
-		return convId;
-	}
+    public String getConvId() {
+        return convId;
+    }
 
 }

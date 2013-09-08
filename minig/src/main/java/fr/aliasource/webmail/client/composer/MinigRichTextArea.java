@@ -23,125 +23,112 @@ import com.google.gwt.user.client.ui.RichTextArea;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 import fr.aliasource.webmail.client.View;
-import fr.aliasource.webmail.client.shared.Body;
+import fr.aliasource.webmail.client.shared.IBody;
+import fr.aliasource.webmail.client.test.BeanFactory;
 
 public class MinigRichTextArea extends MinigTextArea {
 
-	private RichTextArea rta;
-	private Body mailBody;
-	private Boolean htmlBody;
+    private RichTextArea rta;
+    private IBody mailBody;
+    private Boolean htmlBody;
 
-	public MinigRichTextArea(View ui, MailComposer mc) {
-		super(ui, mc);
-		this.rta = new RichTextArea();
-		this.htmlBody = false;
-		// FIXME
-		// http://code.google.com/p/google-web-toolkit/issues/detail?id=1052
+    public MinigRichTextArea(View ui, MailComposer mc) {
+        super(ui, mc);
+        this.rta = new RichTextArea();
+        this.htmlBody = false;
+        // FIXME
+        // http://code.google.com/p/google-web-toolkit/issues/detail?id=1052
 
-		this.setHeight(Window.getClientHeight());
-		SimplePanel sp = new SimplePanel();
-		sp.add(rta);
-		this.add(rta);
-		this.mailBody = new Body();
-		updateSignature(mailBody);
-	}
+        this.setHeight(Window.getClientHeight());
+        SimplePanel sp = new SimplePanel();
+        sp.add(rta);
+        this.add(rta);
+        this.mailBody = BeanFactory.instance.body().as();
+    }
 
-	public void addKeyboardListener(KeyPressHandler addKeyboardListener) {
-		rta.addKeyPressHandler(addKeyboardListener);
-	}
+    public void addKeyboardListener(KeyPressHandler addKeyboardListener) {
+        rta.addKeyPressHandler(addKeyboardListener);
+    }
 
-	public void setFocus(boolean b) {
-		rta.setFocus(b);
-	}
+    public void setFocus(boolean b) {
+        rta.setFocus(b);
+    }
 
-	public Body getMailBody() {
-		GWT.log("returning mailbody, signature: " + signature, null);
+    public IBody getMailBody() {
+        GWT.log("returning mailbody, signature: " + signature, null);
 
-		mailBody.setHtml(rta.getHTML());
-		Body ret = new Body();
-		ret.setWithSignature(mailBody.isWithSignature());
-		ret.setHtml(mailBody.getHtml());
-		return ret;
-	}
+        mailBody.setHtml(rta.getHTML());
+        IBody ret = BeanFactory.instance.body().as();
+        ret.setHtml(mailBody.getHtml());
+        return ret;
+    }
 
-	public void setHeight(int height) {
-		rta.setHeight(height - 350 + "px");
-	}
+    public void setHeight(int height) {
+        // TODO
+        if (height > 350) {
 
-	public void setMailBody(Body body, boolean updateSignature) {
-		mailBody.setPlain(body.getPlain());
-		if (body.getHtml() != null) {
-			mailBody.setHtml(ensureHTML(body.getHtml()));
-			this.htmlBody = true;
-		} else {
-			GWT.log("using plain", null);
-			mailBody.setHtml(ensureHTML(body.getPlain()));
-		}
-		mailBody.setWithSignature(body.isWithSignature());
+            rta.setHeight(height - 350 + "px");
+        } else {
+            rta.setHeight(height + "px");
+        }
+    }
 
-		GWT.log("rta.setHTML:\n" + mailBody.getHtml(), null);
-		rta.setHTML(mailBody.getHtml());
-		if (updateSignature) {
-			setSignature();
-		}
-	}
+    public void setMailBody(IBody body) {
+        mailBody.setPlain(body.getPlain());
+        if (body.getHtml() != null) {
+            mailBody.setHtml(ensureHTML(body.getHtml()));
+            this.htmlBody = true;
+        } else {
+            GWT.log("using plain", null);
+            mailBody.setHtml(ensureHTML(body.getPlain()));
+        }
 
-	@Override
-	public RichTextToolbar getRichTextToolbar() {
-		return new RichTextToolbar(rta);
-	}
+        GWT.log("rta.setHTML:\n" + mailBody.getHtml(), null);
+        rta.setHTML(mailBody.getHtml());
+    }
 
-	@Override
-	protected void setSignature() {
-		GWT.log("ui.getCurrentTab(): " + ui.getCurrentTab(), null);
-		if (mailBody.isWithSignature()) {
-			return;
-		}
-		mailBody.setWithSignature(true);
-		GWT.log("add signature: " + signature, null);
-		String content = rta.getHTML();
-		content = content + HTML_SIGNATURE_SEPARATOR + ensureHTML(signature);
-		rta.setHTML(content);
-	}
+    @Override
+    public RichTextToolbar getRichTextToolbar() {
+        return new RichTextToolbar(rta);
+    }
 
-	private String ensureHTML(String badHTML) {
-		String sig = badHTML;
-		sig = sig.replace("\r", "");
-		sig = sig.replace("\n", "<br>");
-		return sig;
-	}
+    private String ensureHTML(String badHTML) {
+        String sig = badHTML;
+        sig = sig.replace("\r", "");
+        sig = sig.replace("\n", "<br>");
+        return sig;
+    }
 
-	public boolean isEmpty() {
-		boolean ret = false;
+    public boolean isEmpty() {
+        boolean ret = false;
 
-		String cur = rta.getHTML().toLowerCase();
-		cur = cur.replace("<br>", "");
-		cur = cur.replace("<br/>", "");
-		cur = cur.replace("--", "");
-		cur = cur.replace(" ", "");
+        String cur = rta.getHTML().toLowerCase();
+        cur = cur.replace("<br>", "");
+        cur = cur.replace("<br/>", "");
+        cur = cur.replace("--", "");
+        cur = cur.replace(" ", "");
 
-		String sig = "";
-		if (signature != null) {
-			sig = signature.toLowerCase();
-			sig = sig.replace("--", "");
-			sig = sig.replace(" ", "");
-			sig = sig.replace("\n", "");
-			sig = sig.replace("\r", "");
-		}
+        String sig = "";
+        if (signature != null) {
+            sig = signature.toLowerCase();
+            sig = sig.replace("--", "");
+            sig = sig.replace(" ", "");
+            sig = sig.replace("\n", "");
+            sig = sig.replace("\r", "");
+        }
 
-		GWT.log("simplified content: " + cur, null);
-		GWT.log("simplified sig: " + cur, null);
+        GWT.log("simplified content: " + cur, null);
+        GWT.log("simplified sig: " + cur, null);
 
-		if (cur.isEmpty() || cur.equals(sig)) {
-			ret = true;
-		}
-		GWT.log("isEmpty, content: [" + rta.getHTML() + "] empty => " + ret,
-				null);
-		return ret;
-	}
+        if (cur.isEmpty() || cur.equals(sig)) {
+            ret = true;
+        }
+        GWT.log("isEmpty, content: [" + rta.getHTML() + "] empty => " + ret, null);
+        return ret;
+    }
 
-	public Boolean isHtmlBody() {
-		return htmlBody;
-	}
+    public Boolean isHtmlBody() {
+        return htmlBody;
+    }
 
 }

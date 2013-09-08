@@ -38,7 +38,6 @@ public class ComposerActions extends HorizontalPanel implements IUploadListener 
 
 	private Button send;
 	private Button saveNow;
-	private Button saveTemplate;
 	private Button discard;
 	private Label savedDate;
 	private MailComposer mailComposer;
@@ -49,13 +48,11 @@ public class ComposerActions extends HorizontalPanel implements IUploadListener 
 		this.mailComposer = mc;
 		send = new Button(I18N.strings.send());
 		saveNow = new Button(I18N.strings.saveNow());
-		saveTemplate = new Button(I18N.strings.saveAsTemplate());
 		discard = new Button(I18N.strings.discard());
 		savedDate = new Label();
 
 		add(send);
 		add(saveNow);
-		add(saveTemplate);
 		add(discard);
 		add(savedDate);
 		setSpacing(4);
@@ -83,13 +80,7 @@ public class ComposerActions extends HorizontalPanel implements IUploadListener 
 
 		saveNow.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent sender) {
-				mailComposer.saveDraft();
-			}
-		});
-
-		saveTemplate.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent sender) {
-				mailComposer.saveTemplate();
+				mailComposer.takeSnapshotFromDraft(null);
 			}
 		});
 
@@ -103,7 +94,6 @@ public class ComposerActions extends HorizontalPanel implements IUploadListener 
 	private void setButtonsEnabled(boolean enabled) {
 		send.setEnabled(enabled);
 		saveNow.setEnabled(enabled);
-		saveTemplate.setEnabled(enabled);
 		discard.setEnabled(enabled);
 	}
 
@@ -121,10 +111,6 @@ public class ComposerActions extends HorizontalPanel implements IUploadListener 
 
 	public Button getSaveNowButton() {
 		return saveNow;
-	}
-
-	public Button getSaveTemplateButton() {
-		return saveTemplate;
 	}
 
 	public Label getSavedDate() {

@@ -18,12 +18,10 @@ package fr.aliasource.webmail.client.conversations;
 
 import java.util.Set;
 
-import fr.aliasource.webmail.client.shared.ConversationId;
-
 public interface IConversationSelectionChangedListener {
 
-	void selectionChanged(Set<ConversationId> selectedIds);
+    void selectionChanged(Set<String> selectedIds);
 
-	void selectionChanged(String str);
+    void selectionChanged(String str);
 
 }

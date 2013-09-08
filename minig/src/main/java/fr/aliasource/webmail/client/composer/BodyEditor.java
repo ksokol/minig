@@ -16,17 +16,13 @@
 
 package fr.aliasource.webmail.client.composer;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.ui.DockPanel;
 
 import fr.aliasource.webmail.client.View;
-import fr.aliasource.webmail.client.ctrl.WebmailController;
-import fr.aliasource.webmail.client.settings.IServerSettingsListener;
-import fr.aliasource.webmail.client.shared.Body;
+import fr.aliasource.webmail.client.shared.IBody;
+import fr.aliasource.webmail.client.test.BeanFactory;
 
 /**
  * The body editor part of the mail composer
@@ -34,133 +30,83 @@ import fr.aliasource.webmail.client.shared.Body;
  * @author tom
  * 
  */
-public class BodyEditor extends DockPanel implements
-		IdentitySelectionBoxChangeListener, IServerSettingsListener {
+public class BodyEditor extends DockPanel {
 
-	private MinigRichTextArea mta;
+    private MinigRichTextArea mta;
 
-	private ResizeHandler resizeListener;
-	private MailComposer mc;
-	private ComposerToolbarSwitcher cts;
+    private ResizeHandler resizeListener;
+    private ComposerToolbarSwitcher cts;
 
-	public BodyEditor(MailComposer mc, final View ui) {
-		super();
-		this.mc = mc;
+    public BodyEditor(MailComposer mc, final View ui) {
+        mta = new MinigRichTextArea(ui, mc);
+        mta.addStyleName("whiteBackground");
 
-		mta = new MinigRichTextArea(ui, mc);
-		mta.addStyleName("whiteBackground");
-		mta.addKeyboardListener(createKeyboardListener());
-		add(mta, DockPanel.CENTER);
+        add(mta, DockPanel.CENTER);
 
-		cts = new ComposerToolbarSwitcher(mta);
-		add(cts.getWidget(), DockPanel.NORTH);
+        cts = new ComposerToolbarSwitcher(mta);
+        add(cts.getWidget(), DockPanel.NORTH);
 
-		setStyleName("bodyEditor");
-		resizeListener = createResizeListener();
+        setStyleName("bodyEditor");
+        resizeListener = createResizeListener();
+    }
 
-		if (mc.getIdentities() != null) {
-			mc.getIdentities().getIdentititesSelectionBox()
-					.addIdentitySelectionBoxChangeListener(this);
-		}
-		WebmailController.get().addServerSettingsListener(this);
-	}
+    public void destroy() {
+    }
 
-	public void destroy() {
-		GWT.log("destroy bodyEditor", null);
-		WebmailController.get().removeServerSettingsListener(this);
-	}
+    void switchToPlainText(boolean withConfirm) {
+        cts.switchToPlain();
+    }
 
-	void switchToPlainText(boolean withConfirm) {
-		cts.switchToPlain();
-	}
+    public IBody getMailBody() {
+        return mta.getMailBody();
+    }
 
-	public Body getMailBody() {
-		return mta.getMailBody();
-	}
+    public void setMailBody(IBody b) {
+        mta.setMailBody(b);
+    }
 
-	public void setMailBody(Body b) {
-		mta.setMailBody(b,true);
-	}
+    public void focus() {
+        mta.setFocus(true);
+    }
 
-	public void focus() {
-		mta.setFocus(true);
-	}
+    public void resize(int height) {
+        mta.setHeight(height);
+    }
 
-	private KeyPressHandler createKeyboardListener() {
-		KeyPressHandler kl = new KeyPressHandler() {
+    private ResizeHandler createResizeListener() {
+        return new ResizeHandler() {
 
-			@Override
-			public void onKeyPress(KeyPressEvent event) {
-				if (!mc.isTimerStarted()) {
-					mc.startAutoSaveDraftTimer();
-				}
-			}
-		};
-		return kl;
-	}
+            @Override
+            public void onResize(ResizeEvent event) {
+                mta.setHeight(event.getHeight());
+            }
+        };
+    }
 
-	public void resize(int height) {
-		mta.setHeight(height);
-	}
+    public void update(IBody mailBody) {
+        mta.update(mailBody);
+        if (mta.isHtmlBody()) {
+            cts.switchToRich();
+        }
+    }
 
-	private ResizeHandler createResizeListener() {
-		return new ResizeHandler() {
+    public boolean isEmpty() {
+        return mta.isEmpty();
+    }
 
-			@Override
-			public void onResize(ResizeEvent event) {
-				mta.setHeight(event.getHeight());
-			}
-		};
-	}
+    public ResizeHandler getResizeListener() {
+        return resizeListener;
+    }
 
-	@Override
-	public void notifyIdentityChanged() {
-		update();
-	}
+    // TODO
+    public boolean shouldSendInPlain() {
+        return cts.isPlainOnly();
+    }
 
-	@Override
-	public void settingsReceived() {
-		GWT.log("bodyEditor received new server settings", null);
-		if (mc.getIdentities() != null) {
-			IdentitiesSelectionBox isb = mc.getIdentities()
-					.getIdentititesSelectionBox();
-			isb.removeIdentitySelectionBoxChangeListener(this);
-			isb.addIdentitySelectionBoxChangeListener(this);
-		}
-		update();
-	}
-
-	public void update(Body mailBody, boolean updateSignature) {
-		mta.update(mailBody, updateSignature);
-		if(mta.isHtmlBody()){
-			cts.switchToRich();
-		}
-	}
-	
-	public void update(Body mailBody) {
-		update(mailBody, true);
-	}
-
-	public void update() {
-		update(mta.getMailBody(), true);
-	}
-
-	public boolean isEmpty() {
-		return mta.isEmpty();
-	}
-
-	public ResizeHandler getResizeListener() {
-		return resizeListener;
-	}
-
-	public boolean shouldSendInPlain() {
-		return cts.isPlainOnly();
-	}
-
-	public void reset() {
-		update(new Body());
-		switchToPlainText(false);
-		cts.reset();
-	}
+    public void reset() {
+        update(BeanFactory.instance.body().as());
+        switchToPlainText(false);
+        cts.reset();
+    }
 
 }

@@ -75,27 +75,36 @@ public class DateFormatter {
 	 * @return
 	 */
 	public String formatPretty(Date d) {
-		long received = d.getTime();
-		long ago = now - received;
-		if (!isToday(d)) {
-			return oldMail.format(d);
-		} else if (ago < ONE_HOUR_MS) {
-			int minutes = (int) (ago / ONE_MINUTE_MS);
-			if (minutes > 1) {
-				return formatSmall(d) + " ("
-						+ strings.dateXMinutesAgo(Integer.toString(minutes))
-						+ ")";
+		if (d != null) {
+			long received = d.getTime();
+			long ago = now - received;
+			if (!isToday(d)) {
+				return oldMail.format(d);
+			} else if (ago < ONE_HOUR_MS) {
+				int minutes = (int) (ago / ONE_MINUTE_MS);
+				if (minutes > 1) {
+					return formatSmall(d)
+							+ " ("
+							+ strings
+									.dateXMinutesAgo(Integer.toString(minutes))
+							+ ")";
+				} else {
+					return formatSmall(d) + " (" + strings.dateOneMinuteAgo()
+							+ ")";
+				}
 			} else {
-				return formatSmall(d) + " (" + strings.dateOneMinuteAgo() + ")";
+				int hour = (int) (ago / ONE_HOUR_MS);
+				if (hour > 1) {
+					return formatSmall(d) + " ("
+							+ strings.dateXHoursAgo(Integer.toString(hour))
+							+ ")";
+				} else {
+					return formatSmall(d) + " (" + strings.dateOneHourAgo()
+							+ ")";
+				}
 			}
 		} else {
-			int hour = (int) (ago / ONE_HOUR_MS);
-			if (hour > 1) {
-				return formatSmall(d) + " ("
-						+ strings.dateXHoursAgo(Integer.toString(hour)) + ")";
-			} else {
-				return formatSmall(d) + " (" + strings.dateOneHourAgo() + ")";
-			}
+			return "";
 		}
 	}
 
@@ -120,7 +129,11 @@ public class DateFormatter {
 	 * @return
 	 */
 	public String formatDetails(Date d) {
-		return oldMailDetails.format(d);
+		if (d != null) {
+			return oldMailDetails.format(d);
+		} else {
+			return "";
+		}
 	}
 
 }

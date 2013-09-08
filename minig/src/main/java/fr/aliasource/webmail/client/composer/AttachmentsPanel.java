@@ -17,34 +17,41 @@
 package fr.aliasource.webmail.client.composer;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import fr.aliasource.webmail.client.I18N;
-import fr.aliasource.webmail.client.ctrl.AjaxCall;
-import fr.aliasource.webmail.client.rpc.AttachementsManagerAsync;
+import fr.aliasource.webmail.client.TailCall;
+import fr.aliasource.webmail.client.ctrl.WebmailController;
+import fr.aliasource.webmail.client.shared.IAttachmentMetadata;
+import fr.aliasource.webmail.client.shared.IAttachmentMetadataList;
+import fr.aliasource.webmail.client.test.Ajax;
+import fr.aliasource.webmail.client.test.AjaxCallback;
+import fr.aliasource.webmail.client.test.AjaxFactory;
 
 public class AttachmentsPanel extends VerticalPanel {
 
 	private VerticalPanel attachPanel;
 	private VerticalPanel attachList;
-	private AttachementsManagerAsync manager;
 	private ArrayList<String> managedIds;
 	private ArrayList<IUploadListener> uploadListeners;
 	private Anchor attach;
+	private String messageId;
+	private MailComposer composer;
 
-	public AttachmentsPanel() {
-		this.manager = AjaxCall.atMgr;
+	public AttachmentsPanel(MailComposer composer) {
 		this.managedIds = new ArrayList<String>();
 		this.uploadListeners = new ArrayList<IUploadListener>();
-
+		this.composer = composer;
 		createAttachHyperlink();
 	}
 
@@ -57,7 +64,18 @@ public class AttachmentsPanel extends VerticalPanel {
 		attach = new Anchor(I18N.strings.attachFile());
 		attach.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent sender) {
-				uploadAnotherFile();
+				if (messageId == null) {
+					composer.takeSnapshotFromDraft(new TailCall() {
+
+						@Override
+						public void run() {
+							attachIdReceived(false);
+						}
+
+					});
+				} else {
+					attachIdReceived(false);
+				}
 			}
 		});
 		hp.add(l);
@@ -68,39 +86,41 @@ public class AttachmentsPanel extends VerticalPanel {
 		add(attachPanel);
 	}
 
-	public void uploadAnotherFile() {
-		requestAttachementId();
+	public void setAttachments(IAttachmentMetadataList list) {
+		// AttachmentUploadWidget uw = newFileUpload(alreadyOnServer);
+		// attachList.add(uw);
+
+		for (IAttachmentMetadata meta : list.getAttachmentMetadata()) {
+			// HorizontalPanel hp = new HorizontalPanel();
+			// Label uploadInfo = new Label();
+			// // uploadInfo.setText("File '" + attachementId + "' attached.");
+			// hp.add(uploadInfo);
+			//
+			// hp.add(new AttachmentDisplay(meta));
+
+			AttachmentUploadWidget uw = new AttachmentUploadWidget(this, meta);
+			attachList.add(uw);
+			attach.setText(I18N.strings.attachAnotherFile());
+			// return uw;
+		}
+
+		// attach.setText(I18N.strings.attachAnotherFile());
+
 	}
 
-	private void requestAttachementId() {
-		AsyncCallback<String> ac = new AsyncCallback<String>() {
-			public void onFailure(Throwable caught) {
-				GWT.log("Error allocation attachement id", caught);
-			}
-
-			public void onSuccess(String attachId) {
-				attachIdReceived(attachId, false);
-			}
-		};
-		manager.allocateAttachementId(ac);
-	}
-
-	private AttachmentUploadWidget attachIdReceived(String attachId,
-			boolean alreadyOnServer) {
-		GWT.log("Attachement id received: " + attachId, null);
-		AttachmentUploadWidget uw = newFileUpload(attachId, alreadyOnServer);
+	private AttachmentUploadWidget attachIdReceived(boolean alreadyOnServer) {
+		AttachmentUploadWidget uw = newFileUpload(alreadyOnServer);
 		attachList.add(uw);
 		attach.setText(I18N.strings.attachAnotherFile());
 		return uw;
 	}
 
-	private AttachmentUploadWidget newFileUpload(String attachId,
-			boolean alreadyOnServer) {
-		return new AttachmentUploadWidget(this, attachId, alreadyOnServer);
+	private AttachmentUploadWidget newFileUpload(boolean alreadyOnServer) {
+		return new AttachmentUploadWidget(this, messageId, alreadyOnServer);
 	}
 
-	public String[] getAttachementIds() {
-		return (String[]) managedIds.toArray(new String[managedIds.size()]);
+	public List<String> getAttachementIds() {
+		return Collections.unmodifiableList(managedIds);
 	}
 
 	public void registerUploadListener(IUploadListener ul) {
@@ -126,40 +146,55 @@ public class AttachmentsPanel extends VerticalPanel {
 
 	public void reset() {
 		clear();
-		manager.dropAttachement(getAttachementIds(), droppAttachmentCallback());
 		managedIds.clear();
 		createAttachHyperlink();
+		messageId = null;
 	}
 
-	public void droppAnAttachment(String attachmentId) {
-		String[] id = new String[1];
-		id[0] = attachmentId;
-		managedIds.remove(attachmentId);
-		manager.dropAttachement(id, droppAttachmentCallback());
-	}
+	public void dropAttachment(final String attachmentId) {
+		Ajax<String> request = AjaxFactory.deleteAttachment(messageId, attachmentId);
+		WebmailController.get().getView().getSpinner().startSpinning();
 
-	AttachementsManagerAsync getManager() {
-		return manager;
+		try {
+			request.send(new AjaxCallback<String>() {
+
+				@Override
+				public void onSuccess(String object) {
+					managedIds.remove(attachmentId);
+					WebmailController.get().getView().getSpinner().stopSpinning();
+				}
+
+				@Override
+				public void onError(Request request, Throwable exception) {
+					WebmailController.get().getView().getSpinner().stopSpinning();
+					if (exception != null) {
+						WebmailController.get().getView().notifyUser(exception.getMessage());
+					} else {
+						WebmailController.get().getView().notifyUser("something goes wrong.");
+					}
+				}
+			});
+		} catch (RequestException e) {
+			WebmailController.get().getView().notifyUser(e.getMessage());
+			WebmailController.get().getView().getSpinner().stopSpinning();
+		}
 	}
 
 	public void showAttach(String attachId) {
-		attachIdReceived(attachId, true);
-	}
-
-	private AsyncCallback<Void> droppAttachmentCallback() {
-		return new AsyncCallback<Void>() {
-			public void onFailure(Throwable caught) {
-				GWT.log("Error dropping attachements", caught);
-			}
-
-			public void onSuccess(Void result) {
-				GWT.log("Attachements dropped", null);
-			}
-		};
+		attachIdReceived(true);
 	}
 
 	public VerticalPanel getAttachList() {
 		return attachList;
+	}
+
+	public String getMessageId() {
+		return messageId;
+	}
+
+	public void setMessageId(String messageId) {
+		this.messageId = messageId;
+		this.composer.setMessageId(messageId);
 	}
 
 }

@@ -21,116 +21,76 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 import fr.aliasource.webmail.client.View;
-import fr.aliasource.webmail.client.ctrl.WebmailController;
-import fr.aliasource.webmail.client.shared.Body;
+import fr.aliasource.webmail.client.shared.IBody;
 
 abstract class MinigTextArea extends SimplePanel {
 
-	final static protected String HTML_SIGNATURE_SEPARATOR = "<br>--&nbsp;<br>";
+    final static protected String HTML_SIGNATURE_SEPARATOR = "<br>--&nbsp;<br>";
 
-	protected View ui;
-	protected MailComposer composer;
-	protected String signature;
+    protected View ui;
+    protected MailComposer composer;
+    protected String signature;
 
-	public MinigTextArea(View ui, MailComposer mc) {
-		this.ui = ui;
-		this.composer = mc;
-	}
+    public MinigTextArea(View ui, MailComposer mc) {
+        this.ui = ui;
+        this.composer = mc;
+    }
 
-	protected void updateSignature(Body mailBody) {
-		if (mailBody.isWithSignature()) {
-			return;
-		}
-		String sig = null;
-		if (composer.getIdentities() != null) {
-			sig = composer.getIdentities().getIdentititesSelectionBox()
-					.getSelectedAddress().getSignature();
-		} else {
-			sig = WebmailController.get().getIdentity().getSignature();
-		}
-		if (isUsableSignature(sig)) {
-			this.signature = sig;
-			setSignature();
-		} else {
-			mailBody.setWithSignature(true);
-		}
-	}
+    public abstract void addKeyboardListener(KeyPressHandler addKeyboardListener);
 
-	private boolean isUsableSignature(String sig) {
-		if (sig == null) {
-			return false;
-		}
-		String tmp = sig.replace("\r", "");
-		tmp = tmp.replace("\n", "");
-		tmp = tmp.replace("\t", "");
-		tmp = tmp.replace(" ", "");
+    public abstract void setFocus(boolean b);
 
-		if (tmp.length() == 0) {
-			return false;
-		}
-		return true;
-	}
+    public abstract RichTextToolbar getRichTextToolbar();
 
-	public abstract void addKeyboardListener(KeyPressHandler addKeyboardListener);
+    public abstract IBody getMailBody();
 
-	public abstract void setFocus(boolean b);
+    public abstract void setMailBody(IBody body);
 
-	public abstract RichTextToolbar getRichTextToolbar();
+    public abstract void setHeight(int height);
 
-	public abstract Body getMailBody();
+    final void update(IBody mailBody) {
+        if (es(mailBody.getPlain())) {
+            mailBody.setPlain("");
+        }
+        if (es(mailBody.getHtml())) {
+            mailBody.setHtml("");
+        }
+        logBody(mailBody);
 
-	public abstract void setMailBody(Body body, boolean updateSignature);
+        setMailBody(mailBody);
+    }
 
-	public abstract void setHeight(int height);
+    /**
+     * Another empty string method
+     * 
+     * @param s
+     * @return
+     */
+    private final boolean es(String s) {
+        if (s == null) {
+            return true;
+        }
+        if (s.length() == 0) {
+            return true;
+        }
+        if (s.trim().length() == 0) {
+            return true;
+        }
+        return false;
+    }
 
-	final void update(Body mailBody, boolean updateSignature) {
-		if (es(mailBody.getPlain())) {
-			mailBody.setPlain("");
-		}
-		if (es(mailBody.getHtml())) {
-			mailBody.setHtml("");
-		}
-		logBody(mailBody);
-		if (!mailBody.isWithSignature() && updateSignature) {
-			GWT.log("update(mailBody) will update signature.", null);
-			updateSignature(mailBody);
-		}
-		setMailBody(mailBody, updateSignature);
-	}
-	
-	/**
-	 * Another empty string method
-	 * 
-	 * @param s
-	 * @return
-	 */
-	private final boolean es(String s) {
-		if (s == null) {
-			return true;
-		}
-		if (s.length() == 0) {
-			return true;
-		}
-		if (s.trim().length() == 0) {
-			return true;
-		}
-		return false;
-	}
+    private final void logBody(IBody mailBody) {
+        if (!GWT.isScript()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("update(mailBody):\n");
+            sb.append("plain:\n");
+            sb.append(mailBody.getPlain());
+            sb.append("html:\n");
+            sb.append(mailBody.getHtml());
+            GWT.log(sb.toString(), null);
+        }
+    }
 
-	private final void logBody(Body mailBody) {
-		if (!GWT.isScript()) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("update(mailBody):\n");
-			sb.append("plain:\n");
-			sb.append(mailBody.getPlain());
-			sb.append("html:\n");
-			sb.append(mailBody.getHtml());
-			GWT.log(sb.toString(), null);
-		}
-	}
-
-	protected abstract void setSignature();
-
-	public abstract boolean isEmpty();
+    public abstract boolean isEmpty();
 
 }

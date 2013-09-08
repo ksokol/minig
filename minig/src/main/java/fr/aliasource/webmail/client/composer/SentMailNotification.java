@@ -25,10 +25,7 @@ import com.google.gwt.user.client.ui.Label;
 
 import fr.aliasource.webmail.client.I18N;
 import fr.aliasource.webmail.client.View;
-import fr.aliasource.webmail.client.ctrl.WebmailController;
-import fr.aliasource.webmail.client.rpc.GetSettings;
-import fr.aliasource.webmail.client.shared.ConversationId;
-import fr.aliasource.webmail.client.shared.Folder;
+import fr.aliasource.webmail.client.shared.IMessageId;
 
 /**
  * Notification displayed on when a message is sent.
@@ -38,43 +35,45 @@ import fr.aliasource.webmail.client.shared.Folder;
  */
 public class SentMailNotification extends HorizontalPanel {
 
-	private Label text;
-	private View ui;
+    private Label text;
+    private View ui;
 
-	public SentMailNotification(View ui) {
-		super();
-		this.ui = ui;
-		text = new Label(I18N.strings.messageSent());
-		add(text);
-	}
+    public SentMailNotification(View ui) {
+        super();
+        this.ui = ui;
+        text = new Label(I18N.strings.messageSent());
+        add(text);
+    }
 
-	/**
-	 * Informs the notification that the storage in the 'sent' folder was
-	 * successful.
-	 */
-	public void setStored(final ConversationId conversationId) {
-		text.setText(I18N.strings.messageSent());
-		add(new HTML("&nbsp;"));
-		Anchor viewSent = new Anchor(I18N.strings.viewSent());
-		ClickHandler cl = new ClickHandler() {
-			public void onClick(ClickEvent ev) {
-				ui.setCurrentFolder(new Folder(WebmailController.get()
-						.getSetting(GetSettings.SENT_FOLDER), I18N.strings
-						.sent()));
-				ui.log("showConv("
-						+ WebmailController.get().getSelector().getCurrent()
-								.getName() + ", " + conversationId + ")");
-				ui.getSidebar().setCurrentDefaultLinkStyle(
-						ui.getSidebar().defaultLinks.get(WebmailController
-								.get().getSelector().getCurrent().getName()
-								.toLowerCase()));
-				ui.showConversation(new Folder(WebmailController.get()
-						.getSetting(GetSettings.SENT_FOLDER)), conversationId,
-						1);
-			}
-		};
-		viewSent.addClickHandler(cl);
-		add(viewSent);
-	}
+    /**
+     * Informs the notification that the storage in the 'sent' folder was
+     * successful.
+     */
+    public void setStored(final IMessageId conversationId) {
+        text.setText(I18N.strings.messageSent());
+        add(new HTML("&nbsp;"));
+        Anchor viewSent = new Anchor(I18N.strings.viewSent());
+        ClickHandler cl = new ClickHandler() {
+            public void onClick(ClickEvent ev) {
+                throw new UnsupportedOperationException();
+
+                // ui.setCurrentFolder(new Folder(WebmailController.get()
+                // .getSetting(GetSettings.SENT_FOLDER), I18N.strings
+                // .sent()));
+                // ui.log("showConv("
+                // + WebmailController.get().getSelector().getCurrent()
+                // .getName() + ", " + conversationId + ")");
+                // ui.getSidebar().setCurrentDefaultLinkStyle(
+                // ui.getSidebar().defaultLinks.get(WebmailController
+                // .get().getSelector().getCurrent().getName()
+                // .toLowerCase()));
+                // ui.showConversation(new Folder(WebmailController.get()
+                // .getSetting(GetSettings.SENT_FOLDER)), conversationId,
+                // 1);
+            }
+        };
+        viewSent.addClickHandler(cl);
+        add(viewSent);
+    }
 
 }

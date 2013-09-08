@@ -1,11 +1,5 @@
 package fr.aliasource.webmail.client.lang;
 
-/**
- * Interface to represent the messages contained in resource bundle:
- * /home/tom/git
- * /minig/webmail-frontend/gwt/src/fr/aliasource/webmail/client/lang
- * /Strings.properties'.
- */
 public interface Strings extends com.google.gwt.i18n.client.Messages {
 
 	/**
@@ -119,7 +113,7 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	@DefaultMessage("Ask for a disposition notification")
 	@Key("askForDispositionNotification")
 	String askForDispositionNotification();
-	
+
 	/**
 	 * Translated "Attach another file".
 	 * 
@@ -193,33 +187,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	String cc();
 
 	/**
-	 * Translated "mobile".
-	 * 
-	 * @return translated "mobile"
-	 */
-	@DefaultMessage("mobile")
-	@Key("cellVoice")
-	String cellVoice();
-
-	/**
-	 * Translated "Chat".
-	 * 
-	 * @return translated "Chat"
-	 */
-	@DefaultMessage("Chat")
-	@Key("chat")
-	String chat();
-
-	/**
-	 * Translated "Chat dialog saved".
-	 * 
-	 * @return translated "Chat dialog saved"
-	 */
-	@DefaultMessage("Chat dialog saved")
-	@Key("chatHistorySaved")
-	String chatHistorySaved();
-
-	/**
 	 * Translated "Clear selection".
 	 * 
 	 * @return translated "Clear selection"
@@ -245,15 +212,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	@DefaultMessage("Collapse all")
 	@Key("collapseAll")
 	String collapseAll();
-
-	/**
-	 * Translated "Collected addresses".
-	 * 
-	 * @return translated "Collected addresses"
-	 */
-	@DefaultMessage("Collected addresses")
-	@Key("collectedAddresses")
-	String collectedAddresses();
 
 	/**
 	 * Translated "Mail composer".
@@ -296,60 +254,28 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	String confirmDiscardMessage();
 
 	/**
-	 * Translated"This action will affect all {0} conversations in {1}.\nAre you sure you want to continue?"
+	 * Translated
+	 * "This action will affect all {0} conversations in {1}.\nAre you sure you want to continue?"
 	 * .
 	 * 
-	 * @return translated"This action will affect all {0} conversations in {1}.\nAre you sure you want to continue?"
+	 * @return translated
+	 *         "This action will affect all {0} conversations in {1}.\nAre you sure you want to continue?"
 	 */
 	@DefaultMessage("This action will affect all {0} conversations in {1}.\nAre you sure you want to continue?")
 	@Key("confirmFolderAction")
 	String confirmFolderAction(String arg0, String arg1);
 
 	/**
-	 * Translated"Converting this message to plain text will lose some formatting.\nAre you sure you want to continue?"
+	 * Translated
+	 * "Converting this message to plain text will lose some formatting.\nAre you sure you want to continue?"
 	 * .
 	 * 
-	 * @return translated"Converting this message to plain text will lose some formatting.\nAre you sure you want to continue?"
+	 * @return translated
+	 *         "Converting this message to plain text will lose some formatting.\nAre you sure you want to continue?"
 	 */
 	@DefaultMessage("Converting this message to plain text will lose some formatting.\nAre you sure you want to continue?")
 	@Key("confirmRichToPlain")
 	String confirmRichToPlain();
-
-	/**
-	 * Translated "Group".
-	 * 
-	 * @return translated "Group"
-	 */
-	@DefaultMessage("Group")
-	@Key("contactGroup")
-	String contactGroup();
-
-	/**
-	 * Translated "Name".
-	 * 
-	 * @return translated "Name"
-	 */
-	@DefaultMessage("Name")
-	@Key("contactName")
-	String contactName();
-
-	/**
-	 * Translated "Contacts".
-	 * 
-	 * @return translated "Contacts"
-	 */
-	@DefaultMessage("Contacts")
-	@Key("contacts")
-	String contacts();
-
-	/**
-	 * Translated "Contacts selected".
-	 * 
-	 * @return translated "Contacts selected"
-	 */
-	@DefaultMessage("Contacts selected")
-	@Key("contactsSelected")
-	String contactsSelected();
 
 	/**
 	 * Translated "of".
@@ -442,6 +368,15 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	String copyTo();
 
 	/**
+	 * Translated "Message has been copied to {0}".
+	 * 
+	 * @return translated "Message has been copied to {0}"
+	 */
+	@DefaultMessage("Message has been copied to {0}")
+	@Key("copiedTo")
+	String copiedTo(String arg0);
+
+	/**
 	 * Translated "Create".
 	 * 
 	 * @return translated "Create"
@@ -449,33 +384,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	@DefaultMessage("Create")
 	@Key("create")
 	String create();
-
-	/**
-	 * Translated "Create a filter".
-	 * 
-	 * @return translated "Create a filter"
-	 */
-	@DefaultMessage("Create a filter")
-	@Key("createAFilter")
-	String createAFilter();
-
-	/**
-	 * Translated "Create event".
-	 * 
-	 * @return translated "Create event"
-	 */
-	@DefaultMessage("Create event")
-	@Key("createEvent")
-	String createEvent();
-
-	/**
-	 * Translated "Create Filter".
-	 * 
-	 * @return translated "Create Filter"
-	 */
-	@DefaultMessage("Create Filter")
-	@Key("createFilter")
-	String createFilter();
 
 	/**
 	 * Translated "Create a folder".
@@ -641,15 +549,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	String discard();
 
 	/**
-	 * Translated "Display all {0} contacts".
-	 * 
-	 * @return translated "Display all {0} contacts"
-	 */
-	@DefaultMessage("Display all {0} contacts")
-	@Key("displayAllXContacts")
-	String displayAllXContacts(String arg0);
-
-	/**
 	 * Translated "Display images below".
 	 * 
 	 * @return translated "Display images below"
@@ -665,7 +564,7 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	@DefaultMessage("Later")
 	@Key("dispositionNotificationLater")
 	String dispositionNotificationLater();
-	
+
 	@DefaultMessage("{0} would like to be notified of this mail delivery :")
 	@Key("dispositionNotificationMessage")
 	String dispositionNotificationMessage(String recipients);
@@ -673,12 +572,11 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	@DefaultMessage("{0} would like to be notified of this mail delivery :")
 	@Key("dispositionNotificationMessagePlural")
 	String dispositionNotificationMessagePlural(String recipients);
-	
+
 	@DefaultMessage("Refuse")
 	@Key("dispositionNotificationRefuse")
 	String dispositionNotificationRefuse();
-	
-	
+
 	/**
 	 * Translated "<b>Drop on a folder to move all conversations there</b>".
 	 * 
@@ -782,26 +680,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	String email();
 
 	/**
-	 * Translated
-	 * "Select contacts on the left to view their names, addresses and more !".
-	 * 
-	 * @return translated
-	 *         "Select contacts on the left to view their names, addresses and more !"
-	 */
-	@DefaultMessage("Select contacts on the left to view their names, addresses and more !")
-	@Key("emptyContactDisplay")
-	String emptyContactDisplay();
-
-	/**
-	 * Translated "Select a group on the left".
-	 * 
-	 * @return translated "Select a group on the left"
-	 */
-	@DefaultMessage("Select a group on the left")
-	@Key("emptyContactList")
-	String emptyContactList();
-
-	/**
 	 * Translated "Empty {0} now".
 	 * 
 	 * @return translated "Empty {0} now"
@@ -847,15 +725,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	String errorMovingConv();
 
 	/**
-	 * Translated "All day".
-	 * 
-	 * @return translated "All day"
-	 */
-	@DefaultMessage("All day")
-	@Key("eventAllDay")
-	String eventAllDay();
-
-	/**
 	 * Translated "Expand all".
 	 * 
 	 * @return translated "Expand all"
@@ -899,157 +768,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	@DefaultMessage("Failed to save template")
 	@Key("failedToSaveTemplate")
 	String failedToSaveTemplate();
-
-	/**
-	 * Translated"<b>Choose action</b> - Now, select the action you''d like to take on messages that match the criteria you specified. When a message arrives that matches the search, do the following:"
-	 * .
-	 * 
-	 * @return translated"<b>Choose action</b> - Now, select the action you''d like to take on messages that match the criteria you specified. When a message arrives that matches the search, do the following:"
-	 */
-	@DefaultMessage("<b>Choose action</b> - Now, select the action you''d like to take on messages that match the criteria you specified. When a message arrives that matches the search, do the following:")
-	@Key("filterActionHeader")
-	String filterActionHeader();
-
-	/**
-	 * Translated "Filter added successfully".
-	 * 
-	 * @return translated "Filter added successfully"
-	 */
-	@DefaultMessage("Filter added successfully")
-	@Key("filterAddSuccess")
-	String filterAddSuccess();
-
-	/**
-	 * Translated "Also apply filter to conversation(s) below.".
-	 * 
-	 * @return translated "Also apply filter to conversation(s) below."
-	 */
-	@DefaultMessage("Also apply filter to conversation(s) below.")
-	@Key("filterAlsoApplyNow")
-	String filterAlsoApplyNow();
-
-	/**
-	 * Translated "Back".
-	 * 
-	 * @return translated "Back"
-	 */
-	@DefaultMessage("Back")
-	@Key("filterBack")
-	String filterBack();
-
-	/**
-	 * Translated"<b>Choose search criteria</b> Specify the criteria you''d like to use for determining what to do with a message as it arrives. Use \"Test Search\" to see which messages would have been filtered using these criteria. Messages in Spam and Trash will not be searched."
-	 * .
-	 * 
-	 * @return translated"<b>Choose search criteria</b> Specify the criteria you''d like to use for determining what to do with a message as it arrives. Use \"Test Search\" to see which messages would have been filtered using these criteria. Messages in Spam and Trash will not be searched."
-	 */
-	@DefaultMessage("<b>Choose search criteria</b> Specify the criteria you''d like to use for determining what to do with a message as it arrives. Use \"Test Search\" to see which messages would have been filtered using these criteria. Messages in Spam and Trash will not be searched.")
-	@Key("filterCriteriaHeader")
-	String filterCriteriaHeader();
-
-	/**
-	 * Translated "Delete it".
-	 * 
-	 * @return translated "Delete it"
-	 */
-	@DefaultMessage("Delete it")
-	@Key("filterDeleteIt")
-	String filterDeleteIt();
-
-	/**
-	 * Translated "Deliver in folder ''{0}''".
-	 * 
-	 * @return translated "Deliver in folder ''{0}''"
-	 */
-	@DefaultMessage("Deliver in folder ''{0}''")
-	@Key("filterDeliverInto")
-	String filterDeliverInto(String arg0);
-
-	/**
-	 * Translated "</b></pre>Do this: ".
-	 * 
-	 * @return translated "</b></pre>Do this: "
-	 */
-	@DefaultMessage("</b></pre>Do this: ")
-	@Key("filterDoThis")
-	String filterDoThis();
-
-	/**
-	 * Translated "Forward it to ''{0}''".
-	 * 
-	 * @return translated "Forward it to ''{0}''"
-	 */
-	@DefaultMessage("Forward it to ''{0}''")
-	@Key("filterForwardItTo")
-	String filterForwardItTo(String arg0);
-
-	/**
-	 * Translated "Mark it as read".
-	 * 
-	 * @return translated "Mark it as read"
-	 */
-	@DefaultMessage("Mark it as read")
-	@Key("filterMarkItAsRead")
-	String filterMarkItAsRead();
-
-	/**
-	 * Translated "
-	 * 
-	 * <pre>
-	 * Matches: <b>".
-	 * 
-	 * @return translated "
-	 * 
-	 * <pre>Matches: <b>"
-	 */
-	@DefaultMessage("<pre>Matches: <b>")
-	@Key("filterMatches")
-	String filterMatches();
-
-	/**
-	 * Translated "Next Step".
-	 * 
-	 * @return translated "Next Step"
-	 */
-	@DefaultMessage("Next Step")
-	@Key("filterNextStep")
-	String filterNextStep();
-
-	/**
-	 * Translated "Error while removing filter".
-	 * 
-	 * @return translated "Error while removing filter"
-	 */
-	@DefaultMessage("Error while removing filter")
-	@Key("filterRemoveError")
-	String filterRemoveError();
-
-	/**
-	 * Translated "Star it".
-	 * 
-	 * @return translated "Star it"
-	 */
-	@DefaultMessage("Star it")
-	@Key("filterStarIt")
-	String filterStarIt();
-
-	/**
-	 * Translated "Test Search".
-	 * 
-	 * @return translated "Test Search"
-	 */
-	@DefaultMessage("Test Search")
-	@Key("filterTestSearch")
-	String filterTestSearch();
-
-	/**
-	 * Translated "Filters".
-	 * 
-	 * @return translated "Filters"
-	 */
-	@DefaultMessage("Filters")
-	@Key("filtersTabTitle")
-	String filtersTabTitle();
 
 	/**
 	 * Translated "Folders".
@@ -1160,15 +878,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	String general();
 
 	/**
-	 * Translated "Goodies".
-	 * 
-	 * @return translated "Goodies"
-	 */
-	@DefaultMessage("Goodies")
-	@Key("goodies")
-	String goodies();
-
-	/**
 	 * Translated "Has attachments".
 	 * 
 	 * @return translated "Has attachments"
@@ -1176,15 +885,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	@DefaultMessage("Has attachments")
 	@Key("hasAttachments")
 	String hasAttachments();
-
-	/**
-	 * Translated "Has the words".
-	 * 
-	 * @return translated "Has the words"
-	 */
-	@DefaultMessage("Has the words")
-	@Key("hasTheWords")
-	String hasTheWords();
 
 	/**
 	 * Translated "hide detail".
@@ -1196,15 +896,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	String hideDetail();
 
 	/**
-	 * Translated "Hide filter options".
-	 * 
-	 * @return translated "Hide filter options"
-	 */
-	@DefaultMessage("Hide filter options")
-	@Key("hideFilterOptions")
-	String hideFilterOptions();
-
-	/**
 	 * Translated "Hide quoted text".
 	 * 
 	 * @return translated "Hide quoted text"
@@ -1212,42 +903,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	@DefaultMessage("Hide quoted text")
 	@Key("hideQuotedText")
 	String hideQuotedText();
-
-	/**
-	 * Translated "Hide search options".
-	 * 
-	 * @return translated "Hide search options"
-	 */
-	@DefaultMessage("Hide search options")
-	@Key("hideSearchOptions")
-	String hideSearchOptions();
-
-	/**
-	 * Translated "home".
-	 * 
-	 * @return translated "home"
-	 */
-	@DefaultMessage("home")
-	@Key("homeAddress")
-	String homeAddress();
-
-	/**
-	 * Translated "home fax".
-	 * 
-	 * @return translated "home fax"
-	 */
-	@DefaultMessage("home fax")
-	@Key("homeFax")
-	String homeFax();
-
-	/**
-	 * Translated "home".
-	 * 
-	 * @return translated "home"
-	 */
-	@DefaultMessage("home")
-	@Key("homeVoice")
-	String homeVoice();
 
 	/**
 	 * Translated "Images are not displayed.".
@@ -1268,6 +923,15 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	String importantMessage();
 
 	/**
+	 * Translated "Return receipt".
+	 * 
+	 * @return translated "Return receipt"
+	 */
+	@DefaultMessage("Return receipt")
+	@Key("receipt")
+	String receipt();
+
+	/**
 	 * Translated "Inbox".
 	 * 
 	 * @return translated "Inbox"
@@ -1277,190 +941,12 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	String inbox();
 
 	/**
-	 * Translated "Invalid search query - returning all mail.".
-	 * 
-	 * @return translated "Invalid search query - returning all mail."
-	 */
-	@DefaultMessage("Invalid search query - returning all mail.")
-	@Key("invalidSearchQuery")
-	String invalidSearchQuery();
-
-	/**
-	 * Translated "Your Agenda for {0}".
-	 * 
-	 * @return translated "Your Agenda for {0}"
-	 */
-	@DefaultMessage("Your Agenda for {0}")
-	@Key("invitationDay")
-	String invitationDay(String arg0);
-
-	/**
-	 * Translated "view my calendar >> ".
-	 * 
-	 * @return translated "view my calendar >> "
-	 */
-	@DefaultMessage("view my calendar >> ")
-	@Key("invitationGoToCalendar")
-	String invitationGoToCalendar();
-
-	/**
-	 * Translated "Going?".
-	 * 
-	 * @return translated "Going?"
-	 */
-	@DefaultMessage("Going?")
-	@Key("invitationGoing")
-	String invitationGoing();
-
-	/**
-	 * Translated "Maybe  ".
-	 * 
-	 * @return translated "Maybe  "
-	 */
-	@DefaultMessage("Maybe  ")
-	@Key("invitationMaybe")
-	String invitationMaybe();
-
-	/**
-	 * Translated "more details >>  ".
-	 * 
-	 * @return translated "more details >>  "
-	 */
-	@DefaultMessage("more details >>  ")
-	@Key("invitationMoreDetail")
-	String invitationMoreDetail();
-
-	/**
-	 * Translated "No".
-	 * 
-	 * @return translated "No"
-	 */
-	@DefaultMessage("No")
-	@Key("invitationNo")
-	String invitationNo();
-
-	/**
-	 * Translated "Owner".
-	 * 
-	 * @return translated "Owner"
-	 */
-	@DefaultMessage("Owner")
-	@Key("invitationOwner")
-	String invitationOwner();
-
-	/**
-	 * Translated "Title".
-	 * 
-	 * @return translated "Title"
-	 */
-	@DefaultMessage("Title")
-	@Key("invitationTitle")
-	String invitationTitle();
-
-	/**
-	 * Translated "When".
-	 * 
-	 * @return translated "When"
-	 */
-	@DefaultMessage("When")
-	@Key("invitationWhen")
-	String invitationWhen();
-
-	/**
-	 * Translated "Where".
-	 * 
-	 * @return translated "Where"
-	 */
-	@DefaultMessage("Where")
-	@Key("invitationWhere")
-	String invitationWhere();
-
-	/**
-	 * Translated "Who".
-	 * 
-	 * @return translated "Who"
-	 */
-	@DefaultMessage("Who")
-	@Key("invitationWho")
-	String invitationWho();
-
-	/**
-	 * Translated "Yes".
-	 * 
-	 * @return translated "Yes"
-	 */
-	@DefaultMessage("Yes")
-	@Key("invitationYes")
-	String invitationYes();
-
-	/**
-	 * Translated "Away".
-	 * 
-	 * @return translated "Away"
-	 */
-	@DefaultMessage("Away")
-	@Key("jabberAway")
-	String jabberAway();
-
-	/**
-	 * Translated "Chatting".
-	 * 
-	 * @return translated "Chatting"
-	 */
-	@DefaultMessage("Chatting")
-	@Key("jabberChat")
-	String jabberChat();
-
-	/**
-	 * Translated "Do not disturb".
-	 * 
-	 * @return translated "Do not disturb"
-	 */
-	@DefaultMessage("Do not disturb")
-	@Key("jabberDnd")
-	String jabberDnd();
-
-	/**
-	 * Translated "Available".
-	 * 
-	 * @return translated "Available"
-	 */
-	@DefaultMessage("Available")
-	@Key("jabberOnline")
-	String jabberOnline();
-
-	/**
-	 * Translated "A quatre pattes".
-	 * 
-	 * @return translated "A quatre pattes"
-	 */
-	@DefaultMessage("A quatre pattes")
-	@Key("jabberSylvain")
-	String jabberSylvain();
-
-	/**
-	 * Translated "Unknown".
-	 * 
-	 * @return translated "Unknown"
-	 */
-	@DefaultMessage("Unknown")
-	@Key("jabberUnknown")
-	String jabberUnknown();
-
-	/**
-	 * Translated "Extended Away".
-	 * 
-	 * @return translated "Extended Away"
-	 */
-	@DefaultMessage("Extended Away")
-	@Key("jabberXa")
-	String jabberXa();
-
-	/**
-	 * Translated"The canned response will replace your current message. Are you sure you want to proceed?"
+	 * Translated
+	 * "The canned response will replace your current message. Are you sure you want to proceed?"
 	 * .
 	 * 
-	 * @return translated"The canned response will replace your current message. Are you sure you want to proceed?"
+	 * @return translated
+	 *         "The canned response will replace your current message. Are you sure you want to proceed?"
 	 */
 	@DefaultMessage("The canned response will replace your current message. Are you sure you want to proceed?")
 	@Key("loadCannedResponse")
@@ -1552,9 +1038,9 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	 * 
 	 * @return translated "The message has been moved to the {0}"
 	 */
-	@DefaultMessage("The message has been moved to the {0}")
+	@DefaultMessage("The message has been moved to {0}")
 	@Key("messageDeleted")
-	String messageDeleted(String arg0);
+	String moveMessage(String arg0);
 
 	/**
 	 * Translated "The message has been deleted".
@@ -1600,33 +1086,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	@DefaultMessage("Move to")
 	@Key("moveTo")
 	String moveTo();
-
-	/**
-	 * Translated "All contacts".
-	 * 
-	 * @return translated "All contacts"
-	 */
-	@DefaultMessage("All contacts")
-	@Key("myContactsGroup")
-	String myContactsGroup();
-
-	/**
-	 * Translated "New message !".
-	 * 
-	 * @return translated "New message !"
-	 */
-	@DefaultMessage("New message !")
-	@Key("newChatMessage")
-	String newChatMessage();
-
-	/**
-	 * Translated "Invitation to a new event".
-	 * 
-	 * @return translated "Invitation to a new event"
-	 */
-	@DefaultMessage("Invitation to a new event")
-	@Key("newEvent")
-	String newEvent();
 
 	/**
 	 * Translated "Newer".
@@ -1683,15 +1142,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	String noCannedResponses();
 
 	/**
-	 * Translated "No preview available".
-	 * 
-	 * @return translated "No preview available"
-	 */
-	@DefaultMessage("No preview available")
-	@Key("noPreview")
-	String noPreview();
-
-	/**
 	 * Translated "None".
 	 * 
 	 * @return translated "None"
@@ -1708,33 +1158,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	@DefaultMessage("Not Spam")
 	@Key("notSpam")
 	String notSpam();
-
-	/**
-	 * Translated "Users".
-	 * 
-	 * @return translated "Users"
-	 */
-	@DefaultMessage("Users")
-	@Key("obmLdapGroup")
-	String obmLdapGroup();
-
-	/**
-	 * Translated "OBM private contacts".
-	 * 
-	 * @return translated "OBM private contacts"
-	 */
-	@DefaultMessage("OBM private contacts")
-	@Key("obmPrivateGroup")
-	String obmPrivateGroup();
-
-	/**
-	 * Translated "OBM public contacts".
-	 * 
-	 * @return translated "OBM public contacts"
-	 */
-	@DefaultMessage("OBM public contacts")
-	@Key("obmPublicGroup")
-	String obmPublicGroup();
 
 	/**
 	 * Translated "Of".
@@ -1800,33 +1223,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	String one_year();
 
 	/**
-	 * Translated "other".
-	 * 
-	 * @return translated "other"
-	 */
-	@DefaultMessage("other")
-	@Key("otherAddress")
-	String otherAddress();
-
-	/**
-	 * Translated "other".
-	 * 
-	 * @return translated "other"
-	 */
-	@DefaultMessage("other")
-	@Key("otherVoice")
-	String otherVoice();
-
-	/**
-	 * Translated "pager".
-	 * 
-	 * @return translated "pager"
-	 */
-	@DefaultMessage("pager")
-	@Key("pagerVoice")
-	String pagerVoice();
-
-	/**
 	 * Translated "Permission denied.".
 	 * 
 	 * @return translated "Permission denied."
@@ -1870,15 +1266,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	@DefaultMessage("Print")
 	@Key("printOne")
 	String printOne();
-
-	/**
-	 * Translated "You are currently using {0} ({1}%) of your {2}.".
-	 * 
-	 * @return translated "You are currently using {0} ({1}%) of your {2}."
-	 */
-	@DefaultMessage("You are currently using {0} ({1}%) of your {2}.")
-	@Key("quotaInfo")
-	String quotaInfo(String arg0, String arg1, String arg2);
 
 	/**
 	 * Translated "Quoting {0} :".
@@ -2037,60 +1424,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	String saveNow();
 
 	/**
-	 * Translated "Search".
-	 * 
-	 * @return translated "Search"
-	 */
-	@DefaultMessage("Search")
-	@Key("search")
-	String search();
-
-	/**
-	 * Translated "Search contacts".
-	 * 
-	 * @return translated "Search contacts"
-	 */
-	@DefaultMessage("Search contacts")
-	@Key("searchContactField")
-	String searchContactField();
-
-	/**
-	 * Translated "Search results".
-	 * 
-	 * @return translated "Search results"
-	 */
-	@DefaultMessage("Search results")
-	@Key("searchContactResults")
-	String searchContactResults();
-
-	/**
-	 * Translated "search for ''{0}''".
-	 * 
-	 * @return translated "search for ''{0}''"
-	 */
-	@DefaultMessage("search for ''{0}''")
-	@Key("searchFor")
-	String searchFor(String arg0);
-
-	/**
-	 * Translated "Search Mail".
-	 * 
-	 * @return translated "Search Mail"
-	 */
-	@DefaultMessage("Search Mail")
-	@Key("searchMail")
-	String searchMail();
-
-	/**
-	 * Translated "Search options".
-	 * 
-	 * @return translated "Search options"
-	 */
-	@DefaultMessage("Search options")
-	@Key("searchOptions")
-	String searchOptions();
-
-	/**
 	 * Translated "Select".
 	 * 
 	 * @return translated "Select"
@@ -2163,15 +1496,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	String showAnyContactsRecentConversations();
 
 	/**
-	 * Translated "Show current filters".
-	 * 
-	 * @return translated "Show current filters"
-	 */
-	@DefaultMessage("Show current filters")
-	@Key("showCurrentFilters")
-	String showCurrentFilters();
-
-	/**
 	 * Translated "show detail".
 	 * 
 	 * @return translated "show detail"
@@ -2215,24 +1539,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	@DefaultMessage("Sign out")
 	@Key("signOut")
 	String signOut();
-
-	/**
-	 * Translated "Signature".
-	 * 
-	 * @return translated "Signature"
-	 */
-	@DefaultMessage("Signature")
-	@Key("signature")
-	String signature();
-
-	/**
-	 * Translated "(appended at the end of your emails)".
-	 * 
-	 * @return translated "(appended at the end of your emails)"
-	 */
-	@DefaultMessage("(appended at the end of your emails)")
-	@Key("signatureDescription")
-	String signatureDescription();
 
 	/**
 	 * Translated "B".
@@ -2337,15 +1643,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	String templateSaved();
 
 	/**
-	 * Translated "Templates".
-	 * 
-	 * @return translated "Templates"
-	 */
-	@DefaultMessage("Templates")
-	@Key("templates")
-	String templates();
-
-	/**
 	 * Translated "To".
 	 * 
 	 * @return translated "To"
@@ -2427,88 +1724,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	String unsubscribe();
 
 	/**
-	 * Translated "Vacation responder:".
-	 * 
-	 * @return translated "Vacation responder:"
-	 */
-	@DefaultMessage("Vacation responder:")
-	@Key("vacation")
-	String vacation();
-
-	/**
-	 * Translated"(sends an automated reply to incoming messages. If a contact sends you several messages, this automated reply will be sent at most once every 4 days)"
-	 * .
-	 * 
-	 * @return translated"(sends an automated reply to incoming messages. If a contact sends you several messages, this automated reply will be sent at most once every 4 days)"
-	 */
-	@DefaultMessage("(sends an automated reply to incoming messages. If a contact sends you several messages, this automated reply will be sent at most once every 4 days)")
-	@Key("vacationDescription")
-	String vacationDescription();
-
-	/**
-	 * Translated "Do not send Out of Office auto-replies".
-	 * 
-	 * @return translated "Do not send Out of Office auto-replies"
-	 */
-	@DefaultMessage("Do not send Out of Office auto-replies")
-	@Key("vacationDisable")
-	String vacationDisable();
-
-	/**
-	 * Translated "Send Out of Office auto-replies".
-	 * 
-	 * @return translated "Send Out of Office auto-replies"
-	 */
-	@DefaultMessage("Send Out of Office auto-replies")
-	@Key("vacationEnable")
-	String vacationEnable();
-
-	/**
-	 * Translated "End time: ".
-	 * 
-	 * @return translated "End time: "
-	 */
-	@DefaultMessage("End time: ")
-	@Key("vacationEnd")
-	String vacationEnd();
-
-	/**
-	 * Translated "Only send during this time range".
-	 * 
-	 * @return translated "Only send during this time range"
-	 */
-	@DefaultMessage("Only send during this time range")
-	@Key("vacationRange")
-	String vacationRange();
-
-	/**
-	 * Translated "Start time:".
-	 * 
-	 * @return translated "Start time:"
-	 */
-	@DefaultMessage("Start time:")
-	@Key("vacationStart")
-	String vacationStart();
-
-	/**
-	 * Translated "Subject:".
-	 * 
-	 * @return translated "Subject:"
-	 */
-	@DefaultMessage("Subject:")
-	@Key("vacationSubject")
-	String vacationSubject();
-
-	/**
-	 * Translated "Message:".
-	 * 
-	 * @return translated "Message:"
-	 */
-	@DefaultMessage("Message:")
-	@Key("vacationText")
-	String vacationText();
-
-	/**
 	 * Translated "View".
 	 * 
 	 * @return translated "View"
@@ -2525,33 +1740,6 @@ public interface Strings extends com.google.gwt.i18n.client.Messages {
 	@DefaultMessage("View sent message")
 	@Key("viewSent")
 	String viewSent();
-
-	/**
-	 * Translated "work".
-	 * 
-	 * @return translated "work"
-	 */
-	@DefaultMessage("work")
-	@Key("workAddress")
-	String workAddress();
-
-	/**
-	 * Translated "work fax".
-	 * 
-	 * @return translated "work fax"
-	 */
-	@DefaultMessage("work fax")
-	@Key("workFax")
-	String workFax();
-
-	/**
-	 * Translated "work".
-	 * 
-	 * @return translated "work"
-	 */
-	@DefaultMessage("work")
-	@Key("workVoice")
-	String workVoice();
 
 	/**
 	 * Translated "{0} days".

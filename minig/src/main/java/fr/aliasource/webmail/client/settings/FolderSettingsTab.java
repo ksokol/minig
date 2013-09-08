@@ -16,10 +16,10 @@
 
 package fr.aliasource.webmail.client.settings;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -30,9 +30,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import fr.aliasource.webmail.client.I18N;
 import fr.aliasource.webmail.client.ListSubFoldersCommand;
 import fr.aliasource.webmail.client.View;
-import fr.aliasource.webmail.client.ctrl.AjaxCall;
 import fr.aliasource.webmail.client.ctrl.WebmailController;
-import fr.aliasource.webmail.client.shared.Folder;
+import fr.aliasource.webmail.client.shared.ICreateFolderRequest;
+import fr.aliasource.webmail.client.shared.IFolder;
+import fr.aliasource.webmail.client.shared.IFolderList;
+import fr.aliasource.webmail.client.test.Ajax;
+import fr.aliasource.webmail.client.test.AjaxCallback;
+import fr.aliasource.webmail.client.test.AjaxFactory;
+import fr.aliasource.webmail.client.test.BeanFactory;
 
 /**
  * Settings page to manage IMAP folders
@@ -40,7 +45,7 @@ import fr.aliasource.webmail.client.shared.Folder;
  * @author matthieu
  * 
  */
-public class FolderSettingsTab extends DockPanel implements ISettingsPage {
+public class FolderSettingsTab extends DockPanel {
 
 	private View ui;
 	private FolderSettingsDataGrid dataGrid;
@@ -55,7 +60,7 @@ public class FolderSettingsTab extends DockPanel implements ISettingsPage {
 		VerticalPanel settingContentPanel = new VerticalPanel();
 		settingContentPanel.setWidth("100%");
 		addCreateFolder();
-		dataGrid = new FolderSettingsDataGrid(this, ui);
+		dataGrid = new FolderSettingsDataGrid(this);
 		settingContentPanel.add(dataGrid);
 		add(settingContentPanel, DockPanel.CENTER);
 	}
@@ -90,69 +95,113 @@ public class FolderSettingsTab extends DockPanel implements ISettingsPage {
 	}
 
 	private void createFolder() {
-		Folder f = new Folder(formatFolderName(folderName.getText()),
-				folderName.getText());
-		f.setSubscribed(true);
-		AjaxCall.folderManager.createFolder(f, new AsyncCallback<Void>() {
-			public void onSuccess(Void result) {
-				refreshTab();
-				refreshSubscribedFolders();
-				selectFolder(null);
-				createButton.setEnabled(true);
-			}
+		Ajax<ICreateFolderRequest> builder = AjaxFactory.createFolder(dataGrid
+				.getCurrentPath());
+		ICreateFolderRequest createFolderRequest = BeanFactory.instance
+				.createFolder().as();
 
-			public void onFailure(Throwable caught) {
-				ui.log("Cannot create folder");
-			}
-		});
-	}
+		createFolderRequest.setFolder(folderName.getText());
 
-	private String formatFolderName(String name) {
-		if (dataGrid.getCurrentPath() != null) {
-			return dataGrid.getCurrentPath() + "/" + name;
+		try {
+			builder.send(createFolderRequest,
+					new AjaxCallback<ICreateFolderRequest>() {
+
+						@Override
+						public void onSuccess(ICreateFolderRequest object) {
+							refreshTab();
+							refreshSubscribedFolders();
+							selectFolder(null);
+							createButton.setEnabled(true);
+						}
+
+						@Override
+						public void onError(Request request, Throwable exception) {
+							if (exception != null) {
+								ui.notifyUser(exception.getMessage());
+							} else {
+								ui.notifyUser("something went wrong");
+							}
+						}
+					});
+		} catch (RequestException e) {
+			ui.notifyUser(e.getMessage());
 		}
-		return name;
 	}
 
-	public void subscribe(Folder folder) {
-		AjaxCall.folderManager.subscribeFolder(folder,
-				new AsyncCallback<Void>() {
-					public void onSuccess(Void result) {
-						refreshTab();
-						refreshSubscribedFolders();
-					}
+	private void updateFolder(IFolder folder) {
+		Ajax<IFolder> ajax = AjaxFactory.updateFolder(folder.getId());
 
-					public void onFailure(Throwable caught) {
-						ui.log("Cannot subscribe to folder");
+		try {
+			ajax.send(folder, new AjaxCallback<IFolder>() {
+
+				@Override
+				public void onSuccess(IFolder object) {
+					refreshTab();
+					refreshSubscribedFolders();
+				}
+
+				@Override
+				public void onError(Request request, Throwable exception) {
+					if (exception != null) {
+						ui.notifyUser(exception.getMessage());
+					} else {
+						ui.notifyUser("something went wrong");
 					}
-				});
+				}
+			});
+		} catch (RequestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
-	public void unsubscribe(Folder folder) {
-		AjaxCall.folderManager.unSubscribeFolder(folder,
-				new AsyncCallback<Void>() {
-					public void onSuccess(Void result) {
-						refreshTab();
-						refreshSubscribedFolders();
-					}
-
-					public void onFailure(Throwable caught) {
-						ui.log("Cannot unsubscribe of folder");
-					}
-				});
+	public void subscribe(IFolder folder) {
+		folder.setSubscribed(true);
+		updateFolder(folder);
 	}
 
-	public void deleteFolder(Folder folder) {
-		AjaxCall.folderManager.deleteFolder(folder, new AsyncCallback<Void>() {
-			public void onSuccess(Void result) {
-				refreshTab();
-				refreshSubscribedFolders();
-			}
+	public void unsubscribe(IFolder folder) {
+		folder.setSubscribed(false);
+		updateFolder(folder);
+	}
 
-			public void onFailure(Throwable caught) {
-				ui.log("Cannot unsubscribe of folder");
-			}
-		});
+	public void deleteFolder(IFolder folder) {
+		Ajax<IFolder> request = AjaxFactory.deleteFolder(folder.getId());
+
+		try {
+			request.send(new AjaxCallback<IFolder>() {
+
+				@Override
+				public void onSuccess(IFolder object) {
+					refreshTab();
+					refreshSubscribedFolders();
+				}
+
+				@Override
+				public void onError(Request request, Throwable exception) {
+					// TODO Auto-generated method stub
+					if (exception != null) {
+						ui.notifyUser(exception.getMessage());
+					}
+				}
+			});
+		} catch (RequestException e) {
+			// TODO Auto-generated catch block
+			ui.notifyUser(e.getMessage());
+		}
+
+		// AjaxCall.folderManager.deleteFolder(folder, new AsyncCallback<Void>()
+		// {
+		// public void onSuccess(Void result) {
+		// refreshTab();
+		// refreshSubscribedFolders();
+		// }
+		//
+		// public void onFailure(Throwable caught) {
+		// ui.log("Cannot unsubscribe of folder");
+		// }
+		// });
 
 	}
 
@@ -168,28 +217,37 @@ public class FolderSettingsTab extends DockPanel implements ISettingsPage {
 
 	private void refreshTab() {
 		ui.getSpinner().startSpinning();
-		AsyncCallback<Folder[]> callback = new AsyncCallback<Folder[]>() {
-			public void onSuccess(Folder[] folders) {
-				ui.getSpinner().stopSpinning();
-				dataGrid.updateGrid(folders);
-			}
+		Ajax<IFolderList> builder = AjaxFactory.subscribedFolder();
 
-			public void onFailure(Throwable caught) {
-				ui.getSpinner().stopSpinning();
-				ui.log("nextFailure");
-			}
-		};
+		try {
+			builder.send(new AjaxCallback<IFolderList>() {
 
-		ui.log("showing folder page settings ");
-		AjaxCall.folderManager.listAvailableFolders(callback);
+				@Override
+				public void onSuccess(IFolderList object) {
+					ui.getSpinner().stopSpinning();
+					dataGrid.updateGrid(object.getFolderList());
+				}
 
+				@Override
+				public void onError(Request request, Throwable exception) {
+					ui.getSpinner().stopSpinning();
+					// TODO
+					if (exception != null) {
+						exception.printStackTrace();
+					}
+				}
+			});
+		} catch (RequestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	public void selectFolder(Folder folder) {
+	public void selectFolder(IFolder folder) {
 		if (folder != null) {
-			dataGrid.setCurrentPath(folder.getName());
+			dataGrid.setCurrentPath(folder.getId());
 			createLabel.setHTML(I18N.strings.createSubFolderIn() + " <b>"
-					+ folder.getName() + "</b>: ");
+					+ folder.getId() + "</b>: ");
 			folderName.setText("");
 			createButton.setText(I18N.strings.createSubFolder());
 			cancelButton.setVisible(true);
@@ -203,29 +261,12 @@ public class FolderSettingsTab extends DockPanel implements ISettingsPage {
 		folderName.setFocus(true);
 	}
 
-	public void renameFolder(Folder folder, String newName) {
-		AjaxCall.folderManager.renameFolder(folder, newName,
-				new AsyncCallback<Void>() {
-					public void onSuccess(Void result) {
-						refreshTab();
-						refreshSubscribedFolders();
-					}
-
-					public void onFailure(Throwable caught) {
-						ui.log("Cannot unsubscribe of folder");
-					}
-				});
-
+	public void renameFolder(IFolder folder, String newName) {
+		folder.setName(newName);
+		updateFolder(folder);
 	}
 
-	public void showFolder(Folder f) {
+	public void showFolder(IFolder f) {
 		WebmailController.get().getSelector().select(f);
-
 	}
-
-	@Override
-	public void shutdown() {
-		GWT.log("shutdown should be implement...", null);
-	}
-
 }

@@ -21,40 +21,40 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import fr.aliasource.webmail.client.shared.ClientMessage;
-import fr.aliasource.webmail.client.shared.ConversationContent;
-import fr.aliasource.webmail.client.shared.EmailAddress;
+import fr.aliasource.webmail.client.shared.IClientMessage;
+import fr.aliasource.webmail.client.shared.IEmailAddress;
 
 public class RecipientsStyleHandler {
 
-	private Map<EmailAddress, String> styles;
+    private Map<IEmailAddress, String> styles;
 
-	public RecipientsStyleHandler(ConversationContent cc) {
-		styles = new HashMap<EmailAddress, String>();
+    public RecipientsStyleHandler(IClientMessage cc) {
+        styles = new HashMap<IEmailAddress, String>();
 
-		Set<EmailAddress> sa = new LinkedHashSet<EmailAddress>();
-		for (ClientMessage cm : cc.getMessages()) {
-			sa.add(cm.getSender());
-			for (EmailAddress a : cm.getTo()) {
-				sa.add(a);
-			}
-			for (EmailAddress a : cm.getCc()) {
-				sa.add(a);
-			}
-			for (EmailAddress a : cm.getBcc()) {
-				sa.add(a);
-			}
-		}
-		String style = "recipientLabel";
-		int i = 1;
-		for (EmailAddress a : sa) {
-			styles.put(a, style + i);
-			i++;
-		}
-	}
+        Set<IEmailAddress> sa = new LinkedHashSet<IEmailAddress>();
+        IClientMessage cm = cc;
+        // for (ClientMessage cm : cc.getMessages()) {
+        sa.add(cm.getSender());
+        for (IEmailAddress a : cm.getTo()) {
+            sa.add(a);
+        }
+        for (IEmailAddress a : cm.getCc()) {
+            sa.add(a);
+        }
+        for (IEmailAddress a : cm.getBcc()) {
+            sa.add(a);
+        }
+        // }
+        String style = "recipientLabel";
+        int i = 1;
+        for (IEmailAddress a : sa) {
+            styles.put(a, style + i);
+            i++;
+        }
+    }
 
-	public String getStyle(EmailAddress sender) {
-		return styles.get(sender);
-	}
+    public String getStyle(IEmailAddress sender) {
+        return styles.get(sender);
+    }
 
 }

@@ -16,36 +16,42 @@
 
 package fr.aliasource.webmail.client;
 
-import java.util.Arrays;
-
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import fr.aliasource.webmail.client.ctrl.AjaxCall;
 import fr.aliasource.webmail.client.ctrl.WebmailController;
-import fr.aliasource.webmail.client.shared.Folder;
+import fr.aliasource.webmail.client.shared.IFolderList;
+import fr.aliasource.webmail.client.test.Ajax;
+import fr.aliasource.webmail.client.test.AjaxFactory;
+import fr.aliasource.webmail.client.test.AjaxCallback;
 
 public class ListSubFoldersCommand implements Command {
 
-	public ListSubFoldersCommand() {
-	}
+    public ListSubFoldersCommand() {
+    }
 
-	public void execute() {
-		AsyncCallback<Folder[]> callback = new AsyncCallback<Folder[]>() {
-			public void onSuccess(Folder[] result) {
-				Arrays.sort(result, new FolderComparator());
-				WebmailController.get().getSelector().setFolders(result);
-				GWT.log("/folderManager call successfull", null);
-			}
+    public void execute() {
+        Ajax<IFolderList> builder = AjaxFactory.subscribedFolder(true);
 
-			public void onFailure(Throwable caught) {
-				GWT.log("/folderManager failure (" + caught.getMessage() + ")",
-						null);
-			}
-		};
+        try {
+            builder.send(new AjaxCallback<IFolderList>() {
 
-		AjaxCall.folderManager.listSubscribedFolders(callback);
-	}
+                @Override
+                public void onSuccess(IFolderList object) {
+                    WebmailController.get().getSelector().setFolders(object.getFolderList());
+                }
 
+                @Override
+                public void onError(Request request, Throwable exception) {
+                    // TODO
+                    GWT.log("/folderManager failure (" + exception.getMessage() + ")", null);
+                }
+            });
+        } catch (RequestException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }

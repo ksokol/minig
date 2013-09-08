@@ -9,8 +9,7 @@ import com.google.gwt.user.client.Window;
 import fr.aliasource.webmail.client.I18N;
 import fr.aliasource.webmail.client.View;
 
-public class ComposerTabListener implements BeforeSelectionHandler<Integer>,
-		SelectionHandler<Integer> {
+public class ComposerTabListener implements BeforeSelectionHandler<Integer>, SelectionHandler<Integer> {
 
 	private MailComposer mc;
 	private View ui;
@@ -33,19 +32,12 @@ public class ComposerTabListener implements BeforeSelectionHandler<Integer>,
 
 	private void onBeforeSelectionImpl(BeforeSelectionEvent<Integer> bse) {
 		// we switch between two tabs unrelated to composer
-		if (bse.getItem() != View.COMPOSER
-				&& ui.getCurrentTab() != View.COMPOSER) {
-			return;
-		}
-
-		if (!mc.isTimerStarted()) {
-			mc.clearComposer();
+		if (bse.getItem() != View.COMPOSER && ui.getCurrentTab() != View.COMPOSER) {
 			return;
 		}
 
 		if (!mc.isEmpty()) {
-			boolean discard = Window.confirm(I18N.strings
-					.confirmDiscardMessage());
+			boolean discard = Window.confirm(I18N.strings.confirmDiscardMessage());
 			if (discard) {
 				mc.discard();
 			} else {

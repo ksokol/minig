@@ -19,8 +19,9 @@ package fr.aliasource.webmail.client.composer;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FileUpload;
@@ -31,8 +32,12 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import fr.aliasource.webmail.client.I18N;
+import fr.aliasource.webmail.client.ctrl.WebmailController;
 import fr.aliasource.webmail.client.reader.AttachmentDisplay;
-import fr.aliasource.webmail.client.shared.AttachmentMetadata;
+import fr.aliasource.webmail.client.shared.IAttachmentMetadata;
+import fr.aliasource.webmail.client.test.Ajax;
+import fr.aliasource.webmail.client.test.AjaxCallback;
+import fr.aliasource.webmail.client.test.AjaxFactory;
 
 /**
  * Widget used to display the attachments upload form and a link to the uploaded
@@ -48,12 +53,25 @@ public class AttachmentUploadWidget extends FormPanel {
 	private Image upSpinner;
 	private Anchor droppAttachmentLink;
 	private AttachmentsPanel attachPanel;
-	private DockPanel dp;
+	public DockPanel dp;
+	private String messageId;
+	private IAttachmentMetadata meta;
 
-	public AttachmentUploadWidget(AttachmentsPanel attPanel, String attId,
-			boolean alreadyOnServer) {
+	public AttachmentUploadWidget(AttachmentsPanel attPanel, IAttachmentMetadata meta) {
 		this.attachPanel = attPanel;
-		this.attachementId = attId;
+		// this.messageId = messageId;
+		dp = new DockPanel();
+		dp.setSpacing(1);
+
+		attachementId = meta.getFileName();
+		this.meta = meta;
+		setWidget(dp);
+		buildDisplay(dp);
+	}
+
+	public AttachmentUploadWidget(AttachmentsPanel attPanel, String messageId, boolean alreadyOnServer) {
+		this.attachPanel = attPanel;
+		this.messageId = messageId;
 		dp = new DockPanel();
 		dp.setSpacing(1);
 
@@ -71,27 +89,37 @@ public class AttachmentUploadWidget extends FormPanel {
 	}
 
 	private void buildDisplay(final DockPanel dp) {
-		attachPanel.notifyUploadComplete(attachementId);
+		// attachPanel.notifyUploadComplete(attachementId);
+		droppAttachmentLink = new Anchor(I18N.strings.delete());
+		droppAttachmentLink.addClickHandler(createDropAttachmentClickListener());
+		HorizontalPanel eastPanel = new HorizontalPanel();
+		upSpinner = new Image("minig/images/spinner_moz.gif");
+		upSpinner.setVisible(false);
+		eastPanel.add(upSpinner);
+		eastPanel.add(droppAttachmentLink);
+		dp.add(eastPanel, DockPanel.EAST);
+
 		HorizontalPanel hp = new HorizontalPanel();
 		dp.add(hp, DockPanel.CENTER);
-		updateMetadata(hp);
+		hp.clear();
+		hp.add(new AttachmentDisplay(meta));
 	}
 
 	private void buildUpload(final DockPanel dp) {
 		setEncoding(FormPanel.ENCODING_MULTIPART);
 		setMethod(FormPanel.METHOD_POST);
-		setAction(GWT.getModuleBaseURL() + "attachements");
+
+		setAction(AjaxFactory.uploadAttachment(messageId));
 
 		Label l = new Label();
 		dp.add(l, DockPanel.WEST);
 		dp.setCellVerticalAlignment(l, VerticalPanel.ALIGN_MIDDLE);
 		upload = new FileUpload();
-		upload.setName(attachementId);
+
 		dp.add(upload, DockPanel.CENTER);
 
 		droppAttachmentLink = new Anchor(I18N.strings.delete());
-		droppAttachmentLink
-				.addClickHandler(createDropAttachmentClickListener());
+		droppAttachmentLink.addClickHandler(createDropAttachmentClickListener());
 		HorizontalPanel eastPanel = new HorizontalPanel();
 		upSpinner = new Image("minig/images/spinner_moz.gif");
 		upSpinner.setVisible(false);
@@ -106,7 +134,6 @@ public class AttachmentUploadWidget extends FormPanel {
 				upSpinner.setVisible(true);
 				droppAttachmentLink.setVisible(false);
 				attachPanel.notifyUploadStarted(attachementId);
-
 			}
 		});
 
@@ -123,18 +150,27 @@ public class AttachmentUploadWidget extends FormPanel {
 				uploadInfo.setText("File '" + attachementId + "' attached.");
 				hp.add(uploadInfo);
 
+				String results = event.getResults().trim();
+				int indexOf = results.indexOf("</noscript>");
+				String cut = results.substring(indexOf + 11).trim();
+				String replaceAll = cut.replaceAll("&gt;", ">").replaceAll("&lt;", "<");
+
+				messageId = replaceAll;
+				attachPanel.setMessageId(replaceAll);
+
 				dp.remove(upload);
 				dp.add(hp, DockPanel.CENTER);
 				updateMetadata(hp);
+
 			}
 		});
 
 		Timer t = new Timer() {
 			public void run() {
-				if (upload.getFilename() != null
-						&& upload.getFilename().length() > 0) {
-					GWT.log("filename before upload: " + upload.getFilename(),
-							null);
+				if (upload.getFilename() != null && upload.getFilename().length() > 0) {
+					GWT.log("filename before upload: " + upload.getFilename(), null);
+					upload.setName(upload.getFilename());
+					attachementId = upload.getFilename();
 					cancel();
 					submit();
 				}
@@ -144,43 +180,47 @@ public class AttachmentUploadWidget extends FormPanel {
 	}
 
 	private void updateMetadata(final HorizontalPanel hp) {
-		AsyncCallback<AttachmentMetadata[]> ac = new AsyncCallback<AttachmentMetadata[]>() {
-			public void onFailure(Throwable caught) {
-				if (upSpinner != null) {
-					upSpinner.setVisible(false);
-				}
-				GWT.log("Error fetching metadata for " + attachementId, caught);
-			}
+		Ajax<IAttachmentMetadata> request = AjaxFactory.attachmentMetadata(messageId, attachementId);
 
-			public void onSuccess(AttachmentMetadata[] meta) {
-				if (meta != null && meta.length == 1 && meta[0] != null) {
-					hp.clear();
-					hp.add(new AttachmentDisplay(meta[0], attachementId));
-				} else {
-					GWT.log("Empty metadata", null);
-				}
-				if (upSpinner != null) {
+		try {
+			request.send(new AjaxCallback<IAttachmentMetadata>() {
+
+				@Override
+				public void onSuccess(IAttachmentMetadata meta) {
 					upSpinner.setVisible(false);
+					hp.clear();
+					hp.add(new AttachmentDisplay(meta));
 				}
-			}
-		};
-		if (upSpinner != null) {
-			upSpinner.setVisible(true);
+
+				@Override
+				public void onError(Request request, Throwable exception) {
+					upSpinner.setVisible(false);
+
+					if (exception != null) {
+						WebmailController.get().getView().notifyUser(exception.getMessage());
+					} else {
+						WebmailController.get().getView().notifyUser("something goes wrong.");
+					}
+				}
+			});
+		} catch (RequestException e) {
+			WebmailController.get().getView().notifyUser(e.getMessage());
 		}
-		attachPanel.getManager().getAttachementMetadata(
-				new String[] { attachementId }, ac);
 	}
 
 	private ClickHandler createDropAttachmentClickListener() {
 		final AttachmentUploadWidget auw = this;
 		return new ClickHandler() {
 			public void onClick(ClickEvent ev) {
-				if (attachPanel.getAttachList().getWidgetCount() == 1) {
-					attachPanel.reset();
-				} else {
-					attachPanel.getAttachList().remove(auw);
-					attachPanel.droppAnAttachment(auw.attachementId);
-				}
+				attachPanel.getAttachList().remove(auw);
+				attachPanel.dropAttachment(auw.attachementId);
+				//
+				// if (attachPanel.getAttachList().getWidgetCount() == 1) {
+				// attachPanel.reset();
+				// } else {
+				// attachPanel.getAttachList().remove(auw);
+				// attachPanel.droppAnAttachment(auw.attachementId);
+				// }
 			}
 		};
 	}

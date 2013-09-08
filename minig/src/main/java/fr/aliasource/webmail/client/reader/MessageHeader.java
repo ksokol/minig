@@ -31,8 +31,8 @@ import fr.aliasource.webmail.client.I18N;
 import fr.aliasource.webmail.client.View;
 import fr.aliasource.webmail.client.conversations.DateFormatter;
 import fr.aliasource.webmail.client.conversations.StarWidget;
-import fr.aliasource.webmail.client.shared.ClientMessage;
-import fr.aliasource.webmail.client.shared.EmailAddress;
+import fr.aliasource.webmail.client.shared.IClientMessage;
+import fr.aliasource.webmail.client.shared.IEmailAddress;
 
 /**
  * Renders the rounded header on top of messages in conversation reader.
@@ -44,10 +44,8 @@ public class MessageHeader extends FlexTable {
 
 	private Anchor showDetails;
 
-	public MessageHeader(View ui, DateFormatter dtf,
-			RecipientsStyleHandler rsh, ClientMessage cm,
-			ConversationDisplay convDisplay, final AbstractMessageWidget mw,
-			boolean withMenu, boolean collapsable) {
+	public MessageHeader(View ui, DateFormatter dtf, RecipientsStyleHandler rsh, IClientMessage cm, ConversationDisplay convDisplay,
+			final AbstractMessageWidget mw, boolean withMenu, boolean collapsable) {
 
 		addStyleName("singleMessageHeader");
 		setWidth("100%");
@@ -57,7 +55,7 @@ public class MessageHeader extends FlexTable {
 		GWT.log("withMenu: " + withMenu + " collapsable: " + collapsable, null);
 
 		if (withMenu) {
-			if (cm.isHighPriority()) {
+			if (cm.getHighPriority()) {
 				Widget hp = createHighPriority();
 				setWidget(0, col++, hp);
 			}
@@ -65,7 +63,7 @@ public class MessageHeader extends FlexTable {
 			Widget star = createStar(ui, cm);
 			setWidget(0, col++, star);
 
-			if (cm.isAnswered()) {
+			if (cm.getAnswered()) {
 				Widget answer = createAnswer();
 				setWidget(0, col++, answer);
 			}
@@ -85,11 +83,6 @@ public class MessageHeader extends FlexTable {
 		date.addStyleName("noWrap");
 		setWidget(0, col++, date);
 		date.addStyleName("recipientsDate");
-
-		if (withMenu) {
-			MessageMenu menu = new MessageMenu(cm, convDisplay);
-			setWidget(0, col++, menu);
-		}
 	}
 
 	private Widget createHighPriority() {
@@ -100,21 +93,19 @@ public class MessageHeader extends FlexTable {
 		return new AnsweredWidget();
 	}
 
-	private Widget createStar(View ui, ClientMessage cm) {
-		StarWidget sw = new StarWidget(cm.isStarred(), cm.getConvId());
+	private Widget createStar(View ui, IClientMessage cm) {
+		StarWidget sw = new StarWidget(cm.getStarred(), cm.getId());
 		return sw;
 	}
 
-	private Widget createRecipientsWidget(RecipientsStyleHandler rsh,
-			final ClientMessage cm, final AbstractMessageWidget mw,
+	private Widget createRecipientsWidget(RecipientsStyleHandler rsh, final IClientMessage cm, final AbstractMessageWidget mw,
 			boolean isClickable) {
 		StringBuilder html = new StringBuilder(150);
 		html.append("<span class=\"bold noWrap ");
 		html.append(rsh.getStyle(cm.getSender()));
 		html.append("\">");
-		html.append(cm.getSender().getDisplay());
-		html.append("</span>&nbsp;" + I18N.strings.to().toLowerCase()
-				+ "&nbsp;");
+		html.append(cm.getSender().getDisplayName());
+		html.append("</span>&nbsp;" + I18N.strings.to().toLowerCase() + "&nbsp;");
 
 		int col = addRecips(rsh, html, cm.getTo(), 0);
 		if (cm.getCc() != null) {
@@ -128,26 +119,25 @@ public class MessageHeader extends FlexTable {
 		if (isClickable) {
 			h.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent sender) {
-						mw.setOpen(!mw.isOpen());
+					mw.setOpen(!mw.isOpen());
 				}
 			});
 		}
 		return h;
 	}
 
-	private int addRecips(RecipientsStyleHandler rsh, StringBuilder html,
-			List<EmailAddress> al, int col) {
+	private int addRecips(RecipientsStyleHandler rsh, StringBuilder html, List<IEmailAddress> al, int col) {
 		int c = col;
 		for (int i = 0; i < al.size(); i++) {
 
-			EmailAddress a = al.get(i);
+			IEmailAddress a = al.get(i);
 			if (c++ > 0) {
 				html.append("&nbsp;");
 			}
 			html.append("<span class=\"noWrap ");
 			html.append(rsh.getStyle(a));
 			html.append("\">");
-			String lbl = a.getDisplay();
+			String lbl = a.getDisplayName();
 			if (lbl == null || lbl.trim().length() == 0) {
 				lbl = a.getEmail();
 			}

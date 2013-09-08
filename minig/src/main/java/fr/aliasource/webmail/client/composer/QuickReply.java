@@ -21,86 +21,85 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 
 import fr.aliasource.webmail.client.View;
-import fr.aliasource.webmail.client.shared.ClientMessage;
+import fr.aliasource.webmail.client.shared.IClientMessage;
 import fr.aliasource.webmail.client.shared.ReplyInfo;
 
 public class QuickReply extends MailComposer {
 
-	private IQuickReplyListener listener;
+    private IQuickReplyListener listener;
 
-	private ReplyManager replyManager;
+    private ReplyManager replyManager;
 
-	private ReplyInfo replyInfo;
+    private ReplyInfo replyInfo;
 
-	public QuickReply(View ui, IQuickReplyListener showQuickReplyListener) {
-		super(ui);
-		this.listener = showQuickReplyListener;
-		this.replyManager = new ReplyManager(ui);
-		addStyleName("replyZone");
-		focusComposer();
-	}
+    public QuickReply(View ui, IQuickReplyListener showQuickReplyListener) {
+        super(ui);
+        this.listener = showQuickReplyListener;
+        this.replyManager = new ReplyManager();
+        addStyleName("replyZone");
+        focusComposer();
+    }
 
-	@Override
-	protected ClickHandler undoDiscardListener(final ClientMessage cm,
-			final Widget notification, final boolean switchTab) {
-		listener.setNotification(notification);
-		return new ClickHandler() {
-			public void onClick(ClickEvent ev) {
-				listener.onClick(ev);
-				ui.clearNotification(notification);
-				loadDraft(cm, null);
-			}
-		};
-	}
+    @Override
+    protected ClickHandler undoDiscardListener(final IClientMessage cm, final Widget notification, final boolean switchTab) {
+        listener.setNotification(notification);
+        return new ClickHandler() {
+            public void onClick(ClickEvent ev) {
+                listener.onClick(ev);
+                ui.clearNotification(notification);
+                loadDraft(cm);
+            }
+        };
+    }
 
-	@Override
-	public void discard() {
-		discard(false);
-		listener.discard();
-	}
+    @Override
+    public void discard() {
+        discard(false);
+        listener.discard();
+    }
 
-	public void sendMessage() {
-		sendMessage(listener);
-	}
+    public void sendMessage() {
+        sendMessage(listener);
+    }
 
-	private void reply(ClientMessage message, boolean toAll) {
-		ClientMessage cm = replyManager.prepareReply(message, toAll);
-		replyInfo = replyManager.getInfo(message);
-		loadDraft(cm, null);
-		focusComposer();
-	}
+    private void reply(IClientMessage message, boolean toAll) {
+        IClientMessage cm = replyManager.prepareReply(message, toAll);
+        replyInfo = replyManager.getInfo(message);
+        loadDraft(cm);
+        focusComposer();
+    }
 
-	public void reply(ClientMessage message) {
-		reply(message, false);
-	}
+    public void reply(IClientMessage message) {
+        reply(message, false);
+    }
 
-	public void replyAll(ClientMessage message) {
-		reply(message, true);
-	}
+    public void replyAll(IClientMessage message) {
+        reply(message, true);
+    }
 
-	public void forward(ClientMessage message) {
-		ui.log("forward");
-		replyManager.prepareForward(message, this);
-	}
+    public void forward(IClientMessage message) {
+        this.messageToForward = message;
+        replyManager.prepareForward(message, this);
+    }
 
-	protected ReplyInfo getReplyInfo() {
-		return replyInfo;
-	}
+    protected ReplyInfo getReplyInfo() {
+        return replyInfo;
+    }
 
-	protected void addTabPanelListener() {
-		// no tab panel listener as we are displayed in the conversation panel
-	}
+    protected void addTabPanelListener() {
+        // no tab panel listener as we are displayed in the conversation panel
+    }
 
-	@Override
-	protected void addWindowResizeHandler() {
-		// no need to resize when browser size changes
-	}
+    @Override
+    protected void addWindowResizeHandler() {
+        // no need to resize when browser size changes
+    }
 
-	@Override
-	protected ClientMessage clearComposer() {
-		ClientMessage ret = super.clearComposer();
-		destroy();
-		return ret;
-	}
+    @Override
+    protected IClientMessage clearComposer() {
+        IClientMessage ret = super.clearComposer();
+        destroy();
+        return ret;
+    }
 
 }

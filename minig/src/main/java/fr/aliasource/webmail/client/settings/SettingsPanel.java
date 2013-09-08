@@ -16,22 +16,15 @@
 
 package fr.aliasource.webmail.client.settings;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import fr.aliasource.webmail.client.I18N;
 import fr.aliasource.webmail.client.View;
-import fr.aliasource.webmail.client.ctrl.Features;
-import fr.aliasource.webmail.client.ctrl.WebmailController;
 
 /**
  * Settings widget
@@ -39,100 +32,42 @@ import fr.aliasource.webmail.client.ctrl.WebmailController;
  * @author matthieu
  * 
  */
-public class SettingsPanel extends VerticalPanel implements
-		IServerSettingsListener {
+public class SettingsPanel extends VerticalPanel {
 
-	private GlobalSettingsTab globalSettingsTab;
-	private FolderSettingsTab folderSettingsTab;
-	private FilterSettingsTab filterSettingsTab;
+    private FolderSettingsTab folderSettingsTab;
+    public static int FOLDER_SETTINGS_TAG = 0;
+    private DeckPanel sections;
+    private View ui;
 
-	public static int GLOBAL_SETTINGS_TAG = 0;
-	public static int FOLDER_SETTINGS_TAG = 1;
-	public static int FILTER_SETTINGS_TAG = 2;
+    public SettingsPanel(View wm) {
+        this.ui = wm;
 
-	private HorizontalPanel sectionTitles;
-	private DeckPanel sections;
+        sections = new DeckPanel();
+        sections.setWidth("100%");
 
-	private View ui;
+        add(sections);
 
-	public SettingsPanel(View wm) {
-		this.ui = wm;
-		sectionTitles = new HorizontalPanel();
-		sectionTitles.setSpacing(5);
-		sectionTitles.addStyleName("panelActions");
-		sections = new DeckPanel();
-		sections.setWidth("100%");
+        folderSettingsTab = new FolderSettingsTab(ui);
+        addSettingsSection(folderSettingsTab, I18N.strings.folders());
+    }
 
-		add(sectionTitles);
-		add(sections);
+    public void addSettingsSection(Widget w, String label) {
+        final int cnt = sections.getWidgetCount();
+        sections.add(w);
+        Anchor cat = new Anchor(label);
 
-		globalSettingsTab = new GlobalSettingsTab(ui);
+        cat.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent ev) {
+                sections.showWidget(cnt);
+                // Widget page =
+                // sections.getWidget(sections.getVisibleWidget());
+            }
+        });
+    }
 
-		folderSettingsTab = new FolderSettingsTab(ui);
-
-		filterSettingsTab = new FilterSettingsTab(ui);
-
-		addSettingsSection(globalSettingsTab, I18N.strings.general());
-		addSettingsSection(folderSettingsTab, I18N.strings.folders());
-		if (Features.FILTERS) {
-			addSettingsSection(filterSettingsTab, I18N.strings
-					.filtersTabTitle());
-		}
-		WebmailController.get().addServerSettingsListener(this);
-	}
-
-	public void addSettingsSection(Widget w, String label) {
-		if (sectionTitles.getWidgetCount() > 0) {
-			sectionTitles.add(new Label("|"));
-		}
-		final int cnt = sections.getWidgetCount();
-		sections.add(w);
-		Anchor cat = new Anchor(label);
-		sectionTitles.add(cat);
-		cat.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent ev) {
-				sections.showWidget(cnt);
-				Widget page = sections.getWidget(sections.getVisibleWidget());
-				if (page instanceof ISettingsPage) {
-					((ISettingsPage) page).init();
-				}
-			}
-		});
-	}
-
-	public void showFolderSettings() {
-		sections.showWidget(FOLDER_SETTINGS_TAG);
-		folderSettingsTab.init();
-	}
-
-	public void showFilterSettings() {
-		sections.showWidget(FILTER_SETTINGS_TAG);
-		filterSettingsTab.init();
-	}
-
-	public void showGlobalSettings() {
-		sections.showWidget(GLOBAL_SETTINGS_TAG);
-		globalSettingsTab.init();
-	}
-
-	public void settingsReceived() {
-
-		List<ISetting> settings = new ArrayList<ISetting>();
-
-		// settings.add(new MaxPageSizeSetting(ui));
-		settings.add(new SignatureSettingDataGrid(ui));
-		if (Features.FILTERS) {
-			settings.add(new ForwardSetting(ui));
-			settings.add(new VacationSetting(ui));
-
-			// Map<String, String> allSettings = ui.getSettings();
-			// for (String k : allSettings.keySet()) {
-			// if (k.startsWith("obm/")) {
-			// settings.add(new OBMSetting(k, allSettings.get(k)));
-			// }
-			// }
-		}
-		globalSettingsTab.update(settings);
-	}
+    public void showFolderSettings() {
+        sections.showWidget(FOLDER_SETTINGS_TAG);
+        folderSettingsTab.init();
+    }
 
 }

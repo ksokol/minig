@@ -16,18 +16,18 @@
 
 package fr.aliasource.webmail.client.composer;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -40,15 +40,15 @@ import com.google.gwt.user.client.ui.Widget;
 import fr.aliasource.webmail.client.I18N;
 import fr.aliasource.webmail.client.TailCall;
 import fr.aliasource.webmail.client.View;
-import fr.aliasource.webmail.client.conversations.DateFormatter;
-import fr.aliasource.webmail.client.ctrl.AjaxCall;
-import fr.aliasource.webmail.client.ctrl.WebmailController;
-import fr.aliasource.webmail.client.shared.Body;
-import fr.aliasource.webmail.client.shared.ClientMessage;
-import fr.aliasource.webmail.client.shared.ConversationId;
-import fr.aliasource.webmail.client.shared.EmailAddress;
+import fr.aliasource.webmail.client.shared.IAttachmentMetadataList;
+import fr.aliasource.webmail.client.shared.IBody;
+import fr.aliasource.webmail.client.shared.IClientMessage;
+import fr.aliasource.webmail.client.shared.IEmailAddress;
 import fr.aliasource.webmail.client.shared.ReplyInfo;
-import fr.aliasource.webmail.client.shared.SendParameters;
+import fr.aliasource.webmail.client.test.Ajax;
+import fr.aliasource.webmail.client.test.AjaxCallback;
+import fr.aliasource.webmail.client.test.AjaxFactory;
+import fr.aliasource.webmail.client.test.BeanFactory;
 
 /**
  * Mail compose widget
@@ -58,475 +58,440 @@ import fr.aliasource.webmail.client.shared.SendParameters;
  */
 public class MailComposer extends DockPanel {
 
-	private BodyEditor textArea;
-	private IdentitiesPanel identities;
-	private RecipientsPanel to;
-	private RecipientsPanel cc;
-	private RecipientsPanel bcc;
-	private SubjectField subject;
-	private VerticalPanel enveloppe;
-	private ConversationId draftConvId;
-	private Timer timer;
-	private boolean timerStarted;
-	private ComposerActions northActions;
-	private ComposerActions southActions;
-	private Anchor addBccLink;
-	private Anchor addCcLink;
-	private Anchor editSubjectLink;
-	private HorizontalPanel enveloppeActions;
+    private BodyEditor textArea;
+    private RecipientsPanel to;
+    private RecipientsPanel cc;
+    private RecipientsPanel bcc;
+    private SubjectField subject;
+    private VerticalPanel enveloppe;
+    private String draftConvId;
+    private ComposerActions northActions;
+    private ComposerActions southActions;
+    private Anchor addBccLink;
+    private Anchor addCcLink;
+    private Anchor editSubjectLink;
+    private HorizontalPanel enveloppeActions;
 
-	private AttachmentsPanel attach;
+    private AttachmentsPanel attach;
 
-	protected View ui;
-	private CheckBox highPriority;
-	private CheckBox askForDispositionNotification;
-	
-	public MailComposer(View ui) {
-		this.ui = ui;
-		setWidth("100%");
-		northActions = new ComposerActions(ui, this);
-		add(northActions, DockPanel.NORTH);
-		setCellHorizontalAlignment(northActions, DockPanel.ALIGN_LEFT);
+    protected View ui;
+    private CheckBox highPriority;
+    private CheckBox askForDispositionNotification;
+    private CheckBox receipt;
 
-		enveloppe = new VerticalPanel();
-		enveloppeActions = new HorizontalPanel();
-		to = new RecipientsPanel(ui, I18N.strings.to() + ": ");
-		cc = new RecipientsPanel(ui, I18N.strings.cc() + ": ");
-		bcc = new RecipientsPanel(ui, I18N.strings.bcc() + ": ");
-		subject = new SubjectField(ui);
+    protected IClientMessage messageToForward;
 
-		if (WebmailController.get().getSetting("identities/nb_identities") != null) {
-			if (identities == null && WebmailController.get().hasIdentities()) {
-				identities = new IdentitiesPanel();
-				enveloppe.add(identities);
-			}
-		}
+    public MailComposer(View ui) {
+        this.ui = ui;
+        setWidth("100%");
+        northActions = new ComposerActions(ui, this);
+        add(northActions, DockPanel.NORTH);
+        setCellHorizontalAlignment(northActions, DockPanel.ALIGN_LEFT);
 
-		attach = new AttachmentsPanel();
-		// crp = new CannedResponsePanel(ui, this);
+        enveloppe = new VerticalPanel();
+        enveloppeActions = new HorizontalPanel();
+        to = new RecipientsPanel(ui, I18N.strings.to() + ": ");
+        cc = new RecipientsPanel(ui, I18N.strings.cc() + ": ");
+        bcc = new RecipientsPanel(ui, I18N.strings.bcc() + ": ");
+        subject = new SubjectField(ui);
 
-		enveloppe.add(to);
-		enveloppe.add(cc);
-		cc.setVisible(false);
-		enveloppe.add(bcc);
-		bcc.setVisible(false);
-		enveloppe.add(enveloppeActions);
-		enveloppe.add(subject);
+        attach = new AttachmentsPanel(this);
 
-		// enveloppe.add(crp);
-		enveloppe.add(attach);
+        enveloppe.add(to);
+        enveloppe.add(cc);
+        cc.setVisible(false);
+        enveloppe.add(bcc);
+        bcc.setVisible(false);
+        enveloppe.add(enveloppeActions);
+        enveloppe.add(subject);
 
-		HorizontalPanel sendParams = new HorizontalPanel();
-		sendParams.add(new Label());
-		highPriority = new CheckBox(I18N.strings.importantMessage());
-		sendParams.add(highPriority);
-		askForDispositionNotification = new CheckBox(I18N.strings.askForDispositionNotification());
-		sendParams.add(askForDispositionNotification);
-		enveloppe.add(sendParams);
-		sendParams.setCellVerticalAlignment(highPriority,
-				HasVerticalAlignment.ALIGN_MIDDLE);
-		highPriority.setStyleName("enveloppeField");
+        enveloppe.add(attach);
 
-		enveloppe.setStyleName("enveloppe");
+        HorizontalPanel sendParams = new HorizontalPanel();
+        sendParams.add(new Label());
+        highPriority = new CheckBox(I18N.strings.importantMessage());
+        sendParams.add(highPriority);
+        askForDispositionNotification = new CheckBox(I18N.strings.askForDispositionNotification());
+        sendParams.add(askForDispositionNotification);
+        receipt = new CheckBox(I18N.strings.receipt());
+        sendParams.add(receipt);
 
-		createEnveloppeActions();
+        enveloppe.add(sendParams);
+        sendParams.setCellVerticalAlignment(highPriority, HasVerticalAlignment.ALIGN_MIDDLE);
 
-		add(enveloppe, DockPanel.NORTH);
+        highPriority.setStyleName("enveloppeField");
 
-		VerticalPanel vp = createBodyEditor(ui);
-		add(vp, DockPanel.CENTER);
+        enveloppe.setStyleName("enveloppe");
 
-		southActions = new ComposerActions(ui, this);
-		add(southActions, DockPanel.SOUTH);
-		setCellHorizontalAlignment(southActions, DockPanel.ALIGN_LEFT);
+        createEnveloppeActions();
 
-		attach.registerUploadListener(northActions);
-		attach.registerUploadListener(southActions);
+        add(enveloppe, DockPanel.NORTH);
 
-		addTabPanelListener();
-		focusTo();
-		setTimerStarted(false);
-		setEnableSaveButtons(false);
-		addWindowResizeHandler();
-	}
+        VerticalPanel vp = createBodyEditor(ui);
+        add(vp, DockPanel.CENTER);
 
-	private void createEnveloppeActions() {
-		Label l = new Label("");
-		enveloppeActions.add(l);
-		HorizontalPanel hp = new HorizontalPanel();
-		hp.addStyleName("panelActions");
+        southActions = new ComposerActions(ui, this);
+        add(southActions, DockPanel.SOUTH);
+        setCellHorizontalAlignment(southActions, DockPanel.ALIGN_LEFT);
 
-		addCcLink = new Anchor(I18N.strings.addCc());
-		addCcLink.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent sender) {
-				cc.setVisible(true);
-				addCcLink.setVisible(false);
-			}
-		});
-		hp.add(addCcLink);
-		addBccLink = new Anchor(I18N.strings.addBcc());
-		addBccLink.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent sender) {
-				bcc.setVisible(true);
-				addBccLink.setVisible(false);
-			}
-		});
-		hp.add(addBccLink);
-		editSubjectLink = new Anchor(I18N.strings.editSubject());
-		editSubjectLink.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent sender) {
-				subject.setVisible(true);
-				editSubjectLink.setVisible(false);
-			}
-		});
-		hp.add(editSubjectLink);
-		hp.setSpacing(2);
+        attach.registerUploadListener(northActions);
+        attach.registerUploadListener(southActions);
 
-		enveloppeActions.add(hp);
-	}
+        addTabPanelListener();
+        focusTo();
+        northActions.getSaveNowButton().setEnabled(true);
+        southActions.getSaveNowButton().setEnabled(true);
+        addWindowResizeHandler();
+    }
 
-	protected ClientMessage clearComposer() {
-		ClientMessage ret = getMessage();
-		subject.clearText();
+    private void createEnveloppeActions() {
+        Label l = new Label("");
+        enveloppeActions.add(l);
+        HorizontalPanel hp = new HorizontalPanel();
+        hp.addStyleName("panelActions");
 
-		textArea.reset();
-		to.clearText();
-		cc.clearText();
-		bcc.clearText();
-		attach.reset();
-		return ret;
-	}
+        addCcLink = new Anchor(I18N.strings.addCc());
+        addCcLink.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent sender) {
+                cc.setVisible(true);
+                addCcLink.setVisible(false);
+            }
+        });
+        hp.add(addCcLink);
+        addBccLink = new Anchor(I18N.strings.addBcc());
+        addBccLink.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent sender) {
+                bcc.setVisible(true);
+                addBccLink.setVisible(false);
+            }
+        });
+        hp.add(addBccLink);
+        editSubjectLink = new Anchor(I18N.strings.editSubject());
+        editSubjectLink.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent sender) {
+                subject.setVisible(true);
+                editSubjectLink.setVisible(false);
+            }
+        });
+        hp.add(editSubjectLink);
+        hp.setSpacing(2);
 
-	protected void destroy() {
-		textArea.destroy();
-	}
+        enveloppeActions.add(hp);
+    }
 
-	public void mailto(String recip) {
-		ClientMessage cm = new ClientMessage();
-		List<EmailAddress> a = Arrays.asList(new EmailAddress(recip, recip));
-		cm.setTo(a);
-		cm.setBody(new Body());
-		cm.setSubject("");
-		loadDraft(cm, null);
-	}
+    protected IClientMessage clearComposer() {
+        IClientMessage ret = getMessage();
+        subject.clearText();
 
-	public void loadDraft(ClientMessage cm, ConversationId convId) {
-		loadDraft(cm, convId, true);
-	}
-	
-	public void loadDraft(ClientMessage cm, ConversationId convId, boolean withSignature) {
-		if (identities != null && cm.getSender() != null) {
-			EmailAddress sender = cm.getSender();
-			identities.getIdentititesSelectionBox().setSelectedAddress(sender);
-		}
+        textArea.reset();
+        to.clearText();
+        cc.clearText();
+        bcc.clearText();
+        attach.reset();
+        return ret;
+    }
 
-		draftConvId = convId;
-		subject.setText(cm.getSubject());
-		textArea.update(cm.getBody(), withSignature);
-		to.setRecipients(cm.getTo());
-		if (!cm.getCc().isEmpty()) {
-			cc.setRecipients(cm.getCc());
-			cc.setVisible(true);
-			addCcLink.setVisible(false);
-		}
-		if (!cm.getBcc().isEmpty()) {
-			bcc.setRecipients(cm.getBcc());
-			bcc.setVisible(true);
-			addBccLink.setVisible(false);
-		}
-		if (cm.getAttachments() != null && cm.getAttachments().length > 0) {
-			GWT.log("should display " + cm.getAttachments().length
-					+ " attachments", null);
-			for (String attachId : cm.getAttachments()) {
-				attach.showAttach(attachId);
-			}
-		}
+    protected void destroy() {
+        textArea.destroy();
+    }
 
-		ui.getSidebar().setCurrentDefaultLinkStyle(
-				ui.getSidebar().defaultLinks.get(I18N.strings.compose()));
-	}
+    public void mailto(String recip) {
+        IClientMessage cm = BeanFactory.instance.clientMessage().as();
+        List<IEmailAddress> a = new ArrayList<IEmailAddress>();
 
-	public void sendMessage(final IQuickReplyListener listener) {
-		stopAutoSaveDraftTimer();
-		MailSender ms = new MailSender(ui, this);
-		TailCall tc = new TailCall() {
+        IEmailAddress emailAddress = BeanFactory.instance.emailAddress().as();
+        emailAddress.setDisplayName(recip);
+        emailAddress.setEmail(recip);
 
-			@Override
-			public void run() {
-				GWT.log("sendMessage(quickRListener)", null);
-				if (listener != null) {
-					listener.discard();
-				}
-				if (draftConvId != null) {
-					AjaxCall.store.deleteConversation(Arrays.asList(draftConvId), 
-							removeDraftCallback(draftConvId, null));
-				} else {
-					GWT.log("draftConvId is null, not removing", null);
-				}
-			}
-		};
-		ms.sendMessage(getMessage(), getReplyInfo(), sendParams(), tc);
-	}
+        a.add(emailAddress);
+        cm.setTo(a);
+        cm.setBody(BeanFactory.instance.body().as());
+        cm.setSubject("");
+        loadDraft(cm);
+    }
 
-	private SendParameters sendParams() {
-		SendParameters sp = new SendParameters();
-		sp.setSendPlainText(textArea.shouldSendInPlain());
-		sp.setHighPriority(highPriority.getValue());
-		sp.setAskForDispositionNotification(askForDispositionNotification.getValue());
-		return sp;
-	}
+    public void loadDraft(IClientMessage cm) {
+        draftConvId = cm.getId();
+        attach.setMessageId(cm.getId());
+        subject.setText(cm.getSubject());
+        textArea.update(cm.getBody());
+        to.setRecipients(cm.getTo());
+        if (cm.getCc() != null && !cm.getCc().isEmpty()) {
+            cc.setRecipients(cm.getCc());
+            cc.setVisible(true);
+            addCcLink.setVisible(false);
+        }
+        if (cm.getBcc() != null && !cm.getBcc().isEmpty()) {
+            bcc.setRecipients(cm.getBcc());
+            bcc.setVisible(true);
+            addBccLink.setVisible(false);
+        }
 
-	protected ReplyInfo getReplyInfo() {
-		return null;
-	}
+        if (cm.getAttachments() != null && !cm.getAttachments().isEmpty()) {
+            Ajax<IAttachmentMetadataList> builder = AjaxFactory.attachmentMetadataList(cm.getId());
 
-	private ClientMessage getMessage() {
-		EmailAddress sender = null;
-		if (WebmailController.get().hasIdentities()) {
-			sender = identities.getIdentititesSelectionBox()
-					.getSelectedAddress();
-		} else {
-			sender = WebmailController.get().getIdentity();
-		}
-		List<EmailAddress> tos = to.getRecipients();
+            try {
+                builder.send(new AjaxCallback<IAttachmentMetadataList>() {
 
-		ClientMessage cm = new ClientMessage(sender, tos, subject.getText(),
-				textArea.getMailBody(), attach.getAttachementIds(), new Date(),
-				"MiniG Webmail", null);
-		if (cc != null && cc.getRecipients() != null && !cc.getRecipients().isEmpty()) {
-			cm.setCc(cc.getRecipients());
-		}
-		if (bcc != null && bcc.getRecipients() != null && !bcc.getRecipients().isEmpty()) {
-			cm.setBcc(bcc.getRecipients());
-		}
-		return cm;
-	}
+                    @Override
+                    public void onSuccess(IAttachmentMetadataList object) {
+                        if (object != null && object.getAttachmentMetadata() != null) {
+                            attach.setAttachments(object);
+                        }
+                    }
 
-	private VerticalPanel createBodyEditor(View ui) {
-		VerticalPanel vp = new VerticalPanel();
-		textArea = new BodyEditor(this, ui);
-		vp.add(textArea);
-		vp.setWidth("100%");
-		return vp;
-	}
+                    @Override
+                    public void onError(Request request, Throwable exception) {
+                        if (exception != null) {
+                            ui.notifyUser(exception.getMessage());
+                        } else {
+                            ui.notifyUser("something went wrong");
+                        }
+                    }
+                });
+            } catch (RequestException e) {
+                ui.notifyUser("something went wrong");
+            }
+        }
 
-	public void saveDraft() {
-		// FIXME : stupid code
+        ui.getSidebar().setCurrentDefaultLinkStyle(ui.getSidebar().defaultLinks.get(I18N.strings.compose()));
+    }
 
-		final ConversationId prevConvId = draftConvId;
-		ui.getSpinner().startSpinning();
-		if (prevConvId != null) {
-			TailCall tc = new TailCall() {
-				public void run() {
-					AjaxCall.store.storeDraftMessage(getMessage(), sendParams(), saveDraftCallback());
-				}
-			};
-			AjaxCall.store.deleteConversation(Arrays.asList(prevConvId), removeDraftCallback(prevConvId, tc));
-		} else {
-			AjaxCall.store.storeDraftMessage(getMessage(), sendParams(), saveDraftCallback());
-		}
-	}
+    public void sendMessage(final IQuickReplyListener listener) {
+        MailSender ms = new MailSender(ui, this);
 
-	public void saveTemplate() {
-		ui.getSpinner().startSpinning();
-		AjaxCall.store.storeTemplateMessage(getMessage(), sendParams(), saveTemplateCallback());
-	}
+        TailCall tc = new TailCall() {
 
-	private AsyncCallback<Void> removeDraftCallback(final ConversationId convId,
-			final TailCall tc) {
-		return new AsyncCallback<Void>() {
-			public void onFailure(Throwable caught) {
-				ui.log("Failed to remove draft.");
-				ui.getSpinner().stopSpinning();
-			}
+            @Override
+            public void run() {
+                if (listener != null) {
+                    listener.discard();
+                }
+            }
+        };
 
-			public void onSuccess(Void result) {
-				ui.log("Previous draft conversation removed : " + convId);
-				if (tc != null) {
-					tc.run();
-				}
-			}
-		};
-	}
+        if (this.messageToForward == null) {
+            ms.sendMessage(getMessage(), getReplyInfo(), tc);
+        } else {
+            ms.forward(getMessage(), this.messageToForward.getId(), tc);
+        }
+    }
 
-	private AsyncCallback<ConversationId> saveDraftCallback() {
-		return new AsyncCallback<ConversationId>() {
-			public void onFailure(Throwable caught) {
-				ui.notifyUser(I18N.strings.failedToSaveDraft());
-				ui.getSpinner().stopSpinning();
-			}
+    protected ReplyInfo getReplyInfo() {
+        return null;
+    }
 
-			public void onSuccess(ConversationId result) {
-				ui.notifyUser(I18N.strings.draftSaved());
-				draftConvId = result;
-				ui.getSpinner().stopSpinning();
-				stopAutoSaveDraftTimer();
-				setEnableSaveButtons(false);
-			}
-		};
-	}
+    private IClientMessage getMessage() {
+        IClientMessage cm = BeanFactory.instance.clientMessage().as();
 
-	private AsyncCallback<ConversationId> saveTemplateCallback() {
-		return new AsyncCallback<ConversationId>() {
-			public void onFailure(Throwable caught) {
-				ui.notifyUser(I18N.strings.failedToSaveTemplate());
-				ui.getSpinner().stopSpinning();
-			}
+        List<IEmailAddress> tos = to.getRecipients();
 
-			public void onSuccess(ConversationId result) {
-				ui.notifyUser(I18N.strings.templateSaved());
-				stopAutoSaveDraftTimer();
-				setEnableSaveButtons(false);
-				ui.getSpinner().stopSpinning();
-			}
-		};
-	}
+        cm.setId(draftConvId);
+        cm.setTo(tos);
+        cm.setSubject(subject.getText());
+        cm.setHighPriority(highPriority.getValue());
+        cm.setAskForDispositionNotification(askForDispositionNotification.getValue());
+        cm.setReceipt(receipt.getValue());
 
-	protected ClickHandler undoDiscardListener(final ClientMessage cm,
-			final Widget notification, final boolean switchTab) {
-		return new ClickHandler() {
-			public void onClick(ClickEvent sender) {
-				ui.clearNotification(notification);
-				if (switchTab) {
-					ui.selectTab(View.COMPOSER);
-				}
-				loadDraft(cm, null);
-			}
-		};
-	}
+        IBody body = BeanFactory.instance.body().as();
 
-	public void discard() {
-		GWT.log("composer.discard() called.", null);
-		discard(true);
-	}
+        body.setHtml(textArea.getMailBody().getHtml());
+        body.setPlain(textArea.getMailBody().getPlain());
 
-	protected void discard(boolean switchTab) {
-		final ClientMessage cm = clearComposer();
-		if (switchTab) {
-			ui.selectTab(View.CONVERSATIONS);
-		}
-		notifyUndoDiscard(switchTab, cm);
-	}
+        cm.setBody(body);
+        cm.setDate(new Date());
+        cm.setMailer("MiniG Webmail");
 
-	private void notifyUndoDiscard(boolean switchTab, final ClientMessage cm) {
-		final HorizontalPanel notif = new HorizontalPanel();
-		stopAutoSaveDraftTimer();
-		notif.setSpacing(2);
-		notif.add(new Label(I18N.strings.messageDiscarded()));
-		Anchor undo = new Anchor(I18N.strings.undoDiscard());
-		undo.addClickHandler(undoDiscardListener(cm, notif, switchTab));
-		notif.add(undo);
-		ui.notifyUser(notif, 15);
-	}
+        if (cc != null && cc.getRecipients() != null && !cc.getRecipients().isEmpty()) {
+            cm.setCc(cc.getRecipients());
+        }
+        if (bcc != null && bcc.getRecipients() != null && !bcc.getRecipients().isEmpty()) {
+            cm.setBcc(bcc.getRecipients());
+        }
 
-	public void focusComposer() {
-		// QuickReply mode
-		draftConvId = null;
-		subject.setVisible(false);
-		editSubjectLink.setVisible(true);
-		DeferredCommand.addCommand(new Command() {
-			@Override
-			public void execute() {
-				textArea.focus();
-			}
-		});
-	}
+        return cm;
+    }
 
-	public void focusTo() {
-		// Composer mode
-		draftConvId = null;
-		cc.setVisible(false);
-		addCcLink.setVisible(true);
-		bcc.setVisible(false);
-		addBccLink.setVisible(true);
-		subject.setVisible(true);
-		editSubjectLink.setVisible(false);
-		setEnableSaveButtons(false);
-		to.focus();
-	}
+    private VerticalPanel createBodyEditor(View ui) {
+        VerticalPanel vp = new VerticalPanel();
+        textArea = new BodyEditor(this, ui);
+        vp.add(textArea);
+        vp.setWidth("100%");
+        return vp;
+    }
 
-	protected void addWindowResizeHandler() {
-		Window.addResizeHandler(textArea.getResizeListener());
-	}
+    public void takeSnapshotFromDraft(TailCall tc) {
+        IClientMessage cm = getMessage();
 
-	private boolean emptyString(String s) {
-		return s == null || s.length() == 0;
-	}
+        if (draftConvId == null) {
+            saveDraft(cm, tc);
+        } else {
+            updateDraft(cm, tc);
+        }
+    }
 
-	protected boolean isEmpty() {
-		return emptyString(subject.getText())
-			&& textArea.isEmpty()
-			&& to.getRecipients().isEmpty()
-			&& cc.getRecipients().isEmpty()
-			&& bcc.getRecipients().isEmpty() 
-			&& attach.isEmpty();
-	}
+    private void saveDraft(IClientMessage cm, final TailCall tc) {
+        ui.getSpinner().startSpinning();
 
-	/**
-	 * Creates listeners on the webmail tabpanel, for exemple to prevent tab
-	 * switch when composing an email
-	 */
-	protected void addTabPanelListener() {
-		ComposerTabListener ctl = new ComposerTabListener(this, ui);
-		ui.getTabPanel().addBeforeSelectionHandler(ctl);
-		ui.getTabPanel().addSelectionHandler(ctl);
-	}
+        Ajax<IClientMessage> saveDrafMessage = AjaxFactory.saveDraftMessage();
 
-	private void setTimerStarted(boolean timerStarted) {
-		this.timerStarted = timerStarted;
-	}
+        try {
+            saveDrafMessage.send(cm, new AjaxCallback<IClientMessage>() {
 
-	public boolean isTimerStarted() {
-		return timerStarted;
-	}
+                @Override
+                public void onSuccess(IClientMessage object) {
+                    ui.getSpinner().stopSpinning();
+                    ui.notifyUser(I18N.strings.draftSaved());
+                    loadDraft(object);
 
-	public void startAutoSaveDraftTimer() {
-		setTimerStarted(true);
-		setEnableSaveButtons(true);
-		ui.log("startAutoSaveDraftTimer");
-		timer = new Timer() {
-			@Override
-			public void run() {
-				if (!emptyString(textArea.getMailBody().getHtml())) {
-					ui.log("auto save draft");
-					saveDraft();
-					DateFormatter df = new DateFormatter(new Date());
-					String date = df.formatSmall(new Date());
-					String autosaveddate = I18N.strings.draftAutoSavedAt(date);
-					setSavedDate(autosaveddate);
-				}
-			}
-		};
-		timer.scheduleRepeating(30000);
-	}
+                    if (tc != null) {
+                        tc.run();
+                    }
+                }
 
-	private void stopAutoSaveDraftTimer() {
-		GWT.log("stopAutoSaveDraftTimer", null);
-		if (timer != null) {
-			timer.cancel();
-		}
-		setTimerStarted(false);
-	}
+                @Override
+                public void onError(Request request, Throwable exception) {
+                    ui.getSpinner().stopSpinning();
 
-	public void setEnableSaveButtons(boolean b) {
-		northActions.getSaveNowButton().setEnabled(b);
-		southActions.getSaveNowButton().setEnabled(b);
-		northActions.getSaveTemplateButton().setEnabled(b);
-		southActions.getSaveTemplateButton().setEnabled(b);
-	}
+                    if (exception != null) {
+                        ui.notifyUser(exception.getMessage());
+                    } else {
+                        ui.notifyUser("something goes wrong.");
+                    }
+                }
+            });
+        } catch (RequestException e) {
+            ui.getSpinner().stopSpinning();
+            ui.notifyUser(e.getMessage());
+        }
+    }
 
-	private void setSavedDate(String s) {
-		northActions.getSavedDate().setText(s);
-		southActions.getSavedDate().setText(s);
-	}
+    private void updateDraft(IClientMessage cm, final TailCall tc) {
+        ui.getSpinner().startSpinning();
 
-	public IdentitiesPanel getIdentities() {
-		return identities;
-	}
+        Ajax<IClientMessage> updateDrafMessage = AjaxFactory.updateDraftMessage(draftConvId);
 
-	public void resize() {
-		int height = Window.getClientHeight();
-		textArea.resize(height);
-	}
+        try {
+            updateDrafMessage.send(cm, new AjaxCallback<IClientMessage>() {
+
+                @Override
+                public void onSuccess(IClientMessage object) {
+                    ui.getSpinner().stopSpinning();
+                    ui.notifyUser(I18N.strings.draftSaved());
+                    loadDraft(object);
+
+                    if (tc != null) {
+                        tc.run();
+                    }
+                }
+
+                @Override
+                public void onError(Request request, Throwable exception) {
+                    ui.getSpinner().stopSpinning();
+
+                    if (exception != null) {
+                        ui.notifyUser(exception.getMessage());
+                    } else {
+                        ui.notifyUser("something goes wrong.");
+                    }
+                }
+            });
+        } catch (RequestException e) {
+            ui.getSpinner().stopSpinning();
+            ui.notifyUser(e.getMessage());
+        }
+    }
+
+    protected ClickHandler undoDiscardListener(final IClientMessage cm, final Widget notification, final boolean switchTab) {
+        return new ClickHandler() {
+            public void onClick(ClickEvent sender) {
+                ui.clearNotification(notification);
+                if (switchTab) {
+                    ui.selectTab(View.COMPOSER);
+                }
+                loadDraft(cm);
+            }
+        };
+    }
+
+    public void discard() {
+        GWT.log("composer.discard() called.", null);
+        discard(true);
+    }
+
+    protected void discard(boolean switchTab) {
+        final IClientMessage cm = clearComposer();
+        if (switchTab) {
+            ui.selectTab(View.CONVERSATIONS);
+        }
+        notifyUndoDiscard(switchTab, cm);
+    }
+
+    private void notifyUndoDiscard(boolean switchTab, final IClientMessage cm) {
+        final HorizontalPanel notif = new HorizontalPanel();
+        notif.setSpacing(2);
+        notif.add(new Label(I18N.strings.messageDiscarded()));
+        Anchor undo = new Anchor(I18N.strings.undoDiscard());
+        undo.addClickHandler(undoDiscardListener(cm, notif, switchTab));
+        notif.add(undo);
+        ui.notifyUser(notif, 15);
+    }
+
+    public void focusComposer() {
+        // QuickReply mode
+        draftConvId = null;
+        subject.setVisible(false);
+        editSubjectLink.setVisible(true);
+        DeferredCommand.addCommand(new Command() {
+            @Override
+            public void execute() {
+                textArea.focus();
+            }
+        });
+    }
+
+    public void focusTo() {
+        // Composer mode
+        draftConvId = null;
+        cc.setVisible(false);
+        addCcLink.setVisible(true);
+        bcc.setVisible(false);
+        addBccLink.setVisible(true);
+        subject.setVisible(true);
+        editSubjectLink.setVisible(false);
+        to.focus();
+    }
+
+    protected void addWindowResizeHandler() {
+        Window.addResizeHandler(textArea.getResizeListener());
+    }
+
+    private boolean emptyString(String s) {
+        return s == null || s.length() == 0;
+    }
+
+    protected boolean isEmpty() {
+        return emptyString(subject.getText()) && textArea.isEmpty() && to.getRecipients().isEmpty() && cc.getRecipients().isEmpty()
+                && bcc.getRecipients().isEmpty() && attach.isEmpty();
+    }
+
+    /**
+     * Creates listeners on the webmail tabpanel, for exemple to prevent tab
+     * switch when composing an email
+     */
+    protected void addTabPanelListener() {
+        ComposerTabListener ctl = new ComposerTabListener(this, ui);
+        ui.getTabPanel().addBeforeSelectionHandler(ctl);
+        ui.getTabPanel().addSelectionHandler(ctl);
+    }
+
+    public void resize() {
+        int height = Window.getClientHeight();
+        textArea.resize(height);
+    }
+
+    public void setMessageId(String id) {
+        this.draftConvId = id;
+    }
 
 }

@@ -19,114 +19,103 @@ package fr.aliasource.webmail.client.reader;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 
 import fr.aliasource.webmail.client.I18N;
 import fr.aliasource.webmail.client.View;
-import fr.aliasource.webmail.client.ctrl.AjaxCall;
-import fr.aliasource.webmail.client.shared.ClientMessage;
-import fr.aliasource.webmail.client.shared.EmailAddress;
+import fr.aliasource.webmail.client.ctrl.WebmailController;
+import fr.aliasource.webmail.client.shared.IClientMessage;
+import fr.aliasource.webmail.client.shared.IEmailAddress;
+import fr.aliasource.webmail.client.test.Ajax;
+import fr.aliasource.webmail.client.test.AjaxCallback;
+import fr.aliasource.webmail.client.test.AjaxFactory;
 
 public class DispositionNotificationPanel extends HorizontalPanel {
 
-	private ClientMessage cm;
+    private IClientMessage cm;
 
-	private Anchor accept;
-	private Anchor later;
-	private Anchor refuse;
+    private Anchor accept;
+    private Anchor later;
 
-	public DispositionNotificationPanel(View ui, ClientMessage cm) {
-		this.cm = cm;
-		HorizontalPanel panel = new HorizontalPanel();
-		panel.add(buildMessage());
-		accept = new Anchor(I18N.strings.dispositionNotificationAccept());
-		accept.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				accept();
-			}
-		});
-		panel.add(accept);
-		later = new Anchor(I18N.strings.dispositionNotificationLater());
-		later.addClickHandler(new ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				later();
-			}
-		});
-		panel.add(later);
-		refuse = new Anchor(I18N.strings.dispositionNotificationRefuse());
-		refuse.addClickHandler(new ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				refuse();
-			}
-		});
-		panel.add(refuse);
-		panel.addStyleName("content");
-		this.add(panel);
-		this.setVisible(true);
-		this.addStyleName("dispositionNotificationPanel");
-	}
+    public DispositionNotificationPanel(View ui, IClientMessage cm) {
+        this.cm = cm;
+        HorizontalPanel panel = new HorizontalPanel();
+        panel.add(buildMessage());
+        accept = new Anchor(I18N.strings.dispositionNotificationAccept());
+        accept.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                accept();
+            }
+        });
+        panel.add(accept);
+        later = new Anchor(I18N.strings.dispositionNotificationLater());
+        later.addClickHandler(new ClickHandler() {
 
-	protected void refuse() {
-		AjaxCall.dispositionNotification.declineNotification(cm.getUid(), new AsyncCallback<Void>() {
-			
-			@Override
-			public void onSuccess(Void v) {
-				setVisible(false);
-			}
-			
-			@Override
-			public void onFailure(Throwable t) {
-				GWT.log("notification failed", t);
-			}
-		});
-	}
+            @Override
+            public void onClick(ClickEvent event) {
+                later();
+            }
+        });
+        panel.add(later);
 
-	protected void later() {
-		setVisible(false);
-	}
+        panel.addStyleName("content");
+        this.add(panel);
+        this.setVisible(true);
+        this.addStyleName("dispositionNotificationPanel");
+    }
 
-	protected void accept() {
-		AjaxCall.dispositionNotification.sendNotification(cm.getUid(), cm.getFolderName(), new AsyncCallback<Void>() {
-			
-			@Override
-			public void onSuccess(Void v) {
-				setVisible(false);
-			}
-			
-			@Override
-			public void onFailure(Throwable t) {
-				GWT.log("notification failed", t);
-			}
-		});
-	}
+    protected void later() {
+        setVisible(false);
+    }
 
-	private Label buildMessage() {
-		List<EmailAddress> dispositionNotification = cm.getDispositionNotification();
-		StringBuilder stringBuilder = new StringBuilder();
-		Iterator<EmailAddress> iterator = dispositionNotification.iterator();
-		while (iterator.hasNext()) {
-			stringBuilder.append(iterator.next().getDisplay());
-			if (iterator.hasNext()) {
-				stringBuilder.append(", ");
-			}
-		}
-		String recipients = stringBuilder.toString();
-		if (dispositionNotification.size() > 1) {
-			return new Label(I18N.strings.dispositionNotificationMessagePlural(recipients));
-		} else {
-			return new Label(I18N.strings.dispositionNotificationMessage(recipients));
-		}
-	}
-	
+    protected void accept() {
+        Ajax<Void> dispositionRequest = AjaxFactory.dispositionRequest(cm.getId());
+
+        try {
+            dispositionRequest.send(new AjaxCallback<Void>() {
+
+                @Override
+                public void onSuccess(Void object) {
+                    setVisible(false);
+                }
+
+                @Override
+                public void onError(Request request, Throwable exception) {
+                    if (exception != null) {
+                        WebmailController.get().getView().notifyUser(exception.getMessage());
+                    } else {
+                        WebmailController.get().getView().notifyUser("something went wrong");
+                    }
+                }
+            });
+        } catch (RequestException e) {
+            WebmailController.get().getView().notifyUser(e.getMessage());
+        }
+    }
+
+    private Label buildMessage() {
+        List<IEmailAddress> dispositionNotification = cm.getDispositionNotification();
+        StringBuilder stringBuilder = new StringBuilder();
+        Iterator<IEmailAddress> iterator = dispositionNotification.iterator();
+        while (iterator.hasNext()) {
+            stringBuilder.append(iterator.next().getDisplayName());
+            if (iterator.hasNext()) {
+                stringBuilder.append(", ");
+            }
+        }
+        String recipients = stringBuilder.toString();
+        if (dispositionNotification.size() > 1) {
+            return new Label(I18N.strings.dispositionNotificationMessagePlural(recipients));
+        } else {
+            return new Label(I18N.strings.dispositionNotificationMessage(recipients));
+        }
+    }
+
 }

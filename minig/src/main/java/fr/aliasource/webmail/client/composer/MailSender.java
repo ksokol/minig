@@ -16,21 +16,21 @@
 
 package fr.aliasource.webmail.client.composer;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestException;
 
 import fr.aliasource.webmail.client.I18N;
 import fr.aliasource.webmail.client.TailCall;
 import fr.aliasource.webmail.client.View;
-import fr.aliasource.webmail.client.ctrl.AjaxCall;
 import fr.aliasource.webmail.client.ctrl.WebmailController;
-import fr.aliasource.webmail.client.rpc.SendResponse;
-import fr.aliasource.webmail.client.shared.ClientMessage;
-import fr.aliasource.webmail.client.shared.ConversationId;
-import fr.aliasource.webmail.client.shared.Folder;
+import fr.aliasource.webmail.client.shared.IClientMessage;
+import fr.aliasource.webmail.client.shared.IFolder;
 import fr.aliasource.webmail.client.shared.ReplyInfo;
-import fr.aliasource.webmail.client.shared.SendParameters;
+import fr.aliasource.webmail.client.shared.SubmissionRequest;
+import fr.aliasource.webmail.client.test.Ajax;
+import fr.aliasource.webmail.client.test.AjaxCallback;
+import fr.aliasource.webmail.client.test.AjaxFactory;
+import fr.aliasource.webmail.client.test.BeanFactory;
 
 /**
  * Handles the mail sending process in the composer
@@ -40,87 +40,125 @@ import fr.aliasource.webmail.client.shared.SendParameters;
  */
 public class MailSender {
 
-	private View ui;
-	private MailComposer mc;
+    private View ui;
+    private MailComposer mc;
 
-	public MailSender(View ui, MailComposer mc) {
-		this.ui = ui;
-		this.mc = mc;
-	}
+    public MailSender(View ui, MailComposer mc) {
+        this.ui = ui;
+        this.mc = mc;
+    }
 
-	public void sendMessage(final ClientMessage cm, ReplyInfo ri,
-			final SendParameters sp, final TailCall tc) {
-		if (!isValidMessage(cm)) {
-			return;
-		}
+    public void forward(final IClientMessage cm, String forwardId, final TailCall tc) {
+        if (!isValidMessage(cm)) {
+            return;
+        }
 
-		AsyncCallback<SendResponse> ac = new AsyncCallback<SendResponse>() {
-			public void onFailure(Throwable caught) {
-				ui.getSpinner().stopSpinning();
-				ui.log("sendMessage failure", caught);
-			}
+        ui.getSpinner().startSpinning();
 
-			public void onSuccess(SendResponse result) {
-				ui.getSpinner().stopSpinning();
-				if (result.isOk()) {
-					mc.clearComposer();
-					tc.run();
-					ui.selectTab(View.CONVERSATIONS);
+        Ajax<IClientMessage> builder = AjaxFactory.forwardMessage(forwardId);
 
-					SentMailNotification smn = new SentMailNotification(ui);
-					ui.notifyUser(smn, 20);
-					storeSent(smn, cm, sp);
-					String folderName = WebmailController.get().getSelector()
-							.getCurrent().getName();
-					ui.setCurrentFolder(new Folder(folderName));
-					ui.getSidebar().setCurrentDefaultLinkStyle(
-							ui.getSidebar().defaultLinks.get(folderName));
-					ui.fetchConversations(folderName, 1);
-				} else {
-					ui.notifyUser(new Label(I18N.strings.smtpError(result
-							.getReason())), 15);
-				}
-			}
-		};
+        try {
+            builder.send(cm, new AjaxCallback<IClientMessage>() {
 
-		ui.getSpinner().startSpinning();
-		AjaxCall.send.sendMessage(cm, ri, sp, ac);
-	}
+                @Override
+                public void onSuccess(IClientMessage object) {
+                    ui.getSpinner().stopSpinning();
 
-	private boolean e(String s) {
-		return s == null || s.trim().length() == 0;
-	}
+                    mc.clearComposer();
+                    tc.run();
+                    ui.selectTab(View.CONVERSATIONS);
 
-	private boolean isValidMessage(ClientMessage cm) {
-		if (e(cm.getSubject())) {
-			ui.notifyUser(I18N.strings.emptySubject());
-			return false;
-		}
-		if (cm.getTo() == null || cm.getTo().isEmpty()) {
-			ui.notifyUser(I18N.strings.emptyRecipient());
-			return false;
-		}
+                    SentMailNotification smn = new SentMailNotification(ui);
+                    ui.notifyUser(smn, 20);
+                    IFolder folderName = WebmailController.get().getSelector().getCurrent();
+                    ui.setCurrentFolder(folderName);
+                    ui.getSidebar().setCurrentDefaultLinkStyle(ui.getSidebar().defaultLinks.get(folderName));
+                    ui.fetchMessages(folderName.getId(), 1);
+                }
 
-		return true;
-	}
+                @Override
+                public void onError(Request request, Throwable exception) {
+                    ui.getSpinner().stopSpinning();
 
-	private void storeSent(final SentMailNotification smn,
-			final ClientMessage cm, SendParameters sp) {
-		if (cm == null) {
-			GWT.log("NULL message for store sent !!!!!!!!!!!!!",
-					new NullPointerException());
-			return;
-		}
-		AsyncCallback<ConversationId> ac = new AsyncCallback<ConversationId>() {
-			public void onFailure(Throwable caught) {
-				ui.log("storeSentMessage failure");
-			}
+                    if (exception != null) {
+                        ui.notifyUser(exception.getMessage());
+                    } else {
+                        ui.notifyUser("something goes wrong.");
+                    }
+                }
+            });
+        } catch (RequestException e) {
+            ui.getSpinner().stopSpinning();
+            ui.notifyUser("sendMessage failure: " + e.getMessage());
+        }
+    }
 
-			public void onSuccess(ConversationId convId) {
-				smn.setStored(convId);
-			}
-		};
-		AjaxCall.store.storeSentMessage(cm, sp, ac);
-	}
+    public void sendMessage(final IClientMessage cm, ReplyInfo ri, final TailCall tc) {
+        if (!isValidMessage(cm)) {
+            return;
+        }
 
+        ui.getSpinner().startSpinning();
+
+        SubmissionRequest submissionRequest = BeanFactory.instance.clientMessageSend().as();
+        submissionRequest.setClientMessage(cm);
+
+        if (ri != null) {
+            submissionRequest.setReplyTo(ri.getId());
+        }
+
+        Ajax<SubmissionRequest> builder = AjaxFactory.submissionRequest();
+
+        try {
+            builder.send(submissionRequest, (new AjaxCallback<SubmissionRequest>() {
+
+                @Override
+                public void onSuccess(SubmissionRequest object) {
+                    ui.getSpinner().stopSpinning();
+
+                    mc.clearComposer();
+                    tc.run();
+                    ui.selectTab(View.CONVERSATIONS);
+
+                    SentMailNotification smn = new SentMailNotification(ui);
+                    ui.notifyUser(smn, 20);
+                    IFolder folderName = WebmailController.get().getSelector().getCurrent();
+                    ui.setCurrentFolder(folderName);
+                    ui.getSidebar().setCurrentDefaultLinkStyle(ui.getSidebar().defaultLinks.get(folderName));
+                    ui.fetchMessages(folderName.getId(), 1);
+                }
+
+                @Override
+                public void onError(Request request, Throwable exception) {
+                    ui.getSpinner().stopSpinning();
+
+                    if (exception != null) {
+                        ui.notifyUser(exception.getMessage());
+                    } else {
+                        ui.notifyUser("something goes wrong.");
+                    }
+                }
+            }));
+        } catch (RequestException e) {
+            ui.getSpinner().stopSpinning();
+            ui.notifyUser("sendMessage failure: " + e.getMessage());
+        }
+    }
+
+    private boolean e(String s) {
+        return s == null || s.trim().length() == 0;
+    }
+
+    private boolean isValidMessage(IClientMessage cm) {
+        if (e(cm.getSubject())) {
+            ui.notifyUser(I18N.strings.emptySubject());
+            return false;
+        }
+        if (cm.getTo() == null || cm.getTo().isEmpty()) {
+            ui.notifyUser(I18N.strings.emptyRecipient());
+            return false;
+        }
+
+        return true;
+    }
 }

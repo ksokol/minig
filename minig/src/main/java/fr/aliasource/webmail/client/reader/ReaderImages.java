@@ -6,14 +6,20 @@ import com.google.gwt.resources.client.ImageResource;
 
 public interface ReaderImages extends ClientBundle {
 
-	public static final ReaderImages imgs = GWT.create(ReaderImages.class);
+    public static final ReaderImages imgs = GWT.create(ReaderImages.class);
 
-	@Source("dropDown.gif")
-	ImageResource dropDown();
+    @Source("dropDown.gif")
+    ImageResource dropDown();
 
-	@Source("answered.gif")
-	ImageResource answered();
+    @Source("answered.png")
+    ImageResource answered();
 
-	@Source("highPriority.gif")
-	ImageResource highPriority();
+    @Source("highPriority.gif")
+    ImageResource highPriority();
+
+    @Source("forwarded.png")
+    ImageResource forwarded();
+
+    @Source("forwardedanswered.png")
+    ImageResource forwardedanswered();
 }

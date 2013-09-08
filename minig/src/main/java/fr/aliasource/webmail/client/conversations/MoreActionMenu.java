@@ -1,12 +1,16 @@
 package fr.aliasource.webmail.client.conversations;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -15,14 +19,21 @@ import fr.aliasource.webmail.client.I18N;
 import fr.aliasource.webmail.client.View;
 import fr.aliasource.webmail.client.composer.MenuButton;
 import fr.aliasource.webmail.client.conversations.ConversationListActionsPanel.Position;
-import fr.aliasource.webmail.client.ctrl.AjaxCall;
+import fr.aliasource.webmail.client.ctrl.MinigEventBus;
 import fr.aliasource.webmail.client.ctrl.WebmailController;
-import fr.aliasource.webmail.client.rpc.SetFlags;
-import fr.aliasource.webmail.client.shared.ConversationId;
+import fr.aliasource.webmail.client.shared.IClientMessage;
+import fr.aliasource.webmail.client.shared.IClientMessageList;
+import fr.aliasource.webmail.client.test.Ajax;
+import fr.aliasource.webmail.client.test.AjaxCallback;
+import fr.aliasource.webmail.client.test.AjaxFactory;
+import fr.aliasource.webmail.client.test.BeanFactory;
 
 public class MoreActionMenu extends MenuButton {
 
-	private Set<ConversationId> ids;
+	private static final int READ = 1;
+	private static final int STAR = 2;
+
+	private Set<String> ids;
 	private ConversationListPanel clp;
 	private HandlerRegistration marReg;
 	private HandlerRegistration mauReg;
@@ -30,8 +41,8 @@ public class MoreActionMenu extends MenuButton {
 	private HandlerRegistration ustReg;
 
 	public MoreActionMenu(String lbl, ConversationListPanel clp, Position position) {
-		super(lbl, position == Position.North ? PopupOrientation.DownRight: PopupOrientation.UpRight);
-		setSelection(new HashSet<ConversationId>());
+		super(lbl, position == Position.North ? PopupOrientation.DownRight : PopupOrientation.UpRight);
+		setSelection(new HashSet<String>());
 		this.clp = clp;
 
 		createContent();
@@ -43,53 +54,89 @@ public class MoreActionMenu extends MenuButton {
 		int idx = 0;
 		Anchor markAsRead = new Anchor(I18N.strings.markAsRead());
 		ft.setWidget(idx++, 0, markAsRead);
-		marReg = markAsRead.addClickHandler(createChangeFlag(SetFlags.READ,
-				true));
+		marReg = markAsRead.addClickHandler(createChangeFlag(READ, true));
 
 		Anchor markAsUnread = new Anchor(I18N.strings.markAsUnread());
 		ft.setWidget(idx++, 0, markAsUnread);
-		mauReg = markAsUnread.addClickHandler(createChangeFlag(SetFlags.READ,
-				false));
+		mauReg = markAsUnread.addClickHandler(createChangeFlag(READ, false));
 
 		Anchor star = new Anchor(I18N.strings.addStar());
 		ft.setWidget(idx++, 0, star);
-		staReg = star.addClickHandler(createChangeFlag(SetFlags.STAR, true));
+		staReg = star.addClickHandler(createChangeFlag(STAR, true));
 
 		Anchor unstar = new Anchor(I18N.strings.removeStar());
 		ft.setWidget(idx++, 0, unstar);
-		ustReg = unstar.addClickHandler(createChangeFlag(SetFlags.STAR, false));
+		ustReg = unstar.addClickHandler(createChangeFlag(STAR, false));
 
 		pp.add(ft);
 	}
 
-	private ClickHandler createChangeFlag(final String flag, final boolean add) {
+	private ClickHandler createChangeFlag(final int flag, final boolean add) {
 		return new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				setDown(false);
 				pp.hide();
+
 				setFlag(clp, flag, add, createSetFlagCB());
 			}
 		};
 	}
 
-	private void setFlag(ConversationListPanel clp, String flag, boolean set,
-			AsyncCallback<Void> ac) {
+	private void setFlag(final ConversationListPanel clp, int flag, final boolean set, AsyncCallback<Void> ac) {
 		View ui = WebmailController.get().getView();
-		if (clp != null && clp.isAllSelected()) {
-			if (ui.confirmFolderAction(clp.getCurrentData().cListFullLength,
-					WebmailController.get().getSelector().getCurrent())) {
-				String query = ui.getQuery();
-				if (query == null) {
-					query = "in:\""
-							+ WebmailController.get().getSelector()
-									.getCurrent().getName() + "\"";
-				}
-				GWT.log("query is " + query, null);
-				AjaxCall.flags.setFlags(query, flag, set, ac);
+		ui.getSpinner().startSpinning();
+
+		List<IClientMessage> l = new ArrayList<IClientMessage>();
+
+		for (String id : ids) {
+			IClientMessage m = BeanFactory.instance.clientMessage().as();
+			m.setId(id);
+
+			switch (flag) {
+			case READ:
+				m.setRead(set);
+				break;
+			case STAR:
+				m.setStarred(set);
+				break;
+			default:
+				break;
 			}
-		} else {
-			AjaxCall.flags.setFlags(ids, flag, set, ac);
+
+			l.add(m);
+		}
+
+		Ajax<IClientMessageList> ajax = AjaxFactory.updateMessagesFlags();
+
+		IClientMessageList ml = BeanFactory.instance.clientMessageList().as();
+		ml.setMailList(l);
+
+		try {
+			ajax.send(ml, new AjaxCallback<IClientMessageList>() {
+
+				@Override
+				public void onSuccess(IClientMessageList object) {
+					if (clp != null) {
+						clp.selectNone();
+						clp.showPage(clp.getCurrentPage());
+
+						StarredChangedEvent event = new StarredChangedEvent(ids, set);
+						MinigEventBus.getEventBus().fireEvent(event);
+					}
+				}
+
+				@Override
+				public void onError(Request request, Throwable exception) {
+					if (exception != null) {
+						WebmailController.get().getView().notifyUser(exception.getMessage());
+					} else {
+						WebmailController.get().getView().notifyUser("something goes wrong.");
+					}
+				}
+			});
+		} catch (RequestException e) {
+			WebmailController.get().getView().notifyUser(e.getMessage());
 		}
 	}
 
@@ -104,18 +151,18 @@ public class MoreActionMenu extends MenuButton {
 					clp.selectNone();
 					clp.showPage(clp.getCurrentPage());
 				}
-				WebmailController.get().getSelector().refreshUnreadCounts();
 			}
 		};
 	}
 
-	public void setSelection(Set<ConversationId> selectedIds) {
+	public void setSelection(Set<String> selectedIds) {
 		this.ids = selectedIds;
 		setEnabled(this.ids != null && !this.ids.isEmpty());
 	}
 
 	public void setSelection(String str) {
-		GWT.log("setSelection(" + str + ")", null);
+		this.ids.add(str);
+		setEnabled(true);
 	}
 
 	public void destroy() {
@@ -126,5 +173,4 @@ public class MoreActionMenu extends MenuButton {
 		ids = null;
 		clp = null;
 	}
-
 }

@@ -26,77 +26,76 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import fr.aliasource.webmail.client.I18N;
-import fr.aliasource.webmail.client.shared.ClientMessage;
+import fr.aliasource.webmail.client.shared.IClientMessage;
 
 public class MessageActions extends DockPanel {
 
-	private Anchor showImagesLink;
-	private VerticalPanel vp;
-	private VerticalPanel cleanMessageBody;
-	private VerticalPanel actionPanel;
-	private HTML body;
-	private ClientMessage cm;
-	private HandlerRegistration reg;
+    private Anchor showImagesLink;
+    private VerticalPanel vp;
+    private VerticalPanel cleanMessageBody;
+    private VerticalPanel actionPanel;
+    private HTML body;
+    private IClientMessage cm;
+    private HandlerRegistration reg;
 
-	public MessageActions(final ClientMessage cm) {
-		this.cm = cm;
+    public MessageActions(final IClientMessage cm) {
+        this.cm = cm;
 
-		setWidth("100%");
-		this.cleanMessageBody = createCleanMessageBody();
-		cleanMessageBody.setWidth("100%");
+        setWidth("100%");
+        this.cleanMessageBody = createCleanMessageBody();
+        cleanMessageBody.setWidth("100%");
 
-		VerticalPanel vsp = new VerticalPanel();
-		vsp.setWidth("100%");
-		vsp.add(cleanMessageBody);
-		add(vsp, DockPanel.NORTH);
+        VerticalPanel vsp = new VerticalPanel();
+        vsp.setWidth("100%");
+        vsp.add(cleanMessageBody);
+        add(vsp, DockPanel.NORTH);
 
-		body = new HTML(cm.getBody().getCleanHtml());
-		body.addStyleName("messageText");
-		vsp.add(body);
-	}
+        body = new HTML(cm.getBody().getHtml());
+        body.addStyleName("messageText");
+        vsp.add(body);
+    }
 
-	private VerticalPanel createCleanMessageBody() {
+    private VerticalPanel createCleanMessageBody() {
 
-		vp = new VerticalPanel();
-		actionPanel = new VerticalPanel();
+        vp = new VerticalPanel();
+        actionPanel = new VerticalPanel();
 
-		Label imagesNotDisplayed = new Label(I18N.strings
-				.imagesAreNotDisplayed());
-		imagesNotDisplayed.addStyleName("bold");
+        Label imagesNotDisplayed = new Label(I18N.strings.imagesAreNotDisplayed());
+        imagesNotDisplayed.addStyleName("bold");
 
-		showImagesLink = new Anchor(I18N.strings.displayImagesBelow());
+        showImagesLink = new Anchor(I18N.strings.displayImagesBelow());
 
-		reg = showImagesLink.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent ce) {
-				showImages();
-			}
-		});
+        reg = showImagesLink.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent ce) {
+                showImages();
+            }
+        });
 
-		actionPanel.add(imagesNotDisplayed);
-		actionPanel.add(showImagesLink);
-		actionPanel.setWidth("100%");
-		actionPanel.addStyleName("contentInfo");
+        actionPanel.add(imagesNotDisplayed);
+        actionPanel.add(showImagesLink);
+        actionPanel.setWidth("100%");
+        actionPanel.addStyleName("contentInfo");
 
-		vp.add(actionPanel);
+        vp.add(actionPanel);
 
-		return vp;
-	}
+        return vp;
+    }
 
-	private void showImages() {
-		HTML partialCleanBody = new HTML(cm.getBody().getPartialCleanHtml());
-		partialCleanBody.setWidth("100%");
-		partialCleanBody.addStyleName("messageText");
-		body.removeFromParent();
-		add(partialCleanBody, DockPanel.CENTER);
-		cleanMessageBody.removeFromParent();
-		setHeight("100%");
-	}
+    private void showImages() {
+        HTML partialCleanBody = new HTML(cm.getBody().getHtml());
+        partialCleanBody.setWidth("100%");
+        partialCleanBody.addStyleName("messageText");
+        body.removeFromParent();
+        add(partialCleanBody, DockPanel.CENTER);
+        cleanMessageBody.removeFromParent();
+        setHeight("100%");
+    }
 
-	public void destroy() {
-		if (reg != null) {
-			reg.removeHandler();
-		}
-		cm = null;
-	}
+    public void destroy() {
+        if (reg != null) {
+            reg.removeHandler();
+        }
+        cm = null;
+    }
 
 }

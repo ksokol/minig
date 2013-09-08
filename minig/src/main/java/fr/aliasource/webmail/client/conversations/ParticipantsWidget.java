@@ -21,24 +21,20 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Label;
 
 import fr.aliasource.webmail.client.View;
-import fr.aliasource.webmail.client.shared.Conversation;
+import fr.aliasource.webmail.client.shared.IClientMessage;
 
 public class ParticipantsWidget extends Label {
 
-	private HandlerRegistration registration;
+    private HandlerRegistration registration;
 
-	public ParticipantsWidget(View ui, Conversation conversation,
-			ClickHandler cl) {
-		super(conversation.getParticipantsAbrev(), false);
-		setTitle(conversation.getParticipantsFull());
-		this.registration = addClickHandler(cl);
-		if (conversation.isUnread()) {
-			addStyleName("bold");
-		}
-	}
+    public ParticipantsWidget(View ui, IClientMessage conversation, ClickHandler cl) {
+        super(conversation.getSender().getDisplayName(), false);
+        setTitle(conversation.getSender().getDisplayName());
+        this.registration = addClickHandler(cl);
+    }
 
-	public HandlerRegistration getRegistration() {
-		return registration;
-	}
+    public HandlerRegistration getRegistration() {
+        return registration;
+    }
 
 }

@@ -16,26 +16,29 @@
 
 package fr.aliasource.webmail.client.conversations;
 
-import java.util.HashSet;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 
 import fr.aliasource.webmail.client.IDestroyable;
-import fr.aliasource.webmail.client.ctrl.AjaxCall;
-import fr.aliasource.webmail.client.rpc.SetFlags;
-import fr.aliasource.webmail.client.shared.ConversationId;
+import fr.aliasource.webmail.client.ctrl.MinigEventBus;
+import fr.aliasource.webmail.client.ctrl.WebmailController;
+import fr.aliasource.webmail.client.shared.IClientMessage;
+import fr.aliasource.webmail.client.test.Ajax;
+import fr.aliasource.webmail.client.test.AjaxCallback;
+import fr.aliasource.webmail.client.test.AjaxFactory;
+import fr.aliasource.webmail.client.test.BeanFactory;
 
-public class StarWidget extends Image implements IDestroyable {
+public class StarWidget extends Image implements IDestroyable, StarredChangedEventHandler {
 
 	private boolean starred;
-	private ConversationId id;
+	private String id;
 	private HandlerRegistration reg;
 
 	public interface Stars extends ClientBundle {
@@ -48,13 +51,15 @@ public class StarWidget extends Image implements IDestroyable {
 
 	public static Stars stars = GWT.create(Stars.class);
 
-	public StarWidget(boolean starred, ConversationId id) {
+	public StarWidget(boolean starred, String id) {
 		super();
 		this.id = id;
 		setStarred(starred);
-		if (id.hasFolder()) {
-			reg = addClickHandler(getStarListener());
-		}
+		// if (id.hasFolder()) {
+		reg = addClickHandler(getStarListener());
+		// }
+
+		MinigEventBus.getEventBus().addHandler(StarredChangedEvent.TYPE, this);
 	}
 
 	private ClickHandler getStarListener() {
@@ -68,19 +73,30 @@ public class StarWidget extends Image implements IDestroyable {
 	}
 
 	private void setFlagOnServer(final boolean starred) {
-		AsyncCallback<Void> ac = new AsyncCallback<Void>() {
-			public void onFailure(Throwable caught) {
-				GWT.log("star failure", caught);
-			}
+		IClientMessage m = BeanFactory.instance.clientMessage().as();
+		m.setStarred(starred);
 
-			public void onSuccess(Void result) {
-				GWT.log("starred mail: " + starred, null);
-			}
-		};
-		if (id.hasFolder()) {
-			HashSet<ConversationId> ids = new HashSet<ConversationId>();
-			ids.add(id);
-			AjaxCall.flags.setFlags(ids, SetFlags.STAR, starred, ac);
+		Ajax<IClientMessage> ajax = AjaxFactory.updateMessageFlags(id);
+
+		try {
+			ajax.send(m, new AjaxCallback<IClientMessage>() {
+
+				@Override
+				public void onSuccess(IClientMessage object) {
+					setStarred(starred);
+				}
+
+				@Override
+				public void onError(Request request, Throwable exception) {
+					if (exception != null) {
+						WebmailController.get().getView().notifyUser(exception.getMessage());
+					} else {
+						WebmailController.get().getView().notifyUser("something goes wrong.");
+					}
+				}
+			});
+		} catch (RequestException e) {
+			WebmailController.get().getView().notifyUser(e.getMessage());
 		}
 	}
 
@@ -97,6 +113,13 @@ public class StarWidget extends Image implements IDestroyable {
 	public void destroy() {
 		if (reg != null) {
 			reg.removeHandler();
+		}
+	}
+
+	@Override
+	public void onMessageReceived(StarredChangedEvent event) {
+		if (event.getIds().contains(id)) {
+			setStarred(event.isStarred());
 		}
 	}
 

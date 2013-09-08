@@ -22,134 +22,124 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.DOM;
 
 import fr.aliasource.webmail.client.I18N;
-import fr.aliasource.webmail.client.View;
-import fr.aliasource.webmail.client.ctrl.AjaxCall;
-import fr.aliasource.webmail.client.ctrl.WebmailController;
-import fr.aliasource.webmail.client.shared.Body;
-import fr.aliasource.webmail.client.shared.ClientMessage;
-import fr.aliasource.webmail.client.shared.Folder;
-import fr.aliasource.webmail.client.shared.EmailAddress;
+import fr.aliasource.webmail.client.shared.AttachmentId;
+import fr.aliasource.webmail.client.shared.IBody;
+import fr.aliasource.webmail.client.shared.IClientMessage;
+import fr.aliasource.webmail.client.shared.IEmailAddress;
+import fr.aliasource.webmail.client.shared.IFolder;
 import fr.aliasource.webmail.client.shared.ReplyInfo;
+import fr.aliasource.webmail.client.test.BeanFactory;
 
 public class ReplyManager {
 
-	private EmailAddress me;
+    private IEmailAddress me;
 
-	public ReplyManager(View ui) {
-		this.me = WebmailController.get().getIdentity();
-	}
+    public ReplyManager() {
+        Element element = DOM.getElementById("username");
+        String innerText = element.getInnerText();
 
-	public ClientMessage prepareReply(ClientMessage message, boolean all) {
-		ClientMessage ret = new ClientMessage();
-		if (!all) {
-			ret.setTo(Arrays.asList(message.getSender()));
-		} else {
-			Set<EmailAddress> ads = new HashSet<EmailAddress>();
-			// reply to all recipients except me
-			addRecips(ads, message.getTo());
-			addRecips(ads, message.getCc());
-			addRecips(ads, message.getBcc());
-			ads.add(message.getSender());
-			ret.setTo(new ArrayList<EmailAddress>(ads));
-		}
-		ret.setSubject(replySubject(message.getSubject()));
-		ret.setAttachements(new String[0]);
-		ret.setBody(quoteForReply(message));
-		return ret;
-	}
+        this.me = BeanFactory.instance.emailAddress().as();
+        me.setEmail(innerText);
+    }
 
-	private void addRecips(Set<EmailAddress> ads, List<EmailAddress> rcpt) {
-		for (int i = 0; i < rcpt.size(); i++) {
-			EmailAddress ad = rcpt.get(i);
-			if (!ad.equals(me)) {
-				GWT.log("replyAll: '" + ad.getEmail() + "'", null);
-				ads.add(ad);
-			} else {
-				GWT.log("replyAll discarded '" + ad.getEmail() + "'", null);
-			}
-		}
-	}
+    public IClientMessage prepareReply(IClientMessage message, boolean all) {
+        IClientMessage ret = BeanFactory.instance.clientMessage().as();
+        if (!all) {
+            ret.setTo(Arrays.asList(message.getSender()));
+        } else {
+            Set<IEmailAddress> ads = new HashSet<IEmailAddress>();
+            // reply to all recipients except me
+            addRecips(ads, message.getTo());
+            addRecips(ads, message.getCc());
+            addRecips(ads, message.getBcc());
+            ads.add(message.getSender());
+            ret.setTo(new ArrayList<IEmailAddress>(ads));
+        }
+        ret.setSubject(replySubject(message.getSubject()));
+        ret.setAttachments(new ArrayList<AttachmentId>());
+        ret.setBody(quoteForReply(message));
+        return ret;
+    }
 
-	private String replySubject(String subject) {
-		if (subject == null) {
-			return "RE: ";
-		}
-		if (subject.toLowerCase().startsWith("re:")) {
-			return subject;
-		} else {
-			return "RE: " + subject;
-		}
-	}
+    private void addRecips(Set<IEmailAddress> ads, List<IEmailAddress> rcpt) {
+        for (int i = 0; i < rcpt.size(); i++) {
+            IEmailAddress ad = rcpt.get(i);
+            if (!equals(ad, me)) {
+                ads.add(ad);
+            }
+        }
+    }
 
-	private Body quoteForReply(ClientMessage message) {
-		String endLine = "\n";
-		String plainB = message.getBody().getPlain();
-		StringBuffer quote = new StringBuffer(2 * plainB.length());
-		//insert two empty lines to write the reply
-		quote.append(endLine).append(endLine);
-		quote.append(I18N.strings.quoteSender(message.getSender().getDisplay())
-				+ endLine);
-		String[] lines = plainB.split("\n");
-		for (int i = 0; i < lines.length; i++) {
-			if (!lines[i].trim().isEmpty()) {
-				quote.append("> ").append(lines[i].trim()).append(endLine);
-			}
-		}
-		quote.append(endLine);
+    private boolean equals(IEmailAddress a1, IEmailAddress a2) {
+        return a1.getEmail().equals(a2.getEmail());
+    }
 
-		String quoted = quote.toString();
-		Body ret = new Body();
-		ret.setHtml(new PlainToHTMLConverter().convert(quoted));
+    private String replySubject(String subject) {
+        if (subject == null) {
+            return "RE: ";
+        }
+        if (subject.toLowerCase().startsWith("re:")) {
+            return subject;
+        } else {
+            return "RE: " + subject;
+        }
+    }
 
-		return ret;
-	}
+    private IBody quoteForReply(IClientMessage message) {
+        String endLine = "\n";
+        String plainB = message.getBody().getPlain();
+        StringBuffer quote = new StringBuffer(2 * plainB.length());
+        // insert two empty lines to write the reply
+        quote.append(endLine).append(endLine);
+        quote.append(I18N.strings.quoteSender(message.getSender().getDisplayName()) + endLine);
+        String[] lines = plainB.split("\n");
+        for (int i = 0; i < lines.length; i++) {
+            if (!lines[i].trim().isEmpty()) {
+                quote.append("> ").append(lines[i].trim()).append(endLine);
+            }
+        }
+        quote.append(endLine);
 
-	public void prepareForward(final ClientMessage message,
-			final QuickReply quickReply) {
-		AsyncCallback<ClientMessage> ac = new AsyncCallback<ClientMessage>() {
-			private void forward(ClientMessage cm) {
-				cm.setBody(new Body("text/plain", ""));
-				quickReply.loadDraft(cm, null);
-				quickReply.focusComposer();
-			}
+        String quoted = quote.toString();
+        IBody ret = BeanFactory.instance.body().as();
+        ret.setHtml(new PlainToHTMLConverter().convert(quoted));
 
-			public void onFailure(Throwable caught) {
-				GWT.log("prepare forward failed: " + caught.getMessage(), null);
-				ClientMessage cm = new ClientMessage();
-				cm.setSender(me);
-				cm.setSubject(forwardSubject(message.getSubject()));
-				forward(cm);
-			}
+        return ret;
+    }
 
-			public void onSuccess(ClientMessage result) {
-				GWT.log("prepareForward success", null);
-				result.setSender(me);
-				result.setSubject(forwardSubject(message.getSubject()));
-				forward(result);
-			}
-		};
-		AjaxCall.composerParser.prepareForward(message, ac);
-	}
+    public void prepareForward(final IClientMessage message, final QuickReply quickReply) {
+        message.setSender(me);
+        message.setSubject(forwardSubject(message.getSubject()));
+        message.setTo(null);
+        message.setCc(null);
+        message.setBcc(null);
+        message.setAttachments(null);
 
-	private String forwardSubject(String subject) {
-		if (subject == null) {
-			return "[Fwd: ]";
-		}
-		if (subject.toLowerCase().startsWith("[fwd:")) {
-			return subject;
-		} else {
-			return "[Fwd: " + subject + "]";
-		}
-	}
+        quickReply.loadDraft(message);
+        quickReply.focusComposer();
+    }
 
-	public ReplyInfo getInfo(ClientMessage message) {
-		ReplyInfo ri = new ReplyInfo(new Folder(message.getFolderName()),
-				message.getUid(), message.getConvId());
-		return ri;
-	}
+    private String forwardSubject(String subject) {
+        if (subject == null) {
+            return "[Fwd: ]";
+        }
+        if (subject.toLowerCase().startsWith("[fwd:")) {
+            return subject;
+        } else {
+            return "[Fwd: " + subject + "]";
+        }
+    }
+
+    public ReplyInfo getInfo(IClientMessage message) {
+        IFolder folder = BeanFactory.instance.folder().as();
+        folder.setName(message.getFolderName());
+
+        ReplyInfo ri = new ReplyInfo(folder, message.getId(), message.getId());
+        return ri;
+    }
 
 }

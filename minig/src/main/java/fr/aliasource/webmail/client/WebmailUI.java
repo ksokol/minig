@@ -19,24 +19,13 @@ package fr.aliasource.webmail.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
 
-import fr.aliasource.webmail.client.ctrl.AjaxCall;
+import fr.aliasource.webmail.client.ctrl.WebmailController;
 
-/**
- * Entry point classes define <code>onModuleLoad()</code>.
- */
 public class WebmailUI implements EntryPoint {
 
-	/**
-	 * This is the entry point method.
-	 */
-	public void onModuleLoad() {
-		RootPanel rp = RootPanel.get("webmail_root");
-		final SplashScreen ss = new SplashScreen();
-		rp.clear();
-		rp.add(ss);
-		final RootPanel rPanel = rp;
-
-		LoadSettingsCallback lsc = new LoadSettingsCallback(ss, rPanel);
-		AjaxCall.settings.getAllSettings(lsc);
-	}
+    public void onModuleLoad() {
+        RootPanel rp = RootPanel.get("webmail_root");
+        rp.clear();
+        WebmailController.get().start(rp);
+    }
 }
