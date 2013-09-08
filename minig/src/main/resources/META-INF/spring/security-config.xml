@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/security
+		http://www.springframework.org/schema/security/spring-security-3.1.xsd
+		http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+    <bean id="mailAuthentication" class="org.minig.security.SecurityContextMailAuthentication" />
+    
+    <bean id="mailAuthenticationProvider" class="org.minig.security.MailAuthenticationProvider" />
+     
+    <security:authentication-manager alias="authenticationManager" erase-credentials="false">
+       <security:authentication-provider ref="mailAuthenticationProvider" />
+    </security:authentication-manager>
+    
+    <security:http pattern='/login' security="none"/>
+	<security:http pattern='/assets/**' security="none"/>
+	<security:http pattern='/minig/images/**' security="none"/>
+	
+	<security:http pattern='/api/**'>
+	    <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"  />	
+	    <security:http-basic />
+	</security:http>
+  
+  	<security:http pattern="/**">
+  		<security:custom-filter before="FILTER_SECURITY_INTERCEPTOR" ref="myExceptionTranslationFilter"/>
+		<security:intercept-url pattern="/**" access="ROLE_USER"  />						<!-- TODO -->
+		<security:form-login login-processing-url="/j_spring_security_check" authentication-success-handler-ref="customAuthenticationSuccessHandler" authentication-failure-url="/login?login=failed" />
+		<security:logout logout-success-url="/login" logout-url="/j_spring_security_logout" />
+	</security:http>
+	
+  	<bean id="customAuthenticationSuccessHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+  	    <property name="defaultTargetUrl" value="/mybox" />
+  	</bean>
+  	
+	<bean id="loginUrlAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+		<constructor-arg name="loginFormUrl" value="/login" />
+	</bean>
+	
+	<bean id="myExceptionTranslationFilter" class="org.minig.security.AjaxExceptionTranslationFilter">
+ 		<constructor-arg ref="loginUrlAuthenticationEntryPoint"/>
+	</bean>
+	
+</beans>

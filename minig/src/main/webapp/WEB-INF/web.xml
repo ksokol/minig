@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+	version="2.4">
+
+	<display-name>MiniG Webmail</display-name>
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
+	<context-param>
+   		<param-name>spring.profiles.active</param-name>
+   		<param-value>prod</param-value>
+	</context-param>
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:/META-INF/spring/security-config.xml</param-value>
+	</context-param> 
+
+	<servlet>
+		<servlet-name>api-servlet</servlet-name>
+	   	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+      <init-param>
+          <param-name>contextClass</param-name>
+          <param-value>
+              org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+          </param-value>
+      </init-param>
+      <init-param>
+          <param-name>contextConfigLocation</param-name>
+          <param-value>org.minig</param-value>
+      </init-param>
+    	<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>api-servlet</servlet-name>
+		<url-pattern>/api/*</url-pattern>
+	</servlet-mapping>
+ 
+	<filter>
+	  <filter-name>springSecurityFilterChain</filter-name>
+	  <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	
+	<filter-mapping>
+	  <filter-name>springSecurityFilterChain</filter-name>
+	  <url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<servlet>
+	    <servlet-name>login</servlet-name>
+	    <jsp-file>/WEB-INF/views/login.jsp</jsp-file>
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>login</servlet-name>
+	    <url-pattern>/login</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+	    <servlet-name>mybox</servlet-name>
+	    <jsp-file>/mybox.jsp</jsp-file>
+	</servlet>
+	
+	<servlet-mapping>
+	    <servlet-name>mybox</servlet-name>
+	    <url-pattern>/mybox</url-pattern>
+	</servlet-mapping>
+	
+</web-app>

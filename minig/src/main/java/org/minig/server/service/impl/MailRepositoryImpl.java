@@ -1,0 +1,302 @@
+package org.minig.server.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.mail.Flags;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import javax.mail.search.MessageIDTerm;
+import javax.mail.search.SearchTerm;
+
+import org.minig.server.MailMessage;
+import org.minig.server.MailMessageList;
+import org.minig.server.service.CompositeId;
+import org.minig.server.service.MailRepository;
+import org.minig.server.service.NotFoundException;
+import org.minig.server.service.RepositoryException;
+import org.minig.server.service.impl.helper.MessageMapper;
+import org.minig.server.service.impl.helper.UnreadMessageSearch;
+import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
+
+@Component
+class MailRepositoryImpl implements MailRepository {
+
+    @Autowired
+    private MailContext mailContext;
+
+    @Autowired
+    private MessageMapper mapper;
+
+    @Override
+    public MailMessageList findByFolder(String folder, int page, int pageLength) {
+        Assert.notNull(folder, "folder is null");
+
+        return findByFolderAndSearchTerm(folder, new UnreadMessageSearch(), page, pageLength);
+    }
+
+    private MailMessageList findByFolderAndSearchTerm(String folder, SearchTerm searchTerm, int page, int pageLength) {
+
+        try {
+            int normalizedPage = (page < 1) ? 0 : page - 1;
+            int normalizedPageLength = (pageLength < 1) ? 0 : pageLength;
+            int offset = normalizedPage * normalizedPageLength;
+            int counter = 0;
+
+            List<MailMessage> messageList = new ArrayList<MailMessage>();
+            Folder storeFolder = mailContext.getFolder(folder, true);
+            Message[] search = storeFolder.search(searchTerm);
+
+            if (search != null) {
+                for (int i = offset; i < search.length && counter < pageLength; i++) {
+                    counter++;
+                    MailMessage message = mapper.convertShort(search[i]);
+                    messageList.add(message);
+                }
+            }
+
+            return new MailMessageList(messageList, page, storeFolder.getMessageCount());
+        } catch (Exception e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public MailMessage read(CompositeId id) {
+        Assert.notNull(id);
+        int count = 0;
+
+        try {
+            Folder storeFolder = mailContext.getFolder(id.getFolder(), true);
+
+            if (storeFolder.exists()) {
+                Message[] search = storeFolder.search(new MessageIDTerm(id.getMessageId()));
+                count = search.length;
+
+                if (search.length == 1 && search[0] != null) {
+                    return mapper.convertFull(search[0]);
+                }
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+
+        if (count > 1) {
+            // TODO
+            throw new RuntimeException("more than one message found");
+        }
+
+        return null;
+    }
+
+    @Override
+    public Mime4jMessage read(String folder, String messageId) {
+
+        try {
+            Folder storeFolder = mailContext.openFolder(folder);
+            Message[] search = storeFolder.search(new MessageIDTerm(messageId));
+
+            if (search != null && search.length == 1 && search[0] != null) {
+                return mapper.toMessageImpl(search[0]);
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+
+        throw new NotFoundException();
+    }
+
+    @Override
+    public MailMessage readPojo(String folder, String messageId) {
+
+        try {
+            Folder storeFolder = mailContext.getFolder(folder);
+
+            if (storeFolder.exists()) {
+                Message[] search = storeFolder.search(new MessageIDTerm(messageId));
+
+                if (search != null && search.length == 1 && search[0] != null) {
+
+                    return mapper.convertFull(search[0]);
+                }
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+
+        throw new NotFoundException();
+    }
+
+    @Override
+    public void updateFlags(MailMessage message) {
+        Assert.notNull(message, "message is null");
+
+        try {
+            Folder folder = mailContext.getFolder(message.getFolder());
+            Message[] search = folder.search(new MessageIDTerm(message.getMessageId()));
+
+            if (search != null) {
+                for (Message m : search) {
+                    m.setFlag(Flags.Flag.SEEN, message.getRead());
+                    m.setFlag(Flags.Flag.FLAGGED, message.getStarred());
+                    m.setFlag(Flags.Flag.ANSWERED, message.getAnswered());
+
+                    // TODO
+                    if (message.getForwarded()) {
+                        Flags forwardedFlag = new Flags("$Forwarded");
+                        m.setFlags(forwardedFlag, true);
+                    }
+
+                    if (message.getMdnSent()) {
+                        Flags mdnSentFlag = new Flags("$MDNSent");
+                        m.setFlags(mdnSentFlag, true);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void moveMessage(CompositeId message, String folder) {
+        Assert.notNull(message);
+        Assert.hasText(folder);
+
+        try {
+            if (!folder.equals(message.getFolder())) {
+                Folder targetFolder = mailContext.getFolder(folder);
+                Folder sourceFolder = mailContext.getFolder(message.getFolder());
+
+                Message[] search = sourceFolder.search(new MessageIDTerm(message.getMessageId()));
+                sourceFolder.copyMessages(search, targetFolder);
+
+                if (search != null) {
+                    for (Message m : search) {
+                        m.setFlag(Flags.Flag.DELETED, true);
+                    }
+                }
+
+                // expunge
+                sourceFolder.close(true);
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void delete(CompositeId id) {
+        try {
+            Folder storeFolder = mailContext.getFolder(id.getFolder());
+            Message[] search = storeFolder.search(new MessageIDTerm(id.getMessageId()));
+
+            if (search != null) {
+                for (Message msg : search) {
+                    msg.setFlag(Flags.Flag.DELETED, true);
+                }
+            }
+
+            // expunge
+            storeFolder.close(true);
+        } catch (Exception e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public MailMessage saveInFolder(MailMessage source, String folder) {
+        Assert.notNull(source, "message is null");
+        // Assert.notNull(source.getId(), "message.id is null");
+        Assert.hasText(folder);
+
+        try {
+            Message target = mapper.toMessage(source);
+            Folder storeFolder = mailContext.getFolder(folder, true);
+            storeFolder.appendMessages(new Message[] { target });
+
+            Message[] search = storeFolder.search(new MessageIDTerm(target.getHeader("Message-ID")[0]));
+
+            if (search != null && search.length == 1 && search[0] != null) {
+                MailMessage convertShort = mapper.convertShort(search[0]);
+                return convertShort;
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+
+        throw new RepositoryException("error during save");
+    }
+
+    @Override
+    public String save(Mime4jMessage message, String folder) {
+        // Assert.notNull(source, "message is null");
+        // Assert.notNull(source.getId(), "message.id is null");
+        // Assert.hasText(folder);
+
+        try {
+            MimeMessage target = mapper.toMimeMessage(message);
+            target.saveChanges();
+            Folder storeFolder = mailContext.openFolder(folder);
+            storeFolder.appendMessages(new Message[] { target });
+
+            // Message[] search = storeFolder.search(new
+            // MessageIDTerm(target.getHeader("Message-ID")[0]));
+            //
+            // if (search != null && search.length == 1 && search[0] != null) {
+            // MailMessage convertShort = mapper.convertShort(search[0]);
+            // return convertShort;
+            // }
+
+            return target.getHeader("Message-ID")[0];
+        } catch (Exception e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+
+        // throw new RepositoryException("error during save");
+    }
+
+    @Override
+    public void copyMessages(String source, String target) {
+        Assert.hasText(source);
+        Assert.hasText(target);
+
+        try {
+            Folder sourceFolder = mailContext.getFolder(source);
+            Folder targetFolder = mailContext.getFolder(target);
+
+            if (sourceFolder.exists() && targetFolder.exists()) {
+                sourceFolder.copyMessages(sourceFolder.getMessages(), targetFolder);
+            }
+        } catch (MessagingException e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void copyMessage(CompositeId id, String target) {
+        Assert.notNull(id);
+        Assert.hasText(target);
+
+        try {
+            Folder sourceFolder = mailContext.getFolder(id.getFolder());
+            Message[] search = sourceFolder.search(new MessageIDTerm(id.getMessageId()));
+
+            if (search != null) {
+                Folder targetFolder = mailContext.getFolder(target);
+
+                if (targetFolder.exists()) {
+                    sourceFolder.copyMessages(search, targetFolder);
+                }
+            }
+        } catch (MessagingException e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+    }
+
+}

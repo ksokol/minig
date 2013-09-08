@@ -1,0 +1,30 @@
+Date: Fri, 26 Jul 2013 10:06:54 +0200 (CEST)
+From: Testuser <testuser@localhost>
+Message-ID: <6923677.3.1374826015201.JavaMail.javamailuser@localhost>
+Subject: spring template
+MIME-Version: 1.0
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_0_22569524.1374826014736"
+
+------=_Part_0_22569524.1374826014736
+Content-Type: multipart/related; 
+	boundary="----=_Part_1_26694655.1374826014736"
+
+------=_Part_1_26694655.1374826014736
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_2_769389.1374826014736"
+
+------=_Part_2_769389.1374826014736
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+
+------=_Part_2_769389.1374826014736
+Content-Type: text/html;charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+------=_Part_2_769389.1374826014736--
+
+------=_Part_1_26694655.1374826014736--
+
+------=_Part_0_22569524.1374826014736--
