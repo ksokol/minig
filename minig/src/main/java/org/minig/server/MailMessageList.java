@@ -16,6 +16,7 @@
 
 package org.minig.server;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MailMessageList {
@@ -25,6 +26,10 @@ public class MailMessageList {
     private List<MailMessage> mailList;
 
     public MailMessageList() {
+        this.mailList = new ArrayList<MailMessage>();
+        this.page = 1;
+        this.fullLength = 0;
+
     }
 
     public MailMessageList(List<MailMessage> mailList, int page, int fullLength) {
