@@ -94,6 +94,7 @@ public class DataGrid extends Grid {
         int j = 0;
         String highPriorityClass = "dummy";
         String unreadClass = "";
+        String strikeThrough = "";
 
         if (curConvData != null) {
             IClientMessage conversation = curConvData.get(row);
@@ -104,6 +105,10 @@ public class DataGrid extends Grid {
 
             if (!conversation.getRead()) {
                 unreadClass = " bold ";
+            }
+
+            if (conversation.getDeleted()) {
+                strikeThrough = " deleted ";
             }
         }
 
@@ -118,10 +123,10 @@ public class DataGrid extends Grid {
         cf.addStyleName(row, i++, highPriorityClass + unreadClass);
         cf.addStyleName(row, i++, highPriorityClass + unreadClass);
         cf.addStyleName(row, i++, highPriorityClass + unreadClass);
+        cf.addStyleName(row, i++, highPriorityClass + unreadClass + strikeThrough);
+        cf.addStyleName(row, i++, highPriorityClass + unreadClass + strikeThrough);
         cf.addStyleName(row, i++, highPriorityClass + unreadClass);
-        cf.addStyleName(row, i++, highPriorityClass + unreadClass);
-        cf.addStyleName(row, i++, highPriorityClass + unreadClass);
-        cf.addStyleName(row, i++, highPriorityClass + unreadClass);
+        cf.addStyleName(row, i++, highPriorityClass + unreadClass + strikeThrough);
     }
 
     public void updateGrid(IClientMessageList cList) {

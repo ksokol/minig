@@ -42,6 +42,7 @@ public class MailMessage extends CompositeId {
     private Boolean askForDispositionNotification;
     private Boolean receipt;
     private Boolean mdnSent;
+    private Boolean deleted;
 
     public String getSubject() {
         return subject;
@@ -191,6 +192,14 @@ public class MailMessage extends CompositeId {
 
     public void setMdnSent(Boolean mdnSent) {
         this.mdnSent = mdnSent;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
 }
