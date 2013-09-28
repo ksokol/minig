@@ -89,4 +89,6 @@ public interface IClientMessage {
 
     public abstract Boolean getReceipt();
 
+    public abstract Boolean getDeleted();
+
 }

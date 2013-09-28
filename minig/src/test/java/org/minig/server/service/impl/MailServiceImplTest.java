@@ -204,7 +204,9 @@ public class MailServiceImplTest {
         }
 
         try {
-            uut.updateMessagesFlags(new MailMessageList());
+            MailMessageList mailMessageList = new MailMessageList();
+            mailMessageList.setMailList(null);
+            uut.updateMessagesFlags(mailMessageList);
         } catch (IllegalArgumentException e) {
             count++;
         }

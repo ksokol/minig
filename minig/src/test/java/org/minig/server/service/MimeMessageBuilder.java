@@ -38,6 +38,7 @@ public class MimeMessageBuilder {
     private boolean starred = false;
     private boolean askForDispositionNotification = false;
     private boolean receipt = false;
+    private boolean deleted = false;
     private List<InternetAddress> recipientToList = new ArrayList<InternetAddress>();
     private List<InternetAddress> recipientCcList = new ArrayList<InternetAddress>();
     private List<InternetAddress> recipientBccList = new ArrayList<InternetAddress>();
@@ -105,6 +106,7 @@ public class MimeMessageBuilder {
             if (highPriority) {
                 when(m.getHeader("X-Priority")).thenReturn(new String[] { "1 " });
             }
+
             when(m.getRecipients(RecipientType.TO)).thenReturn(recipientToList.toArray(new Address[recipientToList.size()]));
 
             when(m.getRecipients(RecipientType.CC)).thenReturn(recipientCcList.toArray(new Address[recipientCcList.size()]));
@@ -133,6 +135,10 @@ public class MimeMessageBuilder {
 
             if (starred) {
                 flags.add(Flag.FLAGGED);
+            }
+
+            if (deleted) {
+                flags.add(Flag.DELETED);
             }
 
             String xHeader = "";
@@ -383,9 +389,17 @@ public class MimeMessageBuilder {
         return receipt;
     }
 
+    public boolean isDeleted() {
+        return starred;
+    }
+
     public MimeMessageBuilder setReceipt(boolean receipt) {
         this.receipt = receipt;
         return this;
     }
 
+    public MimeMessageBuilder setDeleted(boolean deleted) {
+        this.deleted = deleted;
+        return this;
+    }
 }

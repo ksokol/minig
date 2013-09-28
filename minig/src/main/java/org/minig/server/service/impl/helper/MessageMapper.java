@@ -60,7 +60,7 @@ public class MessageMapper {
         try {
             MailMessage cm = new MailMessage();
 
-            setMessageId(cm, msg);
+            setMessageId(cm, (MimeMessage) msg);
             setFolder(cm, msg);
             setSender(cm, msg);
             setSubject(cm, msg);
@@ -87,13 +87,12 @@ public class MessageMapper {
         try {
             MailMessage cm = new MailMessage();
 
-            setMessageId(cm, msg);
+            setMessageId(cm, (MimeMessage) msg);
             setFolder(cm, msg);
             setAttachmentId(cm, msg);
 
             return cm;
         } catch (Exception e) {
-            // TODO
             throw new RuntimeException(e.getMessage(), e);
         }
     }
@@ -106,7 +105,7 @@ public class MessageMapper {
         try {
             MailMessage cm = new MailMessage();
 
-            setMessageId(cm, msg);
+            setMessageId(cm, (MimeMessage) msg);
             setFolder(cm, msg);
             setSender(cm, msg);
             setSubject(cm, msg);
@@ -176,7 +175,7 @@ public class MessageMapper {
         try {
             MailMessage cm = new MailMessage();
 
-            setMessageId(cm, msg);
+            setMessageId(cm, (MimeMessage) msg);
             setFolder(cm, msg);
 
             return cm;
@@ -185,10 +184,8 @@ public class MessageMapper {
         }
     }
 
-    private void setMessageId(MailMessage cm, Message msg) throws MessagingException {
-        if (msg.getHeader("Message-ID") != null && msg.getHeader("Message-ID")[0] != null) {
-            cm.setMessageId(msg.getHeader("Message-ID")[0]);
-        }
+    private void setMessageId(MailMessage cm, MimeMessage msg) throws MessagingException {
+        cm.setMessageId(msg.getMessageID());
     }
 
     private void setFolder(MailMessage cm, Message msg) throws MessagingException {
@@ -254,11 +251,13 @@ public class MessageMapper {
 
         for (int i = 0; i < sf.length; i++) {
             if (sf[i] == Flags.Flag.SEEN) {
-                cm.setRead(true);
+                cm.setRead(Boolean.TRUE);
             } else if (sf[i] == Flags.Flag.ANSWERED) {
-                cm.setAnswered(true);
+                cm.setAnswered(Boolean.TRUE);
             } else if (sf[i] == Flags.Flag.FLAGGED) {
-                cm.setStarred(true);
+                cm.setStarred(Boolean.TRUE);
+            } else if (sf[i] == Flags.Flag.DELETED) {
+                cm.setDeleted(Boolean.TRUE);
             }
         }
 
@@ -272,6 +271,10 @@ public class MessageMapper {
 
         if (cm.getStarred() == null) {
             cm.setStarred(Boolean.FALSE);
+        }
+
+        if (cm.getDeleted() == null) {
+            cm.setDeleted(Boolean.FALSE);
         }
     }
 

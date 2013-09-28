@@ -1,15 +1,16 @@
 package org.minig.server.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import javax.mail.FetchProfile;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.MessageIDTerm;
-import javax.mail.search.SearchTerm;
 
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
@@ -18,7 +19,6 @@ import org.minig.server.service.MailRepository;
 import org.minig.server.service.NotFoundException;
 import org.minig.server.service.RepositoryException;
 import org.minig.server.service.impl.helper.MessageMapper;
-import org.minig.server.service.impl.helper.UnreadMessageSearch;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,30 +37,46 @@ class MailRepositoryImpl implements MailRepository {
     public MailMessageList findByFolder(String folder, int page, int pageLength) {
         Assert.notNull(folder, "folder is null");
 
-        return findByFolderAndSearchTerm(folder, new UnreadMessageSearch(), page, pageLength);
-    }
-
-    private MailMessageList findByFolderAndSearchTerm(String folder, SearchTerm searchTerm, int page, int pageLength) {
+        if (page < 1 || pageLength < 1) {
+            return new MailMessageList();
+        }
 
         try {
-            int normalizedPage = (page < 1) ? 0 : page - 1;
-            int normalizedPageLength = (pageLength < 1) ? 0 : pageLength;
-            int offset = normalizedPage * normalizedPageLength;
-            int counter = 0;
-
             List<MailMessage> messageList = new ArrayList<MailMessage>();
-            Folder storeFolder = mailContext.getFolder(folder, true);
-            Message[] search = storeFolder.search(searchTerm);
+            Folder storeFolder = mailContext.openFolder(folder);
+            int messageCount = storeFolder.getMessageCount();
 
-            if (search != null) {
-                for (int i = offset; i < search.length && counter < pageLength; i++) {
-                    counter++;
-                    MailMessage message = mapper.convertShort(search[i]);
-                    messageList.add(message);
-                }
+            if (messageCount == 0) {
+                return new MailMessageList();
             }
 
-            return new MailMessageList(messageList, page, storeFolder.getMessageCount());
+            int end = messageCount - (page - 1) * pageLength;
+            int start = Math.max(end - pageLength + 1, 1);
+
+            if (end < 0) {
+                return new MailMessageList();
+            }
+
+            Message[] messages = storeFolder.getMessages(start, end);
+
+            FetchProfile fp = new FetchProfile();
+            fp.add(FetchProfile.Item.ENVELOPE);
+            fp.add(FetchProfile.Item.FLAGS);
+            fp.add(FetchProfile.Item.CONTENT_INFO);
+            fp.add("X-Mozilla-Draft-Info");
+            fp.add("$MDNSent");
+            fp.add("$Forwarded");
+            fp.add("X-PRIORITY");
+
+            storeFolder.fetch(messages, fp);
+
+            for (Message m : messages) {
+                MailMessage message = mapper.convertShort(m);
+                messageList.add(message);
+            }
+
+            Collections.reverse(messageList);
+            return new MailMessageList(messageList, page, messageCount);
         } catch (Exception e) {
             throw new RepositoryException(e.getMessage(), e);
         }

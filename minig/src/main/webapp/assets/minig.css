@@ -2652,3 +2652,7 @@ textarea {
 	padding: 0px;	
 	border-spacing: 4px 0px;
 }
+
+.deleted {
+    text-decoration: line-through;
+}

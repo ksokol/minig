@@ -47,6 +47,7 @@ public class MessageMapperTest {
         assertEquals(builder.isRead(), c.getRead());
         assertEquals(builder.isAskForDispositionNotification(), c.getAskForDispositionNotification());
         assertEquals(builder.isReceipt(), c.getReceipt());
+        assertEquals(builder.isDeleted(), c.getDeleted());
 
         assertNotNull(c.getAttachments());
     }
@@ -75,6 +76,7 @@ public class MessageMapperTest {
         assertEquals(builder.getDispositionNotification(), c.getDispositionNotification());
         assertEquals(builder.isAskForDispositionNotification(), c.getAskForDispositionNotification());
         assertEquals(builder.isReceipt(), c.getReceipt());
+        assertEquals(builder.isDeleted(), c.getDeleted());
 
         assertNotNull(c.getAttachments());
     }
