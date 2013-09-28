@@ -17,7 +17,6 @@
 package fr.aliasource.webmail.client.composer;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -170,14 +169,6 @@ public class RecipientsPanel extends HorizontalPanel {
     private void createMailFieldKeyboardListener() {
         mailField.addKeyDownHandler(new KeyDownHandler() {
             public void onKeyDown(KeyDownEvent kde) {
-                long ts = new Date().getTime();
-                long diff = ts - lastTs;
-                lastTs = ts;
-                if (diff < 150) {
-                    // crap to prevent double delete on backspace...
-                    return;
-                }
-
                 if (mailField.getText().isEmpty()) {
                     recipCount = recipListPanel.getWidgetCount();
                     switch(kde.getNativeKeyCode()) {
@@ -259,6 +250,9 @@ public class RecipientsPanel extends HorizontalPanel {
                     case KeyCodes.KEY_ENTER:
                         addEmail(email);
                         break;
+                    case 32 /* backspace */:
+                        addEmail(email);
+                        break;
                     case KeyCodes.KEY_ESCAPE:
                         mailField.setText("");
                         break;
@@ -318,12 +312,14 @@ public class RecipientsPanel extends HorizontalPanel {
     }
 
     private void addEmail(String email) {
-        if (email.matches(PATTERN_EMAIL)) {
-            addRecipient(email);
+        String trim = email.trim();
+
+        if (trim.matches(PATTERN_EMAIL)) {
+            addRecipient(trim);
             mailField.setFocus(true);
             mailField.setText("");
-        } else if (email.contains(",") || email.contains("<")) {
-            String[] spl = email.split(",");
+        } else if (trim.contains(",") || trim.contains("<")) {
+            String[] spl = trim.split(",");
             for (String s : spl) {
                 String m = s.trim();
                 int idx = m.indexOf("<");
