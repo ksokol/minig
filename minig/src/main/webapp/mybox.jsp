@@ -1,25 +1,27 @@
-<%@ taglib prefix="security"
-	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<!DOCTYPE html>
+<html ng-app>
 	<head>	
 		<!-- Force rendering with google chrome for IE users -->
 		<meta http-equiv="X-UA-Compatible" content="chrome=1" />
 		
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		
-		
-		<!-- default locale on this one -->
-		<!--meta name="gwt:property" content="locale=en"-->
-		
 		<!-- TODO -->
 		<link rel="stylesheet" href="assets/minig.css" type="text/css" />
 		
 		<title>MiniG</title>
-		<script language="javascript" src="minig/minig.nocache.js">
-			
-		</script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.js"></script>
+		<script src="resources/js/controller.js"></script>		
+		<style>
+			aside {
+				float:left;
+			}
+			.bold {
+				font-weight: bold;
+			}
+		</style>
 	</head>
 	<body id="page_body">	
 		<table cellspacing="0" cellpadding="0" style="width: 100%;"
@@ -45,11 +47,46 @@
 				</tr>
 			</tbody>
 		</table>
-	
+
+		<aside ng-controller="FolderListCtrl">
+			<input type="text" ng-model="query">
+			<ul>
+				<li ng-repeat="folder in folders | filter:query"><a ng-href="#/{{folder.id}}">{{folder.id}}</a></li>
+			</ul>
+		</aside>
 		
-		<iframe src="javascript:''" id="__gwt_historyFrame"
-			style="width: 0; height: 0; border: 0"> </iframe>
-	
-		<div id="webmail_root"></div>	
+		<section ng-controller="MailOverviewCtrl">
+			<table>
+				<thead>					
+					<tr>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th>Sender</th>
+						<th>Subject</th>
+						<th>Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="mail in mails">
+						<td><input type="checkbox"></td>
+						<td>
+							<img ng-show="mail.starred" src="resources/images/starred.gif">
+							<img ng-hide="mail.starred" src="resources/images/unstarred.gif">
+						</td>
+						<td>
+							<img ng-show="showIcon(mail)" src="resources/images/{{whichIcon(mail)}}.png">
+						</td>
+						<td>
+							<img ng-show="mail.attachments.length > 0" src="resources/images/paperclip.gif">
+						</td>
+						<td ng-class="!mail.read ? 'bold' : ''">{{mail.sender.email}}</td>
+						<td ng-class="!mail.read ? 'bold' : ''">{{mail.subject}}</td>
+						<td ng-class="!mail.read ? 'bold' : ''">{{mail.date | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
 	</body>
 </html>

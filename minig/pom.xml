@@ -21,28 +21,6 @@
 		<build>
 		<plugins>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>gwt-maven-plugin</artifactId>
-				<version>2.5.1</version>
-				<configuration>
-					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-					<disableCastChecking>true</disableCastChecking>
-					<draftCompile>false</draftCompile>
-					<strict>false</strict>
-					<logLevel>TRACE</logLevel>
-					<module>fr.aliasource.webmail.WebmailUI</module>
-					<disableClassMetadata>true</disableClassMetadata>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-							<goal>test</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.1.1</version>
 				<configuration>
@@ -96,6 +74,22 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+			    <groupId>com.kelveden</groupId>
+			    <artifactId>maven-karma-plugin</artifactId>
+			    <version>1.0</version>
+			    <executions>
+			        <execution>
+			            <goals>
+			                <goal>start</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			    <configuration>
+			    	<configFile>src/test/resources</configFile>
+			        <browsers>PhantomJS</browsers>
+			    </configuration>
 			</plugin>
 		</plugins>
 	</build>
