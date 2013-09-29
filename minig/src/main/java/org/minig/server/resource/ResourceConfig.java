@@ -22,22 +22,22 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Profile({ "test", "prod" })
 public class ResourceConfig extends WebMvcConfigurerAdapter {
 
-	@Override
-	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-		configurer.defaultContentType(MediaType.APPLICATION_JSON).ignoreAcceptHeader(true).useJaf(false).favorPathExtension(false);
-	}
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+        configurer.defaultContentType(MediaType.APPLICATION_JSON).ignoreAcceptHeader(true).useJaf(false).favorPathExtension(false);
+    }
 
-	@Override
-	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-		argumentResolvers.add(new StringIdHandlerMethodArgumentResolver());
-		argumentResolvers.add(new CompositeIdHandlerMethodArgumentResolver());
-	}
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(new StringIdHandlerMethodArgumentResolver());
+        argumentResolvers.add(new CompositeIdHandlerMethodArgumentResolver());
+    }
 
-	@Bean(name = "multipartResolver")
-	public MultipartResolver getMultipartResolver() {
-		CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-		// multipartResolver.setMaxUploadSize(100000);
-		return multipartResolver;
-	}
+    @Bean(name = "multipartResolver")
+    public MultipartResolver getMultipartResolver() {
+        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+        // multipartResolver.setMaxUploadSize(100000);
+        return multipartResolver;
+    }
 
 }

@@ -20,6 +20,8 @@
     </security:authentication-manager>
     
     <security:http pattern='/login' security="none"/>
+    <security:http pattern='/api/api-docs/**' security="none"/>
+    <security:http pattern='/swagger-ui/**' security="none"/>
 	<security:http pattern='/assets/**' security="none"/>
 	<security:http pattern='/minig/images/**' security="none"/>
 	
