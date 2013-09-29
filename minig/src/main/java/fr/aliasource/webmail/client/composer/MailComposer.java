@@ -420,21 +420,10 @@ public class MailComposer extends DockPanel {
     }
 
     protected void discard(boolean switchTab) {
-        final IClientMessage cm = clearComposer();
+        clearComposer();
         if (switchTab) {
             ui.selectTab(View.CONVERSATIONS);
         }
-        notifyUndoDiscard(switchTab, cm);
-    }
-
-    private void notifyUndoDiscard(boolean switchTab, final IClientMessage cm) {
-        final HorizontalPanel notif = new HorizontalPanel();
-        notif.setSpacing(2);
-        notif.add(new Label(I18N.strings.messageDiscarded()));
-        Anchor undo = new Anchor(I18N.strings.undoDiscard());
-        undo.addClickHandler(undoDiscardListener(cm, notif, switchTab));
-        notif.add(undo);
-        ui.notifyUser(notif, 15);
     }
 
     public void focusComposer() {
