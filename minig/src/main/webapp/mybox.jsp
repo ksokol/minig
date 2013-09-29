@@ -86,7 +86,15 @@
 						<td ng-class="!mail.read ? 'bold' : ''">{{mail.date | date:'yyyy-MM-dd HH:mm:ss'}}</td>
 					</tr>
 				</tbody>
-			</table>
+				<tfoot>
+					<tr>
+						<td colspan="7">
+							<button ng-disabled="currentPage == 1" ng-click="previousPage()">previous</button>
+							<button ng-disabled="isLastPage" ng-click="nextPage()">next</button>
+						</td>
+					</tr>
+				</tfoot>
+			</table>			
 		</section>
 	</body>
 </html>
