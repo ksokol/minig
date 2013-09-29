@@ -22,7 +22,7 @@ public class LabelPresenter {
         this.f = f;
         this.idx = idx;
         this.rowFormatter = rowFormatter;
-        defaultText = f.getName();
+        defaultText = f.getId();
         createLink();
     }
 
