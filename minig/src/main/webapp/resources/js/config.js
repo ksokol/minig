@@ -1,4 +1,5 @@
-var app = angular.module("minigApp", []);
+var app = angular.module("minigApp", [])
+.constant('API_HOME', 'api/1/');
 
 app.config(function($httpProvider) {
 
@@ -16,4 +17,3 @@ app.config(function($httpProvider) {
     });
 
 });
-

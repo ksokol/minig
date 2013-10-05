@@ -1,8 +1,7 @@
        
-function FolderListCtrl($scope, $http) {
-	
-	//TODO service
-	$http.get('api/1/folder').success(function(data) {
+function FolderListCtrl($scope, mailService) {
+		
+	mailService.getFolder().success(function(data) {
 		$scope.folders = data.folderList;
 	});
 	
@@ -12,7 +11,7 @@ function FolderListCtrl($scope, $http) {
 }
 
 //TODO remove hardcoded stuff
-function MailOverviewCtrl($scope, $http, $window, $location) {
+function MailOverviewCtrl($scope, $window, $location, mailService) {
 	//TODO
 	$scope.currentFolder = "INBOX";
 	$scope.currentPage = 1;
@@ -42,8 +41,12 @@ function MailOverviewCtrl($scope, $http, $window, $location) {
 		var hash = $window.location.hash;		
 		$scope.currentFolder = (hash.length == 0) ? "INBOX" : hash.substring(2);
 	    
-		//TODO service
-		$http.get('api/1/message?page_length=' + $scope.pageLength + '&folder='+ $scope.currentFolder).success(function(data) {
+		mailService.getMailbox({
+			folder: $scope.currentFolder, 
+			page: $scope.currentPage, 
+			page_length: $scope.pageLength
+		})
+		.success(function(data) {
 			$scope.mails = data.mailList;
 			$scope.setPager(data);			
 		});
@@ -52,8 +55,12 @@ function MailOverviewCtrl($scope, $http, $window, $location) {
 	$scope.firstPage = function() {
 		$scope.currentPage = 1;
 		
-		//TODO service
-		$http.get('api/1/message?page_length=' + $scope.pageLength + '&folder='+ $scope.currentFolder+ "&page="+ $scope.currentPage).success(function(data) {
+		mailService.getMailbox({
+			folder: $scope.currentFolder, 
+			page: $scope.currentPage, 
+			page_length: $scope.pageLength
+		})
+		.success(function(data) {
 			$scope.mails = data.mailList;
 			$scope.setPager(data);
 		});			
@@ -62,8 +69,12 @@ function MailOverviewCtrl($scope, $http, $window, $location) {
 	$scope.lastPage = function() {
 		$scope.currentPage = $scope.pages;
 		
-		//TODO service
-		$http.get('api/1/message?page_length=' + $scope.pageLength + '&folder='+ $scope.currentFolder+ "&page="+ $scope.currentPage).success(function(data) {
+		mailService.getMailbox({
+			folder: $scope.currentFolder, 
+			page: $scope.currentPage, 
+			page_length: $scope.pageLength
+		})
+		.success(function(data) {
 			$scope.mails = data.mailList;
 			$scope.setPager(data);
 		});			
@@ -72,8 +83,12 @@ function MailOverviewCtrl($scope, $http, $window, $location) {
 	$scope.nextPage = function() {
 		$scope.currentPage = $scope.currentPage+1;
 		
-		//TODO service
-		$http.get('api/1/message?page_length=' + $scope.pageLength + '&folder='+ $scope.currentFolder+ "&page="+ $scope.currentPage).success(function(data) {
+		mailService.getMailbox({
+			folder: $scope.currentFolder, 
+			page: $scope.currentPage, 
+			page_length: $scope.pageLength
+		})
+		.success(function(data) {
 			$scope.mails = data.mailList;
 			$scope.setPager(data);
 		});			
@@ -82,10 +97,14 @@ function MailOverviewCtrl($scope, $http, $window, $location) {
 	$scope.previousPage = function() {
 		$scope.currentPage = $scope.currentPage-1;
 				
-		//TODO service
-		$http.get('api/1/message?page_length=' + $scope.pageLength + '&folder='+ $scope.currentFolder+ "&page="+ $scope.currentPage).success(function(data) {
+		mailService.getMailbox({
+			folder: $scope.currentFolder, 
+			page: $scope.currentPage, 
+			page_length: $scope.pageLength
+		})
+		.success(function(data) {
 			$scope.mails = data.mailList;
-			$setPager(data);
+			$scope.setPager(data);
 		});			
 	}
 	
