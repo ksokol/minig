@@ -6,7 +6,7 @@
 	
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	
-	
+	    <link rel="icon" type="image/gif" href="resources/images/favicon.ico">
 		<!-- TODO -->
 		<link type="text/css" href="assets/minig.css" rel="stylesheet">
 	
@@ -23,7 +23,7 @@
 								<tbody>
 									<tr>
 										<td align="center" style="vertical-align: top;" colspan="1">
-											<img src="minig/images/logo_minig_big.png" class="gwt-Image"></td>
+											<img src="resources/images/logo_minig_big.png" class="gwt-Image"></td>
 									</tr>
 									<tr>
 										<td width="" align="center" height=""

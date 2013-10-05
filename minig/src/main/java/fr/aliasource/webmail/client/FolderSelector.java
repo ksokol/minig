@@ -30,54 +30,52 @@ import fr.aliasource.webmail.client.test.BeanFactory;
  */
 public class FolderSelector {
 
-	private List<IFolderSelectionListener> listeners;
-	private IFolder current;
-	private List<IFolder> subscribed;
+    private List<IFolderSelectionListener> listeners;
+    private IFolder current;
+    private List<IFolder> subscribed;
 
-	public FolderSelector() {
-		listeners = new LinkedList<IFolderSelectionListener>();
+    public FolderSelector() {
+        listeners = new LinkedList<IFolderSelectionListener>();
 
-		// TODO
-		IFolder folder = BeanFactory.instance.folder().as();
-		folder.setName("INBOX");
-		folder.setId("INBOX");
+        // TODO
+        IFolder folder = BeanFactory.instance.folder().as();
+        folder.setName("INBOX");
+        folder.setId("INBOX");
 
-		current = folder; // new Folder("INBOX", I18N.strings.inbox());
+        current = folder; // new Folder("INBOX", I18N.strings.inbox());
 
-		ListSubFoldersCommand lsfc = new ListSubFoldersCommand();
-		lsfc.execute();
-	}
+    }
 
-	public void addListener(IFolderSelectionListener fsl) {
-		listeners.add(fsl);
-		if (subscribed != null) {
-			fsl.foldersChanged(subscribed);
-		}
-	}
+    public void addListener(IFolderSelectionListener fsl) {
+        listeners.add(fsl);
+        if (subscribed != null) {
+            fsl.foldersChanged(subscribed);
+        }
+    }
 
-	public void removeListener(IFolderSelectionListener fsl) {
-		listeners.remove(fsl);
-	}
+    public void removeListener(IFolderSelectionListener fsl) {
+        listeners.remove(fsl);
+    }
 
-	private void notifyListeners(IFolder f) {
-		for (IFolderSelectionListener l : listeners) {
-			l.folderSelected(f);
-		}
-	}
+    private void notifyListeners(IFolder f) {
+        for (IFolderSelectionListener l : listeners) {
+            l.folderSelected(f);
+        }
+    }
 
-	public void setFolders(List<IFolder> folders) {
-		this.subscribed = folders;
-		for (IFolderSelectionListener l : listeners) {
-			l.foldersChanged(folders);
-		}
-	}
+    public void setFolders(List<IFolder> folders) {
+        this.subscribed = folders;
+        for (IFolderSelectionListener l : listeners) {
+            l.foldersChanged(folders);
+        }
+    }
 
-	public void select(IFolder f) {
-		current = f;
-		notifyListeners(f);
-	}
+    public void select(IFolder f) {
+        current = f;
+        notifyListeners(f);
+    }
 
-	public IFolder getCurrent() {
-		return current;
-	}
+    public IFolder getCurrent() {
+        return current;
+    }
 }

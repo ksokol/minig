@@ -61,7 +61,6 @@ public class View extends DockPanel implements IFolderSelectionListener {
     private MailComposer composer;
     private SettingsPanel settingsPanel;
     private HorizontalPanel statusPanel;
-    private SideBar sidebar;
     private IFolder currentFolder;
     private int currentTab;
     private Spinner spinner;
@@ -90,8 +89,6 @@ public class View extends DockPanel implements IFolderSelectionListener {
         add(statusPanel, DockPanel.NORTH);
         setCellHeight(statusPanel, "1.4em");
 
-        sidebar = new SideBar(this);
-        add(sidebar, DockPanel.WEST);
         setCellWidth(tp.getDeckPanel(), "100%");
 
         fetchMessages("INBOX", 1);
@@ -276,10 +273,6 @@ public class View extends DockPanel implements IFolderSelectionListener {
 
     public MailComposer getComposer() {
         return this.composer;
-    }
-
-    public SideBar getSidebar() {
-        return sidebar;
     }
 
     private void setWindowTitle(String s) {

@@ -21,7 +21,8 @@
     
     <security:http pattern='/login' security="none"/>
 	<security:http pattern='/assets/**' security="none"/>
-	<security:http pattern='/minig/images/**' security="none"/>
+	<security:http pattern='/resources/**' security="none"/>
+	<security:http pattern='/favicon.ico' security="none"/>
 	
 	<security:http pattern='/api/**'>
 	    <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"  />	
@@ -30,15 +31,11 @@
   
   	<security:http pattern="/**">
   		<security:custom-filter before="FILTER_SECURITY_INTERCEPTOR" ref="myExceptionTranslationFilter"/>
-		<security:intercept-url pattern="/**" access="ROLE_USER"  />						<!-- TODO -->
-		<security:form-login login-processing-url="/j_spring_security_check" authentication-success-handler-ref="customAuthenticationSuccessHandler" authentication-failure-url="/login?login=failed" />
+		<security:intercept-url pattern="/**" access="ROLE_USER"  />
+		<security:form-login default-target-url="/mybox" login-processing-url="/j_spring_security_check" authentication-failure-url="/login?login=failed" />
 		<security:logout logout-success-url="/login" logout-url="/j_spring_security_logout" />
 	</security:http>
-	
-  	<bean id="customAuthenticationSuccessHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
-  	    <property name="defaultTargetUrl" value="/mybox" />
-  	</bean>
-  	
+
 	<bean id="loginUrlAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
 		<constructor-arg name="loginFormUrl" value="/login" />
 	</bean>

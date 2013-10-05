@@ -72,7 +72,7 @@ public class MailSender {
                     ui.notifyUser(smn, 20);
                     IFolder folderName = WebmailController.get().getSelector().getCurrent();
                     ui.setCurrentFolder(folderName);
-                    ui.getSidebar().setCurrentDefaultLinkStyle(ui.getSidebar().defaultLinks.get(folderName));
+
                     ui.fetchMessages(folderName.getId(), 1);
                 }
 
@@ -124,7 +124,7 @@ public class MailSender {
                     ui.notifyUser(smn, 20);
                     IFolder folderName = WebmailController.get().getSelector().getCurrent();
                     ui.setCurrentFolder(folderName);
-                    ui.getSidebar().setCurrentDefaultLinkStyle(ui.getSidebar().defaultLinks.get(folderName));
+
                     ui.fetchMessages(folderName.getId(), 1);
                 }
 

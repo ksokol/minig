@@ -254,7 +254,6 @@ public class MailComposer extends DockPanel {
             }
         }
 
-        ui.getSidebar().setCurrentDefaultLinkStyle(ui.getSidebar().defaultLinks.get(I18N.strings.compose()));
     }
 
     public void sendMessage(final IQuickReplyListener listener) {

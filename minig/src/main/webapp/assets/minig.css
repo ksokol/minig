@@ -320,10 +320,9 @@ html>body .gwt-DialogBox .dialogBottomRight {
 }
 
 .gwt-DisclosurePanel .header,.gwt-DisclosurePanel .header a,.gwt-DisclosurePanel .header td
-	{
+{
 	text-decoration: none; /* Remove underline from header */
 	color: white;
-	cursor: pointer;
 	cursor: hand;
 	text-transform: uppercase;
 	font-weight: bolder;
@@ -1439,7 +1438,7 @@ html>body .gwt-DecoratedTabBar .gwt-TabBarItem-selected .tabTopRight {
 
 .heading {
 	background: url("images/head_bg.png") top repeat-x #4f9bbc;
-	height: 25px;
+	height: 27px;
 	line-height: 1.2em;
 	margin-bottom: 1em;
 	color: #fff;
@@ -1786,7 +1785,7 @@ html>body .dataGrid {
 .leftPanel {
 	padding-left: 5px;
 	padding-right: 5px;
-	width: 14em;
+	
 }
 
 .leftPanel table {
