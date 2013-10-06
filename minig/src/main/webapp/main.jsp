@@ -29,7 +29,8 @@
 												<tbody>
 													<tr ng-repeat="mail in mails">
 														<td class="convCb">
-															<span class="gwt-CheckBox"><input type="checkbox" value="on" id="gwt-uid-284" tabindex="0">
+															<span class="gwt-CheckBox">
+																<input type="checkbox" value="on" id="gwt-uid-284" tabindex="0" ng-model="mail.selected" ng-change="checkSelection()">
 																<label for="gwt-uid-284"></label>
 															</span>
 														</td>

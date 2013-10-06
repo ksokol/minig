@@ -7,8 +7,7 @@
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	
 	    <link rel="icon" type="image/gif" href="resources/images/favicon.ico">
-		<!-- TODO -->
-		<link type="text/css" href="assets/minig.css" rel="stylesheet">
+		<link type="text/css" href="resources/css/minig.css" rel="stylesheet">
 	
 		<title>MiniG</title>
 	</head>

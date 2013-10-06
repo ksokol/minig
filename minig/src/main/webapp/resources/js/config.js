@@ -1,4 +1,4 @@
-var app = angular.module("minigApp", [])
+var app = angular.module("minigApp", ['ngResource'])
 .constant('API_HOME', 'api/1/');
 
 app.config(function($httpProvider) {

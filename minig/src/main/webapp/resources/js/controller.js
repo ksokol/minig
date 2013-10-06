@@ -1,8 +1,8 @@
        
-function FolderListCtrl($scope, mailService) {
-		
-	mailService.getFolder().success(function(data) {
-		$scope.folders = data.folderList;
+function FolderListCtrl($scope, FolderResource) {
+	
+	FolderResource.findAll().$promise.then(function(folders) {
+		$scope.folders = folders;		
 	});
 	
 	$scope.reset = function() {
@@ -10,102 +10,71 @@ function FolderListCtrl($scope, mailService) {
 	}
 }
 
-//TODO remove hardcoded stuff
-function MailOverviewCtrl($scope, $window, $location, mailService) {
-	//TODO
+function MailOverviewCtrl($scope, $window, $location, MailResource) {
+	//TODO: INBOX shouldn't be hardcoded
 	$scope.currentFolder = "INBOX";
-	$scope.currentPage = 1;
-	$scope.pages = 1;
-	$scope.pageLength = 20;
-	$scope.fullLength = 0;
+	$scope.selected = [];
 	
-	$scope.setPager = function (pager) {
-		var length = pager.fullLength;
-		
-		$scope.currentPage = pager.page;
-		$scope.fullLength = pager.fullLength;
-		$scope.pages = parseInt(length / $scope.pageLength) + ((length % $scope.pageLength !== 0) ? 1 : 0);
+	$scope.pager = {
+		currentPage : 1,
+		pages: 1,
+		length: 20,
+		fullLength: 0
+	};
+	
+	function _findMailByFolder() {		
+		MailResource.findByFolder({
+			folder: $scope.currentFolder, 
+			page: $scope.pager.currentPage
+		}).$promise
+		.then(function(data) {
+			$scope.mails = data.mails;
+			$scope.pager = data.pagination;		
+		});
 	}
-	
-	$scope.pageStatus = function() {		
-		var start = ($scope.currentPage === 1) ? 1 : ($scope.currentPage -1) * $scope.pageLength;
-		var mul = $scope.currentPage * $scope.pageLength;
-		var end = (mul > $scope.fullLength) ? $scope.fullLength : mul;
-		
-		var status = start + " - "  + end + " of " +$scope.fullLength;
-		
-		return status;
+
+	function getSelectedMails() {
+		var selected = [];
+
+		angular.forEach($scope.mails, function(mail) {
+			if(mail.selected === true) {
+				selected.push(mail);
+			}
+		});
+
+		return selected;
+	}
+
+	function selectAll(flag) {
+		angular.forEach($scope.mails, function(mail) {
+			mail.selected = flag;
+		});
 	}
 	
 	$scope.$on('$locationChangeSuccess', function(event) {
 		var hash = $window.location.hash;		
-		$scope.currentFolder = (hash.length == 0) ? "INBOX" : hash.substring(2);
-	    
-		mailService.getMailbox({
-			folder: $scope.currentFolder, 
-			page: $scope.currentPage, 
-			page_length: $scope.pageLength
-		})
-		.success(function(data) {
-			$scope.mails = data.mailList;
-			$scope.setPager(data);			
-		});
+		$scope.currentFolder = (hash.length == 0) ? $scope.currentFolder : hash.substring(2);		
+		_findMailByFolder();
 	});
 	
 	$scope.firstPage = function() {
-		$scope.currentPage = 1;
-		
-		mailService.getMailbox({
-			folder: $scope.currentFolder, 
-			page: $scope.currentPage, 
-			page_length: $scope.pageLength
-		})
-		.success(function(data) {
-			$scope.mails = data.mailList;
-			$scope.setPager(data);
-		});			
+		$scope.pager.currentPage = 1;		
+		_findMailByFolder();		
 	}
 	
 	$scope.lastPage = function() {
-		$scope.currentPage = $scope.pages;
-		
-		mailService.getMailbox({
-			folder: $scope.currentFolder, 
-			page: $scope.currentPage, 
-			page_length: $scope.pageLength
-		})
-		.success(function(data) {
-			$scope.mails = data.mailList;
-			$scope.setPager(data);
-		});			
+		$scope.pager.currentPage = $scope.pager.pages;		
+		_findMailByFolder();		
 	}
 	
 	$scope.nextPage = function() {
-		$scope.currentPage = $scope.currentPage+1;
-		
-		mailService.getMailbox({
-			folder: $scope.currentFolder, 
-			page: $scope.currentPage, 
-			page_length: $scope.pageLength
-		})
-		.success(function(data) {
-			$scope.mails = data.mailList;
-			$scope.setPager(data);
-		});			
+		$scope.pager.currentPage = $scope.pager.currentPage+1;		
+		_findMailByFolder();		
 	}
 	
 	$scope.previousPage = function() {
-		$scope.currentPage = $scope.currentPage-1;
-				
-		mailService.getMailbox({
-			folder: $scope.currentFolder, 
-			page: $scope.currentPage, 
-			page_length: $scope.pageLength
-		})
-		.success(function(data) {
-			$scope.mails = data.mailList;
-			$scope.setPager(data);
-		});			
+		$scope.pager.currentPage = $scope.pager.currentPage-1		
+		_findMailByFolder();	
 	}
 	
 	$scope.showIcon = function(mail) {
@@ -113,11 +82,11 @@ function MailOverviewCtrl($scope, $window, $location, mailService) {
 	}
 	
 	$scope.isFirstPage = function() {
-		return $scope.currentPage === 1 ;
+		return $scope.pager.currentPage === 1 ;
 	}
 	
 	$scope.isLastPage = function() {
-		return $scope.currentPage === $scope.pages;
+		return $scope.pager.currentPage === $scope.pager.pages;
 	}
 	
 	$scope.whichIcon = function(mail) {
@@ -128,5 +97,32 @@ function MailOverviewCtrl($scope, $window, $location, mailService) {
 		} else {
 			return "forwarded"
 		}
+	}
+
+	$scope.selectAll = function() {
+		selectAll(true);
+	}
+	
+	$scope.selectNone = function() {
+		selectAll(false);
+	}
+	
+	$scope.hasMailSelected = function() {
+		return getSelectedMails().length === 0;
+	}
+	
+	$scope.deleteMails = function() {
+		var selectedMails = getSelectedMails();
+
+		MailResource.deleteMails(selectedMails).$promise
+		.then(function() {
+			_findMailByFolder();			
+		});
+	}
+	
+	
+	
+	$scope.moveTo = function() {
+		console.log("move");
 	}
 }

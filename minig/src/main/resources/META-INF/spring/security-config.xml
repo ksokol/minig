@@ -20,7 +20,6 @@
     </security:authentication-manager>
     
     <security:http pattern='/login' security="none"/>
-	<security:http pattern='/assets/**' security="none"/>
 	<security:http pattern='/resources/**' security="none"/>
 	<security:http pattern='/favicon.ico' security="none"/>
 	
