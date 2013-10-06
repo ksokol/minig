@@ -8,7 +8,7 @@ app.factory('FolderResource', function($resource, API_HOME) {
 		return json.folderList;
 	}
 	
-	folderResource.findAll = function() {		
+	folderResource.findAll = function() {
 		return folderResource._findAll();
 	}
 	

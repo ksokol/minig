@@ -10,9 +10,9 @@ function FolderListCtrl($scope, FolderResource) {
 	}
 }
 
-function MailOverviewCtrl($scope, $window, $location, MailResource) {
-	//TODO: INBOX shouldn't be hardcoded
-	$scope.currentFolder = "INBOX";
+function MailOverviewCtrl($scope, $window, $location, MailResource, INITIAL_MAILBOX) {
+
+	$scope.currentFolder = INITIAL_MAILBOX;
 	$scope.selected = [];
 	
 	$scope.pager = {
@@ -22,7 +22,7 @@ function MailOverviewCtrl($scope, $window, $location, MailResource) {
 		fullLength: 0
 	};
 	
-	function _findMailByFolder() {		
+	function _findMailByFolder() {
 		MailResource.findByFolder({
 			folder: $scope.currentFolder, 
 			page: $scope.pager.currentPage
@@ -52,8 +52,14 @@ function MailOverviewCtrl($scope, $window, $location, MailResource) {
 	}
 	
 	$scope.$on('$locationChangeSuccess', function(event) {
-		var hash = $window.location.hash;		
-		$scope.currentFolder = (hash.length == 0) ? $scope.currentFolder : hash.substring(2);		
+		//TODO is there a better way?
+		var hash = ($window.location.hash.length !== 0) ? $window.location.hash.substring(2) : INITIAL_MAILBOX;
+		
+		if($scope.currentFolder !== hash) {
+			$scope.pager.currentPage= 1;
+			$scope.currentFolder = hash;
+		}
+
 		_findMailByFolder();
 	});
 	

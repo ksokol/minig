@@ -1,5 +1,6 @@
 var app = angular.module("minigApp", ['ngResource'])
-.constant('API_HOME', 'api/1/');
+.constant('API_HOME', 'api/1/')
+.constant('INITIAL_MAILBOX', 'INBOX'); //TODO: INBOX shouldn't be hardcoded
 
 app.config(function($httpProvider) {
 
@@ -16,4 +17,12 @@ app.config(function($httpProvider) {
         };
     });
 
+});
+
+app.config(function() {
+	
+	return {
+		initialMailbox : "INBOX"
+	}
+	
 });
