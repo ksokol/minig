@@ -4,12 +4,19 @@ var app = angular.module("minigApp", ['ngResource'])
 
 app.config(function($httpProvider) {
 	
-    $httpProvider.interceptors.push(function($q, $window) {
+    $httpProvider.interceptors.push(function($q, $window, $rootScope, i18nService) {
         return {
             'responseError': function(rejection) {
             	if(rejection.status === 401) {
             		$window.location.reload();
                 }
+            	if(rejection.status >= 500) {
+            		if(typeof rejection.data === 'string') {
+            			$rootScope.$broadcast('error', i18nService.resolve(rejection.data));
+            		} else {
+            			$rootScope.$broadcast('error', i18nService.resolve(rejection.data.message));
+            		}
+            	}
 
         		return $q.reject(rejection);
             }

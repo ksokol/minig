@@ -2562,7 +2562,7 @@ textarea {
 }
 
 .statusPanel {
-	height: 1.5em;
+	height: 1.7em;
 	width: 100%;
 }
 
@@ -2651,4 +2651,7 @@ textarea {
 
 .deleted {
     text-decoration: line-through;
+}
+.notification-error {
+	background-color: #ffa8b6;
 }

@@ -14,7 +14,7 @@
 		<link rel="stylesheet" href="resources/css/minig.css" type="text/css" />
 		
 		<title>MiniG</title>
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.js"></script>
+	 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular-resource.js"></script>
 		<script src="http://momentjs.com/downloads/moment.min.js"></script>
 		
@@ -56,19 +56,18 @@
 							</tbody>
 						</table>
 						<table cellspacing="0" cellpadding="0">
-							<tbody>
-							<%-- 
+							<tbody>							
 								<tr>
 									<td align="left" width="" height="1.4em" style="vertical-align: top;" colspan="2">
-										<table cellspacing="0" cellpadding="0" class="statusPanel">
+										<table notification cellspacing="0" cellpadding="0" class="statusPanel">
 											<tbody>
 												<tr>
 													<td align="center" style="vertical-align: top;">
-														<table cellspacing="3" cellpadding="0" class="notificationMessage">
+														<table  style="display:none;" cellspacing="3" cellpadding="0" class="notificationMessage">
 															<tbody>
 																<tr>
 																	<td align="left" style="vertical-align: top;">
-																		<div class="gwt-Label">Draft saved</div>
+																		<div id="notification-label" class="gwt-Label"></div>
 																	</td>
 																</tr>
 															</tbody>
@@ -79,7 +78,7 @@
 										</table>
 									</td>
 								</tr>
---%>
+
 
 <tr>
 <td align="left" width="22%" height="" style="vertical-align: top;" rowspan="1">

@@ -2,7 +2,7 @@
 function FolderListCtrl($scope, FolderResource) {
 	
 	FolderResource.findAll().$promise.then(function(folders) {
-		$scope.folders = folders;		
+		$scope.folders = folders;
 	});
 	
 	$scope.reset = function() {
@@ -10,7 +10,7 @@ function FolderListCtrl($scope, FolderResource) {
 	}
 }
 
-function MailOverviewCtrl($scope, $window, $location, MailResource, INITIAL_MAILBOX) {
+function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, i18nService, INITIAL_MAILBOX) {
 
 	$scope.currentFolder = INITIAL_MAILBOX;
 	$scope.selected = [];
@@ -122,6 +122,7 @@ function MailOverviewCtrl($scope, $window, $location, MailResource, INITIAL_MAIL
 
 		MailResource.deleteMails(selectedMails).$promise
 		.then(function() {
+			$rootScope.$broadcast('notification', i18nService.resolve("Message(s) deleted"));
 			_findMailByFolder();			
 		});
 	}

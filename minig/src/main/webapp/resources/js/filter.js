@@ -13,3 +13,10 @@ app.filter('timeago', function(timeService) {
 		}
 	}
 });
+
+app.filter('i18n', function(i18nService) {
+	
+	return function(text) {
+		return i18nService.resolve(text);
+	}
+});

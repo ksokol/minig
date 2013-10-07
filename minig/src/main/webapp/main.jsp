@@ -24,7 +24,7 @@
 													<col>
 													<col>
 													<col>
-													<col>
+													<col width="80px">
 												</colgroup>
 												<tbody>
 													<tr ng-repeat="mail in mails">
