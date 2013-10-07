@@ -34,7 +34,7 @@
 																<label for="gwt-uid-284"></label>
 															</span>
 														</td>
-														<td class="convStar">
+														<td class="convStar" ng-click="clickStar()">
 															<img ng-show="mail.starred" src="resources/images/starred.gif">
 															<img ng-hide="mail.starred" src="resources/images/unstarred.gif">
 														</td>

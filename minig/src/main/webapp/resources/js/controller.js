@@ -127,6 +127,16 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
 		});
 	}
 	
+	$scope.clickStar = function() {
+		var mail = this.mail;		
+		mail.starred = !mail.starred;
+		
+		MailResource.updateFlags(this.mail).$promise
+		.catch(function() {
+			mail.starred = !mail.starred;
+		});
+	}
+	
 	
 	
 	$scope.moveTo = function() {

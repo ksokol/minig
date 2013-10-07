@@ -23,7 +23,8 @@ app.factory('MailResource', function($resource, API_HOME) {
 	
 	var messageDelete = $resource(API_HOME+'message/delete', {}, {deleteMails: {method: 'PUT', isArray:true, transformRequest: _transMessageDelete }});
 	var messageByFolder = $resource(API_HOME+'message?folder=:folder', defaults, {findByFolder: {method: 'GET', transformResponse: _transMessageByFolder}});
-		
+	var messageUpdateFlag = $resource(API_HOME+'message/flag', {}, {updateFlags: {method: 'PUT', transformRequest: _transMessageUpdateFlags}});
+
 	function _transMessageDelete(mails) {
 		var idList = [];
 		
@@ -55,9 +56,21 @@ app.factory('MailResource', function($resource, API_HOME) {
 		} catch(e) {}
 	}
 	
+	function _transMessageUpdateFlags(mail) {
+		var toSend = [];		
+		var copy = angular.copy(mail, {});
+		
+		delete copy.body;
+		delete copy.sender;
+		
+		toSend.push(copy);
+		return angular.toJson({mailList: toSend});
+	}
+	
 	return {
 		findByFolder: messageByFolder.findByFolder,
-		deleteMails: messageDelete.deleteMails
+		deleteMails: messageDelete.deleteMails,
+		updateFlags: messageUpdateFlag.updateFlags
 	};
 	
 });
