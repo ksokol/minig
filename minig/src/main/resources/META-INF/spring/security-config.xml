@@ -24,10 +24,11 @@
 	<security:http pattern='/favicon.ico' security="none"/>
 	
 	<security:http pattern='/api/**'>
+	    <security:custom-filter before="FILTER_SECURITY_INTERCEPTOR" ref="myExceptionTranslationFilter"/>
 	    <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"  />	
-	    <security:http-basic />
+	    <security:http-basic /> 
 	</security:http>
-  
+	  
   	<security:http pattern="/**">
   		<security:custom-filter before="FILTER_SECURITY_INTERCEPTOR" ref="myExceptionTranslationFilter"/>
 		<security:intercept-url pattern="/**" access="ROLE_USER"  />

@@ -4,8 +4,10 @@ app.factory('FolderResource', function($resource, API_HOME) {
 	var folderResource =  $resource(API_HOME + 'folder/:id', {}, {_findAll : {method: 'GET', isArray: true, transformResponse: _transFindAll}});
 	
 	function _transFindAll(data) {
-		var json = angular.fromJson(data);
-		return json.folderList;
+		try {
+			var json = angular.fromJson(data);
+			return json.folderList;
+		} catch(e) {}
 	}
 	
 	folderResource.findAll = function() {
@@ -32,23 +34,25 @@ app.factory('MailResource', function($resource, API_HOME) {
 		return angular.toJson({messageIdList : idList });
 	}
 	
-	function _transMessageByFolder(data, headersGetter) {		
-		var json = angular.fromJson(data);
-		var pagination = {};
-		
-		pagination.currentPage = json.page;
-		pagination.pageLength = defaults.page_length;
-		pagination.fullLength = json.fullLength;
-		pagination.pages = parseInt(pagination.fullLength / pagination.pageLength) + ((defaults.page_length % json.pageLength !== 0) ? 1 : 0);
-		
-		var start = (pagination.currentPage === 1) ? 1 : (pagination.currentPage -1) * pagination.pageLength;
-		var mul = pagination.currentPage * pagination.pageLength;
-		var end = (mul > pagination.fullLength) ? pagination.fullLength : mul;
-		
-		pagination.start = start;
-		pagination.end = end;
-		
-		return {pagination: pagination, mails: json.mailList};
+	function _transMessageByFolder(data, headersGetter) {
+		try {
+			var json = angular.fromJson(data);
+			var pagination = {};
+			
+			pagination.currentPage = json.page;
+			pagination.pageLength = defaults.page_length;
+			pagination.fullLength = json.fullLength;
+			pagination.pages = parseInt(pagination.fullLength / pagination.pageLength) + ((defaults.page_length % json.pageLength !== 0) ? 1 : 0);
+			
+			var start = (pagination.currentPage === 1) ? 1 : (pagination.currentPage -1) * pagination.pageLength;
+			var mul = pagination.currentPage * pagination.pageLength;
+			var end = (mul > pagination.fullLength) ? pagination.fullLength : mul;
+			
+			pagination.start = start;
+			pagination.end = end;
+			
+			return {pagination: pagination, mails: json.mailList};
+		} catch(e) {}
 	}
 	
 	return {
