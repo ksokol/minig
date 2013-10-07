@@ -55,10 +55,32 @@
 								</tr>
 							</tbody>
 						</table>
+						<table cellspacing="0" cellpadding="0">
+							<tbody>
+							<%-- 
+								<tr>
+									<td align="left" width="" height="1.4em" style="vertical-align: top;" colspan="2">
+										<table cellspacing="0" cellpadding="0" class="statusPanel">
+											<tbody>
+												<tr>
+													<td align="center" style="vertical-align: top;">
+														<table cellspacing="3" cellpadding="0" class="notificationMessage">
+															<tbody>
+																<tr>
+																	<td align="left" style="vertical-align: top;">
+																		<div class="gwt-Label">Draft saved</div>
+																	</td>
+																</tr>
+															</tbody>
+														</table>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</td>
+								</tr>
+--%>
 
-
-<table cellspacing="0" cellpadding="0">
-<tbody>
 <tr>
 <td align="left" width="22%" height="" style="vertical-align: top;" rowspan="1">
 
