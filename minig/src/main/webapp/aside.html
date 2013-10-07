@@ -84,7 +84,7 @@
 																	<col width="20px">
 																</colgroup>
 																<tbody>																
-																	<tr ng-repeat="folder in folders | filter:query">
+																	<tr ng-repeat="folder in folders | filter:query | subscribed">
 																		<td>
 																			<a class="gwt-Anchor noWrap" href="#/{{folder.id}}" title="{{folder.id}}">{{folder.id}}</a>
 																		</td>

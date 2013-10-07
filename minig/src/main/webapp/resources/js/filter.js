@@ -20,3 +20,18 @@ app.filter('i18n', function(i18nService) {
 		return i18nService.resolve(text);
 	}
 });
+
+app.filter('subscribed', function() {
+	
+	return function(folder) {
+		var filtered = [];
+		
+		angular.forEach(folder, function(folder) {
+			if(folder.subscribed) {
+				filtered.push(folder);
+			}
+		});
+		
+		return filtered;
+	}
+});
