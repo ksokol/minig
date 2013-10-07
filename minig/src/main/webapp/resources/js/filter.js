@@ -35,3 +35,19 @@ app.filter('subscribed', function() {
 		return filtered;
 	}
 });
+
+app.filter('displayName', function(i18nService) {
+	
+	return function(sender) {
+		if(sender) {
+			if(sender && sender.displayName) {
+				return sender.displayName;
+			} else {
+				sender.email;
+			}
+		} else {
+			return i18nService.resolve("undisclosed recipient");
+		}
+		
+	}
+});

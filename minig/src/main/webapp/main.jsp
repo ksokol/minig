@@ -42,7 +42,7 @@
 															<img ng-show="showIcon(mail)" ng-src="resources/images/{{whichIcon(mail)}}.png">
 														</td>
 														<td class="convRecip" ng-class="!mail.read ? 'bold' : ''">
-															<div class="gwt-Label" style="white-space: nowrap;" title="{{mail.sender.email}}">{{mail.sender.email}}</div>
+															<div class="gwt-Label" style="white-space: nowrap;" title="{{mail.sender.email}}">{{mail.sender | displayName}}</div>
 														</td>
 														<td class="conversationAndPreviewCol">
 															<div class="gwt-HTML" style="white-space: nowrap;">
