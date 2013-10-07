@@ -16,8 +16,11 @@
 		<title>MiniG</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular-resource.js"></script>
+		<script src="http://momentjs.com/downloads/moment.min.js"></script>
 		
 		<script src="resources/js/config.js"></script>
+		<script src="resources/js/service.js"></script>
+		<script src="resources/js/filter.js"></script>
 		<script src="resources/js/directive.js"></script>
 		<script src="resources/js/resource.js"></script>
 		<script src="resources/js/controller.js"></script>	

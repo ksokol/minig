@@ -53,7 +53,7 @@
 															<img ng-show="mail.attachments.length > 0" src="resources/images/paperclip.gif">
 														</td>
 														<td class="convDate" ng-class="!mail.read ? 'bold' : ''">
-															<div class="gwt-Label" style="white-space: nowrap;" title="{{mail.date | date:'yyyy-MM-dd HH:mm:ss'}}">{{mail.date | date:'yyyy-MM-dd HH:mm:ss'}}</div>
+															<div class="gwt-Label" style="white-space: nowrap;" title="{{mail.date | date:'yyyy-MM-dd HH:mm:ss'}}">{{mail.date | timeago}}</div>
 														</td>
 													</tr>
 												</tbody>
