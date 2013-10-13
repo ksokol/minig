@@ -62,6 +62,7 @@ app.factory('MailResource', function($resource, API_HOME) {
 		
 		delete copy.body;
 		delete copy.sender;
+		delete copy.selected;
 		
 		toSend.push(copy);
 		return angular.toJson({mailList: toSend});
