@@ -14,6 +14,7 @@
 		<link rel="stylesheet" href="resources/css/minig.css" type="text/css" />
 		
 		<title>MiniG</title>
+		<script src="resources/js/jquery-2.0.3.min.js"></script>
 	 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular-resource.js"></script>
 		<script src="http://momentjs.com/downloads/moment.min.js"></script>

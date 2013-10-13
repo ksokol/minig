@@ -22,13 +22,13 @@
 																<table cellspacing="0" cellpadding="0">
 																	<tbody>
 																		<tr>
-																			<td align="left" style="vertical-align: top;">
+																			<td inline-folder-select align="left" style="vertical-align: top;">
 																				<div tabindex="0"
 																					class="gwt-ToggleButton dropDownArrowButton noWrap"
 																					ng-class="hasMailSelected() ? 'gwt-ToggleButton-up-disabled' : 'gwt-ToggleButton-up' "
 																					role="button">
 																					<input type="text" tabindex="-1" role="presentation" style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;">
-																					<div ng-click="moveTo()" class="html-face">Move to</div>
+																					<div class="html-face">Move to</div>
 																				</div>
 																			</td>
 																			<td align="left"

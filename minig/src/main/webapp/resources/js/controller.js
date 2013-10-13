@@ -114,7 +114,15 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
 	}
 	
 	$scope.hasMailSelected = function() {
-		return getSelectedMails().length === 0;
+		var hasSelection = getSelectedMails().length === 0;
+		
+		if(hasSelection) {
+			$rootScope.$broadcast("mail.selection");
+		} else {
+			$rootScope.$broadcast("mail.noselection");
+		}
+		
+		return hasSelection;
 	}
 	
 	$scope.deleteMails = function() {
@@ -137,9 +145,9 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
 		});
 	}
 	
-	
-	
+	/*
 	$scope.moveTo = function() {
-		console.log("move");
+		$rootScope.$broadcast("");
 	}
+	*/
 }

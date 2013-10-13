@@ -53,3 +53,44 @@ app.directive("notification", function() {
         }
     };
 });
+
+app.directive("inlineFolderSelect", function($http, $document, $window, $compile, MailResource) {
+
+	var body = angular.element($document[0].body);
+
+	
+	return {
+		
+		link: function($scope, element, attrs) {
+
+			 element.bind("click", function() {
+				
+				$http.get("inline-folder-select.html")
+				.success(function(html) {
+					var compiled = $compile(html);
+					
+					var elem = compiled($scope);
+					var overlay = angular.element(elem);
+
+					overlay.bind('click', function() {
+						overlay.remove();
+					});
+
+					body.append(elem);
+					
+					overlay.css('height', $window.innerHeight);
+					overlay.css('width', $window.innerWidth);
+					
+					
+				});
+				
+				
+			 });
+			 
+			 
+			 
+		}
+		
+	}
+	
+});

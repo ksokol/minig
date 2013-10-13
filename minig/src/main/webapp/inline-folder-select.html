@@ -1,0 +1,76 @@
+<div class="bg-overlay" style="top:0px;left:0px; position: absolute; z-index: 9999;">
+<div id="inline-folder-select"
+	style="overflow: visible; position: absolute; left: 304px; top: 87px;"
+	class="gwt-PopupPanel">
+	<div class="popupContent">
+		<table>
+			<colgroup>
+				<col>
+			</colgroup>
+			<tbody>
+				<tr>
+					<td>
+						<table class="whiteBackground" style="width: 100%;" ng-controller="FolderListCtrl">
+							<colgroup>
+								<col>
+							</colgroup>
+							<tbody>
+								<tr>
+									<td colspan="2"><table cellspacing="0" cellpadding="0"
+											class="labelsPanel" style="table-layout: auto;">
+											<tbody>
+												<tr>
+													<td align="left" width="100%" style="vertical-align: top;"><input ng-model="query"
+														type="text" class="gwt-TextBox" style="width: 96%;"></td>
+													<td align="left" style="vertical-align: middle;"><div
+															tabindex="0" class="gwt-CustomButton gwt-CustomButton-up"
+															role="button" style="padding: 2px;" aria-pressed="false">
+															<input type="text" tabindex="-1" role="presentation"
+																style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+																src="resources/images/x.gif" class="gwt-Image">
+														</div></td>
+												</tr>
+											</tbody>
+										</table></td>
+								</tr>
+								<tr>
+									<td colspan="2"><div
+											style="overflow-x: hidden; overflow-y: scroll; position: relative;"
+											class="labelsList">
+											<div style="position: relative;">
+												<table>
+													<colgroup>
+														<col width="20px">
+													</colgroup>
+													<tbody>
+														<tr ng-repeat="folder in folders | filter:query | subscribed">
+															<td>
+																<a class="gwt-Anchor noWrap" href="#/{{folder.id}}" title="{{folder.id}}">{{folder.id}}</a>
+															</td>
+														</tr>
+														<tr>
+															<td height="100%">
+																<div class="gwt-HTML">&nbsp;</div>
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div></td>
+								</tr>
+								<tr>
+									<td colspan="2"><table cellspacing="0" cellpadding="0"
+											class="bottomActions" style="table-layout: auto;">
+											<tbody>
+												<tr></tr>
+											</tbody>
+										</table></td>
+								</tr>
+							</tbody>
+						</table></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+</div>
