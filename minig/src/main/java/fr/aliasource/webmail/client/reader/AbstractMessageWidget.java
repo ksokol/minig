@@ -286,26 +286,23 @@ public abstract class AbstractMessageWidget extends VerticalPanel {
         return vp;
     }
 
-    // FIXME
     protected void createMessage(IClientMessage cm) {
-        String html = cm.getBody().getHtml();
+        // String html = cm.getBody().getHtml();
         String plain = cm.getBody().getPlain();
 
-        if (plain != null) {
-            VerticalPanel vp = showQuotedText(plain);
-            content.add(vp);
-            return;
-        }
+        VerticalPanel vp = showQuotedText(plain);
+        content.add(vp);
 
-        if (html != null) {
-            if (html.contains("<img")) {
-                ma = new MessageActions(cm);
-                content.add(ma);
-            } else {
-                VerticalPanel vp = showQuotedText(html);
-                content.add(vp);
-            }
-        }
+        // don't show any html because inline styles break our layout
+        // if (html != null) {
+        // if (html.contains("<img")) {
+        // ma = new MessageActions(cm);
+        // content.add(ma);
+        // } else {
+        // VerticalPanel vp = showQuotedText(html);
+        // content.add(vp);
+        // }
+        // }
     }
 
     protected FlexTable createMessageDetails(IClientMessage cm, DateFormatter df, RecipientsStyleHandler rsh) {
@@ -371,8 +368,7 @@ public abstract class AbstractMessageWidget extends VerticalPanel {
         return ft;
     }
 
-    protected Widget createHeader(DateFormatter df, RecipientsStyleHandler rsh, IClientMessage cm, boolean isClickable,
-            boolean menuAvailable) {
+    protected Widget createHeader(DateFormatter df, RecipientsStyleHandler rsh, IClientMessage cm, boolean isClickable, boolean menuAvailable) {
         header = new MessageHeader(ui, df, rsh, cm, convDisp, this, isClickable, menuAvailable);
         return header;
     }

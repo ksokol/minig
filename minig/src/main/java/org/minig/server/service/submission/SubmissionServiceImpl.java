@@ -87,6 +87,8 @@ class SubmissionServiceImpl implements SubmissionService {
 
         submission.submit(mime4jMessage);
 
+        mailService.moveMessageToFolder(mime4jMessage.getId(), folderRepository.getSent().getId());
+
         if (forwardedMessage.getId() != null) {
             // mime4jMessage = messageMapper.toMime4jMessage(message);
             MailMessage updateFlag = mailService.findMessage(forwardedMessage);

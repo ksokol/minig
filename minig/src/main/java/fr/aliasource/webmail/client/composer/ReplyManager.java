@@ -119,6 +119,9 @@ public class ReplyManager {
         message.setBcc(null);
         message.setAttachments(null);
 
+        // set html to null in order to trigger plain message part in MinigRichTextArea
+        message.getBody().setHtml(null);
+
         quickReply.loadDraft(message);
         quickReply.focusComposer();
     }

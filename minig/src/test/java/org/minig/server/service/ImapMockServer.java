@@ -22,6 +22,7 @@ import org.springframework.util.Assert;
 
 import com.icegreen.greenmail.imap.ImapHostManager;
 import com.icegreen.greenmail.imap.ImapHostManagerImpl;
+import com.icegreen.greenmail.store.FolderException;
 import com.icegreen.greenmail.store.MailFolder;
 import com.icegreen.greenmail.store.PatchedInMemoryStore;
 import com.icegreen.greenmail.user.GreenMailUser;
@@ -114,6 +115,8 @@ class ImapMockServer implements InitializingBean, DisposableBean, SmtpAndImapMoc
             MailFolder folder = imapHostManager.createMailbox(getUser(), mailBox);
 
             return folder;
+        } catch (FolderException e) {
+            return imapHostManager.getFolder(getUser(), mailBox);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -152,9 +155,8 @@ class ImapMockServer implements InitializingBean, DisposableBean, SmtpAndImapMoc
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.minig.server.service.SmtpAndImapMockServer#prepareMailBox(java.lang
-     * .String, javax.mail.internet.MimeMessage)
+     * @see org.minig.server.service.SmtpAndImapMockServer#prepareMailBox(java.lang .String,
+     * javax.mail.internet.MimeMessage)
      */
     @Override
     public void prepareMailBox(String mailBox, MimeMessage... messages) {
@@ -174,9 +176,7 @@ class ImapMockServer implements InitializingBean, DisposableBean, SmtpAndImapMoc
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.minig.server.service.SmtpAndImapMockServer#prepareMailBox(java.lang
-     * .String, java.util.List)
+     * @see org.minig.server.service.SmtpAndImapMockServer#prepareMailBox(java.lang .String, java.util.List)
      */
     @Override
     public void prepareMailBox(String mailBox, List<MimeMessage> messages) {
@@ -196,9 +196,7 @@ class ImapMockServer implements InitializingBean, DisposableBean, SmtpAndImapMoc
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.minig.server.service.SmtpAndImapMockServer#verifyMailbox(java.lang
-     * .String)
+     * @see org.minig.server.service.SmtpAndImapMockServer#verifyMailbox(java.lang .String)
      */
     @Override
     public void verifyMailbox(String mailbox) {
@@ -212,9 +210,7 @@ class ImapMockServer implements InitializingBean, DisposableBean, SmtpAndImapMoc
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.minig.server.service.SmtpAndImapMockServer#verifyMessageCount(java
-     * .lang.String, int)
+     * @see org.minig.server.service.SmtpAndImapMockServer#verifyMessageCount(java .lang.String, int)
      */
     @Override
     public void verifyMessageCount(String mailBox, int count) {

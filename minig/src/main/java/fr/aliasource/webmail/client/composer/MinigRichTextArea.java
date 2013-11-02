@@ -75,7 +75,7 @@ public class MinigRichTextArea extends MinigTextArea {
 
     public void setMailBody(IBody body) {
         mailBody.setPlain(body.getPlain());
-        if (body.getHtml() != null) {
+        if (body.getHtml() != null && !body.getHtml().trim().isEmpty()) {
             mailBody.setHtml(ensureHTML(body.getHtml()));
             this.htmlBody = true;
         } else {
