@@ -75,7 +75,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.4</version>
+				<version>1.5</version>
 				<configuration>
 					<showWeaveInfo>true</showWeaveInfo>
 					<encoding>UTF-8</encoding>
@@ -87,6 +87,7 @@
 							<artifactId>greenmail</artifactId>
 						</weaveDependency>
 					</weaveDependencies>
+					<complianceLevel>1.6</complianceLevel>
 				</configuration>
 				<executions>
 					<execution>
