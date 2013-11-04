@@ -24,7 +24,7 @@ public interface SmtpAndImapMockServer {
 
     public String getMockUserEmail();
 
-    public MimeMessage[] getReceivedMessages();
+    public MimeMessage[] getReceivedMessages(String recipient);
 
     public void shutdown();
 

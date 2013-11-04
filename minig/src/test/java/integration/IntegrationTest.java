@@ -54,7 +54,7 @@ public class IntegrationTest {
 
     @Test
     public void test1() throws Exception {
-        MimeMessage mm = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
+        MimeMessage mm = new MimeMessageBuilder().setFolder("INBOX").build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
         mockServer.prepareMailBox("INBOX", mm);
 
         mockMvc.perform(get(PREFIX + "/message/INBOX|" + mm.getMessageID())).andExpect(status().isOk())

@@ -16,8 +16,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import com.icegreen.greenmail.imap.ImapHostManager;
@@ -32,8 +30,8 @@ import com.icegreen.greenmail.util.ServerSetup;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@Component("mockServer")
-@Profile("test")
+//@Component("mockServer")
+//@Profile("test")
 class ImapMockServer implements InitializingBean, DisposableBean, SmtpAndImapMockServer {
 
     private static final Logger logger = LoggerFactory.getLogger(ImapMockServer.class);
@@ -243,7 +241,7 @@ class ImapMockServer implements InitializingBean, DisposableBean, SmtpAndImapMoc
     }
 
     @Override
-    public MimeMessage[] getReceivedMessages() {
+    public MimeMessage[] getReceivedMessages(String recipient) {
         return greenMail.getReceivedMessages();
     }
 }

@@ -3,3 +3,8 @@ minig/.project
 minig/.settings/
 minig/.classpath
 
+mock-javamail/target/
+mock-javamail/.project
+mock-javamail/.settings/
+mock-javamail/.classpath
+

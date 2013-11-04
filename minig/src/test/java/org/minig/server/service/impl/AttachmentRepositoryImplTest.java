@@ -31,7 +31,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("unchecked")
@@ -81,12 +83,13 @@ public class AttachmentRepositoryImplTest {
 
     @Test
     public void testReadMetadata() throws MessagingException, IOException {
-        MimeMessage m = new MimeMessageBuilder().build("src/test/resources/testAttachmentId.mail");
+        MimeMessage m = new MimeMessageBuilder().setFolder("INBOX").build("src/test/resources/testAttachmentId.mail");
 
         CompositeId id = new CompositeId("INBOX", m.getMessageID());
         mockServer.prepareMailBox("INBOX", m);
 
         MailMessage mm = mailRepository.read(id);
+
         List<MailAttachment> attachmentMetadata = uut.readMetadata(mm).getAttachmentMetadata();
 
         MailAttachment mailAttachment1 = uut.readMetadata(mm).getAttachmentMetadata().get(0);
@@ -99,7 +102,7 @@ public class AttachmentRepositoryImplTest {
         CompositeId expected = new CompositeAttachmentId("INBOX", m.getMessageID(), mailAttachment1.getFileName());
 
         assertEquals(expected.getId(), mailAttachment1.getId());
-        assertEquals("IMAGE/PNG; name=1.png", mailAttachment1.getMime());
+        assertThat("image/png; name=\"1.png\"", equalToIgnoringWhiteSpace(mailAttachment1.getMime()));
         assertEquals(180702, mailAttachment1.getSize());
 
         assertEquals("2.png", mailAttachment2.getFileName());
@@ -107,7 +110,7 @@ public class AttachmentRepositoryImplTest {
         expected = new CompositeAttachmentId("INBOX", m.getMessageID(), mailAttachment2.getFileName());
 
         assertEquals(expected.getId(), mailAttachment2.getId());
-        assertEquals("IMAGE/PNG; name=2.png", mailAttachment2.getMime());
+        assertThat("image/png; name=\"2.png\"", equalToIgnoringWhiteSpace(mailAttachment2.getMime()));
         assertEquals(181998, mailAttachment2.getSize());
     }
 
@@ -135,7 +138,8 @@ public class AttachmentRepositoryImplTest {
 
         assertEquals("1.png", read.getFileName());
         assertEquals(id.getId(), read.getId());
-        assertEquals("IMAGE/PNG; name=1.png", read.getMime());
+
+        assertThat("image/png; name=\"1.png\"", equalToIgnoringWhiteSpace(read.getMime()));
         assertEquals(180702, read.getSize());
     }
 
@@ -184,7 +188,7 @@ public class AttachmentRepositoryImplTest {
         assertEquals(1489, read.getBody().getPlain().length());
         assertTrue(read.getBody().getPlain().contains("From: 2013-04-25 09:35:54, To: 2013-04-25 09:44:54, Downtime: 0h 09m 00s"));
 
-        assertEquals(25336, read.getBody().getHtml().length());
+        assertEquals(25350, read.getBody().getHtml().length());
         assertTrue(read.getBody().getHtml().contains("<td><br><h3>178.254.55.49</h3></td></tr>"));
 
         assertEquals(1, readMetadata2.getAttachmentMetadata().size());
@@ -205,7 +209,7 @@ public class AttachmentRepositoryImplTest {
 
         assertTrue(read.getBody().getPlain().isEmpty());
 
-        assertEquals(180, read.getBody().getHtml().length());
+        assertEquals(182, read.getBody().getHtml().length());
         assertTrue(read.getBody().getHtml().contains("</body>"));
 
         assertEquals(1, readMetadata2.getAttachmentMetadata().size());
@@ -224,7 +228,7 @@ public class AttachmentRepositoryImplTest {
         MailAttachmentList readMetadata2 = uut.readMetadata(appendAttachmentId);
         MailMessage read = mailRepository.read(id);
 
-        assertEquals(71, read.getBody().getPlain().length());
+        assertEquals(73, read.getBody().getPlain().length());
         assertTrue(read.getBody().getPlain().contains("row with text"));
 
         assertTrue(read.getBody().getHtml() == null);

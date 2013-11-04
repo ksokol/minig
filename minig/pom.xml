@@ -104,8 +104,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.7</version>
-			<type>jar</type>
+			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -387,6 +386,12 @@
     		<groupId>com.sun.mail</groupId>
     		<artifactId>dsn</artifactId>
     		<version>1.4.6</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.jvnet.mock-javamail</groupId>
+    		<artifactId>mock-javamail</artifactId>
+    		<version>1.12-custom-SNAPSHOT</version>
+    		<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<url>http://code.google.com/p/minig/</url>

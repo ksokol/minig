@@ -221,6 +221,7 @@ class MailRepositoryImpl implements MailRepository {
             // expunge
             storeFolder.close(true);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RepositoryException(e.getMessage(), e);
         }
     }
