@@ -349,12 +349,6 @@
     		<artifactId>dsn</artifactId>
     		<version>1.4.6</version>
 		</dependency>
-		<dependency>
-    		<groupId>org.jvnet.mock-javamail</groupId>
-    		<artifactId>mock-javamail</artifactId>
-    		<version>1.12-custom-SNAPSHOT</version>
-    		<scope>test</scope>
-		</dependency>
 	</dependencies>
 	<url>http://code.google.com/p/minig/</url>
 	<version>3.0-SNAPSHOT</version>
