@@ -72,32 +72,6 @@
 					</formats>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.5</version>
-				<configuration>
-					<showWeaveInfo>true</showWeaveInfo>
-					<encoding>UTF-8</encoding>
-					<source>1.6</source>
-					<target>1.6</target>
-					<weaveDependencies>
-						<weaveDependency>
-							<groupId>com.icegreen</groupId>
-							<artifactId>greenmail</artifactId>
-						</weaveDependency>
-					</weaveDependencies>
-					<complianceLevel>1.6</complianceLevel>
-				</configuration>
-				<executions>
-					<execution>
-						<id>test-compile</id>
-						<goals>
-							<goal>test-compile</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -296,12 +270,6 @@
 			<version>2.4</version>
 		</dependency>
 		<dependency>
-			<groupId>com.icegreen</groupId>
-			<artifactId>greenmail</artifactId>
-			<version>1.3.1b</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 			<version>${spring.version}</version>
@@ -329,12 +297,6 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 			<version>1.9.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjrt</artifactId>
-			<version>1.6.11</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
