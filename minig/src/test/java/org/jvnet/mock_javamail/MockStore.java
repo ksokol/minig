@@ -28,7 +28,7 @@ public class MockStore extends Store {
 
     protected boolean protocolConnect(String host, int port, String user, String password) throws MessagingException {
         String concat = user + '@' + host;
-        address = new InternetAddress(Aliases.getInstance().resolve(concat));
+        address = new InternetAddress(concat);
 
         // TODO
         Mailbox mailbox = Mailbox.get(address, "INBOX");

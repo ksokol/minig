@@ -14,6 +14,7 @@ import javax.mail.internet.MimeMessage;
  * @author Kohsuke Kawaguchi
  */
 public class MockTransport extends Transport {
+
     public MockTransport(Session session, URLName urlname) {
         super(session, urlname);
     }
@@ -26,7 +27,7 @@ public class MockTransport extends Transport {
         for (Address a : addresses) {
             // create a copy to isolate the sender and the receiver
             // TODO
-            Mailbox mailbox = Mailbox.get(Aliases.getInstance().resolve(a), "INBOX");
+            Mailbox mailbox = Mailbox.get(a, "INBOX");
 
             if (mailbox == null) {
                 mailbox = Mailbox.init(a, "INBOX", true, true);
