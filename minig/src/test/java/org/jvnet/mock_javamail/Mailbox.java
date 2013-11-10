@@ -1,10 +1,6 @@
 package org.jvnet.mock_javamail;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.mail.Address;
 import javax.mail.Message;
@@ -124,6 +120,11 @@ public class Mailbox extends ArrayList<Message> {
         return mailboxesOfUser;
     }
 
+    public void existsNow() {
+        this.exists = true;
+        this.subscribed = true;
+    }
+
     /**
      * Get the inbox for the given address.
      */
@@ -143,6 +144,7 @@ public class Mailbox extends ArrayList<Message> {
         return null;
     }
 
+    @Deprecated
     public static Mailbox get(String address, String mailboxPath) throws AddressException {
         return get(new InternetAddress(address), mailboxPath);
     }
@@ -160,6 +162,7 @@ public class Mailbox extends ArrayList<Message> {
         return mailboxesOfUser;
     }
 
+    @Deprecated
     public static Mailbox init(String address, String mailboxPath, boolean subscribed) throws AddressException {
         Mailbox mailbox = new Mailbox(new InternetAddress(address), mailboxPath, subscribed, true);
 
@@ -169,6 +172,7 @@ public class Mailbox extends ArrayList<Message> {
         return mailbox;
     }
 
+    @Deprecated
     public static Mailbox init(Address address, String mailboxPath, boolean subscribed) throws AddressException {
         Mailbox mailbox = new Mailbox(address, mailboxPath, subscribed, true);
 
@@ -178,6 +182,7 @@ public class Mailbox extends ArrayList<Message> {
         return mailbox;
     }
 
+    @Deprecated
     public static Mailbox init(Address address, String mailboxPath, boolean subscribed, boolean exists) throws AddressException {
         Mailbox mailbox = new Mailbox(address, mailboxPath, subscribed, exists);
 
@@ -284,9 +289,15 @@ public class Mailbox extends ArrayList<Message> {
         return address + ":" + this.path + " " + super.toString();
     }
 
+    @Deprecated
     public static boolean remove(Mailbox mailbox) {
         return mailboxes.remove(mailbox);
     }
+
+    public boolean delete() {
+        return mailboxes.remove(this);
+    }
+
 
     public static boolean update(Mailbox mailbox) {
         mailboxes.remove(mailbox);

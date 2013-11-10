@@ -10,8 +10,8 @@ import javax.mail.Flags.Flag;
 import javax.mail.search.SearchTerm;
 
 /**
- * @author Kohsuke Kawaguchi
- * @author dev@sokol-web.de
+ * @author dev@sokol-web.de <Kamill Sokol>
+ *
  */
 public class MockFolder extends Folder {
 
@@ -23,14 +23,17 @@ public class MockFolder extends Folder {
         this.mailbox = mailbox;
     }
 
+    @Override
     public String getName() {
         return mailbox.getName();
     }
 
+    @Override
     public String getFullName() {
         return mailbox.getPath();
     }
 
+    @Override
     public Folder getParent() throws MessagingException {
         if (mailbox.getParent() != null) {
             return new MockFolder(store, mailbox.getParent());
@@ -39,10 +42,12 @@ public class MockFolder extends Folder {
         return null;
     }
 
+    @Override
     public boolean exists() throws MessagingException {
         return mailbox.isExists();
     }
 
+    @Override
     public Folder[] list(String pattern) throws MessagingException {
         List<MockFolder> mockFolders = new ArrayList<>();
         List<Mailbox> all = mailbox.getAll();
@@ -72,18 +77,21 @@ public class MockFolder extends Folder {
         }
     }
 
+    @Override
     public char getSeparator() throws MessagingException {
         return mailbox.getSeparator();
     }
 
+    @Override
     public int getType() throws MessagingException {
         return HOLDS_MESSAGES;
     }
 
+    @Override
     public boolean create(int type) throws MessagingException {
         switch(type) {
-            case 1:    {
-                mailbox = Mailbox.init(mailbox.getAddress(), mailbox.getPath(), true, true);
+            case 1: {
+                mailbox.existsNow();
                 return true;
             } default: {
                 throw new UnsupportedOperationException();
@@ -91,10 +99,12 @@ public class MockFolder extends Folder {
         }
     }
 
+    @Override
     public boolean hasNewMessages() throws MessagingException {
         return mailbox.getNewMessageCount() > 0;
     }
 
+    @Override
     public Folder getFolder(String name) throws MessagingException {
         String folderName = name;
 
@@ -105,47 +115,51 @@ public class MockFolder extends Folder {
         return getStore().getFolder(folderName);
     }
 
+    @Override
     public boolean delete(boolean recurse) throws MessagingException {
         boolean result = true;
 
         if (recurse) {
-            List<Mailbox> list = mailbox.getAll();
-
-            for (Mailbox mb : list) {
+            for (Mailbox mb : mailbox.getAll()) {
                 if (mb.getPath().startsWith(mailbox.getPath())) {
-                    result &= Mailbox.remove(mb);
+                    result &= mb.delete();
                 }
             }
-
         } else {
-            result = Mailbox.remove(mailbox);
+            result = mailbox.delete();
         }
 
         return result;
     }
 
+    @Override
     public boolean renameTo(Folder f) throws MessagingException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void open(int mode) throws MessagingException {
         // always succeed
     }
 
+    @Override
     public void close(boolean expunge) throws MessagingException {
         if (expunge) {
             expunge();
         }
     }
 
+    @Override
     public boolean isOpen() {
         return true;
     }
 
+    @Override
     public Flags getPermanentFlags() {
         return null;
     }
 
+    @Override
     public int getMessageCount() throws MessagingException {
         return mailbox.size();
     }
@@ -155,6 +169,7 @@ public class MockFolder extends Folder {
         return mailbox.getNewMessageCount();
     }
 
+    @Override
     public Message getMessage(int msgnum) throws MessagingException {
         return mailbox.get(msgnum - 1);
     }
@@ -173,9 +188,9 @@ public class MockFolder extends Folder {
         return messages.toArray(new Message[messages.size()]);
     }
 
+    @Override
     public void appendMessages(Message[] msgs) throws MessagingException {
         for (Message msg : msgs) {
-
             if (msg.getHeader("Message-ID") == null) {
                 msg.saveChanges();
             }
@@ -184,12 +199,18 @@ public class MockFolder extends Folder {
         }
     }
 
+    @Override
     public Message[] expunge() throws MessagingException {
         List<Message> expunged = new ArrayList<>();
+
         for (Message msg : mailbox) {
-            if (msg.getFlags().contains(Flag.DELETED)) expunged.add(msg);
+            if (msg.getFlags().contains(Flag.DELETED)) {
+                expunged.add(msg);
+            }
         }
+
         mailbox.removeAll(expunged);
+
         return expunged.toArray(new Message[expunged.size()]);
     }
 
