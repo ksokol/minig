@@ -27,13 +27,10 @@ public class MockTransport extends Transport {
         for (Address a : addresses) {
             // create a copy to isolate the sender and the receiver
 
-            Mailbox mailbox = Mailbox.get(a, "INBOX"); //MailboxHolder.getFixture(a, "INBOX");
+            Mailbox mailbox = MailboxHolder.getFixture(a, "INBOX");
 
             if (mailbox == null) {
-                Mailbox inbox = new Mailbox(a, "INBOX");
-                inbox.existsNow();
-
-                inbox.add(msg);
+                Mailbox inbox = new MailboxBuilder(a.toString()).inbox().subscribed(false).exists(true).addMessage(msg).build();
 
                 MailboxHolder.addFixture(inbox);
             } else {
