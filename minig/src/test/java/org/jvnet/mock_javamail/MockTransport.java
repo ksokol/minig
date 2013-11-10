@@ -35,7 +35,7 @@ public class MockTransport extends Transport {
 
                 inbox.add(msg);
 
-                Mailbox.mailboxes.add(inbox);
+                MailboxHolder.addFixture(inbox);
             } else {
                 if (mailbox.isError()) {
                     throw new MessagingException("Simulated error sending message to " + a);

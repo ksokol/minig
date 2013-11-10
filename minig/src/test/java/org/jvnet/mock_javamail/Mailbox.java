@@ -122,12 +122,10 @@ public class Mailbox extends ArrayList<Message> {
         return subscribed;
     }
 
-    protected static final Set<Mailbox> mailboxes = new HashSet<Mailbox>();
-
     public synchronized List<Mailbox> getAll() {
         List<Mailbox> mailboxesOfUser = new ArrayList<>();
 
-        for (Mailbox mb : mailboxes) {
+        for (Mailbox mb : MailboxHolder.allMailboxes()) {
             if (mb.exists && mb.getAddress().equals(address)) {
                 mailboxesOfUser.add(mb);
             }
@@ -148,9 +146,9 @@ public class Mailbox extends ArrayList<Message> {
     public synchronized static Mailbox get(Address a, String mailboxPath) {
         Mailbox mailbox = new Mailbox(a, mailboxPath, true, true);
 
-        if (mailboxes.contains(mailbox)) {
+        if (MailboxHolder.allMailboxes().contains(mailbox)) {
 
-            for (Mailbox mb : mailboxes) {
+            for (Mailbox mb : MailboxHolder.allMailboxes()) {
                 if (mailbox.equals(mb)) {
                     return mb;
                 }
@@ -169,7 +167,7 @@ public class Mailbox extends ArrayList<Message> {
     public static List<Mailbox> get(Address address) throws AddressException {
         List<Mailbox> mailboxesOfUser = new ArrayList<Mailbox>();
 
-        for (Mailbox mb : mailboxes) {
+        for (Mailbox mb : MailboxHolder.allMailboxes()) {
             if (mb.exists && mb.getAddress().equals(address)) {
                 mailboxesOfUser.add(mb);
             }
@@ -182,8 +180,7 @@ public class Mailbox extends ArrayList<Message> {
     static Mailbox init(Address address, String mailboxPath, boolean subscribed, boolean exists) throws AddressException {
         Mailbox mailbox = new Mailbox(address, mailboxPath, subscribed, exists);
 
-        mailboxes.remove(mailbox);
-        mailboxes.add(mailbox);
+        MailboxHolder.addFixture(mailbox);
 
         return mailbox;
     }
@@ -253,7 +250,8 @@ public class Mailbox extends ArrayList<Message> {
      * Discards all the mailboxes and its data.
      */
     public static void clearAll() {
-        mailboxes.clear();
+      //TODO
+        MailboxHolder.reset();
     }
 
     @Override
@@ -284,20 +282,8 @@ public class Mailbox extends ArrayList<Message> {
     public String toString() {
         return address + ":" + this.path + " " + super.toString();
     }
-
-    @Deprecated
-    public static boolean remove(Mailbox mailbox) {
-        return mailboxes.remove(mailbox);
-    }
-
     public boolean delete() {
-        return mailboxes.remove(this);
-    }
-
-
-    public static boolean update(Mailbox mailbox) {
-        mailboxes.remove(mailbox);
-        return mailboxes.add(mailbox);
+        return MailboxHolder.remove(this);
     }
 
     public char getSeparator() {

@@ -43,10 +43,6 @@ public class MailboxBuilder {
             mailbox.setSubscribed(subscribed);
             mailbox.setExists(exists);
 
-            //TODO
-            Mailbox.mailboxes.remove(mailbox);
-            Mailbox.mailboxes.add(mailbox);
-
             MailboxHolder.addFixture(mailbox);
 
             return mailbox;
