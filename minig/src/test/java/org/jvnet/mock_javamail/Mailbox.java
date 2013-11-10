@@ -22,7 +22,6 @@ public class Mailbox extends ArrayList<Message> {
     private static final long serialVersionUID = 1L;
 
     private final String parent;
-
     private final Address address;
     private final String name;
     private final String path;
@@ -36,7 +35,7 @@ public class Mailbox extends ArrayList<Message> {
      * Because we can't intercept every mutation of {@link ArrayList}, this set may contain messages that are no longer
      * in them.
      */
-    private List<MimeMessage> unread = new ArrayList<MimeMessage>();
+    private List<Message> unread = new ArrayList<>();
 
     private boolean error;
 
@@ -44,7 +43,7 @@ public class Mailbox extends ArrayList<Message> {
 
     public Mailbox getParent() {
         if (parent == null) {
-            return null; // new Mailbox(address, "INBOX", false, true);
+            return null;
         }
 
         Mailbox mailbox = Mailbox.get(address, parent);
@@ -54,8 +53,6 @@ public class Mailbox extends ArrayList<Message> {
         } else {
             return mailbox;
         }
-
-        // return null;
     }
 
     public Mailbox(Address address, String fullname, boolean subscribed, boolean exists) {
@@ -92,9 +89,6 @@ public class Mailbox extends ArrayList<Message> {
         }
     }
 
-    /**
-     * Gets the e-mail address of this mailbox.
-     */
     public Address getAddress() {
         return address;
     }
@@ -122,11 +116,11 @@ public class Mailbox extends ArrayList<Message> {
         return subscribed;
     }
 
-    public synchronized List<Mailbox> getAll() {
+    public List<Mailbox> getAll() {
         List<Mailbox> mailboxesOfUser = new ArrayList<>();
 
         for (Mailbox mb : MailboxHolder.allMailboxes()) {
-            if (mb.exists && mb.getAddress().equals(address)) {
+            if (mb.exists && mb.address.equals(address)) {
                 mailboxesOfUser.add(mb);
             }
         }
@@ -195,11 +189,6 @@ public class Mailbox extends ArrayList<Message> {
         return exists;
     }
 
-    @Override
-    public int size() {
-        return super.size();
-    }
-
     public String getPath() {
         return path;
     }
@@ -214,7 +203,7 @@ public class Mailbox extends ArrayList<Message> {
         return m;
     }
 
-    public List<MimeMessage> getUnread() {
+    public List<Message> getUnread() {
         return unread;
     }
 
@@ -227,15 +216,13 @@ public class Mailbox extends ArrayList<Message> {
     }
 
     public boolean addAll(Collection<? extends Message> messages) {
-        // TODO
-        unread.addAll((Collection<? extends MimeMessage>) messages);
+        unread.addAll(messages);
         return super.addAll(messages);
     }
 
     @Override
     public boolean add(Message message) {
-        // TODO
-        unread.add((MimeMessage) message);
+        unread.add(message);
         return super.add(message);
     }
 
@@ -257,7 +244,7 @@ public class Mailbox extends ArrayList<Message> {
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = 1; // super.hashCode();
+        int result = 1;
         result = prime * result + ((address == null) ? 0 : address.hashCode());
         result = prime * result + ((path == null) ? 0 : path.hashCode());
         return result;
@@ -266,7 +253,6 @@ public class Mailbox extends ArrayList<Message> {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        // if (!super.equals(obj)) return false;
         if (getClass() != obj.getClass()) return false;
         Mailbox other = (Mailbox) obj;
         if (address == null) {
