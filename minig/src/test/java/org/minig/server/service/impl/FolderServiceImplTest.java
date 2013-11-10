@@ -10,7 +10,7 @@ import org.minig.server.MailFolder;
 import org.minig.server.MailFolderList;
 import org.minig.server.TestConstants;
 import org.minig.server.service.*;
-import org.mockito.Mockito;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -43,7 +43,6 @@ public class FolderServiceImplTest {
 
     @Before
     public void setUp() throws Exception {
-        mockServer.reset();
         mockServer.reset();
         mockServer.createAndSubscribeMailBox("INBOX.Trash");
         mockServer.createAndSubscribeMailBox("INBOX.Sent");
@@ -348,52 +347,27 @@ public class FolderServiceImplTest {
 
     @Test
     public void testDeleteFolder_withMessagesWithNestedFolders() {
-        long start = System.currentTimeMillis();
-
-        MimeMessage msg = Mockito.mock(MimeMessage.class);
-                          //new MimeMessageStub(); /
-             //   new MimeMessageBuilder().mock();
-
-        long mock = System.currentTimeMillis();
-        System.out.println("after mock: " + (mock - start));
+        MimeMessage msg = new MimeMessageBuilder().mock();
 
         mockServer.createAndSubscribeMailBox("INBOX.Trash");
-
-        mock = System.currentTimeMillis();
-        System.out.println("mockServer.createAndSubscribeMailBox(\"INBOX.Trash\"): " + (mock - start));
 
         mockServer.prepareMailBox("INBOX.test.deleteme2", msg);
         mockServer.prepareMailBox("INBOX.test.deleteme2.nested1", msg);
         mockServer.prepareMailBox("INBOX.test.deleteme2.nested2", msg);
 
-        mock = System.currentTimeMillis();
-        System.out.println("prepareMailBox1 " + (mock - start));
-
         uut.deleteFolder("INBOX.test.deleteme2.nested1");
-
-        mock = System.currentTimeMillis();
-        System.out.println("uut.deleteFolder(\"INBOX.test.deleteme2.nested1\") " + (mock - start));
 
         mockServer.verifyMailbox("INBOX.Trash.nested1");
         mockServer.verifyMessageCount("INBOX.Trash.nested1", 1);
         mockServer.verifyMessageCount("INBOX.test.deleteme2", 1);
         mockServer.verifyMessageCount("INBOX.test.deleteme2.nested2", 1);
 
-        mock = System.currentTimeMillis();
-        System.out.println("verifyMessageCount " + (mock - start));
-
         uut.deleteFolder("INBOX.test.deleteme2");
-
-        mock = System.currentTimeMillis();
-        System.out.println(" uut.deleteFolder(\"INBOX.test.deleteme2\"); " + (mock - start));
 
         mockServer.verifyMailbox("INBOX.Trash.deleteme2");
         mockServer.verifyMessageCount("INBOX.Trash.deleteme2", 1);
         mockServer.verifyMessageCount("INBOX.Trash.deleteme2.nested2", 1);
         mockServer.verifyMessageCount("INBOX.Trash.nested1", 1);
-
-        mock = System.currentTimeMillis();
-        System.out.println("last " + (mock - start));
     }
 
     // @Test
