@@ -131,10 +131,4 @@ public class MockJavamailSmtpAndImapMockServer implements SmtpAndImapMockServer 
         }
     }
 
-    @Override
-    public void shutdown() {
-        // TODO Auto-generated method stub
-
-    }
-
 }

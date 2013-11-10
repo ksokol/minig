@@ -2,7 +2,6 @@ package integration;
 
 import javax.mail.internet.MimeMessage;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,12 +43,6 @@ public class IntegrationTest {
     @Before
     public void setUp() throws Exception {
         mockMvc = webAppContextSetup(wac).build();
-    }
-
-    @After
-    public void after() {
-        // TODO
-        mockServer.shutdown();
     }
 
     @Test
