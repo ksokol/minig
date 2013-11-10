@@ -13,11 +13,11 @@ import javax.mail.search.SearchTerm;
  * @author dev@sokol-web.de <Kamill Sokol>
  *
  */
-public class MockFolder extends Folder {
+class MockFolder extends Folder {
 
     private Mailbox mailbox;
 
-    public MockFolder(Store store, Mailbox mailbox) {
+    MockFolder(Store store, Mailbox mailbox) {
         super(store);
 
         this.mailbox = mailbox;
