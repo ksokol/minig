@@ -10,6 +10,7 @@ import javax.mail.internet.MimeMessage;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.jvnet.mock_javamail.Mailbox;
+import org.jvnet.mock_javamail.MailboxBuilder;
 import org.minig.MailAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -27,31 +28,16 @@ public class MockJavamailSmtpAndImapMockServer implements SmtpAndImapMockServer 
         for (String box : mailBox) {
             createAndNotSubscribeMailBox(box);
         }
-
     }
 
     @Override
     public void createAndSubscribeMailBox(String mailBox) {
-        // TODO Auto-generated method stub
-        try {
-            Mailbox.init(mailAuthentication.getAddress(), mailBox, true);
-
-        } catch (AddressException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
+        new MailboxBuilder(mailAuthentication.getAddress()).mailbox(mailBox).subscribed(true).exists(true).build();
     }
 
     @Override
     public void createAndNotSubscribeMailBox(String mailBox) {
-
-        try {
-            // Mailbox.init(mailAuthentication.getAddress(), "");
-            Mailbox.init(mailAuthentication.getAddress(), mailBox, false);
-
-        } catch (AddressException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-
+        new MailboxBuilder(mailAuthentication.getAddress()).mailbox(mailBox).subscribed(false).exists(true).build();
     }
 
     @Override
@@ -65,14 +51,8 @@ public class MockJavamailSmtpAndImapMockServer implements SmtpAndImapMockServer 
 
     @Override
     public void prepareMailBox(String mailBox, List<MimeMessage> messages) {
-        try {
-            Mailbox mailbox = Mailbox.init(mailAuthentication.getAddress(), mailBox, false);
-            mailbox.addAll(messages);
-
-        } catch (AddressException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-
+        Mailbox mailbox = new MailboxBuilder(mailAuthentication.getAddress()).mailbox(mailBox).subscribed(false).exists(true).build();
+        mailbox.addAll(messages);
     }
 
     @Override
@@ -104,19 +84,10 @@ public class MockJavamailSmtpAndImapMockServer implements SmtpAndImapMockServer 
 
     @Override
     public void reset() {
-        // TODO Auto-generated method stub
-        try {
-            Mailbox.clearAll();
-            Mailbox.init(mailAuthentication.getAddress(), "INBOX", false);
-        } catch (AddressException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-    }
+        // TODO
+        Mailbox.clearAll();
 
-    @Override
-    public String getMockUserEmail() {
-        // TODO Auto-generated method stub
-        return mailAuthentication.getAddress();
+        new MailboxBuilder(mailAuthentication.getAddress()).inbox().subscribed(false).exists(true).build();
     }
 
     @Override

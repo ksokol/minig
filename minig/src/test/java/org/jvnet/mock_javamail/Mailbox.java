@@ -76,6 +76,22 @@ public class Mailbox extends ArrayList<Message> {
         }
     }
 
+    public Mailbox(Address address, String fullname) {
+        this.address = address;
+        this.path = fullname;
+
+        int lastIndexOf = fullname.lastIndexOf(".");
+
+        if (lastIndexOf != -1) {
+            this.name = fullname.substring(lastIndexOf + 1);
+            this.parent = fullname.substring(0, lastIndexOf);
+
+        } else {
+            this.name = fullname;
+            this.parent = null;
+        }
+    }
+
     /**
      * Gets the e-mail address of this mailbox.
      */
@@ -106,7 +122,7 @@ public class Mailbox extends ArrayList<Message> {
         return subscribed;
     }
 
-    private static final Set<Mailbox> mailboxes = new HashSet<Mailbox>();
+    protected static final Set<Mailbox> mailboxes = new HashSet<Mailbox>();
 
     public synchronized List<Mailbox> getAll() {
         List<Mailbox> mailboxesOfUser = new ArrayList<>();
@@ -163,27 +179,7 @@ public class Mailbox extends ArrayList<Message> {
     }
 
     @Deprecated
-    public static Mailbox init(String address, String mailboxPath, boolean subscribed) throws AddressException {
-        Mailbox mailbox = new Mailbox(new InternetAddress(address), mailboxPath, subscribed, true);
-
-        mailboxes.remove(mailbox);
-        mailboxes.add(mailbox);
-
-        return mailbox;
-    }
-
-    @Deprecated
-    public static Mailbox init(Address address, String mailboxPath, boolean subscribed) throws AddressException {
-        Mailbox mailbox = new Mailbox(address, mailboxPath, subscribed, true);
-
-        mailboxes.remove(mailbox);
-        mailboxes.add(mailbox);
-
-        return mailbox;
-    }
-
-    @Deprecated
-    public static Mailbox init(Address address, String mailboxPath, boolean subscribed, boolean exists) throws AddressException {
+    static Mailbox init(Address address, String mailboxPath, boolean subscribed, boolean exists) throws AddressException {
         Mailbox mailbox = new Mailbox(address, mailboxPath, subscribed, exists);
 
         mailboxes.remove(mailbox);

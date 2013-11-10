@@ -8,6 +8,7 @@ import javax.mail.internet.MimeMessage;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.minig.MailAuthentication;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
 import org.minig.server.MailMessageList;
@@ -39,6 +40,9 @@ public class SubmissionServiceImplTest {
     @Autowired
     private SmtpAndImapMockServer mockServer;
 
+    @Autowired
+    private MailAuthentication mailAuthentication;
+
     @Before
     public void setUp() throws Exception {
         mockServer.reset();
@@ -49,7 +53,7 @@ public class SubmissionServiceImplTest {
         mockServer.createAndSubscribeMailBox("INBOX.Sent", "INBOX.Drafts");
 
         MailMessage mm = new MailMessage();
-        mm.setSender(new MailMessageAddress(mockServer.getMockUserEmail()));
+        mm.setSender(new MailMessageAddress(mailAuthentication.getAddress()));
         mm.setTo(Arrays.asList(new MailMessageAddress("test@example.com")));
         mm.setSubject("test subject");
 
@@ -70,7 +74,7 @@ public class SubmissionServiceImplTest {
         mockServer.prepareMailBox("INBOX.test", toBeForwarded);
 
         MailMessage mm = new MailMessage();
-        mm.setSender(new MailMessageAddress(mockServer.getMockUserEmail()));
+        mm.setSender(new MailMessageAddress(mailAuthentication.getAddress()));
         mm.setTo(Arrays.asList(new MailMessageAddress("test@example.com")));
         mm.setSubject("msg with forward");
 

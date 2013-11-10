@@ -6,12 +6,12 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.URLName;
-import javax.mail.internet.MimeMessage;
 
 /**
  * Mock {@link Transport} to deliver to {@link Mailbox}.
- * 
+ *
  * @author Kohsuke Kawaguchi
+ * @author dev@sokol-web.de <Kamill Sokol>
  */
 public class MockTransport extends Transport {
 
@@ -26,15 +26,21 @@ public class MockTransport extends Transport {
     public void sendMessage(Message msg, Address[] addresses) throws MessagingException {
         for (Address a : addresses) {
             // create a copy to isolate the sender and the receiver
-            // TODO
-            Mailbox mailbox = Mailbox.get(a, "INBOX");
+
+            Mailbox mailbox = Mailbox.get(a, "INBOX"); //MailboxHolder.getFixture(a, "INBOX");
 
             if (mailbox == null) {
-                mailbox = Mailbox.init(a, "INBOX", true, true);
-            }
+                Mailbox inbox = new Mailbox(a, "INBOX");
+                inbox.existsNow();
 
-            if (mailbox.isError()) throw new MessagingException("Simulated error sending message to " + a);
-            mailbox.add(new MimeMessage((MimeMessage) msg));
+                inbox.add(msg);
+
+                Mailbox.mailboxes.add(inbox);
+            } else {
+                if (mailbox.isError()) {
+                    throw new MessagingException("Simulated error sending message to " + a);
+                }
+            }
         }
     }
 }
