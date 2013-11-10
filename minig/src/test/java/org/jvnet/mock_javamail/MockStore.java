@@ -16,6 +16,8 @@ import javax.mail.internet.InternetAddress;
  */
 public class MockStore extends Store {
 
+    private static final char SEPARATOR = '.';
+
     private Address address;
 
     public MockStore(Session session, URLName urlname) {
@@ -62,8 +64,7 @@ public class MockStore extends Store {
         return address;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
+    public char getSeparator() {
+        return SEPARATOR;
     }
-
 }

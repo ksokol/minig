@@ -114,6 +114,7 @@ public class Mailbox extends ArrayList<Message> {
      */
     private static final Set<Mailbox> mailboxes = new HashSet<Mailbox>();
 
+    @Deprecated
     public String getMailboxPath() {
         return (parent == null) ? "INBOX" : parent;
     }

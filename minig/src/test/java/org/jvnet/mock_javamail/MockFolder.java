@@ -21,19 +21,14 @@ import javax.mail.search.SearchTerm;
 public class MockFolder extends Folder {
     private Mailbox mailbox;
     private MockFolder parent;
-    private String name;
+
     private MockStore store;
-    private boolean subscribed = true;
-    private boolean exists = false;
-    private char separator = '.'; // TODO
 
     public MockFolder(MockStore store, Mailbox mailbox) {
         super(store);
+
         this.store = store;
         this.mailbox = mailbox;
-        this.exists = mailbox.isExists();
-        this.subscribed = mailbox.isSubscribed();
-        this.name = mailbox.getName();
 
         if (mailbox.getParent() != null) {
             this.parent = new MockFolder(store, mailbox.getParent());
@@ -41,7 +36,7 @@ public class MockFolder extends Folder {
     }
 
     public String getName() {
-        return name;
+        return mailbox.getName();
     }
 
     public String getFullName() {
@@ -53,38 +48,40 @@ public class MockFolder extends Folder {
     }
 
     public boolean exists() throws MessagingException {
-        return exists;
+        return mailbox.isExists();
     }
 
     public Folder[] list(String pattern) throws MessagingException {
-        List<MockFolder> mockFolders = new ArrayList<MockFolder>();
+        List<MockFolder> mockFolders = new ArrayList<>();
         List<Mailbox> list = Mailbox.get(mailbox.getAddress());
 
-        if ("*".equals(pattern)) {
-            for (Mailbox mb : list) {
-                if (mb.getMailboxPath().startsWith(mailbox.getMailboxPath())) {
-                    MockFolder mockFolder = new MockFolder(store, mb);
-                    mockFolders.add(mockFolder);
+        switch(pattern) {
+            case "*": {
+                for (Mailbox mb : list) {
+                    if (mb.getPath().startsWith(mailbox.getPath())) {
+                        mockFolders.add(new MockFolder(store, mb));
+                    }
                 }
-            }
-            return mockFolders.toArray(new Folder[mockFolders.size()]);
 
-        } else if ("%".equals(pattern)) {
-            for (Mailbox mb : list) {
-                if (mb.getPath().matches(mailbox.getPath() + "\\.?[\\w]{0,}")) {
-                    MockFolder mockFolder = new MockFolder(store, mb);
-                    mockFolders.add(mockFolder);
+                return mockFolders.toArray(new Folder[mockFolders.size()]);
+            }
+            case "%": {
+                for (Mailbox mb : list) {
+                    if (mb.getPath().matches(mailbox.getPath() + "\\.?[\\w]{0,}")) {
+                        mockFolders.add(new MockFolder(store, mb));
+                    }
                 }
-            }
 
-            return mockFolders.toArray(new Folder[mockFolders.size()]);
+                return mockFolders.toArray(new Folder[mockFolders.size()]);
+            }
+            default: {
+                throw new UnsupportedOperationException();
+            }
         }
-
-        throw new UnsupportedOperationException();
     }
 
     public char getSeparator() throws MessagingException {
-        return separator;
+        return store.getSeparator();
     }
 
     public int getType() throws MessagingException {
@@ -93,19 +90,13 @@ public class MockFolder extends Folder {
 
     public boolean create(int type) throws MessagingException {
         switch(type) {
-        case 1:
-            mailbox = Mailbox.init(store.getAddress(), String.format("%s", mailbox.getPath()), true, true);
-
-            Mailbox.update(mailbox);
-
-            // TODO
-            subscribed = true;
-            exists = true;
-
-            return true;
+            case 1:    {
+                mailbox = Mailbox.init(store.getAddress(), mailbox.getPath(), true, true);
+                return true;
+            } default: {
+                throw new UnsupportedOperationException();
+            }
         }
-
-        return false;
     }
 
     public boolean hasNewMessages() throws MessagingException {
@@ -113,9 +104,9 @@ public class MockFolder extends Folder {
     }
 
     public Folder getFolder(String name) throws MessagingException {
-        String parent2 = mailbox.getPath();
+        String parent = mailbox.getPath();
 
-        if (parent2 == null) {
+        if (parent == null) {
             return store.getFolder(name);
         } else {
             return store.getFolder(mailbox.getPath() + getSeparator() + name);
@@ -150,7 +141,9 @@ public class MockFolder extends Folder {
     }
 
     public void close(boolean expunge) throws MessagingException {
-        if (expunge) expunge();
+        if (expunge) {
+            expunge();
+        }
     }
 
     public boolean isOpen() {
@@ -276,15 +269,12 @@ public class MockFolder extends Folder {
 
     @Override
     public boolean isSubscribed() {
-        return subscribed;
+        return mailbox.isSubscribed();
     }
 
     @Override
     public void setSubscribed(boolean subscribe) throws MessagingException {
         mailbox.setSubscribed(subscribe);
-        this.subscribed = subscribe;
-        // TODO
-        Mailbox.update(mailbox);
     }
 
     @Override
