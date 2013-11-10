@@ -11,6 +11,7 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.jvnet.mock_javamail.Mailbox;
 import org.jvnet.mock_javamail.MailboxBuilder;
+import org.jvnet.mock_javamail.MailboxHolder;
 import org.minig.MailAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -85,7 +86,7 @@ public class MockJavamailSmtpAndImapMockServer implements SmtpAndImapMockServer 
     @Override
     public void reset() {
         // TODO
-        Mailbox.clearAll();
+        MailboxHolder.reset();
 
         new MailboxBuilder(mailAuthentication.getAddress()).inbox().subscribed(false).exists(true).build();
     }

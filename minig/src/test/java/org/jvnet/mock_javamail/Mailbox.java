@@ -233,14 +233,6 @@ public class Mailbox extends ArrayList<Message> {
         unread.clear();
     }
 
-    /**
-     * Discards all the mailboxes and its data.
-     */
-    public static void clearAll() {
-      //TODO
-        MailboxHolder.reset();
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
