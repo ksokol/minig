@@ -46,6 +46,7 @@ public class MockStore extends Store {
         return new MockFolder(this, mailbox);
     }
 
+    @Override
     public Folder getFolder(String name) throws MessagingException {
         Mailbox mailbox = Mailbox.get(address, name);
 
@@ -58,13 +59,5 @@ public class MockStore extends Store {
 
     public Folder getFolder(URLName url) throws MessagingException {
         throw new UnsupportedOperationException();
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public char getSeparator() {
-        return SEPARATOR;
     }
 }

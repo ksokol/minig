@@ -31,6 +31,7 @@ public class Mailbox extends ArrayList<Message> {
     private final String name;
     private final String path;
     private boolean exists;
+    private char separator = '.'; //TODO
 
     /**
      * Of the mails in the {@link ArrayList}, these are considered unread.
@@ -109,19 +110,24 @@ public class Mailbox extends ArrayList<Message> {
         return subscribed;
     }
 
-    /**
-     * All mailboxes.
-     */
     private static final Set<Mailbox> mailboxes = new HashSet<Mailbox>();
 
-    @Deprecated
-    public String getMailboxPath() {
-        return (parent == null) ? "INBOX" : parent;
+    public synchronized List<Mailbox> getAll() {
+        List<Mailbox> mailboxesOfUser = new ArrayList<>();
+
+        for (Mailbox mb : mailboxes) {
+            if (mb.exists && mb.getAddress().equals(address)) {
+                mailboxesOfUser.add(mb);
+            }
+        }
+
+        return mailboxesOfUser;
     }
 
     /**
      * Get the inbox for the given address.
      */
+    @Deprecated
     public synchronized static Mailbox get(Address a, String mailboxPath) {
         Mailbox mailbox = new Mailbox(a, mailboxPath, true, true);
 
@@ -141,6 +147,7 @@ public class Mailbox extends ArrayList<Message> {
         return get(new InternetAddress(address), mailboxPath);
     }
 
+    @Deprecated
     public static List<Mailbox> get(Address address) throws AddressException {
         List<Mailbox> mailboxesOfUser = new ArrayList<Mailbox>();
 
@@ -284,5 +291,9 @@ public class Mailbox extends ArrayList<Message> {
     public static boolean update(Mailbox mailbox) {
         mailboxes.remove(mailbox);
         return mailboxes.add(mailbox);
+    }
+
+    public char getSeparator() {
+        return separator;
     }
 }

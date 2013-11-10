@@ -1,17 +1,12 @@
 package org.jvnet.mock_javamail;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import javax.mail.Flags;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.mail.*;
 import javax.mail.Flags.Flag;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.search.SearchTerm;
 
 /**
@@ -19,20 +14,13 @@ import javax.mail.search.SearchTerm;
  * @author dev@sokol-web.de
  */
 public class MockFolder extends Folder {
+
     private Mailbox mailbox;
-    private MockFolder parent;
 
-    private MockStore store;
-
-    public MockFolder(MockStore store, Mailbox mailbox) {
+    public MockFolder(Store store, Mailbox mailbox) {
         super(store);
 
-        this.store = store;
         this.mailbox = mailbox;
-
-        if (mailbox.getParent() != null) {
-            this.parent = new MockFolder(store, mailbox.getParent());
-        }
     }
 
     public String getName() {
@@ -44,7 +32,11 @@ public class MockFolder extends Folder {
     }
 
     public Folder getParent() throws MessagingException {
-        return parent;
+        if (mailbox.getParent() != null) {
+            return new MockFolder(store, mailbox.getParent());
+        }
+
+        return null;
     }
 
     public boolean exists() throws MessagingException {
@@ -53,22 +45,22 @@ public class MockFolder extends Folder {
 
     public Folder[] list(String pattern) throws MessagingException {
         List<MockFolder> mockFolders = new ArrayList<>();
-        List<Mailbox> list = Mailbox.get(mailbox.getAddress());
+        List<Mailbox> all = mailbox.getAll();
 
         switch(pattern) {
             case "*": {
-                for (Mailbox mb : list) {
+                for (Mailbox mb : all) {
                     if (mb.getPath().startsWith(mailbox.getPath())) {
-                        mockFolders.add(new MockFolder(store, mb));
+                        mockFolders.add(new MockFolder(getStore(), mb));
                     }
                 }
 
                 return mockFolders.toArray(new Folder[mockFolders.size()]);
             }
             case "%": {
-                for (Mailbox mb : list) {
-                    if (mb.getPath().matches(mailbox.getPath() + "\\.?[\\w]{0,}")) {
-                        mockFolders.add(new MockFolder(store, mb));
+                for (Mailbox mb : all) {
+                    if (mb.getPath().matches(mailbox.getPath() + "\\.?[\\w]*")) {
+                        mockFolders.add(new MockFolder(getStore(), mb));
                     }
                 }
 
@@ -81,7 +73,7 @@ public class MockFolder extends Folder {
     }
 
     public char getSeparator() throws MessagingException {
-        return store.getSeparator();
+        return mailbox.getSeparator();
     }
 
     public int getType() throws MessagingException {
@@ -91,7 +83,7 @@ public class MockFolder extends Folder {
     public boolean create(int type) throws MessagingException {
         switch(type) {
             case 1:    {
-                mailbox = Mailbox.init(store.getAddress(), mailbox.getPath(), true, true);
+                mailbox = Mailbox.init(mailbox.getAddress(), mailbox.getPath(), true, true);
                 return true;
             } default: {
                 throw new UnsupportedOperationException();
@@ -104,20 +96,20 @@ public class MockFolder extends Folder {
     }
 
     public Folder getFolder(String name) throws MessagingException {
-        String parent = mailbox.getPath();
+        String folderName = name;
 
-        if (parent == null) {
-            return store.getFolder(name);
-        } else {
-            return store.getFolder(mailbox.getPath() + getSeparator() + name);
+        if (mailbox.getPath() != null) {
+            folderName = mailbox.getPath() + getSeparator() + name;
         }
+
+        return getStore().getFolder(folderName);
     }
 
     public boolean delete(boolean recurse) throws MessagingException {
         boolean result = true;
 
         if (recurse) {
-            List<Mailbox> list = Mailbox.get(mailbox.getAddress());
+            List<Mailbox> list = mailbox.getAll();
 
             for (Mailbox mb : list) {
                 if (mb.getPath().startsWith(mailbox.getPath())) {
@@ -171,49 +163,14 @@ public class MockFolder extends Folder {
     public Message[] getMessages(int low, int high) throws MessagingException {
         int low1 = low - 1;
         int high1 = high - 1;
+        List<Message> messages = new ArrayList<>();
 
-        List<Message> messages = new ArrayList<Message>();
         for (int i = low1; i <= high1; i++) {
             Message m = mailbox.get(i);
-            messages.add(m);
-
-            try {
-                Collection<Field> fields = getFields(m.getClass());
-
-                for (Field f : fields) {
-                    if ("folder".equals(f.getName())) {
-                        try {
-                            f.setAccessible(true);
-                            f.set(m, this);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e.getMessage(), e);
-                        }
-                        break;
-                    }
-                    ;
-                }
-
-            } catch (Exception e) {
-                throw new RuntimeException(e.getMessage(), e);
-            }
+            messages.add(enhance(m));
         }
 
         return messages.toArray(new Message[messages.size()]);
-    }
-
-    public static Collection<Field> getFields(Class<?> clazz) {
-        Map<String, Field> fields = new HashMap<String, Field>();
-        while (clazz != null) {
-            for (Field field : clazz.getDeclaredFields()) {
-                if (!fields.containsKey(field.getName())) {
-                    fields.put(field.getName(), field);
-                }
-            }
-
-            clazz = clazz.getSuperclass();
-        }
-
-        return fields.values();
     }
 
     public void appendMessages(Message[] msgs) throws MessagingException {
@@ -224,12 +181,11 @@ public class MockFolder extends Folder {
             }
 
             mailbox.add(msg);
-
         }
     }
 
     public Message[] expunge() throws MessagingException {
-        List<Message> expunged = new ArrayList<Message>();
+        List<Message> expunged = new ArrayList<>();
         for (Message msg : mailbox) {
             if (msg.getFlags().contains(Flag.DELETED)) expunged.add(msg);
         }
@@ -239,32 +195,9 @@ public class MockFolder extends Folder {
 
     @Override
     public Message[] search(SearchTerm term) throws MessagingException {
-        // TODO Auto-generated method stub
         Message[] search = super.search(term);
 
-        for (Message m : search) {
-            Collection<Field> fields = getFields(m.getClass());
-
-            for (Field f : fields) {
-                if ("folder".equals(f.getName())) {
-                    try {
-
-                        f.setAccessible(true);
-                        f.set(m, this);
-                    } catch (IllegalArgumentException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    break;
-                }
-
-            }
-        }
-
-        return search;
+        return enhance(search);
     }
 
     @Override
@@ -279,29 +212,18 @@ public class MockFolder extends Folder {
 
     @Override
     public void copyMessages(Message[] msgs, Folder folder) throws MessagingException {
-        // TODO Auto-generated method stub
+        super.copyMessages(enhance(msgs), folder);
+    }
 
+    private Message enhance(Message msg) {
+        return enhance(new Message[]{msg})[0];
+    }
+
+    private Message[] enhance(Message[] msgs) {
         for (Message m : msgs) {
-            Collection<Field> fields = getFields(m.getClass());
-
-            for (Field f : fields) {
-                if ("folder".equals(f.getName())) {
-                    try {
-                        f.setAccessible(true);
-                        f.set(m, this);
-                    } catch (IllegalArgumentException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    break;
-                }
-
-            }
+            ReflectionTestUtils.setField(m, "folder", this);
         }
 
-        super.copyMessages(msgs, folder);
+        return msgs;
     }
 }
