@@ -40,10 +40,6 @@ class FolderRepositoryImpl implements FolderRepository {
                     MailFolder mailFolder = folderMapper.toMailFolder(folder);
                     folderList.add(mailFolder);
                 } else {
-
-                    System.out.println(folder.getName());
-                    System.out.println(folder.isSubscribed());
-                    System.out.println("---");
                     if (subscribed.equals(folder.isSubscribed())) {
                         MailFolder mailFolder = folderMapper.toMailFolder(folder);
                         folderList.add(mailFolder);

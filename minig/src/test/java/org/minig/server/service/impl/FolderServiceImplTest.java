@@ -8,14 +8,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailFolder;
 import org.minig.server.MailFolderList;
-import org.minig.server.service.FolderService;
-import org.minig.server.service.MimeMessageBuilder;
-import org.minig.server.service.ServiceTestConfig;
-import org.minig.server.service.SmtpAndImapMockServer;
+import org.minig.server.TestConstants;
+import org.minig.server.service.*;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.mail.internet.MimeMessage;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -42,6 +43,7 @@ public class FolderServiceImplTest {
 
     @Before
     public void setUp() throws Exception {
+        mockServer.reset();
         mockServer.reset();
         mockServer.createAndSubscribeMailBox("INBOX.Trash");
         mockServer.createAndSubscribeMailBox("INBOX.Sent");
@@ -237,10 +239,12 @@ public class FolderServiceImplTest {
 
     @Test
     public void testUpdateFolder_movingFolderWithMessagesWithNestedFolders() throws InterruptedException {
+        MimeMessage msg = new MimeMessageBuilder().build(TestConstants.PLAIN);
+
         mockServer.createAndSubscribeMailBox("INBOX.source");
-        mockServer.prepareMailBox("INBOX.source.folder", new MimeMessageBuilder().build(3));
-        mockServer.prepareMailBox("INBOX.source.folder.nested1", new MimeMessageBuilder().build(4));
-        mockServer.prepareMailBox("INBOX.source.folder.nested2", new MimeMessageBuilder().build(5));
+        mockServer.prepareMailBox("INBOX.source.folder", msg);
+        mockServer.prepareMailBox("INBOX.source.folder.nested1", msg);
+        mockServer.prepareMailBox("INBOX.source.folder.nested2", msg);
         mockServer.createAndSubscribeMailBox("INBOX.target");
 
         MailFolder mf = uut.findById("INBOX.source.folder");
@@ -252,9 +256,9 @@ public class FolderServiceImplTest {
         assertEquals("INBOX.target", uut.findById("INBOX.target.folder").getParentFolderId());
         assertEquals(2, uut.findByParent("INBOX.target.folder").getFolderList().size());
 
-        mockServer.verifyMessageCount("INBOX.target.folder", 3);
-        mockServer.verifyMessageCount("INBOX.target.folder.nested1", 4);
-        mockServer.verifyMessageCount("INBOX.target.folder.nested2", 5);
+        mockServer.verifyMessageCount("INBOX.target.folder", 1);
+        mockServer.verifyMessageCount("INBOX.target.folder.nested1", 1);
+        mockServer.verifyMessageCount("INBOX.target.folder.nested2", 1);
     }
 
     @Test
@@ -301,18 +305,20 @@ public class FolderServiceImplTest {
 
     @Test
     public void testDeleteFolder_trashedWithMessagesWithNestedFolders() {
+        MimeMessage msg = new MimeMessageBuilder().build(TestConstants.PLAIN);
+
         mockServer.createAndSubscribeMailBox("INBOX.Trash.deleteme");
-        mockServer.prepareMailBox("INBOX.Trash.deleteme", new MimeMessageBuilder().build(3));
-        mockServer.prepareMailBox("INBOX.Trash.deleteme.nested1", new MimeMessageBuilder().build(4));
-        mockServer.prepareMailBox("INBOX.Trash.deleteme.nested2", new MimeMessageBuilder().build(5));
+        mockServer.prepareMailBox("INBOX.Trash.deleteme", msg);
+        mockServer.prepareMailBox("INBOX.Trash.deleteme.nested1", msg);
+        mockServer.prepareMailBox("INBOX.Trash.deleteme.nested2", msg);
 
         uut.deleteFolder("INBOX.Trash.deleteme.nested1");
 
         assertEquals(1, uut.findByParent("INBOX.Trash").getFolderList().size());
         assertEquals(1, uut.findByParent("INBOX.Trash.deleteme").getFolderList().size());
 
-        mockServer.verifyMessageCount("INBOX.Trash.deleteme", 3);
-        mockServer.verifyMessageCount("INBOX.Trash.deleteme.nested2", 5);
+        mockServer.verifyMessageCount("INBOX.Trash.deleteme", 1);
+        mockServer.verifyMessageCount("INBOX.Trash.deleteme.nested2", 1);
 
         uut.deleteFolder("INBOX.Trash.deleteme");
 
@@ -331,38 +337,63 @@ public class FolderServiceImplTest {
 
     @Test
     public void testDeleteFolder_noMessagesWithNestedFolders() {
-        mockServer.prepareMailBox("INBOX.deleteme2", new MimeMessageBuilder().build(2));
+        mockServer.prepareMailBox("INBOX.deleteme2", new MimeMessageBuilder().mock());
 
         uut.deleteFolder("INBOX.deleteme2");
 
         assertTrue(uut.findById("INBOX.deleteme2") == null);
         assertEquals("INBOX.Trash.deleteme2", uut.findById("INBOX.Trash.deleteme2").getId());
-        mockServer.verifyMessageCount("INBOX.Trash.deleteme2", 2);
+        mockServer.verifyMessageCount("INBOX.Trash.deleteme2", 1);
     }
 
     @Test
     public void testDeleteFolder_withMessagesWithNestedFolders() {
+        long start = System.currentTimeMillis();
+
+        MimeMessage msg = Mockito.mock(MimeMessage.class);
+                          //new MimeMessageStub(); /
+             //   new MimeMessageBuilder().mock();
+
+        long mock = System.currentTimeMillis();
+        System.out.println("after mock: " + (mock - start));
+
         mockServer.createAndSubscribeMailBox("INBOX.Trash");
 
-        mockServer.createAndSubscribeMailBox("INBOX.test.deleteme2");
-        mockServer.prepareMailBox("INBOX.test.deleteme2", new MimeMessageBuilder().build(3));
-        mockServer.prepareMailBox("INBOX.test.deleteme2.nested1", new MimeMessageBuilder().build(4));
-        mockServer.prepareMailBox("INBOX.test.deleteme2.nested2", new MimeMessageBuilder().build(5));
+        mock = System.currentTimeMillis();
+        System.out.println("mockServer.createAndSubscribeMailBox(\"INBOX.Trash\"): " + (mock - start));
+
+        mockServer.prepareMailBox("INBOX.test.deleteme2", msg);
+        mockServer.prepareMailBox("INBOX.test.deleteme2.nested1", msg);
+        mockServer.prepareMailBox("INBOX.test.deleteme2.nested2", msg);
+
+        mock = System.currentTimeMillis();
+        System.out.println("prepareMailBox1 " + (mock - start));
 
         uut.deleteFolder("INBOX.test.deleteme2.nested1");
 
-        assertEquals(1, uut.findByParent("INBOX.Trash").getFolderList().size());
-        assertEquals(1, uut.findByParent("INBOX.test.deleteme2").getFolderList().size());
+        mock = System.currentTimeMillis();
+        System.out.println("uut.deleteFolder(\"INBOX.test.deleteme2.nested1\") " + (mock - start));
 
-        mockServer.verifyMessageCount("INBOX.Trash.nested1", 4);
-        mockServer.verifyMessageCount("INBOX.test.deleteme2.nested2", 5);
+        mockServer.verifyMailbox("INBOX.Trash.nested1");
+        mockServer.verifyMessageCount("INBOX.Trash.nested1", 1);
+        mockServer.verifyMessageCount("INBOX.test.deleteme2", 1);
+        mockServer.verifyMessageCount("INBOX.test.deleteme2.nested2", 1);
+
+        mock = System.currentTimeMillis();
+        System.out.println("verifyMessageCount " + (mock - start));
 
         uut.deleteFolder("INBOX.test.deleteme2");
 
-        assertEquals(2, uut.findByParent("INBOX.Trash").getFolderList().size());
-        mockServer.verifyMessageCount("INBOX.Trash.deleteme2", 3);
-        mockServer.verifyMessageCount("INBOX.Trash.deleteme2.nested2", 5);
-        mockServer.verifyMessageCount("INBOX.Trash.nested1", 4);
+        mock = System.currentTimeMillis();
+        System.out.println(" uut.deleteFolder(\"INBOX.test.deleteme2\"); " + (mock - start));
+
+        mockServer.verifyMailbox("INBOX.Trash.deleteme2");
+        mockServer.verifyMessageCount("INBOX.Trash.deleteme2", 1);
+        mockServer.verifyMessageCount("INBOX.Trash.deleteme2.nested2", 1);
+        mockServer.verifyMessageCount("INBOX.Trash.nested1", 1);
+
+        mock = System.currentTimeMillis();
+        System.out.println("last " + (mock - start));
     }
 
     // @Test
