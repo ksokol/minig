@@ -170,15 +170,6 @@ public class Mailbox extends ArrayList<Message> {
         return mailboxesOfUser;
     }
 
-    @Deprecated
-    static Mailbox init(Address address, String mailboxPath, boolean subscribed, boolean exists) throws AddressException {
-        Mailbox mailbox = new Mailbox(address, mailboxPath, subscribed, exists);
-
-        MailboxHolder.addFixture(mailbox);
-
-        return mailbox;
-    }
-
     public int getNewMessageCount() {
         // to compute the real size, we need to trim off all the e-mails that are no longer in the base set
         unread.retainAll(this);

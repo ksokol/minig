@@ -51,10 +51,10 @@ public class MockStore extends Store {
         Mailbox mailbox = Mailbox.get(address, name);
 
         if (mailbox == null) {
-            return new MockFolder(this, Mailbox.init(address, name, true, false));
-        } else {
-            return new MockFolder(this, mailbox);
+            mailbox = new MailboxBuilder(address).mailbox(name).subscribed(true).exists(false).build();
         }
+
+        return new MockFolder(this, mailbox);
     }
 
     public Folder getFolder(URLName url) throws MessagingException {

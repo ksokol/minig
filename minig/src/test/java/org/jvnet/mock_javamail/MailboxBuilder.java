@@ -1,5 +1,6 @@
 package org.jvnet.mock_javamail;
 
+import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -17,6 +18,10 @@ public class MailboxBuilder {
     private boolean exists;
     private List<Message> messages = new ArrayList<>();
     private boolean error;
+
+    public MailboxBuilder(Address address) {
+        this.address = address.toString();
+    }
 
     public MailboxBuilder(String address) {
         this.address = address;
