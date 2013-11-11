@@ -21,10 +21,10 @@ import javax.mail.internet.MimeMessage;
 public class Mailbox extends ArrayList<Message> {
     private static final long serialVersionUID = 1L;
 
-    private final String parent;
-    private final Address address;
-    private final String name;
-    private final String path;
+    private String parent;
+    private Address address;
+    private String name;
+    private String path;
     private boolean exists;
     private char separator = '.'; //TODO
 
@@ -41,7 +41,7 @@ public class Mailbox extends ArrayList<Message> {
 
     private boolean subscribed;
 
-    public Mailbox getParent() {
+    Mailbox getParent() {
         if (parent == null) {
             return null;
         }
@@ -59,7 +59,7 @@ public class Mailbox extends ArrayList<Message> {
         return new Mailbox(address, parent, false, false);
     }
 
-    public Mailbox(Address address, String fullname, boolean subscribed, boolean exists) {
+    Mailbox(Address address, String fullname, boolean subscribed, boolean exists) {
         this.address = address;
         this.subscribed = subscribed;
         this.exists = exists;
@@ -95,6 +95,22 @@ public class Mailbox extends ArrayList<Message> {
 
     public Address getAddress() {
         return address;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     /**
