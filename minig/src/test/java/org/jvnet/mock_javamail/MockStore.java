@@ -33,7 +33,7 @@ public class MockStore extends Store {
         address = new InternetAddress(concat);
 
         // TODO
-        Mailbox mailbox = Mailbox.get(address, "INBOX");
+        Mailbox mailbox = MailboxHolder.get(address, "INBOX");
 
         if (mailbox.isError()) throw new MessagingException("Simulated error connecting to " + address);
 
@@ -41,14 +41,14 @@ public class MockStore extends Store {
     }
 
     public Folder getDefaultFolder() throws MessagingException {
-        Mailbox mailbox = Mailbox.get(address, "INBOX");
+        Mailbox mailbox = MailboxHolder.get(address, "INBOX");
 
         return new MockFolder(this, mailbox);
     }
 
     @Override
     public Folder getFolder(String name) throws MessagingException {
-        Mailbox mailbox = Mailbox.get(address, name);
+        Mailbox mailbox = MailboxHolder.get(address, name);
 
         if (mailbox == null) {
             mailbox = new MailboxBuilder(address).mailbox(name).subscribed(true).exists(false).build();

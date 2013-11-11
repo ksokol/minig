@@ -60,12 +60,9 @@ public class MockJavamailSmtpAndImapMockServer implements SmtpAndImapMockServer 
     public void verifyMailbox(String mailbox) {
         // TODO Auto-generated method stub
 
-        try {
-            Mailbox result = Mailbox.get(mailAuthentication.getAddress(), mailbox);
+
+            Mailbox result = MailboxHolder.get(mailAuthentication.getAddress(), mailbox);
             Assert.assertThat(result, Matchers.notNullValue());
-        } catch (AddressException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
 
     }
 
@@ -73,13 +70,11 @@ public class MockJavamailSmtpAndImapMockServer implements SmtpAndImapMockServer 
     public void verifyMessageCount(String mailBox, int count) {
         // TODO Auto-generated method stub
 
-        try {
-            Mailbox mailbox = Mailbox.get(mailAuthentication.getAddress(), mailBox);
+
+            Mailbox mailbox = MailboxHolder.get(mailAuthentication.getAddress(), mailBox);
 
             Assert.assertThat(mailbox, Matchers.hasSize(count));
-        } catch (AddressException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
+
 
     }
 
@@ -95,7 +90,7 @@ public class MockJavamailSmtpAndImapMockServer implements SmtpAndImapMockServer 
     public MimeMessage[] getReceivedMessages(String recipient) {
 
         try {
-            Mailbox mailbox = Mailbox.get(new InternetAddress(recipient), "INBOX");
+            Mailbox mailbox = MailboxHolder.get(new InternetAddress(recipient), "INBOX");
 
             return mailbox.getUnread().toArray(new MimeMessage[mailbox.getUnread().size()]);
         } catch (AddressException e) {

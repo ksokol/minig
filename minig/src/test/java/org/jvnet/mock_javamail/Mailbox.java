@@ -46,13 +46,17 @@ public class Mailbox extends ArrayList<Message> {
             return null;
         }
 
-        Mailbox mailbox = Mailbox.get(address, parent);
+        Mailbox mailbox = new Mailbox(address, parent, true, true);
 
-        if (mailbox == null) {
-            return new Mailbox(address, parent, false, false);
-        } else {
-            return mailbox;
+        if (MailboxHolder.allMailboxes().contains(mailbox)) {
+            for (Mailbox mb : MailboxHolder.allMailboxes()) {
+                if (mailbox.equals(mb)) {
+                    return mb;
+                }
+            }
         }
+
+        return new Mailbox(address, parent, false, false);
     }
 
     public Mailbox(Address address, String fullname, boolean subscribed, boolean exists) {
@@ -131,43 +135,6 @@ public class Mailbox extends ArrayList<Message> {
     public void existsNow() {
         this.exists = true;
         this.subscribed = true;
-    }
-
-    /**
-     * Get the inbox for the given address.
-     */
-    @Deprecated
-    public synchronized static Mailbox get(Address a, String mailboxPath) {
-        Mailbox mailbox = new Mailbox(a, mailboxPath, true, true);
-
-        if (MailboxHolder.allMailboxes().contains(mailbox)) {
-
-            for (Mailbox mb : MailboxHolder.allMailboxes()) {
-                if (mailbox.equals(mb)) {
-                    return mb;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    @Deprecated
-    public static Mailbox get(String address, String mailboxPath) throws AddressException {
-        return get(new InternetAddress(address), mailboxPath);
-    }
-
-    @Deprecated
-    public static List<Mailbox> get(Address address) throws AddressException {
-        List<Mailbox> mailboxesOfUser = new ArrayList<Mailbox>();
-
-        for (Mailbox mb : MailboxHolder.allMailboxes()) {
-            if (mb.exists && mb.getAddress().equals(address)) {
-                mailboxesOfUser.add(mb);
-            }
-        }
-
-        return mailboxesOfUser;
     }
 
     public int getNewMessageCount() {
