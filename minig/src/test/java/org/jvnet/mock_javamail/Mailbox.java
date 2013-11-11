@@ -47,6 +47,7 @@ public class Mailbox extends ArrayList<Message> {
         }
 
         Mailbox mailbox = new Mailbox(address, parent, true, true);
+      //  Mailbox mailbox =        new MailboxBuilder(address).mailbox(parent).subscribed().exists().build();
 
         if (MailboxHolder.allMailboxes().contains(mailbox)) {
             for (Mailbox mb : MailboxHolder.allMailboxes()) {
@@ -56,7 +57,7 @@ public class Mailbox extends ArrayList<Message> {
             }
         }
 
-        return new Mailbox(address, parent, false, false);
+        return new MailboxBuilder(address).mailbox(parent).build();
     }
 
     Mailbox(Address address, String fullname, boolean subscribed, boolean exists) {

@@ -37,8 +37,19 @@ public class MailboxBuilder {
         return this;
     }
 
+    public MailboxBuilder subscribed() {
+        this.subscribed = true;
+        return this;
+    }
+
     public MailboxBuilder subscribed(boolean subscribed) {
         this.subscribed = subscribed;
+        return this;
+    }
+
+
+    public MailboxBuilder exists() {
+        this.exists = true;
         return this;
     }
 
@@ -52,7 +63,7 @@ public class MailboxBuilder {
         return this;
     }
 
-    public MailboxBuilder withError() {
+    public MailboxBuilder throwError() {
         error = true;
         return this;
     }
