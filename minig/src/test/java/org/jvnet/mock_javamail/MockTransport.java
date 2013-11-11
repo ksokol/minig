@@ -30,9 +30,7 @@ public class MockTransport extends Transport {
             Mailbox mailbox = MailboxHolder.getFixture(a, "INBOX");
 
             if (mailbox == null) {
-                Mailbox inbox = new MailboxBuilder(a.toString()).inbox().subscribed(false).exists(true).addMessage(msg).build();
-
-                MailboxHolder.addFixture(inbox);
+                new MailboxBuilder(a.toString()).inbox().subscribed(false).exists(true).addMessage(msg).build();
             } else {
                 if (mailbox.isError()) {
                     throw new MessagingException("Simulated error sending message to " + a);

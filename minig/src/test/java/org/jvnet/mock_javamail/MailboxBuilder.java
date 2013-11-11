@@ -16,6 +16,7 @@ public class MailboxBuilder {
     private boolean subscribed;
     private boolean exists;
     private List<Message> messages = new ArrayList<>();
+    private boolean error;
 
     public MailboxBuilder(String address) {
         this.address = address;
@@ -46,15 +47,20 @@ public class MailboxBuilder {
         return this;
     }
 
+    public MailboxBuilder withError() {
+        error = true;
+        return this;
+    }
+
     public Mailbox build() {
         try {
             Mailbox mailbox = new Mailbox(new InternetAddress(address), (name == null) ? "INBOX" : name);
             mailbox.setSubscribed(subscribed);
             mailbox.setExists(exists);
             mailbox.addAll(messages);
+            mailbox.setError(error);
 
             MailboxHolder.addFixture(mailbox);
-
             return mailbox;
         } catch (AddressException e) {
             throw new RuntimeException(e.getMessage(), e);
