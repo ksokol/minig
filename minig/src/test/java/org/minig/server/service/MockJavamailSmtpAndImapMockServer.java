@@ -33,12 +33,12 @@ public class MockJavamailSmtpAndImapMockServer implements SmtpAndImapMockServer 
 
     @Override
     public void createAndSubscribeMailBox(String mailBox) {
-        new MailboxBuilder(mailAuthentication.getAddress()).mailbox(mailBox).subscribed(true).exists(true).build();
+        new MailboxBuilder(mailAuthentication.getAddress()).mailbox(mailBox).subscribed().exists().build();
     }
 
     @Override
     public void createAndNotSubscribeMailBox(String mailBox) {
-        new MailboxBuilder(mailAuthentication.getAddress()).mailbox(mailBox).subscribed(false).exists(true).build();
+        new MailboxBuilder(mailAuthentication.getAddress()).mailbox(mailBox).subscribed(false).exists().build();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class MockJavamailSmtpAndImapMockServer implements SmtpAndImapMockServer 
 
     @Override
     public void prepareMailBox(String mailBox, List<MimeMessage> messages) {
-        Mailbox mailbox = new MailboxBuilder(mailAuthentication.getAddress()).mailbox(mailBox).subscribed(false).exists(true).build();
+        Mailbox mailbox = new MailboxBuilder(mailAuthentication.getAddress()).mailbox(mailBox).subscribed(false).exists().build();
         mailbox.addAll(messages);
     }
 
@@ -83,7 +83,7 @@ public class MockJavamailSmtpAndImapMockServer implements SmtpAndImapMockServer 
         // TODO
         MailboxHolder.reset();
 
-        new MailboxBuilder(mailAuthentication.getAddress()).inbox().subscribed(false).exists(true).build();
+        new MailboxBuilder(mailAuthentication.getAddress()).inbox().subscribed(false).exists().build();
     }
 
     @Override

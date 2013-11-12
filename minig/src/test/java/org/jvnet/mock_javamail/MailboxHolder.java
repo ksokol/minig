@@ -22,7 +22,7 @@ public class MailboxHolder {
 
     @Deprecated
     public synchronized static Mailbox get(Address a, String mailboxPath) {
-        Mailbox mailbox = new Mailbox(a, mailboxPath, true, true);
+        Mailbox mailbox = new MailboxBuilder(a).mailbox(mailboxPath).standalone().subscribed().exists().build();
 
         if (mailboxes.contains(mailbox)) {
 

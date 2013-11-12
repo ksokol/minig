@@ -21,10 +21,12 @@ import javax.mail.internet.MimeMessage;
 public class Mailbox extends ArrayList<Message> {
     private static final long serialVersionUID = 1L;
 
-    private String parent;
-    private Address address;
-    private String name;
-    private String path;
+    //TODO
+    protected String parent;
+    protected Address address;
+    protected String name;
+    protected String path;
+
     private boolean exists;
     private char separator = '.'; //TODO
 
@@ -46,8 +48,7 @@ public class Mailbox extends ArrayList<Message> {
             return null;
         }
 
-        Mailbox mailbox = new Mailbox(address, parent, true, true);
-      //  Mailbox mailbox =        new MailboxBuilder(address).mailbox(parent).subscribed().exists().build();
+        Mailbox mailbox = new MailboxBuilder(address).mailbox(parent).subscribed().exists().standalone().build();
 
         if (MailboxHolder.allMailboxes().contains(mailbox)) {
             for (Mailbox mb : MailboxHolder.allMailboxes()) {
@@ -60,39 +61,7 @@ public class Mailbox extends ArrayList<Message> {
         return new MailboxBuilder(address).mailbox(parent).build();
     }
 
-    Mailbox(Address address, String fullname, boolean subscribed, boolean exists) {
-        this.address = address;
-        this.subscribed = subscribed;
-        this.exists = exists;
-        this.path = fullname;
-
-        int lastIndexOf = fullname.lastIndexOf(".");
-
-        if (lastIndexOf != -1) {
-            this.name = fullname.substring(lastIndexOf + 1);
-            this.parent = fullname.substring(0, lastIndexOf);
-
-        } else {
-            this.name = fullname;
-            this.parent = null;
-        }
-    }
-
-    public Mailbox(Address address, String fullname) {
-        this.address = address;
-        this.path = fullname;
-
-        int lastIndexOf = fullname.lastIndexOf(".");
-
-        if (lastIndexOf != -1) {
-            this.name = fullname.substring(lastIndexOf + 1);
-            this.parent = fullname.substring(0, lastIndexOf);
-
-        } else {
-            this.name = fullname;
-            this.parent = null;
-        }
-    }
+    Mailbox() {}
 
     public Address getAddress() {
         return address;

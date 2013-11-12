@@ -19,6 +19,8 @@ public class MailboxBuilder {
     private List<Message> messages = new ArrayList<>();
     private boolean error;
 
+    private boolean standalone = false;
+
     public MailboxBuilder(Address address) {
         this.address = address.toString();
     }
@@ -58,6 +60,11 @@ public class MailboxBuilder {
         return this;
     }
 
+    public MailboxBuilder standalone() {
+        this.standalone = true;
+        return this;
+    }
+
     public MailboxBuilder addMessage(Message message) {
         this.messages.add(message);
         return this;
@@ -70,13 +77,33 @@ public class MailboxBuilder {
 
     public Mailbox build() {
         try {
-            Mailbox mailbox = new Mailbox(new InternetAddress(address), (name == null) ? "INBOX" : name);
+            String tmpName = (name == null) ? "INBOX" : name;
+            String tmpName2 = tmpName;
+            String path = tmpName;
+            String parent = null;
+
+            int lastIndexOf = tmpName.lastIndexOf(".");
+
+            if (lastIndexOf != -1) {
+                tmpName2 = tmpName.substring(lastIndexOf + 1);
+                parent = tmpName.substring(0, lastIndexOf);
+            }
+
+            Mailbox mailbox = new Mailbox();
+
+            mailbox.name = tmpName2;
+            mailbox.address = new InternetAddress(address);
+            mailbox.path = path;
+            mailbox.parent = parent;
             mailbox.setSubscribed(subscribed);
             mailbox.setExists(exists);
             mailbox.addAll(messages);
             mailbox.setError(error);
 
-            MailboxHolder.addFixture(mailbox);
+            if(!standalone) {
+                MailboxHolder.addFixture(mailbox);
+            }
+
             return mailbox;
         } catch (AddressException e) {
             throw new RuntimeException(e.getMessage(), e);
