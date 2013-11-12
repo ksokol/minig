@@ -47,7 +47,7 @@ public class MailboxHolder {
 
     public static Mailbox getFixture(Address address, String name) {
         for (Mailbox mb : mailboxes) {
-            if (mb.getAddress().equals(address) && name.equals(mb.getPath())) {
+            if (mb.address.equals(address) && name.equals(mb.path)) {
                 return mb;
             }
         }

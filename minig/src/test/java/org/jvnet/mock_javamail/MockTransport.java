@@ -32,7 +32,7 @@ public class MockTransport extends Transport {
             if (mailbox == null) {
                 new MailboxBuilder(a.toString()).inbox().subscribed(false).exists(true).addMessage(msg).build();
             } else {
-                if (mailbox.isError()) {
+                if (mailbox.error) {
                     throw new MessagingException("Simulated error sending message to " + a);
                 }
             }

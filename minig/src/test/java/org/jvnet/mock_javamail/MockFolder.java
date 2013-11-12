@@ -25,12 +25,12 @@ class MockFolder extends Folder {
 
     @Override
     public String getName() {
-        return mailbox.getName();
+        return mailbox.name;
     }
 
     @Override
     public String getFullName() {
-        return mailbox.getPath();
+        return mailbox.path;
     }
 
     @Override
@@ -44,7 +44,7 @@ class MockFolder extends Folder {
 
     @Override
     public boolean exists() throws MessagingException {
-        return mailbox.isExists();
+        return mailbox.exists;
     }
 
     @Override
@@ -55,7 +55,7 @@ class MockFolder extends Folder {
         switch(pattern) {
             case "*": {
                 for (Mailbox mb : all) {
-                    if (mb.getPath().startsWith(mailbox.getPath())) {
+                    if (mb.path.startsWith(mailbox.path)) {
                         mockFolders.add(new MockFolder(getStore(), mb));
                     }
                 }
@@ -64,7 +64,7 @@ class MockFolder extends Folder {
             }
             case "%": {
                 for (Mailbox mb : all) {
-                    if (mb.getPath().matches(mailbox.getPath() + "\\.?[\\w]*")) {
+                    if (mb.path.matches(mailbox.path + "\\.?[\\w]*")) {
                         mockFolders.add(new MockFolder(getStore(), mb));
                     }
                 }
@@ -108,8 +108,8 @@ class MockFolder extends Folder {
     public Folder getFolder(String name) throws MessagingException {
         String folderName = name;
 
-        if (mailbox.getPath() != null) {
-            folderName = mailbox.getPath() + getSeparator() + name;
+        if (mailbox.path != null) {
+            folderName = mailbox.path + getSeparator() + name;
         }
 
         return getStore().getFolder(folderName);
@@ -121,7 +121,7 @@ class MockFolder extends Folder {
 
         if (recurse) {
             for (Mailbox mb : mailbox.getAll()) {
-                if (mb.getPath().startsWith(mailbox.getPath())) {
+                if (mb.path.startsWith(mailbox.path)) {
                     result &= mb.delete();
                 }
             }
@@ -223,12 +223,12 @@ class MockFolder extends Folder {
 
     @Override
     public boolean isSubscribed() {
-        return mailbox.isSubscribed();
+        return mailbox.subscribed;
     }
 
     @Override
     public void setSubscribed(boolean subscribe) throws MessagingException {
-        mailbox.setSubscribed(subscribe);
+        mailbox.subscribed = subscribe;
     }
 
     @Override

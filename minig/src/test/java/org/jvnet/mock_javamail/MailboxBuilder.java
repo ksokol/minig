@@ -95,10 +95,10 @@ public class MailboxBuilder {
             mailbox.address = new InternetAddress(address);
             mailbox.path = path;
             mailbox.parent = parent;
-            mailbox.setSubscribed(subscribed);
-            mailbox.setExists(exists);
+            mailbox.subscribed = subscribed;
+            mailbox.exists = exists;
             mailbox.addAll(messages);
-            mailbox.setError(error);
+            mailbox.error = error;
 
             if(!standalone) {
                 MailboxHolder.addFixture(mailbox);

@@ -35,7 +35,7 @@ public class MockStore extends Store {
         // TODO
         Mailbox mailbox = MailboxHolder.get(address, "INBOX");
 
-        if (mailbox.isError()) throw new MessagingException("Simulated error connecting to " + address);
+        if (mailbox.error) throw new MessagingException("Simulated error connecting to " + address);
 
         return true;
     }

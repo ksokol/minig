@@ -4,9 +4,6 @@ import java.util.*;
 
 import javax.mail.Address;
 import javax.mail.Message;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 /**
  * In-memory mailbox that hosts messages.
@@ -22,13 +19,13 @@ public class Mailbox extends ArrayList<Message> {
     private static final long serialVersionUID = 1L;
 
     //TODO
-    protected String parent;
-    protected Address address;
-    protected String name;
-    protected String path;
+    String parent;
+    Address address;
+    String name;
+    String path;
 
-    private boolean exists;
-    private char separator = '.'; //TODO
+    boolean exists;
+    char separator = '.'; //TODO
 
     /**
      * Of the mails in the {@link ArrayList}, these are considered unread.
@@ -39,9 +36,15 @@ public class Mailbox extends ArrayList<Message> {
      */
     private List<Message> unread = new ArrayList<>();
 
-    private boolean error;
+    /**
+     * Sets if this mailbox should be flagged as 'error'.
+     *
+     * Any sending/receiving operation with an error mailbox will fail. This behavior can be used to test the error
+     * handling behavior of the application.
+     */
+    boolean error;
 
-    private boolean subscribed;
+    boolean subscribed;
 
     Mailbox getParent() {
         if (parent == null) {
@@ -62,49 +65,6 @@ public class Mailbox extends ArrayList<Message> {
     }
 
     Mailbox() {}
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setParent(String parent) {
-        this.parent = parent;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    /**
-     * Returns true if this mailbox is flagged as 'error'.
-     * 
-     * @see #setError(boolean)
-     */
-    public boolean isError() {
-        return error;
-    }
-
-    /**
-     * Sets if this mailbox should be flagged as 'error'.
-     * 
-     * Any sending/receiving operation with an error mailbox will fail. This behavior can be used to test the error
-     * handling behavior of the application.
-     */
-    public void setError(boolean error) {
-        this.error = error;
-    }
-
-    public boolean isSubscribed() {
-        return subscribed;
-    }
 
     public List<Mailbox> getAll() {
         List<Mailbox> mailboxesOfUser = new ArrayList<>();
@@ -129,18 +89,6 @@ public class Mailbox extends ArrayList<Message> {
         return unread.size();
     }
 
-    public boolean isExists() {
-        return exists;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public Message get(int msgnum) {
         Message m = super.get(msgnum);
         unread.remove(m);
@@ -151,13 +99,6 @@ public class Mailbox extends ArrayList<Message> {
         return unread;
     }
 
-    public void setExists(boolean exists) {
-        this.exists = exists;
-    }
-
-    public void setSubscribed(boolean subscribed) {
-        this.subscribed = subscribed;
-    }
 
     public boolean addAll(Collection<? extends Message> messages) {
         unread.addAll(messages);
