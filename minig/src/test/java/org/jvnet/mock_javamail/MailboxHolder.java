@@ -15,7 +15,6 @@ public class MailboxHolder {
 
     private static final Set<Mailbox> mailboxes = new HashSet<>();
 
-
     public static List<Mailbox> allMailboxes(Address address) {
         List<Mailbox> mailboxesOfAddress = new ArrayList<>();
 
@@ -28,23 +27,16 @@ public class MailboxHolder {
         return mailboxesOfAddress;
     }
 
-    @Deprecated
-    public synchronized static Mailbox get(Address a, String mailboxPath) {
-        Mailbox mailbox = new MailboxBuilder(a).mailbox(mailboxPath).standalone().subscribed().exists().build();
-
-        if (mailboxes.contains(mailbox)) {
-
-            for (Mailbox mb : mailboxes) {
-                if (mailbox.equals(mb)) {
-                    return mb;
-                }
+    public static Mailbox get(Address a, String mailboxPath) {
+        for (Mailbox mb : mailboxes) {
+            if (mb.address.equals(a) && mb.path.equals(mailboxPath)) {
+                return mb;
             }
         }
 
         return null;
     }
 
-    @Deprecated
     public static Mailbox get(String address, String mailboxPath) {
         try {
             return get(new InternetAddress(address), mailboxPath);
@@ -53,22 +45,12 @@ public class MailboxHolder {
         }
     }
 
-    public static Mailbox getFixture(Address address, String name) {
-        for (Mailbox mb : mailboxes) {
-            if (mb.address.equals(address) && name.equals(mb.path)) {
-                return mb;
-            }
-        }
-
-        return null;
-    }
-
-    public static void addFixture(Mailbox mailbox) {
+    public static void add(Mailbox mailbox) {
         mailboxes.remove(mailbox);
         mailboxes.add(mailbox);
     }
 
-    public static synchronized boolean remove(Mailbox mailbox) {
+    public static boolean remove(Mailbox mailbox) {
         return mailboxes.remove(mailbox);
     }
 

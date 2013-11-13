@@ -27,7 +27,7 @@ public class MockTransport extends Transport {
         for (Address a : addresses) {
             // create a copy to isolate the sender and the receiver
 
-            Mailbox mailbox = MailboxHolder.getFixture(a, "INBOX");
+            Mailbox mailbox = MailboxHolder.get(a, "INBOX");
 
             if (mailbox == null) {
                 new MailboxBuilder(a.toString()).inbox().subscribed(false).exists(true).addMessage(msg).build();

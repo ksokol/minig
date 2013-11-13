@@ -101,7 +101,7 @@ public class MailboxBuilder {
             mailbox.error = error;
 
             if(!standalone) {
-                MailboxHolder.addFixture(mailbox);
+                MailboxHolder.add(mailbox);
             }
 
             return mailbox;

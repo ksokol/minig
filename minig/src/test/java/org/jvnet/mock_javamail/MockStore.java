@@ -16,8 +16,6 @@ import javax.mail.internet.InternetAddress;
  */
 public class MockStore extends Store {
 
-    private static final char SEPARATOR = '.';
-
     private Address address;
 
     public MockStore(Session session, URLName urlname) {
@@ -35,7 +33,9 @@ public class MockStore extends Store {
         // TODO
         Mailbox mailbox = MailboxHolder.get(address, "INBOX");
 
-        if (mailbox.error) throw new MessagingException("Simulated error connecting to " + address);
+        if (mailbox.error) {
+            throw new MessagingException("Simulated error connecting to " + address);
+        }
 
         return true;
     }
