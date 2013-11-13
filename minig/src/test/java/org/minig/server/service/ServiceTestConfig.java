@@ -14,27 +14,6 @@ import org.springframework.context.annotation.Profile;
 @Profile({ "test" })
 public class ServiceTestConfig {
 
-    @Bean(name = "javaMailProperties")
-    public Properties javaMailProperties() {
-        Properties javaMailProperties = new Properties();
-        javaMailProperties.put("mail.store.protocol", "imap");
-        javaMailProperties.put("mail.smtp.auth", "true");
-        javaMailProperties.put("mail.imap.port", "3143");
-        javaMailProperties.put("mail.transport.protocol", "smtp");
-        javaMailProperties.put("mail.smtp.port", "3125");
-        // javaMailProperties.put("mail.debug", "true");
-
-        return javaMailProperties;
-    }
-
-    // @Bean(name = "javaMail")
-    // public JavaMailSender javaMail() {
-    // JavaMailSenderImpl javaMailSenderImpl = new JavaMailSenderImpl();
-    // javaMailSenderImpl.setJavaMailProperties(javaMailProperties());
-    //
-    // return javaMailSenderImpl;
-    // }
-
     @Bean(name = "mailContext")
     public MailContext mailContext() {
         return new SimpleMailContextImpl();

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.mail.internet.MimeMessage;
 
+@Deprecated
 public interface SmtpAndImapMockServer {
 
     public abstract void createAndSubscribeMailBox(String... mailBox);

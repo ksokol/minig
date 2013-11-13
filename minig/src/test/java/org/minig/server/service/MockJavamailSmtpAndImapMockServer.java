@@ -59,44 +59,26 @@ public class MockJavamailSmtpAndImapMockServer implements SmtpAndImapMockServer 
 
     @Override
     public void verifyMailbox(String mailbox) {
-        // TODO Auto-generated method stub
-
-
-            Mailbox result = MailboxHolder.get(mailAuthentication.getAddress(), mailbox);
-            Assert.assertThat(result, Matchers.notNullValue());
-
+        Mailbox result = MailboxHolder.get(mailAuthentication.getAddress(), mailbox);
+        Assert.assertThat(result, Matchers.notNullValue());
     }
 
     @Override
     public void verifyMessageCount(String mailBox, int count) {
-        // TODO Auto-generated method stub
-
-
-            Mailbox mailbox = MailboxHolder.get(mailAuthentication.getAddress(), mailBox);
-
-            Assert.assertThat(mailbox, Matchers.hasSize(count));
-
-
+        Mailbox mailbox = MailboxHolder.get(mailAuthentication.getAddress(), mailBox);
+        Assert.assertThat(mailbox, Matchers.hasSize(count));
     }
 
     @Override
     public void reset() {
-        // TODO
         MailboxHolder.reset();
-
         new MailboxBuilder(mailAuthentication.getAddress()).inbox().subscribed(false).exists().build();
     }
 
     @Override
     public MimeMessage[] getReceivedMessages(String recipient) {
-
-        try {
-            Mailbox mailbox = MailboxHolder.get(new InternetAddress(recipient), "INBOX");
-
-            return mailbox.getUnread().toArray(new MimeMessage[mailbox.getUnread().size()]);
-        } catch (AddressException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
+        Mailbox mailbox = MailboxHolder.get(recipient, "INBOX");
+        return mailbox.getUnread().toArray(new MimeMessage[mailbox.getUnread().size()]);
     }
 
 }
