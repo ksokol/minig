@@ -1,5 +1,7 @@
 package org.minig.test.javamail;
 
+import org.springframework.util.StringUtils;
+
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.internet.AddressException;
@@ -19,19 +21,12 @@ public class MailboxBuilder {
     private List<Message> messages = new ArrayList<>();
     private boolean error;
 
-    private boolean standalone = false;
-
     public MailboxBuilder(Address address) {
         this.address = address.toString();
     }
 
     public MailboxBuilder(String address) {
         this.address = address;
-    }
-
-    public MailboxBuilder inbox() {
-        this.name = "INBOX";
-        return this;
     }
 
     public MailboxBuilder mailbox(String name) {
@@ -49,7 +44,6 @@ public class MailboxBuilder {
         return this;
     }
 
-
     public MailboxBuilder exists() {
         this.exists = true;
         return this;
@@ -57,11 +51,6 @@ public class MailboxBuilder {
 
     public MailboxBuilder exists(boolean exists) {
         this.exists = exists;
-        return this;
-    }
-
-    public MailboxBuilder standalone() {
-        this.standalone = true;
         return this;
     }
 
@@ -77,21 +66,20 @@ public class MailboxBuilder {
 
     public Mailbox build() {
         try {
-            String tmpName = (name == null) ? "INBOX" : name;
-            String tmpName2 = tmpName;
-            String path = tmpName;
+            String tmpName = name;
+            String path = name;
             String parent = null;
 
-            int lastIndexOf = tmpName.lastIndexOf(".");
+            int lastIndexOf = name.lastIndexOf(".");
 
             if (lastIndexOf != -1) {
-                tmpName2 = tmpName.substring(lastIndexOf + 1);
-                parent = tmpName.substring(0, lastIndexOf);
+                tmpName = name.substring(lastIndexOf + 1);
+                parent = name.substring(0, lastIndexOf);
             }
 
             Mailbox mailbox = new Mailbox();
 
-            mailbox.name = tmpName2;
+            mailbox.name = tmpName;
             mailbox.address = new InternetAddress(address);
             mailbox.path = path;
             mailbox.parent = parent;
@@ -100,9 +88,7 @@ public class MailboxBuilder {
             mailbox.addAll(messages);
             mailbox.error = error;
 
-            if(!standalone) {
-                MailboxHolder.add(mailbox);
-            }
+            MailboxHolder.add(mailbox);
 
             return mailbox;
         } catch (AddressException e) {

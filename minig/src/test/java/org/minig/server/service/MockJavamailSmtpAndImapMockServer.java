@@ -70,7 +70,7 @@ public class MockJavamailSmtpAndImapMockServer implements SmtpAndImapMockServer 
     @Override
     public void reset() {
         MailboxHolder.reset();
-        new MailboxBuilder(mailAuthentication.getAddress()).inbox().subscribed(false).exists().build();
+        new MailboxBuilder(mailAuthentication.getAddress()).mailbox("INBOX").subscribed(false).exists().build();
     }
 
     @Override
