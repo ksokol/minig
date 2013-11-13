@@ -3,15 +3,13 @@ package org.minig.server.service;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.jvnet.mock_javamail.Mailbox;
-import org.jvnet.mock_javamail.MailboxBuilder;
-import org.jvnet.mock_javamail.MailboxHolder;
+import org.minig.test.javamail.Mailbox;
+import org.minig.test.javamail.MailboxBuilder;
+import org.minig.test.javamail.MailboxHolder;
 import org.minig.MailAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;

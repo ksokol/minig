@@ -1,4 +1,4 @@
-package org.jvnet.mock_javamail;
+package org.minig.test.javamail;
 
 import java.util.*;
 

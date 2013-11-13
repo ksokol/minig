@@ -1,4 +1,4 @@
-package org.jvnet.mock_javamail;
+package org.minig.test.javamail;
 
 import org.springframework.test.util.ReflectionTestUtils;
 
