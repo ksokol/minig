@@ -11,14 +11,13 @@ import javax.mail.Message;
  * <p>
  * This class also maintains the 'unread' flag for messages that are newly added. This flag is automatically removed
  * when the message is retrieved, much like how MUA behaves. This flag affects {@link MockFolder#getNewMessageCount()}.
- * 
+ *
  * @author Kohsuke Kawaguchi
  * @author dev@sokol-web.de
  */
 public class Mailbox extends ArrayList<Message> {
     private static final long serialVersionUID = 1L;
 
-    //TODO
     String parent;
     Address address;
     String name;
@@ -43,44 +42,26 @@ public class Mailbox extends ArrayList<Message> {
      * handling behavior of the application.
      */
     boolean error;
-
     boolean subscribed;
+
+    Mailbox() {}
 
     Mailbox getParent() {
         if (parent == null) {
             return null;
         }
 
-        Mailbox mailbox = new MailboxBuilder(address).mailbox(parent).subscribed().exists().standalone().build();
-
-        if (MailboxHolder.allMailboxes().contains(mailbox)) {
-            for (Mailbox mb : MailboxHolder.allMailboxes()) {
-                if (mailbox.equals(mb)) {
-                    return mb;
-                }
+        for (Mailbox mb : getAll()) {
+            if (mb.path.equals(parent)) {
+                return mb;
             }
         }
 
         return new MailboxBuilder(address).mailbox(parent).build();
     }
 
-    Mailbox() {}
-
-    public List<Mailbox> getAll() {
-        List<Mailbox> mailboxesOfUser = new ArrayList<>();
-
-        for (Mailbox mb : MailboxHolder.allMailboxes()) {
-            if (mb.exists && mb.address.equals(address)) {
-                mailboxesOfUser.add(mb);
-            }
-        }
-
-        return mailboxesOfUser;
-    }
-
-    public void existsNow() {
-        this.exists = true;
-        this.subscribed = true;
+    List<Mailbox> getAll() {
+        return MailboxHolder.allMailboxes(address);
     }
 
     public int getNewMessageCount() {

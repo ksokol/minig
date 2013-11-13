@@ -16,8 +16,16 @@ public class MailboxHolder {
     private static final Set<Mailbox> mailboxes = new HashSet<>();
 
 
-    public static List<Mailbox> allMailboxes() {
-        return new ArrayList<>(mailboxes);
+    public static List<Mailbox> allMailboxes(Address address) {
+        List<Mailbox> mailboxesOfAddress = new ArrayList<>();
+
+        for (Mailbox mb : mailboxes) {
+            if (mb.exists && mb.address.equals(address)) {
+                mailboxesOfAddress.add(mb);
+            }
+        }
+
+        return mailboxesOfAddress;
     }
 
     @Deprecated

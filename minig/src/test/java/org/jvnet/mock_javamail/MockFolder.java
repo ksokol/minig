@@ -91,7 +91,8 @@ class MockFolder extends Folder {
     public boolean create(int type) throws MessagingException {
         switch(type) {
             case 1: {
-                mailbox.existsNow();
+                mailbox.subscribed = true;
+                mailbox.exists = true;
                 return true;
             } default: {
                 throw new UnsupportedOperationException();
