@@ -2,7 +2,6 @@ package integration;
 
 import javax.mail.internet.MimeMessage;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,15 +45,9 @@ public class IntegrationTest {
         mockMvc = webAppContextSetup(wac).build();
     }
 
-    @After
-    public void after() {
-        // TODO
-        mockServer.shutdown();
-    }
-
     @Test
     public void test1() throws Exception {
-        MimeMessage mm = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
+        MimeMessage mm = new MimeMessageBuilder().setFolder("INBOX").build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
         mockServer.prepareMailBox("INBOX", mm);
 
         mockMvc.perform(get(PREFIX + "/message/INBOX|" + mm.getMessageID())).andExpect(status().isOk())

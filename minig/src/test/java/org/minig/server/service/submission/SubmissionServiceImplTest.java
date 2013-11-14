@@ -6,9 +6,9 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.minig.MailAuthentication;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
 import org.minig.server.MailMessageList;
@@ -40,6 +40,9 @@ public class SubmissionServiceImplTest {
     @Autowired
     private SmtpAndImapMockServer mockServer;
 
+    @Autowired
+    private MailAuthentication mailAuthentication;
+
     @Before
     public void setUp() throws Exception {
         mockServer.reset();
@@ -50,7 +53,7 @@ public class SubmissionServiceImplTest {
         mockServer.createAndSubscribeMailBox("INBOX.Sent", "INBOX.Drafts");
 
         MailMessage mm = new MailMessage();
-        mm.setSender(new MailMessageAddress(mockServer.getMockUserEmail()));
+        mm.setSender(new MailMessageAddress(mailAuthentication.getAddress()));
         mm.setTo(Arrays.asList(new MailMessageAddress("test@example.com")));
         mm.setSubject("test subject");
 
@@ -58,21 +61,20 @@ public class SubmissionServiceImplTest {
 
         mockServer.verifyMessageCount("INBOX.Sent", 1);
 
-        assertEquals("testuser@localhost", mockServer.getReceivedMessages()[0].getFrom()[0].toString());
-        assertEquals("test subject", mockServer.getReceivedMessages()[0].getSubject());
+        assertEquals("testuser@localhost", mockServer.getReceivedMessages("test@example.com")[0].getFrom()[0].toString());
+        assertEquals("test subject", mockServer.getReceivedMessages("test@example.com")[0].getSubject());
     }
 
-    @Ignore("enable me as soon as greenmail was replaced by a better imap/smtp unittest library")
     @Test
     public void testForwardMessage() throws MessagingException {
         mockServer.createAndSubscribeMailBox("INBOX.Sent", "INBOX.Drafts", "INBOX.test");
 
-        MimeMessage toBeForwarded = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
+        MimeMessage toBeForwarded = new MimeMessageBuilder().setFolder("INBOX.test").build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
 
         mockServer.prepareMailBox("INBOX.test", toBeForwarded);
 
         MailMessage mm = new MailMessage();
-        mm.setSender(new MailMessageAddress(mockServer.getMockUserEmail()));
+        mm.setSender(new MailMessageAddress(mailAuthentication.getAddress()));
         mm.setTo(Arrays.asList(new MailMessageAddress("test@example.com")));
         mm.setSubject("msg with forward");
 
@@ -82,8 +84,8 @@ public class SubmissionServiceImplTest {
 
         mockServer.verifyMessageCount("INBOX.Sent", 1);
 
-        assertEquals("testuser@localhost", mockServer.getReceivedMessages()[0].getFrom()[0].toString());
-        assertEquals("msg with forward", mockServer.getReceivedMessages()[0].getSubject());
+        assertEquals("testuser@localhost", mockServer.getReceivedMessages("test@example.com")[0].getFrom()[0].toString());
+        assertEquals("msg with forward", mockServer.getReceivedMessages("test@example.com")[0].getSubject());
 
         MailMessageList findByFolder = mailRepository.findByFolder("INBOX.test", 1, 10);
 

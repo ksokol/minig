@@ -1,6 +1,7 @@
 package org.minig.server.service.impl;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -10,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
+import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.ServiceTestConfig;
@@ -53,16 +55,22 @@ public class MailRepositoryImplTest {
 
     @Test
     public void testFolderCountVariance() {
-        MimeMessageBuilder builder = new MimeMessageBuilder();
+        MimeMessage msg = new MimeMessageBuilder().build(TestConstants.PLAIN);
 
         assertEquals(0, uut.findByFolder("INBOX", 1, 20).getFullLength());
 
-        mockServer.prepareMailBox("INBOX.testfolder", builder.build(), builder.build());
+        mockServer.prepareMailBox("INBOX.testfolder", msg, msg);
 
         assertEquals(0, uut.findByFolder("INBOX", 1, 20).getFullLength());
         assertEquals(2, uut.findByFolder("INBOX.testfolder", 1, 20).getFullLength());
 
-        mockServer.prepareMailBox("INBOX.testfolder", builder.build(25));
+        List<MimeMessage> mm = new ArrayList<>();
+
+        for(int i=0; i< 25;i++) {
+            mm.add(msg);
+        }
+
+        mockServer.prepareMailBox("INBOX.testfolder", mm);
 
         assertEquals(25, uut.findByFolder("INBOX.testfolder", 1, 20).getFullLength());
         assertEquals(20, uut.findByFolder("INBOX.testfolder", 1, 20).getMailList().size());

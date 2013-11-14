@@ -249,7 +249,7 @@ public class MailServiceImplTest {
         uut.moveMessageToFolder(mm, "INBOX.test");
 
         assertEquals(0, uut.firstPageMessagesByFolder("INBOX").getFullLength());
-        assertEquals(1, uut.firstPageMessagesByFolder("INBOX.Test").getFullLength());
+        assertEquals(1, uut.firstPageMessagesByFolder("INBOX.test").getFullLength());
     }
 
     // @Test(expected = IllegalArgumentException.class)
