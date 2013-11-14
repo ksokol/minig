@@ -1,7 +1,5 @@
 package org.minig.test.javamail;
 
-import org.springframework.util.StringUtils;
-
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.internet.AddressException;

@@ -130,7 +130,7 @@ public class Mailbox extends ArrayList<Message> {
         return MailboxHolder.remove(this);
     }
 
-    public char getSeparator() {
+    char getSeparator() {
         return separator;
     }
 }
