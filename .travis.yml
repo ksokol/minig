@@ -3,4 +3,4 @@ jdk:
   - oraclejdk7
   - openjdk7
 
-script: mvn clean test minig/pom.xml
+script: mvn -f minig/pom.xml clean test
