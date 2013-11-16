@@ -19,10 +19,6 @@ public class MockMailAuthentication implements MailAuthentication {
     private String draftsFolder = "INBOX.Drafts";
     private char separator = '.';
 
-    @Autowired
-    @Qualifier("javaMailProperties")
-    private Properties connectionProperties;
-
     @Override
     public String getAddress() {
         return "testuser@localhost";
@@ -70,7 +66,7 @@ public class MockMailAuthentication implements MailAuthentication {
 
     @Override
     public Properties getConnectionProperties() {
-        return connectionProperties;
+        return new Properties();
     }
 
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.mail.internet.MimeMessage;
 
+@Deprecated
 public interface SmtpAndImapMockServer {
 
     public abstract void createAndSubscribeMailBox(String... mailBox);
@@ -22,10 +23,6 @@ public interface SmtpAndImapMockServer {
 
     public void reset();
 
-    public String getMockUserEmail();
-
-    public MimeMessage[] getReceivedMessages();
-
-    public void shutdown();
+    public MimeMessage[] getReceivedMessages(String recipient);
 
 }
