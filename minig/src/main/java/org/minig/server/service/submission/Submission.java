@@ -34,13 +34,13 @@ public class Submission {
         Session session = mailContext.getSession();
         Properties properties = session.getProperties();
 
-        properties.put(DSN0, "SUCCESS,FAILURE,DELAY ORCPT=rfc822;" + authentication.getUserMail() + "@" + authentication.getDomain());
+        properties.put(DSN0, "SUCCESS,FAILURE,DELAY ORCPT=rfc822;" + authentication.getEmailAddress());
         properties.put(DSN1, "FULL");
 
         mailHelper.setSession(session);
 
         // always set current authenticated user as sender for security reasons
-        message.setSender(authentication.getUserMail() + "@" + authentication.getDomain());
+        message.setSender(authentication.getEmailAddress());
         MimeMessage target = messageMapper.toMimeMessage(message);
 
         try {
@@ -57,7 +57,7 @@ public class Submission {
         mailHelper.setSession(session);
 
         // always set current authenticated user as sender for security reasons
-        message.setSender(authentication.getUserMail() + "@" + authentication.getDomain());
+        message.setSender(authentication.getEmailAddress());
         MimeMessage target = messageMapper.toMimeMessage(message);
 
         mailHelper.send(target);
@@ -71,7 +71,7 @@ public class Submission {
         try {
             // always set current authenticated user as sender for security
             // reasons
-            InternetAddress internetAddress = new InternetAddress(authentication.getUserMail());
+            InternetAddress internetAddress = new InternetAddress(authentication.getEmailAddress());
             message.setFrom(internetAddress);
 
             mailHelper.send(message);

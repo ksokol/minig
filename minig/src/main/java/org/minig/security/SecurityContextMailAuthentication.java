@@ -8,6 +8,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 class SecurityContextMailAuthentication implements MailAuthentication {
 
     @Override
+    public String getEmailAddress() {
+        return getAddress();
+    }
+
+    @Override
     public String getAddress() {
         if (getUserMail().contains("@")) {
             return getUserMail();
