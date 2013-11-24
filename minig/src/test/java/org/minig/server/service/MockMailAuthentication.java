@@ -3,8 +3,6 @@ package org.minig.server.service;
 import java.util.Properties;
 
 import org.minig.MailAuthentication;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,6 +16,11 @@ public class MockMailAuthentication implements MailAuthentication {
     private String sentFolder = "INBOX.Sent";
     private String draftsFolder = "INBOX.Drafts";
     private char separator = '.';
+
+    @Override
+    public String getEmailAddress() {
+        return "testuser@localhost";
+    }
 
     @Override
     public String getAddress() {
@@ -66,7 +69,14 @@ public class MockMailAuthentication implements MailAuthentication {
 
     @Override
     public Properties getConnectionProperties() {
-        return new Properties();
+        Properties javaMailProperties = new Properties();
+
+        javaMailProperties.setProperty("mail.store.protocol", "imap");
+        javaMailProperties.put("mail.smtp.auth", "true");
+        javaMailProperties.put("mail.imap.port", "143");
+        javaMailProperties.put("mail.smtp.host", domain);
+
+        return javaMailProperties;
     }
 
 }

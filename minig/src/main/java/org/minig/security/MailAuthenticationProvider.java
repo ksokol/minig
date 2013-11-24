@@ -30,26 +30,12 @@ public class MailAuthenticationProvider implements AuthenticationProvider {
         String domain = split[1];
         String password = (String) authentication.getCredentials();
         Store store = null;
-        // System.out.println("do login with: " + login + " - " + password +
-        // " - " + domain);
 
-        // TODO: test
-        // http://harikrishnan83.wordpress.com/2009/01/24/access-gmail-with-imap-using-java-mail-api/
-        // Properties props = System.getProperties();
-        // props.setProperty("mail.store.protocol", "imap");
         try {
-            // Session session = Session.getDefaultInstance(props, null);
-            // Store store = session.getStore("imap");
-            // store.connect(domain, login + "@" + domain, password);
-            //
-
-            Properties props = System.getProperties();
-            props.setProperty("mail.store.protocol", "imap");
+            Properties props = new Properties();
+            props.put("mail.store.protocol", "imap");
 
             Session session = Session.getDefaultInstance(props, null);
-
-            // http://stackoverflow.com/questions/1921981/imap-javax-mail-fetching-only-body-without-attachment
-            // session.setDebug(true);
             store = session.getStore("imap");
             store.connect(domain, authentication.getName(), password);
 
@@ -60,27 +46,14 @@ public class MailAuthenticationProvider implements AuthenticationProvider {
             Properties javaMailProperties = new Properties();
             javaMailProperties.setProperty("mail.store.protocol", "imap");
             // javaMailProperties.setProperty("mail.debug", "true");
-            // props.setProperty("mail.store.protocol", "imap");
-            // props.setProperty("mail.smtp.host", authentication.getDomain());
-            javaMailProperties.put("mail.smtp.starttls.enable", "true");
-            // props.setProperty("mail.user", "myuser");
-            // props.setProperty("mail.password", "mypwd");
 
-            // props.setProperty("mail.smtp.host",
-            // credentials.getDomain());
-            // props.setProperty("mail.smtp.host",
-            // credentials.getDomain());
-            // TODO
-            // props.put("mail.smtp.port", "8025");
+            javaMailProperties.put("mail.smtp.starttls.enable", "true");
             javaMailProperties.put("mail.smtp.auth", "true");
             javaMailProperties.put("mail.imap.port", "143");
-
             javaMailProperties.put("mail.smtp.host", domain);
-            // javaMailProperties.put("mail.debug", "true");
-            authenticated.setConnectionProperties(javaMailProperties);
 
+            authenticated.setConnectionProperties(javaMailProperties);
         } catch (Exception e) {
-            // throw new RuntimeException(e.getMessage(), e);
             throw new UsernameNotFoundException(e.getMessage());
         } finally {
             if (store != null) {
@@ -99,35 +72,4 @@ public class MailAuthenticationProvider implements AuthenticationProvider {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
-    // @Override
-    // public void login(String login, String domain, String password) {
-    // // TODO Auto-generated method stub
-    //
-    // credentials = new Credentials(login + "@" + domain, password);
-    //
-    // // System.out.println("do login with: " + login + " - " + password +
-    // // " - " + domain);
-    //
-    // // TODO: test
-    // //
-    // http://harikrishnan83.wordpress.com/2009/01/24/access-gmail-with-imap-using-java-mail-api/
-    // // Properties props = System.getProperties();
-    // // props.setProperty("mail.store.protocol", "imap");
-    // try {
-    // // Session session = Session.getDefaultInstance(props, null);
-    // // Store store = session.getStore("imap");
-    // // store.connect(domain, login + "@" + domain, password);
-    // //
-    // Store store = Utils.getStore(credentials);
-    // store.close();
-    //
-    // javaxMailFolderService = new JavaxMailFolderService(credentials);
-    //
-    // } catch (Exception e) {
-    // throw new RuntimeException(e.getMessage(), e);
-    // }
-    //
-    // // throw new UnsupportedOperationException();
-    //
-    // }
 }

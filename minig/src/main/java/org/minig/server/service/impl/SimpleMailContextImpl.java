@@ -181,7 +181,7 @@ public class SimpleMailContextImpl implements MailContext, DisposableBean {
                     });
 
                     try {
-                        this.store = this.session.getStore("imap");
+                        this.store = this.session.getStore();
                         store.connect(authentication.getDomain(), authentication.getUserMail(), authentication.getPassword());
                     } catch (Exception e) {
                         throw new RuntimeException(e.getMessage(), e);
