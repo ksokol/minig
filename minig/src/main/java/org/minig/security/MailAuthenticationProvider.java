@@ -32,25 +32,14 @@ public class MailAuthenticationProvider implements AuthenticationProvider {
         Store store = null;
 
         try {
-            Properties props = new Properties();
-            props.put("mail.store.protocol", "imap");
+            Properties javaMailProperties = new JavaMailPropertyBuilder(domain).build();
+            Session session = Session.getInstance(javaMailProperties, null);
 
-            Session session = Session.getDefaultInstance(props, null);
-            store = session.getStore("imap");
+            store = session.getStore();
             store.connect(domain, authentication.getName(), password);
 
             List<SimpleGrantedAuthority> ga = Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
             authenticated = new MailAuthenticationToken(authentication.getName(), authentication.getCredentials(), ga, domain);
-
-            // TODO
-            Properties javaMailProperties = new Properties();
-            javaMailProperties.setProperty("mail.store.protocol", "imap");
-            // javaMailProperties.setProperty("mail.debug", "true");
-
-            javaMailProperties.put("mail.smtp.starttls.enable", "true");
-            javaMailProperties.put("mail.smtp.auth", "true");
-            javaMailProperties.put("mail.imap.port", "143");
-            javaMailProperties.put("mail.smtp.host", domain);
 
             authenticated.setConnectionProperties(javaMailProperties);
         } catch (Exception e) {
@@ -59,7 +48,7 @@ public class MailAuthenticationProvider implements AuthenticationProvider {
             if (store != null) {
                 try {
                     store.close();
-                } catch (MessagingException e) {
+                } catch (MessagingException ignored) {
                 }
             }
         }
