@@ -12,7 +12,6 @@ public class LabelPresenter {
 
     private IFolder f;
     private Anchor link;
-    private String defaultText;
     private int idx;
     private RowFormatter rowFormatter;
     private boolean activeFilter;
@@ -22,14 +21,13 @@ public class LabelPresenter {
         this.f = f;
         this.idx = idx;
         this.rowFormatter = rowFormatter;
-        defaultText = f.getId();
         createLink();
     }
 
     private void createLink() {
-        Anchor ret = new Anchor(defaultText);
+        Anchor ret = new Anchor(f.getName());
         ret.addStyleName("noWrap");
-        ret.setTitle(f.getId());
+        ret.setHTML(titleWithIndent());
         this.link = ret;
     }
 
@@ -73,5 +71,18 @@ public class LabelPresenter {
             reg.removeHandler();
             reg = null;
         }
+    }
+
+    private String titleWithIndent() {
+        StringBuilder sb = new StringBuilder();
+        int numberOfFolderSeparators = f.getId().replaceAll("[^/]","").length();
+
+        for(int i=0;i< numberOfFolderSeparators;i++) {
+               sb.append("&nbsp;&nbsp;");
+        }
+
+        sb.append(f.getName());
+
+        return sb.toString();
     }
 }

@@ -125,7 +125,9 @@ public class FolderSettingsDataGrid extends Grid {
 		});
 
 		if (folder.getEditable() != null && folder.getEditable()) {
-			Anchor folderLink = new Anchor(folder.getId());
+			Anchor folderLink = new Anchor(folder.getName());
+            folderLink.setHTML(titleWithIndent(folder));
+
 			folderLink.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent sender) {
 					flt.showFolder(folder);
@@ -162,7 +164,8 @@ public class FolderSettingsDataGrid extends Grid {
 			}
 			setWidget(i, 2, actionLink);
 		} else {
-			Anchor folderLink = new Anchor(folder.getId());
+			Anchor folderLink = new Anchor(folder.getName());
+            folderLink.setHTML(titleWithIndent(folder));
 			folderLink.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent sender) {
 					flt.showFolder(folder);
@@ -216,4 +219,16 @@ public class FolderSettingsDataGrid extends Grid {
 		return currentPath;
 	}
 
+    private String titleWithIndent(IFolder f) {
+        StringBuilder sb = new StringBuilder();
+        int numberOfFolderSeparators = f.getId().replaceAll("[^/]","").length();
+
+        for(int i=0;i< numberOfFolderSeparators;i++) {
+            sb.append("&nbsp;&nbsp;&nbsp;&nbsp;");
+        }
+
+        sb.append(f.getName());
+
+        return sb.toString();
+    }
 }

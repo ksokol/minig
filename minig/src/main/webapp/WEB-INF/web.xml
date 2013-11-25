@@ -62,12 +62,12 @@
 	
 	<servlet>
 	    <servlet-name>mybox</servlet-name>
-	    <jsp-file>/mybox.jsp</jsp-file>
+	    <jsp-file>/index.jsp</jsp-file>
 	</servlet>
 	
 	<servlet-mapping>
 	    <servlet-name>mybox</servlet-name>
 	    <url-pattern>/mybox</url-pattern>
 	</servlet-mapping>
-	
+
 </web-app>
