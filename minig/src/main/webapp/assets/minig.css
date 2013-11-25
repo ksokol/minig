@@ -1796,6 +1796,7 @@ html>body .dataGrid {
 .leftPanel a {
 	line-height: 1.5em;
 	color: #467d8b;
+	text-decoration: none;
 }
 
 .leftPanel .folderLink {
@@ -1847,9 +1848,7 @@ html>body .dataGrid {
 
 .currentDefaultLinkSelected {
 	background: url("images/currentDefaultLinkSelected_bg.gif") no-repeat
-		left center;
-	padding-top: 1px;
-	padding-bottom: 1px;
+	left center;
 	display: block;
 }
 
