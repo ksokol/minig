@@ -32,6 +32,8 @@
 					<logLevel>TRACE</logLevel>
 					<module>fr.aliasource.webmail.WebmailUI</module>
 					<disableClassMetadata>true</disableClassMetadata>
+                    <runTarget>mybox</runTarget>
+                    <copyWebapp>true</copyWebapp>
 				</configuration>
 				<executions>
 					<execution>
