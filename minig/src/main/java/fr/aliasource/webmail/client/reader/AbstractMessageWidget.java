@@ -287,22 +287,23 @@ public abstract class AbstractMessageWidget extends VerticalPanel {
     }
 
     protected void createMessage(IClientMessage cm) {
-        // String html = cm.getBody().getHtml();
+        String html = cm.getBody().getHtml();
         String plain = cm.getBody().getPlain();
+        VerticalPanel vp;
 
-        VerticalPanel vp = showQuotedText(plain);
-        content.add(vp);
-
-        // don't show any html because inline styles break our layout
-        // if (html != null) {
-        // if (html.contains("<img")) {
-        // ma = new MessageActions(cm);
-        // content.add(ma);
-        // } else {
-        // VerticalPanel vp = showQuotedText(html);
-        // content.add(vp);
-        // }
-        // }
+        //currently, some html mails break our layout. Hence show html only if plain is not available.
+        if(plain == null || plain.isEmpty()) {
+            if (html != null && html.contains("<img")) {
+                ma = new MessageActions(cm);
+                content.add(ma);
+            } else {
+                vp = showQuotedText(html);
+                content.add(vp);
+            }
+        } else {
+            vp = showQuotedText(plain);
+            content.add(vp);
+        }
     }
 
     protected FlexTable createMessageDetails(IClientMessage cm, DateFormatter df, RecipientsStyleHandler rsh) {
