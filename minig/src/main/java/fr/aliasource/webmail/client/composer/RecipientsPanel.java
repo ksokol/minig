@@ -131,7 +131,6 @@ public class RecipientsPanel extends HorizontalPanel {
         mailField.addBlurHandler(new BlurHandler() {
             @Override
             public void onBlur(BlurEvent event) {
-                System.out.println("createMailFieldFocusListener.onBlur");
                 String email = mailField.getText();
                 if (!email.isEmpty()) {
                     addEmail(email);
