@@ -20,11 +20,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -43,9 +41,9 @@ import fr.aliasource.webmail.client.test.BeanFactory;
  * The address selection widget used in mail composer
  * 
  * @author tom
+ * @author dev@sokol-web.de <Kamill Sokol>
  * 
  */
-// FIXME
 public class RecipientsPanel extends HorizontalPanel {
 
     private TextBox mailField;
@@ -53,8 +51,7 @@ public class RecipientsPanel extends HorizontalPanel {
     private int token;
     private int recipCount;
     private HashMap<String, String> recipients;
-    private long lastTs;
-    //
+
     private static String PATTERN_EMAIL = "[a-zA-Z_0-9\\-.]+@[a-zA-Z_0-9\\-.]+\\.[a-z]+";
 
     public RecipientsPanel(View ui, String label) {
@@ -63,12 +60,11 @@ public class RecipientsPanel extends HorizontalPanel {
         Label recipientType = new Label(label);
         add(recipientType);
 
-        // FIXME
         mailField = new TextBox();
 
         createMailFieldKeyboardListener();
-        // createMailFieldClickListener();
-        // createMailFieldFocusListener();
+        createMailFieldClickListener();
+        createMailFieldFocusListener();
 
         FlowPanel wrap = new FlowPanel();
         wrap.setStyleName("wrap");
@@ -94,19 +90,6 @@ public class RecipientsPanel extends HorizontalPanel {
             break;
         }
     }
-
-    // private void addRecipient(Suggestion s) {
-    // if (!recipients.containsKey(s.getReplacementString())) {
-    // final String email = s.getReplacementString();
-    // String name = s.getDisplayString();
-    // createRecipient(email, name);
-    // if (token > -1) {
-    // recipListPanel.getWidget(token).removeStyleName("highlightRecipient");
-    // }
-    // }
-    // mailField.setFocus(true);
-    // mailField.setText("");
-    // }
 
     private void addRecipient(IEmailAddress a) {
         final String email = a.getEmail();
@@ -144,27 +127,18 @@ public class RecipientsPanel extends HorizontalPanel {
         recipients.put(email, name);
     }
 
-    // private void createMailFieldFocusListener() {
-    // mailField.getTextBox().addBlurHandler(new BlurHandler() {
-    // @Override
-    // public void onBlur(BlurEvent event) {
-    // String email = mailField.getText();
-    // if (!email.isEmpty()) {
-    // addEmail(email);
-    // }
-    // }
-    // });
-    // }
-
-    // private void createMailFieldEventHandler() {
-    // mailField.addSelectionHandler(new SelectionHandler<String>() {
-    // @Override
-    // public void onSelection(SelectionEvent<String> event) {
-    // addRecipient(event.getSelectedItem());
-    // }
-    //
-    // });
-    // }
+    private void createMailFieldFocusListener() {
+        mailField.addBlurHandler(new BlurHandler() {
+            @Override
+            public void onBlur(BlurEvent event) {
+                System.out.println("createMailFieldFocusListener.onBlur");
+                String email = mailField.getText();
+                if (!email.isEmpty()) {
+                    addEmail(email);
+                }
+            }
+        });
+    }
 
     private void createMailFieldKeyboardListener() {
         mailField.addKeyDownHandler(new KeyDownHandler() {
@@ -262,16 +236,16 @@ public class RecipientsPanel extends HorizontalPanel {
         });
     }
 
-    // private void createMailFieldClickListener() {
-    // mailField.getTextBox().addClickHandler(new ClickHandler() {
-    // public void onClick(ClickEvent sender) {
-    // if (token > -1) {
-    // recipListPanel.getWidget(token).removeStyleName("highlightRecipient");
-    // token = -1;
-    // }
-    // }
-    // });
-    // }
+    private void createMailFieldClickListener() {
+        mailField.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent sender) {
+                if (token > -1) {
+                    recipListPanel.getWidget(token).removeStyleName("highlightRecipient");
+                    token = -1;
+                }
+            }
+        });
+    }
 
     public void clearText() {
         recipListPanel.clear();
