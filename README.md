@@ -1,4 +1,4 @@
-minig [![Build Status](https://api.travis-ci.org/ksokol/minig.png?branch=master)](https://travis-ci.org/ksokol/minig/)
+minig [![Build Status](https://api.travis-ci.org/ksokol/minig.png?branch=master)](https://travis-ci.org/ksokol/minig/) [![Coverage Status](https://coveralls.io/repos/ksokol/minig/badge.png?branch=master)](https://coveralls.io/r/ksokol/minig?branch=master)
 =====
 
 MiniG is a webmailer written in Java. This webmailer is a fork of the original at http://code.google.com/p/minig/

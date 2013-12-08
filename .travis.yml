@@ -14,4 +14,6 @@ branches:
     - master
 
 script: mvn -f minig/pom.xml test package
-after_success: curl -X PUT -T minig/target/minig.war -u travis:$PW --insecure "https://$DEPLOY_HOST/manager/deploy?update=true&path=/minig"
+after_success: 
+ - mvn -f minig/pom.xml cobertura:cobertura coveralls:cobertura
+ - curl -X PUT -T minig/target/minig.war -u travis:$PW --insecure "https://$DEPLOY_HOST/manager/deploy?update=true&path=/minig"
