@@ -38,6 +38,10 @@ a,a:visited,a:hover,a:link {
 	color: #0000AA;
 }
 
+.labelsList a {
+    text-decoration: none;
+}
+
 /**
  * The reference theme can be used to determine when this style sheet has
  * loaded.  Create a hidden div element with absolute position, assign the style
