@@ -101,3 +101,37 @@ app.directive("inlineFolderSelect", function($http, $document, $window, $compile
 		}
 	}
 });
+
+app.directive("moreActions", function($window, $rootScope) {
+    var overlay = angular.element('.bg-overlay-ma');
+    var ma = angular.element('#more-actions');
+
+    overlay.on('click', function() {
+        ma.hide();
+        overlay.hide();
+        return false;
+    });
+
+    ma.find('a').on('click', function() {
+        var event = angular.element(this).attr("data-event");
+        $rootScope.$broadcast(event);
+        return false;
+    });
+
+    $rootScope.$on("more-actions-done", function() {
+        overlay.trigger('click');
+    });
+
+    return {
+        restrict : "A",
+		link: function($scope, element, attrs) {
+			 element.bind("click", function() {
+                overlay.css('height', $window.innerHeight);
+                overlay.css('width', $window.innerWidth);
+
+                ma.show();
+                overlay.show();
+			 });
+		}
+    };
+});

@@ -44,6 +44,27 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
         $scope.folderIntent = null;
     };
 
+    function _updateFlags(fnDecide) {
+        var tmp = [];
+
+        angular.forEach(getSelectedMails(), function(mail) {
+            if(fnDecide(mail)) {
+                tmp.push(mail);
+            }
+
+            mail.selected = false;
+        });
+
+        if(tmp.length > 0) {
+           MailResource.updateFlags(tmp).$promise
+           .catch(function() {
+                _findMailByFolder();
+           });
+        }
+
+        $rootScope.$broadcast("more-actions-done");
+    };
+
 	function getSelectedMails() {
 		var selected = [];
 
@@ -81,6 +102,42 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
             case "copy": MailResource.copy(params).$promise.then(_folderIntentDone); break;
             case "move": MailResource.move(params).$promise.then(_folderIntentDone); break;
         }
+    });
+
+    $scope.$on('mark-as-read', function(e) {
+        _updateFlags(function(mail) {
+            if(!mail.read) {
+                mail.read = true;
+                return mail;
+            }
+        });
+    });
+
+    $scope.$on('mark-as-unread', function(e) {
+        _updateFlags(function(mail) {
+            if(mail.read) {
+                mail.read = false;
+                return mail;
+            }
+        });
+    });
+
+    $scope.$on('add-star', function(e) {
+        _updateFlags(function(mail) {
+            if(!mail.starred) {
+                mail.starred = true;
+                return mail;
+            }
+        });
+    });
+
+    $scope.$on('remove-star', function(e) {
+        _updateFlags(function(mail) {
+            if(mail.starred) {
+                mail.starred = false;
+                return mail;
+            }
+        });
     });
 
     $scope.moveToFolder = function() {
@@ -172,10 +229,4 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
 			mail.starred = !mail.starred;
 		});
 	}
-	
-	/*
-	$scope.moveTo = function() {
-		$rootScope.$broadcast("");
-	}
-	*/
 }

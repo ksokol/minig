@@ -46,7 +46,7 @@
 																	</tbody>
 																</table>
 															</td>
-															<td align="left" style="vertical-align: middle;">
+															<td more-actions align="left" style="vertical-align: middle;">
 																<div tabindex="0"
 																	class="gwt-ToggleButton dropDownArrowButton noWrap"
 																	ng-class="hasMailSelected() ? 'gwt-ToggleButton-up-disabled' : 'gwt-ToggleButton-up' "
@@ -54,6 +54,31 @@
 																	<input type="text" tabindex="-1" role="presentation"
 																		style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;">
 																	<div class="html-face">More actions</div>
+
+                                                                    <div class="bg-overlay-ma" style="top:0px;left:0px; position: absolute; z-index: 9999; display:none"></div>
+																	<div id="more-actions" style="overflow: visible; position: absolute; left: 443px; top: 87px; display:none; z-index:10000;" class="gwt-PopupPanel">
+                                                                        <div class="popupContent">
+                                                                            <table>
+                                                                                <colgroup>
+                                                                                    <col>
+                                                                                </colgroup>
+                                                                                <tbody>
+                                                                                <tr>
+                                                                                    <td><a class="gwt-Anchor" data-event="mark-as-read">Mark as read</a></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><a class="gwt-Anchor" data-event="mark-as-unread">Mark as unread</a></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><a class="gwt-Anchor" data-event="add-star">Add star</a></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><a class="gwt-Anchor" data-event="remove-star">Remove star</a></td>
+                                                                                </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
 																</div>
 															</td>
 														</tr>
