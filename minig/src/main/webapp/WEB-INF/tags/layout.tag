@@ -81,7 +81,12 @@
                             </td>
                         </tr>
                         <tr>
-                            <jsp:doBody />
+                            <td align="left" width="22%" height="" style="vertical-align: top;" rowspan="1">
+                                <jsp:include page="aside.html"></jsp:include>
+                            </td>
+                            <td align="left" width="" height="" style="vertical-align: top; width: 100%;">
+                                <jsp:doBody />
+                            </td>
                         </tr>
                         </tbody>
                     </table>

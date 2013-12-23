@@ -55,7 +55,7 @@ app.filter('displayName', function(i18nService) {
 app.filter('prettyFolderName', function() {
 
 	return function(folder) {
-	    var count = folder.id.split("/").length -2;
+	    var count = folder.id.split("/").length -1;
         var pretty = "";
 
         for(i=0;i<count;i++) {

@@ -3,11 +3,7 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 
 <layout:layout>
-    <td align="left" width="22%" height="" style="vertical-align: top;" rowspan="1">
-        <jsp:include page="aside.html"></jsp:include>
-    </td>
-    <td align="left" width="" height="" style="vertical-align: top; width: 100%;">
-        <div class="gwt-TabPanelBottom" role="tabpanel" ng-controller="MailOverviewCtrl">
+    <div class="gwt-TabPanelBottom" role="tabpanel" ng-controller="MailOverviewCtrl">
             <div style="width: 100%; height: 100%; padding: 0px; margin: 0px;" aria-hidden="false">
                 <table cellspacing="0" cellpadding="0" style="width: 100%; height: 100%;" aria-hidden="false">
                     <tbody>
@@ -87,5 +83,4 @@
                 </table>
             </div>
         </div>
-    </td>
 </layout:layout>

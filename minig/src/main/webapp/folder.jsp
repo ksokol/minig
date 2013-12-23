@@ -3,79 +3,103 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="layout" %>
 
 <layout:layout>
-
-
-    <div
-            style="width: 100%; height: 100%; padding: 0px; margin: 0px; display: none;"
-            aria-hidden="true">
-        <table cellspacing="0" cellpadding="0"
-               style="width: 100%; height: 100%; display: none;" aria-hidden="true">
+<div class="gwt-TabPanelBottom" role="tabpanel" ng-controller="FolderSettingsCtrl">
+    <div style="width: 100%; height: 100%; padding: 0px; margin: 0px;" aria-hidden="false">
+        <table cellspacing="0" cellpadding="0" style="width: 100%; height: 100%;" aria-hidden="false">
             <tbody>
             <tr>
-                <td align="left" style="vertical-align: top;"><div
-                        style="width: 100%;">
-                    <div
-                            style="width: 100%; height: 100%; padding: 0px; margin: 0px; display: none;"
-                            aria-hidden="true">
-                        <table cellspacing="0" cellpadding="0"
-                               style="width: 100%; height: 100%; display: none;"
-                               aria-hidden="true">
-                            <tbody>
-                            <tr>
-                                <td align="left" width="" height=""
-                                    style="vertical-align: top;" colspan="1"><table
-                                        cellspacing="3" cellpadding="0">
-                                    <tbody>
-                                    <tr>
-                                        <td align="left" style="vertical-align: middle;"><div
-                                                class="gwt-HTML">Create a folder:</div></td>
-                                        <td align="left" style="vertical-align: top;"><input
-                                                type="text" class="gwt-TextBox"></td>
-                                        <td align="left" style="vertical-align: top;"><button
-                                                type="button" class="gwt-Button">Create</button></td>
-                                        <td align="left" style="vertical-align: top;"><button
-                                                type="button" class="gwt-Button" style="display: none;"
-                                                aria-hidden="true">Cancel</button></td>
-                                    </tr>
-                                    </tbody>
-                                </table></td>
-                            </tr>
-                            <tr>
-                                <td align="left" width="" height=""
-                                    style="vertical-align: top;"><table cellspacing="0"
-                                                                        cellpadding="0" style="width: 100%;">
-                                    <tbody>
-                                    <tr>
-                                        <td align="left" style="vertical-align: top;"><table
-                                                style="width: 100%;" class="folderSettingsTable">
-                                            <colgroup>
-                                                <col>
-                                                <col>
-                                                <col>
-                                                <col>
-                                                <col>
-                                            </colgroup>
+                <td align="left" style="vertical-align: top;">
+                    <div style="width: 100%;">
+                        <div style="width: 100%; height: 100%; padding: 0px; margin: 0px;" aria-hidden="false">
+                            <table cellspacing="0" cellpadding="0" style="width: 100%; height: 100%;"
+                                   aria-hidden="false">
+                                <tbody>
+                                <tr>
+                                    <td width="" height="" align="left" style="vertical-align: top;" colspan="1">
+                                        <table cellspacing="3" cellpadding="0">
                                             <tbody>
                                             <tr>
-                                                <td width="70%">&nbsp;</td>
-                                                <td>&nbsp;</td>
-                                                <td>&nbsp;</td>
-                                                <td>&nbsp;</td>
-                                                <td>&nbsp;</td>
+                                                <td align="left" style="vertical-align: middle;">
+                                                    <div class="gwt-HTML">Create a folder:</div>
+                                                </td>
+                                                <td align="left" style="vertical-align: top;">
+                                                    <input type="text" class="gwt-TextBox" ng-model="newFolder">
+                                                </td>
+                                                <td align="left" style="vertical-align: top;">
+                                                    <button type="button" class="gwt-Button" ng-click="createFolder()">Create</button>
+                                                </td>
+                                                <td align="left" style="vertical-align: top;">
+                                                    <button type="button" class="gwt-Button" style="display: none;"
+                                                            aria-hidden="true">Cancel
+                                                    </button>
+                                                </td>
                                             </tr>
                                             </tbody>
-                                        </table></td>
-                                    </tr>
-                                    </tbody>
-                                </table></td>
-                            </tr>
-                            </tbody>
-                        </table>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="" height="" align="left" style="vertical-align: top;">
+                                        <table cellspacing="0" cellpadding="0" style="width: 100%;">
+                                            <tbody>
+                                            <tr>
+                                                <td align="left" style="vertical-align: top;">
+                                                    <table style="width: 100%;" class="folderSettingsTable">
+                                                        <colgroup>
+                                                            <col>
+                                                            <col>
+                                                            <col>
+                                                            <col>
+                                                            <col>
+                                                        </colgroup>
+                                                        <tbody>
+                                                        <tr ng-repeat="folder in folders">
+                                                            <td width="70%" class="settingsCell">
+                                                                <table cellspacing="0" cellpadding="0">
+                                                                    <tbody>
+                                                                    <tr>
+                                                                        <td align="left" style="vertical-align: top;">
+                                                                            <div class="gwt-HTML">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                                                                        </td>
+                                                                        <td align="left" style="vertical-align: top;"><a
+                                                                                class="gwt-Anchor" href="javascript:;">{{folder | prettyFolderName}}</a>
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                            <td class="settingsCell">
+                                                                <a class="gwt-Anchor">Create a subfolder</a></td>
+                                                            <td class="settingsCell">
+                                                                <div ng-hide="!folder.editable" class="gwt-HTML">&nbsp;</div>
+                                                                <a ng-show="folder.subscribed && folder.editable" class="gwt-Anchor">Unsubscribe</a>
+                                                                <a ng-hide="folder.subscribed || !folder.editable" class="gwt-Anchor">Subscribe</a>
+                                                            </td>
+                                                            <td class="settingsCell">
+                                                                <div ng-hide="!folder.editable" class="gwt-HTML">&nbsp;</div>
+                                                                <a ng-show="folder.editable" class="gwt-Anchor">Rename</a>
+                                                            </td>
+                                                            <td class="settingsCell">
+                                                                <div ng-hide="!folder.editable" class="gwt-HTML">&nbsp;</div>
+                                                                <a ng-show="folder.editable" class="gwt-Anchor">Delete</a>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div></td>
+                </td>
             </tr>
             </tbody>
         </table>
     </div>
-
+</div>
 </layout:layout>

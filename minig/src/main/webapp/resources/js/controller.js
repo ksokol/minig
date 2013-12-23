@@ -230,3 +230,17 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
 		});
 	}
 }
+
+function FolderSettingsCtrl($scope, $rootScope, FolderResource, INITIAL_MAILBOX) {
+
+
+	FolderResource.findAll().$promise.then(function(folders) {
+		$scope.folders = folders;
+	});
+
+	$scope.createFolder = function() {
+     //   console.log(INITIAL_MAILBOX);
+	 //   console.log($scope.newFolder);
+	}
+
+}
