@@ -43,15 +43,20 @@ app.factory('MailResource', function($resource, API_HOME) {
 			pagination.currentPage = json.page;
 			pagination.pageLength = defaults.page_length;
 			pagination.fullLength = json.fullLength;
-			pagination.pages = parseInt(pagination.fullLength / pagination.pageLength) + ((defaults.page_length % json.pageLength !== 0) ? 1 : 0);
-			
+
+			if((pagination.fullLength % pagination.pageLength) === 0 ) {
+			    pagination.pages = 1;
+			} else {
+			    pagination.pages = parseInt(pagination.fullLength / pagination.pageLength) + ((defaults.page_length % json.pageLength !== 0) ? 1 : 0);
+			}
+
 			var start = (pagination.currentPage === 1) ? 1 : (pagination.currentPage -1) * pagination.pageLength;
 			var mul = pagination.currentPage * pagination.pageLength;
 			var end = (mul > pagination.fullLength) ? pagination.fullLength : mul;
 			
 			pagination.start = start;
 			pagination.end = end;
-			
+
 			return {pagination: pagination, mails: json.mailList};
 		} catch(e) {}
 	}
