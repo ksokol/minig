@@ -51,3 +51,17 @@ app.filter('displayName', function(i18nService) {
 		
 	}
 });
+
+app.filter('prettyFolderName', function() {
+
+	return function(folder) {
+	    var count = folder.id.split("/").length -2;
+        var pretty = "";
+
+        for(i=0;i<count;i++) {
+            pretty = pretty + '\u00A0\u00A0'; //"&nbsp;&nbsp;";
+        }
+
+        return pretty + folder.name;
+	}
+});

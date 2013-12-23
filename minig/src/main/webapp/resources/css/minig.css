@@ -2659,3 +2659,7 @@ textarea {
 .mg-folder-select {
     cursor: pointer;
 }
+
+.labelsList a {
+    text-decoration: none;
+}

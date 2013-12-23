@@ -45,7 +45,7 @@
                                                     <tbody>
                                                         <tr ng-repeat="folder in folders | filter:query | subscribed">
                                                             <td>
-                                                                <a class="gwt-Anchor noWrap mg-folder-select" ng-click="onFolderSelect({{folder}})" title="{{folder.id}}">{{folder.id}}</a>
+                                                                <a class="gwt-Anchor noWrap mg-folder-select" ng-click="onFolderSelect({{folder}})" title="{{folder.id}}">{{folder | prettyFolderName}}</a>
                                                             </td>
                                                         </tr>
                                                         <tr>
