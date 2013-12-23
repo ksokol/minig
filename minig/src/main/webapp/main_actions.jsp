@@ -22,7 +22,7 @@
 																<table cellspacing="0" cellpadding="0">
 																	<tbody>
 																		<tr>
-																			<td inline-folder-select align="left" style="vertical-align: top;">
+																			<td inline-folder-select="moveToFolder()" align="left" style="vertical-align: top;">
 																				<div tabindex="0"
 																					class="gwt-ToggleButton dropDownArrowButton noWrap"
 																					ng-class="hasMailSelected() ? 'gwt-ToggleButton-up-disabled' : 'gwt-ToggleButton-up' "
@@ -31,7 +31,7 @@
 																					<div class="html-face">Move to</div>
 																				</div>
 																			</td>
-																			<td align="left"
+																			<td inline-folder-select="copyToFolder()" align="left"
 																				style="vertical-align: top;"><div
 																					tabindex="0"
 																					class="gwt-ToggleButton dropDownArrowButton noWrap"

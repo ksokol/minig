@@ -1,6 +1,5 @@
 
 app.factory('FolderResource', function($resource, API_HOME) {
-
 	var folderResource =  $resource(API_HOME + 'folder/:id', {}, {_findAll : {method: 'GET', isArray: true, transformResponse: _transFindAll}});
 	
 	function _transFindAll(data) {
@@ -15,7 +14,6 @@ app.factory('FolderResource', function($resource, API_HOME) {
 	}
 	
 	return folderResource;
-	
 });
 
 app.factory('MailResource', function($resource, API_HOME) {
@@ -24,6 +22,8 @@ app.factory('MailResource', function($resource, API_HOME) {
 	var messageDelete = $resource(API_HOME+'message/delete', {}, {deleteMails: {method: 'PUT', isArray:true, transformRequest: _transMessageDelete }});
 	var messageByFolder = $resource(API_HOME+'message?folder=:folder', defaults, {findByFolder: {method: 'GET', transformResponse: _transMessageByFolder}});
 	var messageUpdateFlag = $resource(API_HOME+'message/flag', {}, {updateFlags: {method: 'PUT', transformRequest: _transMessageUpdateFlags}});
+	var messageMove = $resource(API_HOME+'message/move', {}, {moveMessage: {method: 'PUT', isArray:true, transformRequest: _transMessageMoveCopy}});
+	var messageCopy = $resource(API_HOME+'message/copy', {}, {copyMessage: {method: 'PUT', isArray:true, transformRequest: _transMessageMoveCopy}});
 
 	function _transMessageDelete(mails) {
 		var idList = [];
@@ -67,11 +67,22 @@ app.factory('MailResource', function($resource, API_HOME) {
 		toSend.push(copy);
 		return angular.toJson({mailList: toSend});
 	}
+
+	function _transMessageMoveCopy(data) {
+        var folder = data['folder'].id;
+        var ids = [];
+
+        angular.forEach(data['mails'], function(mail) { ids.push(mail.id); } );
+
+        return angular.toJson({folder: folder, messageIdList: ids});
+	}
 	
 	return {
 		findByFolder: messageByFolder.findByFolder,
 		deleteMails: messageDelete.deleteMails,
-		updateFlags: messageUpdateFlag.updateFlags
+		updateFlags: messageUpdateFlag.updateFlags,
+		move: messageMove.moveMessage,
+		copy: messageCopy.copyMessage
 	};
 	
 });

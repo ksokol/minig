@@ -54,43 +54,50 @@ app.directive("notification", function() {
     };
 });
 
-app.directive("inlineFolderSelect", function($http, $document, $window, $compile, MailResource) {
-
+app.directive("inlineFolderSelect", function($http, $document, $window, $compile, $rootScope, i18nService) {
 	var body = angular.element($document[0].body);
+	var cached;
 
-	
+    $http.get("inline-folder-select.html")
+    .success(function(html) {
+        cached = html;
+    });
+
+    var build = function($scope, parent, attrs) {
+        var compiled = $compile(cached);
+        var elem = angular.element(compiled($scope));
+        body.append(elem);
+
+        var overlay = angular.element('.bg-overlay');
+
+        overlay.on('click', function() {
+            elem.remove();
+        });
+
+        $rootScope.$on('folder-intent-done', function(e) {
+            elem.remove();
+        });
+
+        elem.on('$destroy', function() {
+            elem.unbind('click');
+        });
+
+        overlay.css('height', $window.innerHeight);
+        overlay.css('width', $window.innerWidth);
+
+        $scope.$apply(attrs.inlineFolderSelect);
+    }
+
 	return {
-		
+	    restrict : "A",
 		link: function($scope, element, attrs) {
-
 			 element.bind("click", function() {
-				
-				$http.get("inline-folder-select.html")
-				.success(function(html) {
-					var compiled = $compile(html);
-					
-					var elem = compiled($scope);
-					var overlay = angular.element(elem);
-
-					overlay.bind('click', function() {
-						overlay.remove();
-					});
-
-					body.append(elem);
-					
-					overlay.css('height', $window.innerHeight);
-					overlay.css('width', $window.innerWidth);
-					
-					
-				});
-				
-				
+                if(cached) {
+                    build($scope, element, attrs);
+                } else {
+                    $rootScope.$broadcast('error', i18nService.resolve("Template not found. Cannot proceed."));
+                }
 			 });
-			 
-			 
-			 
 		}
-		
 	}
-	
 });

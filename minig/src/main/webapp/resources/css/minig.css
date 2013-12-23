@@ -2655,3 +2655,7 @@ textarea {
 .notification-error {
 	background-color: #ffa8b6;
 }
+
+.mg-folder-select {
+    cursor: pointer;
+}

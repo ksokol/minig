@@ -1,5 +1,5 @@
-       
-function FolderListCtrl($scope, FolderResource) {
+
+function FolderListCtrl($scope, $rootScope, FolderResource) {
 	
 	FolderResource.findAll().$promise.then(function(folders) {
 		$scope.folders = folders;
@@ -8,12 +8,17 @@ function FolderListCtrl($scope, FolderResource) {
 	$scope.reset = function() {
 		$scope.query = null;
 	}
+
+    $scope.onFolderSelect = function(selectedFolder) {
+       $rootScope.$broadcast('folder-intent', selectedFolder);
+    }
 }
 
 function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, i18nService, INITIAL_MAILBOX) {
 
 	$scope.currentFolder = INITIAL_MAILBOX;
 	$scope.selected = [];
+	$scope.folderIntent;
 	
 	$scope.pager = {
 		currentPage : 1,
@@ -33,11 +38,17 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
 		});
 	}
 
+    function _folderIntentDone() {
+        _findMailByFolder();
+        $rootScope.$broadcast('folder-intent-done');
+        $scope.folderIntent = null;
+    };
+
 	function getSelectedMails() {
 		var selected = [];
 
 		angular.forEach($scope.mails, function(mail) {
-			if(mail.selected === true) {
+			if(mail.selected) {
 				selected.push(mail);
 			}
 		});
@@ -62,7 +73,24 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
 
 		_findMailByFolder();
 	});
-	
+
+    $scope.$on('folder-intent', function(e, folder) {
+        var params = {folder: folder, mails: getSelectedMails()};
+
+        switch($scope.folderIntent)    {
+            case "copy": MailResource.copy(params).$promise.then(_folderIntentDone); break;
+            case "move": MailResource.move(params).$promise.then(_folderIntentDone); break;
+        }
+    });
+
+    $scope.moveToFolder = function() {
+        $scope.folderIntent = "move";
+    }
+
+    $scope.copyToFolder = function() {
+        $scope.folderIntent = "copy";
+    }
+
 	$scope.firstPage = function() {
 		$scope.pager.currentPage = 1;		
 		_findMailByFolder();		
