@@ -61,12 +61,6 @@
 										</div>
 									</td>
 								</tr>
-								<tr></tr>
-								<tr>
-									<td align="left" width="" height="" style="vertical-align: top;" colspan="1">
-										<jsp:include page="main_actions.jsp"></jsp:include>
-									</td>
-								</tr>
 							</tbody>
 						</table>
 					</td>
