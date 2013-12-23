@@ -69,5 +69,14 @@
 	    <servlet-name>mybox</servlet-name>
 	    <url-pattern>/mybox</url-pattern>
 	</servlet-mapping>
-	
+
+    <servlet>
+        <servlet-name>folder</servlet-name>
+        <jsp-file>/folder.jsp</jsp-file>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>folder</servlet-name>
+        <url-pattern>/folder</url-pattern>
+    </servlet-mapping>
 </web-app>
