@@ -62,7 +62,7 @@
 	
 	<servlet>
 	    <servlet-name>mybox</servlet-name>
-	    <jsp-file>/mybox.jsp</jsp-file>
+	    <jsp-file>/index.jsp</jsp-file>
 	</servlet>
 	
 	<servlet-mapping>
