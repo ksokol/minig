@@ -4,8 +4,12 @@ import java.util.Properties;
 
 public interface MailAuthentication {
 
+    String getEmailAddress();
+
+    @Deprecated
     String getAddress();
 
+    @Deprecated
     String getUserMail();
 
     String getPassword();

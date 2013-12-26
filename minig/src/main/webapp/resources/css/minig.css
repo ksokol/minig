@@ -38,6 +38,10 @@ a,a:visited,a:hover,a:link {
 	color: #0000AA;
 }
 
+.labelsList a {
+    text-decoration: none;
+}
+
 /**
  * The reference theme can be used to determine when this style sheet has
  * loaded.  Create a hidden div element with absolute position, assign the style
@@ -323,6 +327,7 @@ html>body .gwt-DialogBox .dialogBottomRight {
 {
 	text-decoration: none; /* Remove underline from header */
 	color: white;
+	cursor: pointer;
 	cursor: hand;
 	text-transform: uppercase;
 	font-weight: bolder;
@@ -1782,7 +1787,7 @@ html>body .dataGrid {
 .leftPanel {
 	padding-left: 5px;
 	padding-right: 5px;
-	
+	width: 14em;
 }
 
 .leftPanel table {
@@ -1792,6 +1797,7 @@ html>body .dataGrid {
 .leftPanel a {
 	line-height: 1.5em;
 	color: #467d8b;
+	text-decoration: none;
 }
 
 .leftPanel .folderLink {

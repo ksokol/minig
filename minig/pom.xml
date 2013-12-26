@@ -98,7 +98,12 @@
                     <stopPort>9999</stopPort>
                 </configuration>
             </plugin>
-		</plugins>
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>2.0.1</version>
+            </plugin>
+        </plugins>
 	</build>
 	<dependencies>
 		<dependency>
