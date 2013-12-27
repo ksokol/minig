@@ -8,6 +8,8 @@ env:
      - secure: "SZKapq+Ch9o2ZXEDxf/m5ILWeoK8RladneP1TH/dW0jlFHTgqUe9P3uxFAmL2J7vpZTWCdixOUyeo/C7Av/RT2W8IYWjvgFeXTph9eQLBxjMABUe+lYfLJyngr6z4mUTRkx0/Yd+Y1OWaHXd7yk/N/xcOSOXqNze4fdroaQ1Gqw="
      - secure: "ZG9oOutajiG7HvA2DkSXoAYCRrBh8AwXqtlqS+r5oGi8ezczNgvomN3gA46CT3xtBE2ooRN4Bd8fabYdwhdlDka6xTpIUtnwq0tjHH1bZRNXtNtgYcj5qG92tb0XFOjG9DI8PnCt8MMDerbvnJJ49dDZUVnK8nT4HP4Pnn02zQ4="
 
+before_install:
+ - sudo apt-get install nodejs karma
 script: mvn -f minig/pom.xml test
 after_success: 
  - mvn -f minig/pom.xml cobertura:cobertura coveralls:cobertura
