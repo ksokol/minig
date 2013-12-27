@@ -84,7 +84,7 @@
 			        </execution>
 			    </executions>
 			    <configuration>
-			    	<configFile>src/test/resources</configFile>
+			    	<configFile>src/test/resources/karma.conf.js</configFile>
 			        <browsers>PhantomJS</browsers>
 			    </configuration>
 			</plugin>
