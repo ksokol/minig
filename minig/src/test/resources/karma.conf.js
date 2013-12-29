@@ -35,7 +35,8 @@ var preprocessors = config.preprocessors;
 
     ngJson2JsPreprocessor: {
       // strip this from the file path
-      stripPrefix: 'src/test/resources/json/'
+      stripPrefix: 'src/test/resources/json/',
+      prependPrefix : 'fixture/'
     },
 
 

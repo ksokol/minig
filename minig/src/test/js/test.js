@@ -3,11 +3,11 @@ describe('FolderListCtrl', function(){
     var scope;//we'll use this scope in our tests
     var $httpBackend;
 
-    beforeEach(module('minigApp', 'folderlist.json'));
+    beforeEach(module('minigApp', 'fixture/folderlist.json'));
 
-    beforeEach(inject(function($rootScope, $controller, API_HOME, _$httpBackend_, _folderlist_){
+    beforeEach(inject(function($rootScope, $controller, API_HOME, _$httpBackend_, _fixtureFolderlist_){
        $httpBackend = _$httpBackend_;
-       _$httpBackend_.whenGET(API_HOME+'folder').respond(_folderlist_);
+       _$httpBackend_.whenGET(API_HOME+'folder').respond(_fixtureFolderlist_);
 
         scope = $rootScope.$new();
 
