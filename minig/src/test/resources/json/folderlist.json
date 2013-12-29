@@ -1,0 +1,49 @@
+{
+    "folderList": [
+        {
+            "id": "INBOX/Drafts",
+            "name": "Drafts",
+            "path": "INBOX/Drafts",
+            "subscribed": true,
+            "editable": false,
+            "trashFolder": null,
+            "parentFolderId": "INBOX"
+        },
+        {
+            "id": "INBOX/Sent",
+            "name": "Sent",
+            "path": "INBOX/Sent",
+            "subscribed": true,
+            "editable": false,
+            "trashFolder": null,
+            "parentFolderId": "INBOX"
+        },
+        {
+            "id": "INBOX/Trash",
+            "name": "Trash",
+            "path": "INBOX/Trash",
+            "subscribed": true,
+            "editable": false,
+            "trashFolder": null,
+            "parentFolderId": "INBOX"
+        },
+        {
+            "id": "INBOX/Trash/c6",
+            "name": "c6",
+            "path": "INBOX/Trash/c6",
+            "subscribed": true,
+            "editable": true,
+            "trashFolder": null,
+            "parentFolderId": "INBOX/Trash"
+        },
+        {
+            "id": "INBOX/Trash/test",
+            "name": "test",
+            "path": "INBOX/Trash/test",
+            "subscribed": true,
+            "editable": true,
+            "trashFolder": null,
+            "parentFolderId": "INBOX/Trash"
+        }
+    ]
+}

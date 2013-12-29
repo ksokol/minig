@@ -1,9 +1,12 @@
 module.exports = function(config) {
+
+var preprocessors = config.preprocessors;
+  // put JSON data into a mock
+  preprocessors['**/*.json'] = 'json2js';
+
   config.set({
-
     // base path, that will be used to resolve files and exclude
-    basePath: '../../..',
-
+    basePath: '../../../',
 
     // frameworks to use
     frameworks: ['jasmine'],
@@ -11,9 +14,9 @@ module.exports = function(config) {
     plugins: [
         'karma-junit-reporter',
         'karma-jasmine',
-        'karma-phantomjs-launcher'
+        'karma-phantomjs-launcher',
+        'karma-ng-json2js-preprocessor'
     ],
-
 
     junitReporter: {
         outputFile: 'target/surefire-reports/TEST-phantomjsTest.xml',
@@ -22,8 +25,18 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'src/test/js/*.js'
+        'src/main/webapp/resources/js/vendor/angular-1.2.6.min.js',
+        'src/main/webapp/resources/js/vendor/angular-resource-1.2.6.min.js',
+        'src/test/js/angular/angular-mocks-1.2.6.js',
+        'src/test/resources/json/*.json' ,
+        'src/main/webapp/resources/js/*.js',
+        'src/test/js/*.js',
     ],
+
+    ngJson2JsPreprocessor: {
+      // strip this from the file path
+      stripPrefix: 'src/test/resources/json/'
+    },
 
 
     // list of files to exclude
@@ -42,7 +55,7 @@ module.exports = function(config) {
 
 
     // enable / disable colors in the output (reporters and logs)
-    colors: true,
+    colors: false,
 
 
     // level of logging

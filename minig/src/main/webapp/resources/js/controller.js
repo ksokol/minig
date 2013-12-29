@@ -1,6 +1,7 @@
 
 function FolderListCtrl($scope, $rootScope, FolderResource) {
-	
+	$scope.folders = []
+
 	FolderResource.findAll().$promise.then(function(folders) {
 		$scope.folders = folders;
 	});
