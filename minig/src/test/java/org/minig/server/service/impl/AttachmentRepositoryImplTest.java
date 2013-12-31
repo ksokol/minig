@@ -13,6 +13,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.io.IOUtils;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +34,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -104,7 +106,7 @@ public class AttachmentRepositoryImplTest {
 
         assertEquals(expected.getId(), mailAttachment1.getId());
         assertThat("image/png; name=\"1.png\"", equalToIgnoringWhiteSpace(mailAttachment1.getMime()));
-        assertEquals(180702, mailAttachment1.getSize());
+        assertThat(mailAttachment1.getSize(), greaterThanOrEqualTo(178261L)); //ignore line endings
 
         assertEquals("2.png", mailAttachment2.getFileName());
 
@@ -141,7 +143,7 @@ public class AttachmentRepositoryImplTest {
         assertEquals(id.getId(), read.getId());
 
         assertThat("image/png; name=\"1.png\"", equalToIgnoringWhiteSpace(read.getMime()));
-        assertEquals(180702, read.getSize());
+        assertThat(read.getSize(), greaterThanOrEqualTo(178261L)); //ignore line endings
     }
 
     @Test
@@ -186,7 +188,7 @@ public class AttachmentRepositoryImplTest {
         MailAttachmentList readMetadata2 = uut.readMetadata(appendAttachmentId);
         MailMessage read = mailRepository.read(id);
 
-        assertEquals(1489, read.getBody().getPlain().length());
+        assertThat(read.getBody().getPlain().length(), greaterThanOrEqualTo(1449)); //ignore line endings
         assertTrue(read.getBody().getPlain().contains("From: 2013-04-25 09:35:54, To: 2013-04-25 09:44:54, Downtime: 0h 09m 00s"));
 
         assertEquals(25350, read.getBody().getHtml().length());
@@ -210,7 +212,7 @@ public class AttachmentRepositoryImplTest {
 
         assertTrue(read.getBody().getPlain().isEmpty());
 
-        assertEquals(182, read.getBody().getHtml().length());
+        assertThat(read.getBody().getHtml().length(), greaterThanOrEqualTo(173)); //ignore line endings
         assertTrue(read.getBody().getHtml().contains("</body>"));
 
         assertEquals(1, readMetadata2.getAttachmentMetadata().size());
@@ -229,7 +231,7 @@ public class AttachmentRepositoryImplTest {
         MailAttachmentList readMetadata2 = uut.readMetadata(appendAttachmentId);
         MailMessage read = mailRepository.read(id);
 
-        assertEquals(73, read.getBody().getPlain().length());
+        assertThat(read.getBody().getPlain().length(), greaterThanOrEqualTo(70)); //ignore line endings
         assertTrue(read.getBody().getPlain().contains("row with text"));
 
         assertTrue(read.getBody().getHtml() == null);

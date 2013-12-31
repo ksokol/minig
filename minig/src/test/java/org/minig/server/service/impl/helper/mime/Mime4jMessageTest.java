@@ -112,8 +112,8 @@ public class Mime4jMessageTest {
     public void testSetMultipart6() throws Exception {
         Mime4jMessage mime4jMessage = freshMime4jMessage(TestConstants.MULTIPART_WITH_PLAIN_AND_ATTACHMENT);
 
-        assertEquals("plain text\r\n", mime4jMessage.getPlain());
-        assertEquals("", mime4jMessage.getHtml());
+        assertEquals("plain text", mime4jMessage.getPlain().trim());
+        assertEquals("", mime4jMessage.getHtml().trim());
 
         String replacedBody = "replaced plain " + new Date().toString();
         mime4jMessage.setPlain(replacedBody);
@@ -142,8 +142,8 @@ public class Mime4jMessageTest {
     public void testSetMultipart8() throws Exception {
         Mime4jMessage mime4jMessage = freshMime4jMessage(TestConstants.MULTIPART_WITH_ATTACHMENT);
 
-        assertEquals("\r\n", mime4jMessage.getPlain());
-        assertEquals("", mime4jMessage.getHtml());
+        assertEquals("", mime4jMessage.getPlain().trim());
+        assertEquals("", mime4jMessage.getHtml().trim());
 
         String replacedBody = "replaced plain " + new Date().toString();
         mime4jMessage.setPlain(replacedBody);

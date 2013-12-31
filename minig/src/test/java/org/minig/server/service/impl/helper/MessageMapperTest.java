@@ -4,15 +4,15 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.minig.server.MailMessage;
 import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.MimeMessageBuilder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.junit.Assert.*;
 
 public class MessageMapperTest {
 
@@ -106,7 +106,7 @@ public class MessageMapperTest {
         String plain = c.getBody().getPlain();
         String html = c.getBody().getHtml();
 
-        assertEquals(1489, plain.length());
+        assertThat(plain.length(), greaterThanOrEqualTo(1449)); //ignore line endings
         assertTrue(plain.contains("From: 2013-04-25 09:35:54, To: 2013-04-25 09:44:54, Downtime: 0h 09m 00s"));
 
         assertEquals(25350, html.length());
