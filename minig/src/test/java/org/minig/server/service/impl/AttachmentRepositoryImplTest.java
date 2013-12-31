@@ -114,7 +114,7 @@ public class AttachmentRepositoryImplTest {
 
         assertEquals(expected.getId(), mailAttachment2.getId());
         assertThat("image/png; name=\"2.png\"", equalToIgnoringWhiteSpace(mailAttachment2.getMime()));
-        assertEquals(181998, mailAttachment2.getSize());
+        assertThat(mailAttachment2.getSize(), greaterThanOrEqualTo(179539L));
     }
 
     @Test
@@ -191,7 +191,7 @@ public class AttachmentRepositoryImplTest {
         assertThat(read.getBody().getPlain().length(), greaterThanOrEqualTo(1449)); //ignore line endings
         assertTrue(read.getBody().getPlain().contains("From: 2013-04-25 09:35:54, To: 2013-04-25 09:44:54, Downtime: 0h 09m 00s"));
 
-        assertEquals(25350, read.getBody().getHtml().length());
+        assertThat(read.getBody().getHtml().length(), greaterThanOrEqualTo(25257));
         assertTrue(read.getBody().getHtml().contains("<td><br><h3>178.254.55.49</h3></td></tr>"));
 
         assertEquals(1, readMetadata2.getAttachmentMetadata().size());

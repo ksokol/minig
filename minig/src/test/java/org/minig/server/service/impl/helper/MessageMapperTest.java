@@ -109,7 +109,7 @@ public class MessageMapperTest {
         assertThat(plain.length(), greaterThanOrEqualTo(1449)); //ignore line endings
         assertTrue(plain.contains("From: 2013-04-25 09:35:54, To: 2013-04-25 09:44:54, Downtime: 0h 09m 00s"));
 
-        assertEquals(25350, html.length());
+        assertThat(html.length(), greaterThanOrEqualTo(25257));
         assertTrue(html.contains("<td><br><h3>178.254.55.49</h3></td></tr>"));
     }
 
