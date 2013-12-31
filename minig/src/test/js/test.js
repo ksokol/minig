@@ -14,10 +14,16 @@ describe('FolderListCtrl', function(){
        scope = $rootScope.$new();
 
        $controller('FolderListCtrl', {$scope: scope});
-       $httpBackend.flush();
     }));
 
+    it('should have correct size', function() {
+        expect(scope.folders.length).toBe(0);
+        $httpBackend.flush();
+        expect(scope.folders.length).toBe(5);
+    });
+
     it('should have same json structure', function() {
+        $httpBackend.flush();
         expect(angular.toJson(scope.folders)).toEqual(angular.toJson(fixtureFolderlist.folderList));
     });
 });
