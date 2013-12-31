@@ -6,6 +6,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.junit.Test;
 import org.minig.server.MailMessage;
+import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.MimeMessageBuilder;
 
@@ -84,7 +85,7 @@ public class MessageMapperTest {
     @Test
     public void testAttachmentIds() throws MessagingException {
         MimeMessageBuilder builder = new MimeMessageBuilder();
-        MimeMessage m = builder.build("src/test/resources/testAttachmentId.mail");
+        MimeMessage m = builder.build(TestConstants.MULTIPART_WITH_ATTACHMENT);
 
         CompositeAttachmentId id1 = new CompositeAttachmentId(m.getFolder().getFullName(), m.getMessageID(), "1.png");
         CompositeAttachmentId id2 = new CompositeAttachmentId(m.getFolder().getFullName(), m.getMessageID(), "2.png");
@@ -98,7 +99,7 @@ public class MessageMapperTest {
     @Test
     public void testBody() {
         MimeMessageBuilder builder = new MimeMessageBuilder();
-        MimeMessage m = builder.build("src/test/resources/testBody.mail");
+        MimeMessage m = builder.build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
 
         MailMessage c = uut.convertFull(m);
 

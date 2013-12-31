@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.minig.server.MailAttachment;
 import org.minig.server.MailAttachmentList;
 import org.minig.server.MailMessage;
+import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.MailRepository;
@@ -70,7 +71,7 @@ public class AttachmentRepositoryImplTest {
 
     @Test
     public void testReadMetadata_hasNoAttachements() throws MessagingException, IOException {
-        MimeMessage m = new MimeMessageBuilder().build("src/test/resources/testBody.mail");
+        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
 
         CompositeId id = new CompositeId("INBOX", m.getMessageID());
         mockServer.prepareMailBox("INBOX", m);
@@ -83,7 +84,7 @@ public class AttachmentRepositoryImplTest {
 
     @Test
     public void testReadMetadata() throws MessagingException, IOException {
-        MimeMessage m = new MimeMessageBuilder().setFolder("INBOX").build("src/test/resources/testAttachmentId.mail");
+        MimeMessage m = new MimeMessageBuilder().setFolder("INBOX").build(TestConstants.MULTIPART_WITH_ATTACHMENT);
 
         CompositeId id = new CompositeId("INBOX", m.getMessageID());
         mockServer.prepareMailBox("INBOX", m);
@@ -116,7 +117,7 @@ public class AttachmentRepositoryImplTest {
 
     @Test
     public void testRead_hasNoAttachments() throws MessagingException {
-        MimeMessage m = new MimeMessageBuilder().build("src/test/resources/testBody.mail");
+        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
 
         CompositeAttachmentId id = new CompositeAttachmentId("INBOX", m.getMessageID(), "1.png");
 
@@ -128,7 +129,7 @@ public class AttachmentRepositoryImplTest {
 
     @Test
     public void testRead_hasAttachments() throws MessagingException {
-        MimeMessage m = new MimeMessageBuilder().build("src/test/resources/testAttachmentId.mail");
+        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_ATTACHMENT);
 
         CompositeAttachmentId id = new CompositeAttachmentId("INBOX", m.getMessageID(), "1.png");
 
@@ -145,7 +146,7 @@ public class AttachmentRepositoryImplTest {
 
     @Test
     public void testReadAttachmentPayload() throws Exception {
-        MimeMessage m = new MimeMessageBuilder().build("src/test/resources/testAttachmentId.mail");
+        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_ATTACHMENT);
 
         CompositeAttachmentId id = new CompositeAttachmentId("INBOX", m.getMessageID(), "1.png");
 
@@ -154,14 +155,14 @@ public class AttachmentRepositoryImplTest {
         InputStream readAttachmentPayload = uut.readAttachmentPayload(id);
 
         byte[] byteArray = IOUtils.toByteArray(readAttachmentPayload);
-        byte[] expected = IOUtils.toByteArray(new FileInputStream("src/test/resources/1.png"));
+        byte[] expected = IOUtils.toByteArray(new FileInputStream(TestConstants.ATTACHMENT_IMAGE_1_PNG));
 
         assertTrue(Arrays.equals(expected, byteArray));
     }
 
     @Test(expected = NotFoundException.class)
     public void testReadAttachmentPayload_noAttachment() throws Exception {
-        MimeMessage m = new MimeMessageBuilder().build("src/test/resources/testBody.mail");
+        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
 
         CompositeAttachmentId id = new CompositeAttachmentId("INBOX", m.getMessageID(), "1.png");
 
@@ -172,7 +173,7 @@ public class AttachmentRepositoryImplTest {
 
     @Test
     public void testAppendMultipartAttachment() throws MessagingException, InterruptedException {
-        MimeMessage m = new MimeMessageBuilder().build("src/test/resources/testBody.mail");
+        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
 
         mockServer.prepareMailBox("INBOX.Drafts", m);
 
@@ -180,7 +181,7 @@ public class AttachmentRepositoryImplTest {
         assertEquals(0, readMetadata.getAttachmentMetadata().size());
 
         CompositeAttachmentId id = new CompositeAttachmentId("INBOX.Drafts", m.getMessageID(), "folder.gif");
-        CompositeId appendAttachmentId = uut.appendAttachment(id, new FileDataSource(new File("src/test/resources/folder.gif")));
+        CompositeId appendAttachmentId = uut.appendAttachment(id, new FileDataSource(new File(TestConstants.ATTACHMENT_IMAGE_FOLDER_GIF)));
 
         MailAttachmentList readMetadata2 = uut.readMetadata(appendAttachmentId);
         MailMessage read = mailRepository.read(id);
@@ -197,12 +198,12 @@ public class AttachmentRepositoryImplTest {
 
     @Test
     public void testAppendHtmlAttachment() throws MessagingException, InterruptedException {
-        MimeMessage m = new MimeMessageBuilder().build("src/test/resources/testAppendHtmlAttachment.mail");
+        MimeMessage m = new MimeMessageBuilder().build(TestConstants.HTML);
 
         mockServer.prepareMailBox("INBOX.Drafts", m);
 
         CompositeAttachmentId id = new CompositeAttachmentId("INBOX.Drafts", m.getMessageID(), "folder.gif");
-        CompositeId appendAttachmentId = uut.appendAttachment(id, new FileDataSource(new File("src/test/resources/folder.gif")));
+        CompositeId appendAttachmentId = uut.appendAttachment(id, new FileDataSource(new File(TestConstants.ATTACHMENT_IMAGE_FOLDER_GIF)));
 
         MailAttachmentList readMetadata2 = uut.readMetadata(appendAttachmentId);
         MailMessage read = mailRepository.read(id);
@@ -218,12 +219,12 @@ public class AttachmentRepositoryImplTest {
 
     @Test
     public void testAppendPlainAttachment() throws MessagingException, InterruptedException {
-        MimeMessage m = new MimeMessageBuilder().build("src/test/resources/testAppendPlainAttachment.mail");
+        MimeMessage m = new MimeMessageBuilder().build(TestConstants.PLAIN);
 
         mockServer.prepareMailBox("INBOX.Drafts", m);
 
         CompositeAttachmentId id = new CompositeAttachmentId("INBOX.Drafts", m.getMessageID(), "folder.gif");
-        CompositeId appendAttachmentId = uut.appendAttachment(id, new FileDataSource(new File("src/test/resources/folder.gif")));
+        CompositeId appendAttachmentId = uut.appendAttachment(id, new FileDataSource(new File(TestConstants.ATTACHMENT_IMAGE_FOLDER_GIF)));
 
         MailAttachmentList readMetadata2 = uut.readMetadata(appendAttachmentId);
         MailMessage read = mailRepository.read(id);

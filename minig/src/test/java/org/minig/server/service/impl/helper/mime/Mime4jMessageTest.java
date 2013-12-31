@@ -103,7 +103,7 @@ public class Mime4jMessageTest {
 
         assertEquals(0, mime4jMessage.getAttachments().size());
 
-        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_PNG));
+        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_1_PNG));
 
         assertEquals(1, mime4jMessage.getAttachments().size());
     }
@@ -174,7 +174,7 @@ public class Mime4jMessageTest {
 
         assertEquals(0, mime4jMessage.getAttachments().size());
 
-        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_PNG));
+        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_1_PNG));
 
         assertEquals(1, mime4jMessage.getAttachments().size());
     }
@@ -185,7 +185,7 @@ public class Mime4jMessageTest {
 
         assertEquals(0, mime4jMessage.getAttachments().size());
 
-        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_PNG));
+        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_1_PNG));
 
         assertEquals(1, mime4jMessage.getAttachments().size());
     }
@@ -196,7 +196,7 @@ public class Mime4jMessageTest {
 
         assertEquals(2, mime4jMessage.getAttachments().size());
 
-        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_PNG));
+        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_1_PNG));
 
         assertEquals(3, mime4jMessage.getAttachments().size());
     }

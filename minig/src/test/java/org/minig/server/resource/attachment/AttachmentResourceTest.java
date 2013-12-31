@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.minig.RessourceTestConfig;
 import org.minig.server.MailAttachment;
 import org.minig.server.MailAttachmentList;
+import org.minig.server.TestConstants;
 import org.minig.server.service.AttachmentService;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
@@ -102,7 +103,7 @@ public class AttachmentResourceTest {
 
     @Test
     public void testDownloadAttachment() throws Exception {
-        final byte[] expected = IOUtils.toByteArray(new FileInputStream("src/test/resources/1.png"));
+        final byte[] expected = IOUtils.toByteArray(new FileInputStream(TestConstants.ATTACHMENT_IMAGE_1_PNG));
         MailAttachment ma = new MailAttachment();
 
         ma.setFileName("filename");

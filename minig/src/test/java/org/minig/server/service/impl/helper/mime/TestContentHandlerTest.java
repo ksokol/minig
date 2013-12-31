@@ -38,6 +38,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.minig.server.TestConstants;
 import org.minig.server.service.MailRepository;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.ServiceTestConfig;
@@ -81,7 +82,7 @@ public class TestContentHandlerTest {
     // @Test
     public void testStartHeader2() throws Exception {
 
-        MimeMessage m = new MimeMessageBuilder().build("src/test/resources/testBody.mail");
+        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
 
         mockServer.prepareMailBox("INBOX", m);
 
@@ -141,7 +142,7 @@ public class TestContentHandlerTest {
         parser.setContentHandler(handler);
         parser.setContentDecoding(true);
 
-        InputStream instream = new FileInputStream("src/test/resources/spring_template.mail"); // AttachmentId.mail");
+        InputStream instream = new FileInputStream(TestConstants.SPRING_TEMPLATE); // AttachmentId.mail");
         try {
             parser.parse(instream);
         } finally {
@@ -154,8 +155,8 @@ public class TestContentHandlerTest {
         MessageBuilder newMessageBuilder = new MessageServiceFactoryImpl().newMessageBuilder();
         MessageWriter writer = new DefaultMessageWriter();
         MessageImpl parseMessage = (MessageImpl) newMessageBuilder.parseMessage(new FileInputStream(new File(
-                "src/test/resources/testBody.mail")));
-        System.out.println(parseMessage.isMultipart());
+                TestConstants.MULTIPART_WITH_PLAIN_AND_HTML)));
+       // System.out.println(parseMessage.isMultipart());
 
         // System.out.println("\n\nBefore message:\n--------------------\n");
         writer.writeMessage(parseMessage, System.out);
