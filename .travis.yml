@@ -10,9 +10,10 @@ env:
 
 before_install:
  - sudo apt-get install nodejs npm
- - npm install karma phantomjs 
+ - npm install karma phantomjs
  - npm install karma-junit-reporter --save-dev
  - npm install karma-ng-json2js-preprocessor --save-dev
+ - npm install karma-ng-scenario --save-dev
  - export PATH=$PATH:~/.nvm/v0.10.22/lib/node_modules/karma
 script: mvn -f minig/pom.xml test
 after_success: 

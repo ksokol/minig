@@ -1,50 +1,32 @@
 module.exports = function(config) {
-
-var preprocessors = config.preprocessors;
-  // put JSON data into a mock
-  preprocessors['**/*.json'] = 'json2js';
-
   config.set({
     // base path, that will be used to resolve files and exclude
     basePath: '../../../',
 
     // frameworks to use
-    frameworks: ['jasmine'],
+    frameworks: ['ng-scenario'],
 
     plugins: [
         'karma-junit-reporter',
         'karma-jasmine',
         'karma-phantomjs-launcher',
-        'karma-ng-json2js-preprocessor'
+        'karma-ng-scenario',
+        'karma-firefox-launcher'
     ],
 
     junitReporter: {
-        outputFile: 'target/surefire-reports/TEST-phantomjsTest.xml',
-        suite: ''
+        outputFile: 'target/surefire-reports/TEST-e2eTest.xml',
+        suite: 'e2e'
+    },
+
+    proxies : {
+      '/miniG': 'http://localhost:8080/miniG'
     },
 
     // list of files / patterns to load in the browser
     files: [
-        'src/main/webapp/resources/js/vendor/angular-1.2.6.min.js',
-        'src/main/webapp/resources/js/vendor/angular-resource-1.2.6.min.js',
-        'src/test/js/angular/angular-mocks-1.2.6.js',
-        'src/test/resources/json/*.json' ,
-        'src/main/webapp/resources/js/*.js',
-        'src/test/js/test.js',
+        'src/test/js/test-e2e.js',
     ],
-
-    ngJson2JsPreprocessor: {
-      // strip this from the file path
-      stripPrefix: 'src/test/resources/json/',
-      prependPrefix : 'fixture/'
-    },
-
-
-    // list of files to exclude
-    exclude: [
-
-    ],
-
 
     // test results reporter to use
     // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
@@ -76,7 +58,7 @@ var preprocessors = config.preprocessors;
     // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
     // - PhantomJS
     // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
-    browsers: ['PhantomJS'],
+    browsers: ['Firefox','PhantomJS'],
 
 
     // If browser does not capture in given timeout [ms], kill it
