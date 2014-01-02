@@ -16,8 +16,8 @@ app.factory('FolderResource', function($resource, API_HOME) {
 	return folderResource;
 });
 
-app.factory('MailResource', function($resource, API_HOME) {
-	var defaults = {page: 1, page_length: 20};
+app.factory('MailResource', ['$resource','API_HOME','DEFAULT_PAGE_SIZE','pagerFactory', function($resource, API_HOME, DEFAULT_PAGE_SIZE, pagerFactory) {
+	var defaults = {page: 1, page_length: DEFAULT_PAGE_SIZE};
 	
 	var messageDelete = $resource(API_HOME+'message/delete', {}, {deleteMails: {method: 'PUT', isArray:true, transformRequest: _transMessageDelete }});
 	var messageByFolder = $resource(API_HOME+'message?folder=:folder', defaults, {findByFolder: {method: 'GET', transformResponse: _transMessageByFolder}});
@@ -38,26 +38,9 @@ app.factory('MailResource', function($resource, API_HOME) {
 	function _transMessageByFolder(data, headersGetter) {
 		try {
 			var json = angular.fromJson(data);
-			var pagination = {};
-			
-			pagination.currentPage = json.page;
-			pagination.pageLength = defaults.page_length;
-			pagination.fullLength = json.fullLength;
+            var pager = pagerFactory.newInstance(json.page, json.pageLength, json.fullLength);
 
-			if((pagination.fullLength % pagination.pageLength) === 0 ) {
-			    pagination.pages = 1;
-			} else {
-			    pagination.pages = parseInt(pagination.fullLength / pagination.pageLength) + ((defaults.page_length % json.pageLength !== 0) ? 1 : 0);
-			}
-
-			var start = (pagination.currentPage === 1) ? 1 : (pagination.currentPage -1) * pagination.pageLength;
-			var mul = pagination.currentPage * pagination.pageLength;
-			var end = (mul > pagination.fullLength) ? pagination.fullLength : mul;
-			
-			pagination.start = start;
-			pagination.end = end;
-
-			return {pagination: pagination, mails: json.mailList};
+			return {pagination: pager, mails: json.mailList};
 		} catch(e) {}
 	}
 	
@@ -95,4 +78,4 @@ app.factory('MailResource', function($resource, API_HOME) {
 		copy: messageCopy.copyMessage
 	};
 	
-});
+}]);

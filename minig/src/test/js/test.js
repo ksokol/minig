@@ -98,7 +98,7 @@ describe('MailOverviewCtrl', function() {
     it('should have correct size', function() {
         $httpBackend.flush();
         expect(scope.mails.length).toBe(20);
-        expect(scope.pager).toBeJsonEqual({currentPage: 1, pageLength: 20, fullLength: 45, pages: 3, start: 1, end: 20});
+        expect(scope.pager).toEqual({currentPage: 1, pageLength: 20, fullLength: 45, pages: 3, start: 1, end: 20});
     });
 
 });
