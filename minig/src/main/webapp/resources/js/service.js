@@ -30,3 +30,40 @@ app.service('i18nService',['$locale', function($locale) {
 	return $locale;
 	
 }]);
+
+app.service('pagerFactory',['DEFAULT_PAGE_SIZE', function(DEFAULT_PAGE_SIZE) {
+
+    var DEFAULT =  {currentPage: 1, pageLength:0, fullLength: 0, pages: 0, start: 0, end: 0};
+
+	return {
+		newInstance: function(currentPage, pageLength, fullLength) {
+		    if(!fullLength || fullLength < 1 || !currentPage || currentPage < 1) {
+		        return angular.copy(DEFAULT);
+		    }
+
+		    if(pageLength !== undefined || pageLength < 1) {
+                pageLength = Math.max(DEFAULT_PAGE_SIZE, pageLength);
+            } else {
+                pageLength = DEFAULT_PAGE_SIZE;
+            }
+
+            var pagination = {
+                currentPage: currentPage,
+                fullLength: fullLength,
+                pageLength: pageLength,
+                start: 0,
+                end: 0
+            };
+
+            pagination.pages = parseInt((fullLength + pageLength -1) / pageLength);
+
+            if(currentPage <= pagination.pages) {
+                pagination.start = (currentPage === 1) ? 1 : (currentPage -1) * pageLength;
+                pagination.end = Math.min(currentPage * pageLength, fullLength);
+            }
+
+            return pagination;
+		}
+
+	}
+}]);
