@@ -7,7 +7,7 @@ beforeEach(function(){
     });
 });
 
-describe('FolderListCtrl', function(){
+describe('FolderListCtrl', function() {
     var scope;//we'll use this scope in our tests
     var $httpBackend, fixtureFolderlist;
 
@@ -75,6 +75,30 @@ describe('PagerFactory', function(){
                 expect(pager).toEqual(combination.expected);
             });
         });
+    });
+
+});
+
+
+describe('MailOverviewCtrl', function() {
+    var scope, $httpBackend;
+
+    beforeEach(module('minigApp', 'fixture/maillist.json'));
+
+    beforeEach(inject(function($rootScope, $controller, API_HOME, _$httpBackend_, _fixtureMaillist_){
+       $httpBackend = _$httpBackend_;
+
+       _$httpBackend_.whenGET(API_HOME+'message?folder=INBOX&page=1&page_length=20').respond(_fixtureMaillist_);
+
+       scope = $rootScope.$new();
+
+       $controller('MailOverviewCtrl', {$scope: scope});
+    }));
+
+    it('should have correct size', function() {
+        $httpBackend.flush();
+        expect(scope.mails.length).toBe(20);
+        expect(scope.pager).toBeJsonEqual({currentPage: 1, pageLength: 20, fullLength: 45, pages: 3, start: 1, end: 20});
     });
 
 });
