@@ -109,48 +109,13 @@
 										</tr>
 									</tbody>
 								</table></td>
-							<td align="right" width="" height=""
-								style="vertical-align: top;" rowspan="1"><table
-									cellspacing="0" cellpadding="0">
-									<tbody>
-										<tr>
-											<td align="left" style="vertical-align: top;"><table
-													cellspacing="3" cellpadding="0">
-													<tbody>
-														<tr>
-															<td align="left" style="vertical-align: top;">
-																<button ng-hide="isFirstPage()" ng-click="firstPage()"
-																	type="button" class="gwt-Button noWrap"
-																	>« Newest</button></td>
-															<td align="left" style="vertical-align: top;">
-																<button 
-																	ng-hide="isFirstPage()"
-																	ng-click="previousPage()"
-																	type="button" class="gwt-Button noWrap"
-																	>‹ Newer</button></td>
-															<td align="left"
-																style="vertical-align: middle;"><div
-																	class="gwt-Label noWrap">{{pager.start}} - {{pager.end}} of {{pager.fullLength}}</div></td>
-															
-															<td align="left" style="vertical-align: top;">																									
-																<button ng-click="nextPage()" ng-hide="isLastPage()"
-																	type="button" class="gwt-Button noWrap"
-																	>Older ›</button>
-															</td>
-															
-															<td align="left" style="vertical-align: top;">
-																<button ng-show="!isLastPage()" ng-click="lastPage()" 
-																	type="button" class="gwt-Button noWrap"
-																	>Oldest »</button></td>
-														</tr>
-													</tbody>
-												</table></td>
-										</tr>
-									</tbody>
-								</table></td>
+							<td align="right" width="" height="" style="vertical-align: top;" rowspan="1">
+                                <pagination />
+                            </td>
 						</tr>
 					</tbody>
-				</table></td>
+				</table>
+            </td>
 		</tr>
 	</tbody>
 </table>

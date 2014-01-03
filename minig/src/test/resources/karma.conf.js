@@ -3,6 +3,7 @@ module.exports = function(config) {
 var preprocessors = config.preprocessors;
   // put JSON data into a mock
   preprocessors['**/*.json'] = 'json2js';
+  preprocessors['**/*.html'] = 'ng-html2js';
 
   config.set({
     // base path, that will be used to resolve files and exclude
@@ -15,7 +16,8 @@ var preprocessors = config.preprocessors;
         'karma-junit-reporter',
         'karma-jasmine',
         'karma-phantomjs-launcher',
-        'karma-ng-json2js-preprocessor'
+        'karma-ng-json2js-preprocessor',
+        'karma-ng-html2js-preprocessor'
     ],
 
     junitReporter: {
@@ -27,6 +29,7 @@ var preprocessors = config.preprocessors;
     files: [
         'src/main/webapp/resources/js/vendor/angular-1.2.6.min.js',
         'src/main/webapp/resources/js/vendor/angular-resource-1.2.6.min.js',
+        'src/main/webapp/*.html',
         'src/test/js/angular/angular-mocks-1.2.6.js',
         'src/test/resources/json/*.json' ,
         'src/main/webapp/resources/js/*.js',
@@ -39,6 +42,11 @@ var preprocessors = config.preprocessors;
       prependPrefix : 'fixture/'
     },
 
+    ngHtml2JsPreprocessor: {
+      stripPrefix: 'src/main/webapp/',
+      prependPrefix: 'html/',)
+      moduleName: 'htmlTemplates'
+    },
 
     // list of files to exclude
     exclude: [

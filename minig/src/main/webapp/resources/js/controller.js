@@ -18,29 +18,17 @@ function FolderListCtrl($scope, $rootScope, FolderResource) {
 function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, i18nService, INITIAL_MAILBOX) {
 
 	$scope.currentFolder = INITIAL_MAILBOX;
+	$scope.currentPage = 1;
 	$scope.selected = [];
 	$scope.folderIntent;
-	
-	$scope.pager = {
-		currentPage : 1,
-		pages: 1,
-		length: 20,
-		fullLength: 0
+	$scope.data;
+
+	function _getMails() {
+	    return ($scope.data && $scope.data.mailList) ? $scope.data.mailList : [];
 	};
-	
-	function _findMailByFolder() {
-		MailResource.findByFolder({
-			folder: $scope.currentFolder, 
-			page: $scope.pager.currentPage
-		}).$promise
-		.then(function(data) {
-			$scope.mails = data.mails;
-			$scope.pager = data.pagination;		
-		});
-	}
 
     function _folderIntentDone() {
-        _findMailByFolder();
+        $scope.updateOverview();
         $rootScope.$broadcast('folder-intent-done');
         $scope.folderIntent = null;
     };
@@ -59,7 +47,7 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
         if(tmp.length > 0) {
            MailResource.updateFlags(tmp).$promise
            .catch(function() {
-                _findMailByFolder();
+                $scope.updateOverview();
            });
         }
 
@@ -69,7 +57,7 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
 	function getSelectedMails() {
 		var selected = [];
 
-		angular.forEach($scope.mails, function(mail) {
+		angular.forEach(_getMails(), function(mail) {
 			if(mail.selected) {
 				selected.push(mail);
 			}
@@ -79,7 +67,7 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
 	}
 
 	function selectAll(flag) {
-		angular.forEach($scope.mails, function(mail) {
+		angular.forEach(_getMails(), function(mail) {
 			mail.selected = flag;
 		});
 	}
@@ -89,11 +77,11 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
 		var hash = ($window.location.hash.length !== 0) ? $window.location.hash.substring(2) : INITIAL_MAILBOX;
 		
 		if($scope.currentFolder !== hash) {
-			$scope.pager.currentPage= 1;
+			$scope.currentPage= 1;
 			$scope.currentFolder = hash;
 		}
 
-		_findMailByFolder();
+		$scope.updateOverview();
 	});
 
     $scope.$on('folder-intent', function(e, folder) {
@@ -141,6 +129,16 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
         });
     });
 
+	$scope.updateOverview = function() {
+		MailResource.findByFolder({
+			folder: $scope.currentFolder,
+			page: $scope.currentPage
+		}).$promise
+		.then(function(data) {
+			$scope.data = data;
+		});
+	}
+
     $scope.moveToFolder = function() {
         $scope.folderIntent = "move";
     }
@@ -149,38 +147,10 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
         $scope.folderIntent = "copy";
     }
 
-	$scope.firstPage = function() {
-		$scope.pager.currentPage = 1;		
-		_findMailByFolder();		
-	}
-	
-	$scope.lastPage = function() {
-		$scope.pager.currentPage = $scope.pager.pages;		
-		_findMailByFolder();		
-	}
-	
-	$scope.nextPage = function() {
-		$scope.pager.currentPage = $scope.pager.currentPage+1;		
-		_findMailByFolder();		
-	}
-	
-	$scope.previousPage = function() {
-		$scope.pager.currentPage = $scope.pager.currentPage-1		
-		_findMailByFolder();	
-	}
-	
 	$scope.showIcon = function(mail) {
 		return mail.answered || mail.forwarded;
 	}
-	
-	$scope.isFirstPage = function() {
-		return $scope.pager.currentPage === 1 ;
-	}
-	
-	$scope.isLastPage = function() {
-		return $scope.pager.currentPage === $scope.pager.pages;
-	}
-	
+
 	$scope.whichIcon = function(mail) {
 		if(mail.answered && mail.forwarded) {
 			return "forwardedanswered";
@@ -217,7 +187,7 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
 		MailResource.deleteMails(selectedMails).$promise
 		.then(function() {
 			$rootScope.$broadcast('notification', i18nService.resolve("Message(s) deleted"));
-			_findMailByFolder();			
+			updateOverview();			
 		});
 	}
 	

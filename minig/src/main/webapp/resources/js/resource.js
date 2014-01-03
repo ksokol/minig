@@ -20,7 +20,7 @@ app.factory('MailResource', ['$resource','API_HOME','DEFAULT_PAGE_SIZE','pagerFa
 	var defaults = {page: 1, page_length: DEFAULT_PAGE_SIZE};
 	
 	var messageDelete = $resource(API_HOME+'message/delete', {}, {deleteMails: {method: 'PUT', isArray:true, transformRequest: _transMessageDelete }});
-	var messageByFolder = $resource(API_HOME+'message?folder=:folder', defaults, {findByFolder: {method: 'GET', transformResponse: _transMessageByFolder}});
+	var messageByFolder = $resource(API_HOME+'message?folder=:folder', defaults, {findByFolder: {method: 'GET'}});
 	var messageUpdateFlag = $resource(API_HOME+'message/flag', {}, {updateFlags: {method: 'PUT', isArray:true, transformRequest: _transMessageUpdateFlags}});
 	var messageMove = $resource(API_HOME+'message/move', {}, {moveMessage: {method: 'PUT', isArray:true, transformRequest: _transMessageMoveCopy}});
 	var messageCopy = $resource(API_HOME+'message/copy', {}, {copyMessage: {method: 'PUT', isArray:true, transformRequest: _transMessageMoveCopy}});
@@ -34,16 +34,7 @@ app.factory('MailResource', ['$resource','API_HOME','DEFAULT_PAGE_SIZE','pagerFa
 		
 		return angular.toJson({messageIdList : idList });
 	}
-	
-	function _transMessageByFolder(data, headersGetter) {
-		try {
-			var json = angular.fromJson(data);
-            var pager = pagerFactory.newInstance(json.page, json.pageLength, json.fullLength);
 
-			return {pagination: pager, mails: json.mailList};
-		} catch(e) {}
-	}
-	
 	function _transMessageUpdateFlags(mails) {
 		var toSend = [];
         mails = (angular.isArray(mails)) ? mails : [mails];

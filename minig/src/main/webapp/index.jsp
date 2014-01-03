@@ -30,7 +30,7 @@
                                                     <col width="80px">
                                                 </colgroup>
                                                 <tbody>
-                                                <tr ng-repeat="mail in mails">
+                                                <tr ng-repeat="mail in data.mailList">
                                                     <td class="convCb">
                                                         <span class="gwt-CheckBox">
                                                             <input type="checkbox" value="on"
