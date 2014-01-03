@@ -24,8 +24,7 @@
 	<security:http pattern='/minig/images/**' security="none"/>
 	
 	<security:http pattern='/api/**' entry-point-ref="apiAuthenticationEntryPoint">
-	    <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"  />	
-	    <security:http-basic />
+	    <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"  />
 	</security:http>
 
   	<security:http pattern="/**">
