@@ -44,7 +44,7 @@ var preprocessors = config.preprocessors;
 
     ngHtml2JsPreprocessor: {
       stripPrefix: 'src/main/webapp/',
-      prependPrefix: 'html/',)
+      prependPrefix: 'html/',
       moduleName: 'htmlTemplates'
     },
 
