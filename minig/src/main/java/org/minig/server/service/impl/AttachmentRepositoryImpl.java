@@ -273,7 +273,6 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
                 mm.saveChanges();
 
                 sourceFolder.appendMessages(new Message[] { mm });
-
                 sourceFolder.close(false);
 
                 CompositeId compositeId = new CompositeId();

@@ -38,6 +38,11 @@ public class Mime4jMessage {
         this.message = message;
     }
 
+    public Mime4jMessage(MessageImpl message, CompositeId id) {
+        this.message = message;
+        this.id = id;
+    }
+
     public MessageImpl getMessage() {
         return message;
     }
@@ -382,6 +387,11 @@ public class Mime4jMessage {
         message.setFrom(mb);
     }
 
+    public String getSender() {
+        Mailbox sender = message.getSender();
+        return sender.getAddress();
+    }
+
     public void setRecipient(String recipient) {
         String[] split = recipient.split("@");
         Mailbox mb = new Mailbox(split[0], split[1]);
@@ -389,6 +399,10 @@ public class Mime4jMessage {
         to.add(mb);
 
         message.setTo(to);
+    }
+
+    public String getSubject() {
+        return message.getSubject();
     }
 
     private String parseBodyParts(Multipart multipart, String mimeType) {

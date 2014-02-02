@@ -1,10 +1,15 @@
 package org.minig.server.service.submission;
 
+import java.io.IOException;
 import java.util.Arrays;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.james.mime4j.MimeException;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,12 +23,19 @@ import org.minig.server.service.MailRepository;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.ServiceTestConfig;
 import org.minig.server.service.SmtpAndImapMockServer;
+import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.minig.test.javamail.Mailbox;
+import org.minig.test.javamail.MailboxBuilder;
+import org.minig.test.javamail.MailboxHolder;
+import org.minig.test.mime4j.Mime4jTestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -38,19 +50,19 @@ public class SubmissionServiceImplTest {
     private MailRepository mailRepository;
 
     @Autowired
-    private SmtpAndImapMockServer mockServer;
-
-    @Autowired
     private MailAuthentication mailAuthentication;
 
     @Before
     public void setUp() throws Exception {
-        mockServer.reset();
+        MailboxHolder.reset();
     }
 
     @Test
     public void testSendMessage() throws MessagingException {
-        mockServer.createAndSubscribeMailBox("INBOX.Sent", "INBOX.Drafts");
+        new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Drafts").subscribed().exists().build();
+
+        Mailbox inbox = new MailboxBuilder("test@example.com").mailbox("INBOX").subscribed().exists().build();
+        Mailbox sentBox = new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Sent").subscribed().exists().build();
 
         MailMessage mm = new MailMessage();
         mm.setSender(new MailMessageAddress(mailAuthentication.getAddress()));
@@ -59,22 +71,28 @@ public class SubmissionServiceImplTest {
 
         uut.sendMessage(mm);
 
-        mockServer.verifyMessageCount("INBOX.Sent", 1);
+        assertThat(sentBox, hasSize(1));
+        assertThat(inbox, hasSize(1));
 
-        assertEquals("testuser@localhost", mockServer.getReceivedMessages("test@example.com")[0].getFrom()[0].toString());
-        assertEquals("test subject", mockServer.getReceivedMessages("test@example.com")[0].getSubject());
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.convertMimeMessage(inbox.get(0));
+
+        assertEquals("testuser@localhost", mime4jMessage.getSender());
+        assertEquals("test subject", mime4jMessage.getSubject());
     }
 
     @Test
     public void testForwardMessage() throws MessagingException {
-        mockServer.createAndSubscribeMailBox("INBOX.Sent", "INBOX.Drafts", "INBOX.test");
+        new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Drafts").subscribed().exists().build();
+
+        Mailbox inbox = new MailboxBuilder("test@example.com").mailbox("INBOX").subscribed().exists().build();
+        Mailbox sentBox = new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Sent").subscribed().exists().build();
+        Mailbox testBox = new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.test").subscribed().exists().build();
 
         MimeMessage toBeForwarded = new MimeMessageBuilder().setFolder("INBOX.test").build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
-
-        mockServer.prepareMailBox("INBOX.test", toBeForwarded);
+        testBox.add(toBeForwarded);
 
         MailMessage mm = new MailMessage();
-        mm.setSender(new MailMessageAddress(mailAuthentication.getAddress()));
+        mm.setSender(new MailMessageAddress(mailAuthentication.getEmailAddress()));
         mm.setTo(Arrays.asList(new MailMessageAddress("test@example.com")));
         mm.setSubject("msg with forward");
 
@@ -82,14 +100,55 @@ public class SubmissionServiceImplTest {
 
         uut.forwardMessage(mm, compositeId);
 
-        mockServer.verifyMessageCount("INBOX.Sent", 1);
+        assertThat(sentBox, hasSize(1));
+        assertThat(inbox, hasSize(1));
 
-        assertEquals("testuser@localhost", mockServer.getReceivedMessages("test@example.com")[0].getFrom()[0].toString());
-        assertEquals("msg with forward", mockServer.getReceivedMessages("test@example.com")[0].getSubject());
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.convertMimeMessage(inbox.get(0));
+
+        assertEquals("testuser@localhost", mime4jMessage.getSender());
+        assertEquals("msg with forward", mime4jMessage.getSubject());
 
         MailMessageList findByFolder = mailRepository.findByFolder("INBOX.test", 1, 10);
 
         assertEquals("Pingdom Monthly Report 2013-04-01 to 2013-04-30", findByFolder.getMailList().get(0).getSubject());
         assertTrue(findByFolder.getMailList().get(0).getForwarded());
     }
+
+    @Test
+    public void testSendDraftMessage() throws MessagingException, IOException, MimeException {
+        MimeMessage toBeSend = new MimeMessageBuilder().setFolder("INBOX.Drafts").build(TestConstants.MULTIPART_WITH_PLAIN_AND_ATTACHMENT);
+        Mime4jMessage mime4jMessageToBeSend = Mime4jTestHelper.convertMimeMessage(toBeSend);
+
+        assertThat(mime4jMessageToBeSend.getAttachments(), hasSize(2));
+
+        Mailbox inbox = new MailboxBuilder("testuser@localhost").mailbox("INBOX").subscribed().exists().build();
+        Mailbox sentBox = new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Sent").subscribed().exists().build();
+        Mailbox draftsBox = new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Drafts").subscribed().exists().build();
+
+        draftsBox.add(toBeSend);
+
+        MailMessage mm = new MailMessage();
+        mm.setSender(new MailMessageAddress(mailAuthentication.getEmailAddress()));
+        mm.setTo(Arrays.asList(new MailMessageAddress("testuser@localhost")));
+        mm.setSubject("msg with attachment");
+        mm.setFolder("INBOX.Drafts");
+        mm.setMessageId(toBeSend.getMessageID());
+
+        assertThat(inbox, Matchers.hasSize(0));
+        assertThat(sentBox, Matchers.hasSize(0));
+        assertThat(draftsBox, Matchers.hasSize(1));
+
+        uut.sendMessage(mm);
+
+        assertThat(inbox, Matchers.hasSize(1));
+        assertThat(sentBox, Matchers.hasSize(1));
+        assertThat(draftsBox, Matchers.hasSize(0));
+
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.convertMimeMessage(inbox.get(0));
+
+        assertEquals("testuser@localhost", mime4jMessage.getSender());
+        assertEquals("msg with attachment", mime4jMessage.getSubject());
+        assertThat(mime4jMessage.getAttachments(), hasSize(2));
+    }
+
 }

@@ -6,9 +6,17 @@ public interface MailAuthentication {
 
     String getEmailAddress();
 
+    /**
+     * use getEmailAddress instead
+     * @return
+     */
     @Deprecated
     String getAddress();
 
+    /**
+     * use getEmailAddress instead
+     * @return
+     */
     @Deprecated
     String getUserMail();
 

@@ -212,8 +212,8 @@ public class AttachmentUploadWidget extends FormPanel {
 		final AttachmentUploadWidget auw = this;
 		return new ClickHandler() {
 			public void onClick(ClickEvent ev) {
-				attachPanel.getAttachList().remove(auw);
-				attachPanel.dropAttachment(auw.attachementId);
+				//attachPanel.getAttachList().remove(auw);
+				attachPanel.dropAttachment(auw);
 				//
 				// if (attachPanel.getAttachList().getWidgetCount() == 1) {
 				// attachPanel.reset();
@@ -224,5 +224,9 @@ public class AttachmentUploadWidget extends FormPanel {
 			}
 		};
 	}
+
+    public String getAttachmentId() {
+        return this.attachementId;
+    }
 
 }
