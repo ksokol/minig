@@ -90,6 +90,8 @@ public class AttachmentsPanel extends VerticalPanel {
 		// AttachmentUploadWidget uw = newFileUpload(alreadyOnServer);
 		// attachList.add(uw);
 
+        attachList.clear();
+
 		for (IAttachmentMetadata meta : list.getAttachmentMetadata()) {
 			// HorizontalPanel hp = new HorizontalPanel();
 			// Label uploadInfo = new Label();
