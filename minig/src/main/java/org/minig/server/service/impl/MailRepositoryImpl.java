@@ -118,7 +118,9 @@ class MailRepositoryImpl implements MailRepository {
             Message[] search = storeFolder.search(new MessageIDTerm(messageId));
 
             if (search != null && search.length == 1 && search[0] != null) {
-                return mapper.toMessageImpl(search[0]);
+                Mime4jMessage mime4jMessage = mapper.toMessageImpl(search[0]);
+                mime4jMessage.setId(new CompositeId(folder, messageId));
+                return mime4jMessage;
             }
         } catch (Exception e) {
             throw new RepositoryException(e.getMessage(), e);

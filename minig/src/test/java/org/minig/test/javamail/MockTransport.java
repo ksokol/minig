@@ -34,6 +34,8 @@ public class MockTransport extends Transport {
             } else {
                 if (mailbox.error) {
                     throw new MessagingException("Simulated error sending message to " + a);
+                }   else {
+                    mailbox.add(msg);
                 }
             }
         }

@@ -70,6 +70,19 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
+    public Mime4jMessage findById(CompositeId id) {
+        Assert.notNull(id);
+
+        Mime4jMessage message = mailRepository.read(id.getFolder(), id.getMessageId());
+
+        if (message == null) {
+            throw new NotFoundException();
+        } else {
+            return message;
+        }
+    }
+
+    @Override
     public void deleteMessages(List<CompositeId> messageIdList) {
         Assert.notNull(messageIdList);
 
