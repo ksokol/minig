@@ -26,6 +26,7 @@ import org.minig.server.service.SmtpAndImapMockServer;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
+import org.minig.test.javamail.MailboxHolder;
 import org.minig.test.mime4j.Mime4jTestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -49,19 +50,19 @@ public class SubmissionServiceImplTest {
     private MailRepository mailRepository;
 
     @Autowired
-    private SmtpAndImapMockServer mockServer;
-
-    @Autowired
     private MailAuthentication mailAuthentication;
 
     @Before
     public void setUp() throws Exception {
-        mockServer.reset();
+        MailboxHolder.reset();
     }
 
     @Test
     public void testSendMessage() throws MessagingException {
-        mockServer.createAndSubscribeMailBox("INBOX.Sent", "INBOX.Drafts");
+        new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Drafts").subscribed().exists().build();
+
+        Mailbox inbox = new MailboxBuilder("test@example.com").mailbox("INBOX").subscribed().exists().build();
+        Mailbox sentBox = new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Sent").subscribed().exists().build();
 
         MailMessage mm = new MailMessage();
         mm.setSender(new MailMessageAddress(mailAuthentication.getAddress()));
@@ -70,22 +71,28 @@ public class SubmissionServiceImplTest {
 
         uut.sendMessage(mm);
 
-        mockServer.verifyMessageCount("INBOX.Sent", 1);
+        assertThat(sentBox, hasSize(1));
+        assertThat(inbox, hasSize(1));
 
-        assertEquals("testuser@localhost", mockServer.getReceivedMessages("test@example.com")[0].getFrom()[0].toString());
-        assertEquals("test subject", mockServer.getReceivedMessages("test@example.com")[0].getSubject());
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.convertMimeMessage(inbox.get(0));
+
+        assertEquals("testuser@localhost", mime4jMessage.getSender());
+        assertEquals("test subject", mime4jMessage.getSubject());
     }
 
     @Test
     public void testForwardMessage() throws MessagingException {
-        mockServer.createAndSubscribeMailBox("INBOX.Sent", "INBOX.Drafts", "INBOX.test");
+        new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Drafts").subscribed().exists().build();
+
+        Mailbox inbox = new MailboxBuilder("test@example.com").mailbox("INBOX").subscribed().exists().build();
+        Mailbox sentBox = new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Sent").subscribed().exists().build();
+        Mailbox testBox = new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.test").subscribed().exists().build();
 
         MimeMessage toBeForwarded = new MimeMessageBuilder().setFolder("INBOX.test").build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
-
-        mockServer.prepareMailBox("INBOX.test", toBeForwarded);
+        testBox.add(toBeForwarded);
 
         MailMessage mm = new MailMessage();
-        mm.setSender(new MailMessageAddress(mailAuthentication.getAddress()));
+        mm.setSender(new MailMessageAddress(mailAuthentication.getEmailAddress()));
         mm.setTo(Arrays.asList(new MailMessageAddress("test@example.com")));
         mm.setSubject("msg with forward");
 
@@ -93,10 +100,13 @@ public class SubmissionServiceImplTest {
 
         uut.forwardMessage(mm, compositeId);
 
-        mockServer.verifyMessageCount("INBOX.Sent", 1);
+        assertThat(sentBox, hasSize(1));
+        assertThat(inbox, hasSize(1));
 
-        assertEquals("testuser@localhost", mockServer.getReceivedMessages("test@example.com")[0].getFrom()[0].toString());
-        assertEquals("msg with forward", mockServer.getReceivedMessages("test@example.com")[0].getSubject());
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.convertMimeMessage(inbox.get(0));
+
+        assertEquals("testuser@localhost", mime4jMessage.getSender());
+        assertEquals("msg with forward", mime4jMessage.getSubject());
 
         MailMessageList findByFolder = mailRepository.findByFolder("INBOX.test", 1, 10);
 
