@@ -105,8 +105,8 @@ public class AttachmentResource {
     @ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "attachment/**", method = RequestMethod.DELETE)
     @ResponseBody
-    public String deleteAttachment(@Id CompositeAttachmentId id) {
-
+    public void deleteAttachment(@Id CompositeAttachmentId id) {
+        throw new UnsupportedOperationException("not yet implemented");
         // List<MultipartFile> list = file.getMultiFileMap().get("myfilename");
         //
         // System.out.println(list.get(0).getBytes());
@@ -117,6 +117,6 @@ public class AttachmentResource {
         // attachment.getFileName());
         // attachmentService.readAttachment(id, response.getOutputStream());
 
-        return null;
+       // return null;
     }
 }
