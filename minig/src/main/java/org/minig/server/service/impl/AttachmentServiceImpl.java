@@ -88,12 +88,23 @@ public class AttachmentServiceImpl implements AttachmentService {
 
 		CompositeId appendAttachment = attachmentRepository.appendAttachment(attachmentId, dataSource);
 
-		mailRepository.delete(attachmentId);
-		// MailMessage message = mailRepository.read(attachmentId);
-		//
-		// if(message != null) {
-		//
-		// }
+        MailMessage oldMessage = mailRepository.read(attachmentId);
+        MailMessage newMessage = mailRepository.read(appendAttachment);
+
+        //TODO check if all flags are written back
+        newMessage.setAnswered(oldMessage.getAnswered());
+        newMessage.setAskForDispositionNotification(oldMessage.getAskForDispositionNotification());
+        newMessage.setDeleted(oldMessage.getDeleted());
+        newMessage.setDispositionNotification(oldMessage.getDispositionNotification());
+        newMessage.setForwarded(oldMessage.getForwarded());
+        newMessage.setHighPriority(oldMessage.getHighPriority());
+        newMessage.setMdnSent(oldMessage.getMdnSent());
+        newMessage.setRead(oldMessage.getRead());
+        newMessage.setReceipt(oldMessage.getReceipt());
+        newMessage.setStarred(oldMessage.getStarred());
+
+        mailRepository.updateFlags(newMessage);
+        mailRepository.delete(attachmentId);
 
 		return appendAttachment;
 	}

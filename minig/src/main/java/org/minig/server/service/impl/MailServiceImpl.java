@@ -212,7 +212,6 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public MailMessage updateDraftMessage(MailMessage message) {
-
         Mime4jMessage mimeMessage = mailRepository.read(message.getFolder(), message.getMessageId());
 
         // TEST
@@ -220,11 +219,15 @@ public class MailServiceImpl implements MailService {
         mimeMessage.setHtml(message.getBody().getHtml());
         mimeMessage.setPlain(message.getBody().getPlain());
 
+        //TODO what about other flags?
         String save = mailRepository.save(mimeMessage, message.getFolder());
 
         mailRepository.delete(message);
 
-        return mailRepository.readPojo(message.getFolder(), save);
-        // return createDraftMessage(message);
+        MailMessage readPojo = mailRepository.readPojo(message.getFolder(), save);
+        readPojo.setRead(Boolean.TRUE);
+        mailRepository.updateFlags(readPojo);
+
+        return readPojo;
     }
 }

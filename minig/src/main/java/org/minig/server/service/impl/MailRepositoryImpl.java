@@ -271,6 +271,7 @@ class MailRepositoryImpl implements MailRepository {
             // MailMessage convertShort = mapper.convertShort(search[0]);
             // return convertShort;
             // }
+            storeFolder.close(false);
 
             return target.getHeader("Message-ID")[0];
         } catch (Exception e) {
