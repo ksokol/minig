@@ -86,6 +86,7 @@ public class SubmissionServiceImplTest {
     @Test
     public void testForwardMessage() throws MessagingException {
         String expectedBody = "html with umlaut ä";
+        new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX").subscribed().exists().build();
         new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Drafts").subscribed().exists().build();
 
         Mailbox inbox = new MailboxBuilder("test@example.com").mailbox("INBOX").subscribed().exists().build();
