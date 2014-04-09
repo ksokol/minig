@@ -155,7 +155,7 @@ public class AttachmentUploadWidget extends FormPanel {
 
                 //TODO GWT must be replaced!!!!
                 if(!results.startsWith("<pre>")) {
-                    Window.alert("something went wrong");
+                    Window.alert("wrong response: " + results);
                     return;
                 }
 
