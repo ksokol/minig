@@ -3,13 +3,11 @@ package org.minig.server.service.submission;
 import java.io.IOException;
 import java.util.Arrays;
 
-import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.james.mime4j.MimeException;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +20,6 @@ import org.minig.server.service.CompositeId;
 import org.minig.server.service.MailRepository;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.ServiceTestConfig;
-import org.minig.server.service.SmtpAndImapMockServer;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
@@ -33,6 +30,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -59,15 +57,18 @@ public class SubmissionServiceImplTest {
 
     @Test
     public void testSendMessage() throws MessagingException {
+        String expectedBody = "html with umlaut ä";
         new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Drafts").subscribed().exists().build();
 
         Mailbox inbox = new MailboxBuilder("test@example.com").mailbox("INBOX").subscribed().exists().build();
         Mailbox sentBox = new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Sent").subscribed().exists().build();
 
         MailMessage mm = new MailMessage();
-        mm.setSender(new MailMessageAddress(mailAuthentication.getAddress()));
+        mm.setSender(new MailMessageAddress(mailAuthentication.getEmailAddress()));
         mm.setTo(Arrays.asList(new MailMessageAddress("test@example.com")));
         mm.setSubject("test subject");
+        mm.getBody().setHtml(expectedBody);
+        mm.getBody().setPlain(expectedBody);
 
         uut.sendMessage(mm);
 
@@ -78,10 +79,14 @@ public class SubmissionServiceImplTest {
 
         assertEquals("testuser@localhost", mime4jMessage.getSender());
         assertEquals("test subject", mime4jMessage.getSubject());
+        assertThat(mime4jMessage.getHtml(), is(expectedBody));
+        assertThat(mime4jMessage.getPlain(), is(expectedBody));
     }
 
     @Test
     public void testForwardMessage() throws MessagingException {
+        String expectedBody = "html with umlaut ä";
+        new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX").subscribed().exists().build();
         new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Drafts").subscribed().exists().build();
 
         Mailbox inbox = new MailboxBuilder("test@example.com").mailbox("INBOX").subscribed().exists().build();
@@ -95,6 +100,8 @@ public class SubmissionServiceImplTest {
         mm.setSender(new MailMessageAddress(mailAuthentication.getEmailAddress()));
         mm.setTo(Arrays.asList(new MailMessageAddress("test@example.com")));
         mm.setSubject("msg with forward");
+        mm.getBody().setHtml(expectedBody);
+        mm.getBody().setPlain(expectedBody);
 
         CompositeId compositeId = new CompositeId("INBOX.test", toBeForwarded.getMessageID());
 

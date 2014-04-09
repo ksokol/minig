@@ -3,11 +3,8 @@ package org.minig.server.service.impl.helper.mime;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.nio.charset.Charset;
+import java.util.*;
 
 import javax.activation.DataSource;
 
@@ -28,6 +25,12 @@ import org.apache.james.mime4j.stream.RawField;
 import org.minig.server.service.CompositeId;
 
 public class Mime4jMessage {
+
+    private static final Charset UTF_8 = Charset.forName("UTF-8");
+
+    private static final Map<String, String> CHARSET_UTF_8 = new HashMap<String, String>() {{
+        put("charset", "UTF-8");
+    }};
 
     private CompositeId id;
     private MessageImpl message;
@@ -85,50 +88,46 @@ public class Mime4jMessage {
         if (plain == null) {
             return;
         }
-        try {
-            if (message.isMimeType("text/plain")) {
-                message.removeBody();
 
-                TextBody newbody = new BasicBodyFactory().textBody(plain, message.getCharset());
-                message.setBody(newbody);
+        if (message.isMimeType("text/plain")) {
+            message.removeBody();
 
-            } else if (message.isMultipart()) {
-                Multipart multipart = (Multipart) message.getBody();
-                IndexOfResult indexOf = getIndexOf(multipart.getBodyParts(), "text/plain");
+            TextBody newbody = new BasicBodyFactory().textBody(plain, UTF_8);
+            message.setBody(newbody);
 
-                TextBody txtBody = new BasicBodyFactory().textBody(plain, message.getCharset());
-                BodyPart textBodyPart = new BodyPart();
+        } else if (message.isMultipart()) {
+            Multipart multipart = (Multipart) message.getBody();
+            IndexOfResult indexOf = getIndexOf(multipart.getBodyParts(), "text/plain");
 
-                textBodyPart.setText(txtBody);
+            TextBody txtBody = new BasicBodyFactory().textBody(plain, UTF_8);
+            BodyPart textBodyPart = new BodyPart();
 
-                if (indexOf != null) {
-                    // Multipart part = (Multipart) indexOf.part;
+            textBodyPart.setText(txtBody);
 
-                    multipart.replaceBodyPart(textBodyPart, indexOf.indexOf);
-                } else {
-                    multipart.addBodyPart(textBodyPart);
-                }
-            } else if (message.isMimeType("text/html")) {
-                TextBody removeBody = (TextBody) message.removeBody();
+            if (indexOf != null) {
+                // Multipart part = (Multipart) indexOf.part;
 
-                TextBody txtBody = new BasicBodyFactory().textBody(plain, message.getCharset());
-
-                BodyPart htmlBodyPart = new BodyPart();
-                BodyPart textBodyPart = new BodyPart();
-
-                htmlBodyPart.setText(removeBody, "html");
-                textBodyPart.setText(txtBody);
-
-                Multipart newBody = new MultipartImpl("related");
-
-                newBody.addBodyPart(htmlBodyPart);
-                newBody.addBodyPart(textBodyPart);
-
-                message.setMultipart(newBody);
-
+                multipart.replaceBodyPart(textBodyPart, indexOf.indexOf);
+            } else {
+                multipart.addBodyPart(textBodyPart);
             }
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e.getMessage(), e);
+        } else if (message.isMimeType("text/html")) {
+            TextBody removeBody = (TextBody) message.removeBody();
+
+            TextBody txtBody = new BasicBodyFactory().textBody(plain, UTF_8);
+
+            BodyPart htmlBodyPart = new BodyPart();
+            BodyPart textBodyPart = new BodyPart();
+
+            htmlBodyPart.setText(removeBody, "html");
+            textBodyPart.setText(txtBody);
+
+            Multipart newBody = new MultipartImpl("related");
+
+            newBody.addBodyPart(htmlBodyPart);
+            newBody.addBodyPart(textBodyPart);
+
+            message.setMultipart(newBody, CHARSET_UTF_8);
         }
     }
 
@@ -137,55 +136,53 @@ public class Mime4jMessage {
             return;
         }
 
-        try {
-            if (message.isMimeType("text/html")) {
-                message.removeBody();
+        if (message.isMimeType("text/html")) {
+            message.removeBody();
 
-                TextBody newbody = new BasicBodyFactory().textBody(html, message.getCharset());
-                message.setBody(newbody);
-            } else if (message.isMultipart()) {
-                Multipart multipart = (Multipart) message.getBody();
-                TextBody txtBody = new BasicBodyFactory().textBody(html, message.getCharset());
-                BodyPart htmlBodyPart = new BodyPart();
+            TextBody newbody = new BasicBodyFactory().textBody(html, UTF_8);
+            message.setBody(newbody);
+        } else if (message.isMultipart()) {
+            Multipart multipart = (Multipart) message.getBody();
+            TextBody txtBody = new BasicBodyFactory().textBody(html, UTF_8);
+            BodyPart htmlBodyPart = new BodyPart();
 
-                htmlBodyPart.setText(txtBody, "html");
+            htmlBodyPart.setText(txtBody, "html");
 
-                IndexOfResult indexOf = getIndexOf(multipart.getBodyParts(), "text/html");
+            IndexOfResult indexOf = getIndexOf(multipart.getBodyParts(), "text/html");
 
-                if (indexOf != null) {
-                    Multipart part = (Multipart) indexOf.part.getParent().getBody();
+            if (indexOf != null) {
+                Multipart part = (Multipart) indexOf.part.getParent().getBody();
 
-                    part.replaceBodyPart(htmlBodyPart, indexOf.indexOf);
-                } else {
-                    multipart.addBodyPart(htmlBodyPart);
-                }
-            } else if (message.isMimeType("text/plain")) {
-                TextBody textBody = (TextBody) message.removeBody();
-                TextBody htmlBody;
-
-                htmlBody = new BasicBodyFactory().textBody(html, message.getCharset());
-
-                if (textBody == null) {
-                    message.setBody(htmlBody, "text/html");
-                } else {
-
-                    BodyPart htmlBodyPart = new BodyPart();
-                    BodyPart textBodyPart = new BodyPart();
-
-                    htmlBodyPart.setText(htmlBody, "html");
-
-                    Multipart newBody = new MultipartImpl("related");
-
-                    textBodyPart.setText(textBody);
-
-                    newBody.addBodyPart(htmlBodyPart);
-                    newBody.addBodyPart(textBodyPart);
-
-                    message.setMultipart(newBody);
-                }
+                part.replaceBodyPart(htmlBodyPart, indexOf.indexOf);
+            } else {
+                multipart.addBodyPart(htmlBodyPart);
             }
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e.getMessage(), e);
+        } else if (message.isMimeType("text/plain")) {
+            TextBody textBody = (TextBody) message.removeBody();
+            TextBody htmlBody;
+
+            htmlBody = new BasicBodyFactory().textBody(html, UTF_8);
+
+            if (textBody == null) {
+                Map<String, String> m = new HashMap<String, String>();
+                m.put("charset", "UTF-8");
+                message.setBody(htmlBody, "text/html", m);
+            } else {
+
+                BodyPart htmlBodyPart = new BodyPart();
+                BodyPart textBodyPart = new BodyPart();
+
+                htmlBodyPart.setText(htmlBody, "html");
+
+                Multipart newBody = new MultipartImpl("related");
+
+                textBodyPart.setText(textBody);
+
+                newBody.addBodyPart(htmlBodyPart);
+                newBody.addBodyPart(textBodyPart);
+
+                message.setMultipart(newBody, CHARSET_UTF_8);
+            }
         }
     }
 
@@ -494,10 +491,10 @@ public class Mime4jMessage {
             return "";
         } else {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
+            String mimeCharset = tb.getMimeCharset() == null ? "UTF-8" : tb.getMimeCharset();
             try {
                 tb.writeTo(baos);
-                return new String(baos.toByteArray());
+                return new String(baos.toByteArray(), mimeCharset);
             } catch (IOException e) {
                 throw new RuntimeException(e.getMessage(), e);
             }

@@ -22,6 +22,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FileUpload;
@@ -150,12 +151,18 @@ public class AttachmentUploadWidget extends FormPanel {
 				uploadInfo.setText("File '" + attachementId + "' attached.");
 				hp.add(uploadInfo);
 
-				String results = event.getResults().trim();
-				int indexOf = results.indexOf("</noscript>");
-				String cut = results.substring(indexOf + 11).trim();
+                String results = event.getResults().trim();
+
+                //TODO GWT must be replaced!!!!
+                if(!results.startsWith("<pre>")) {
+                    Window.alert("something went wrong");
+                    return;
+                }
+
+				String cut = results.substring(5, results.length() -6).trim();
 				String replaceAll = cut.replaceAll("&gt;", ">").replaceAll("&lt;", "<");
 
-				messageId = replaceAll;
+                messageId = replaceAll;
 				attachPanel.setMessageId(replaceAll);
 
 				dp.remove(upload);
