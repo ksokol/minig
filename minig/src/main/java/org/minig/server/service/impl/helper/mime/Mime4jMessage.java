@@ -16,6 +16,7 @@ import org.apache.james.mime4j.dom.TextBody;
 import org.apache.james.mime4j.dom.address.Address;
 import org.apache.james.mime4j.dom.address.AddressList;
 import org.apache.james.mime4j.dom.address.Mailbox;
+import org.apache.james.mime4j.dom.address.MailboxList;
 import org.apache.james.mime4j.message.BasicBodyFactory;
 import org.apache.james.mime4j.message.BodyPart;
 import org.apache.james.mime4j.message.MessageImpl;
@@ -319,6 +320,10 @@ public class Mime4jMessage {
         // to.add(mb);
     }
 
+    public void clearTo() {
+        message.setTo(new ArrayList<Address>());
+    }
+
     public void setHeader(String key, String value) {
         RawField f = new RawField(key, value);
         Header messageHheader = message.getHeader();
@@ -385,7 +390,8 @@ public class Mime4jMessage {
     }
 
     public String getSender() {
-        Mailbox sender = message.getSender();
+        MailboxList from = message.getFrom();
+        Mailbox sender = from.get(0);
         return sender.getAddress();
     }
 
