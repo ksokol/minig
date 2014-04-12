@@ -1,8 +1,7 @@
 language: java
 jdk:
   - oraclejdk7
-#disabled until travis supports a script hook which is performed only once
-#  - openjdk7 
+  - openjdk7 
 
 env:
   global:
@@ -16,4 +15,4 @@ branches:
 script: mvn -f minig/pom.xml test package
 after_success: 
  - mvn -f minig/pom.xml cobertura:cobertura coveralls:cobertura
- - curl -X PUT -T minig/target/minig.war -u travis:$PW --insecure "https://$DEPLOY_HOST/manager/deploy?update=true&path=/minig"
+ - if [[ $TRAVIS_BRANCH == "master" && $TRAVIS_JDK_VERSION == "openjdk7" ]]; then mvn -f minig/pom.xml package; curl -X PUT -T minig/target/minig.war -u travis:$PW --insecure "https://$DEPLOY_HOST/manager/deploy?update=true&path=/minig" > /dev/null 2>&1; fi
