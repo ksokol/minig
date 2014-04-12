@@ -9,7 +9,11 @@
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
-	
+
+    <listener>
+        <listener-class>org.minig.servlet.FileCleaningTrackerServletContextListener</listener-class>
+    </listener>
+
 	<context-param>
    		<param-name>spring.profiles.active</param-name>
    		<param-value>prod</param-value>
