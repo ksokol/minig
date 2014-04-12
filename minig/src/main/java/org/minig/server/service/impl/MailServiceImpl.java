@@ -219,6 +219,12 @@ public class MailServiceImpl implements MailService {
         mimeMessage.setHtml(message.getBody().getHtml());
         mimeMessage.setPlain(message.getBody().getPlain());
 
+        mimeMessage.clearTo();
+
+        for (MailMessageAddress mailMessageAddress : message.getTo()) {
+            mimeMessage.addTo(mailMessageAddress.getEmail());
+        }
+
         //TODO what about other flags?
         String save = mailRepository.save(mimeMessage, message.getFolder());
 

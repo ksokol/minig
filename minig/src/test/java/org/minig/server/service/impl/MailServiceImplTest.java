@@ -1,9 +1,6 @@
 package org.minig.server.service.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -12,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailMessage;
+import org.minig.server.MailMessageAddress;
 import org.minig.server.MailMessageList;
 import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeId;
@@ -387,6 +385,7 @@ public class MailServiceImplTest {
         mm.setSubject("save draft");
         mm.getBody().setPlain(replacedBody);
         mm.getBody().setHtml(replacedBody);
+        mm.setTo(Arrays.asList(new MailMessageAddress("test@example.com")));
 
         MailMessage updateDraftMessage = uut.updateDraftMessage(mm);
         MailMessage findMessage = uut.findMessage(updateDraftMessage);

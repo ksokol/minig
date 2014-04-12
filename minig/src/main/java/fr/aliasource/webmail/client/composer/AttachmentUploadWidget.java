@@ -154,21 +154,23 @@ public class AttachmentUploadWidget extends FormPanel {
                 String results = event.getResults().trim();
 
                 //TODO GWT must be replaced!!!!
-                if(!results.startsWith("<pre>")) {
-                    Window.alert("something went wrong");
+                if(results.startsWith("<pre>")) {
+                    String cut = results.substring(5, results.length() -6).trim();
+                    messageId = cut.replaceAll("&gt;", ">").replaceAll("&lt;", "<");
+                } else if(results.startsWith("<noscript>")) {
+                    int indexOf = results.indexOf("</noscript>");
+                    String cut = results.substring(indexOf + 11).trim();
+                    messageId = cut.replaceAll("&gt;", ">").replaceAll("&lt;", "<");
+                } else {
+                    Window.alert("wrong response: " + results);
                     return;
                 }
 
-				String cut = results.substring(5, results.length() -6).trim();
-				String replaceAll = cut.replaceAll("&gt;", ">").replaceAll("&lt;", "<");
-
-                messageId = replaceAll;
-				attachPanel.setMessageId(replaceAll);
+				attachPanel.setMessageId(messageId);
 
 				dp.remove(upload);
 				dp.add(hp, DockPanel.CENTER);
 				updateMetadata(hp);
-
 			}
 		});
 
