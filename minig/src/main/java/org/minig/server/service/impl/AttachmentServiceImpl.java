@@ -18,6 +18,7 @@ import org.minig.server.service.FolderRepository;
 import org.minig.server.service.MailRepository;
 import org.minig.server.service.NotFoundException;
 import org.minig.server.service.ServiceException;
+import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -117,6 +118,22 @@ public class AttachmentServiceImpl implements AttachmentService {
 			throw new ServiceException("");
 		}
 
-		return null;
+        Mime4jMessage message = mailRepository.read(attachmentId.getFolder(), attachmentId.getMessageId());
+
+        message.deleteAttachment(attachmentId.getFileName());
+
+        String id = mailRepository.save(message, message.getId().getFolder());
+
+        MailMessage mm = mailRepository.readPojo(message.getId().getFolder(), id);
+        mm.setRead(true);
+        mailRepository.updateFlags(mm);
+
+        mailRepository.delete(attachmentId);
+
+        CompositeId newId = new CompositeId();
+        newId.setFolder(attachmentId.getFolder());
+        newId.setMessageId(id);
+
+        return newId;
 	}
 }

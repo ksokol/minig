@@ -30,14 +30,11 @@ import org.apache.james.mime4j.util.MimeUtil;
 import org.minig.server.MailAttachment;
 import org.minig.server.MailAttachmentList;
 import org.minig.server.MailMessage;
-import org.minig.server.service.AttachmentRepository;
-import org.minig.server.service.CompositeAttachmentId;
-import org.minig.server.service.CompositeId;
-import org.minig.server.service.NotFoundException;
-import org.minig.server.service.RepositoryException;
+import org.minig.server.service.*;
 import org.minig.server.service.impl.helper.BodyConverter;
 import org.minig.server.service.impl.helper.BodyConverter.BodyType;
 import org.minig.server.service.impl.helper.MessageMapper;
+import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -286,64 +283,5 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
         }
 
         throw new RepositoryException();
-    }
-
-    @Override
-    public CompositeId delete(CompositeAttachmentId attachmentId) {
-        Assert.notNull(attachmentId);
-
-        try {
-            Folder sourceFolder = mailContext.getFolder(attachmentId.getFolder(), true);
-            Message[] search = sourceFolder.search(new MessageIDTerm(attachmentId.getMessageId()));
-
-            if (search != null && search.length == 1) {
-                MimeMessage message = (MimeMessage) search[0];
-
-                // Multipart content = (Multipart) message.getContent();
-                //
-                //
-                //
-                // //now a loop over its body parts
-                // for(int i=0; i<mmp.getCount(); i++) {
-                // MimeBodyPart mbp=(MimeBodyPart)mmp.getBodyPart(i);
-                // if(mmp.get) {
-                // mmp.removeBodyPart(i);
-                // //this will shift all parts down so:
-                // //the index of the loop needs correction
-                // i--;
-                // }
-                // }
-
-                // if (message instanceof Multipart) {
-                // System.out.println(content);
-
-                // Message n = new MimeMessage(message);
-
-                BodyPart object = (BodyPart) BodyConverter.get(message, BodyType.ATTACHMENT, attachmentId.getFileName());
-                Multipart parent = (Multipart) object.getParent();
-                parent.removeBodyPart(object);
-
-                // n.setContent(multipart);
-
-                // n.saveChanges();
-
-                // sourceFolder.appendMessages(new Message[] { n });
-                message.saveChanges();
-                // MailMessage convertShort = mapper.convertId(n);
-
-                CompositeId compositeId = new CompositeId();
-                compositeId.setFolder(attachmentId.getFolder());
-                compositeId.setMessageId(message.getHeader("Message-ID")[0]);
-
-                return compositeId;
-                // }
-            }
-        } catch (Exception e) {
-            throw new RepositoryException(e.getMessage(), e);
-        }
-
-        throw new RepositoryException();
-
-        // return null;
     }
 }

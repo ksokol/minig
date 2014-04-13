@@ -75,48 +75,24 @@ public class AttachmentResource {
     @RequestMapping(value = "attachment/**", method = RequestMethod.POST)
     @ResponseBody
     public String uploadAttachment(@Id CompositeId id, MultipartRequest file) throws IOException {
-        CompositeId addAttachment = id;
+        CompositeId idAfterAttachedFile = id;
 
         for (Entry<String, MultipartFile> entry : file.getFileMap().entrySet()) {
-
-            addAttachment = attachmentService.addAttachment(addAttachment, new MultipartfileDataSource(entry.getValue()));
-
+            idAfterAttachedFile = attachmentService.addAttachment(idAfterAttachedFile, new MultipartfileDataSource(entry.getValue()));
         }
 
-        if (addAttachment != null) {
-            // TODO: hack for GWT right now
-            return addAttachment.getId();
+        if (idAfterAttachedFile != null) {
+            return idAfterAttachedFile.getId();
         }
 
-        // TODO
-        throw new NotFoundException();
-        // List<MultipartFile> list = file.getMultiFileMap().get("myfilename");
-        //
-        // System.out.println(list.get(0).getBytes());
-        // MailAttachment attachment = attachmentService.findAttachment(id);
-        //
-        // response.setContentType(attachment.getMime());
-        // response.setHeader("Content-Disposition", "attachment; filename=" +
-        // attachment.getFileName());
-        // attachmentService.readAttachment(id, response.getOutputStream());
-
+        throw new RuntimeException("no file received");
     }
 
     @ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "attachment/**", method = RequestMethod.DELETE)
     @ResponseBody
-    public void deleteAttachment(@Id CompositeAttachmentId id) {
-        throw new UnsupportedOperationException("not yet implemented");
-        // List<MultipartFile> list = file.getMultiFileMap().get("myfilename");
-        //
-        // System.out.println(list.get(0).getBytes());
-        // MailAttachment attachment = attachmentService.findAttachment(id);
-        //
-        // response.setContentType(attachment.getMime());
-        // response.setHeader("Content-Disposition", "attachment; filename=" +
-        // attachment.getFileName());
-        // attachmentService.readAttachment(id, response.getOutputStream());
-
-       // return null;
+    public CompositeId deleteAttachment(@Id CompositeAttachmentId id) {
+        CompositeId compositeId = attachmentService.deleteAttachment(id);
+        return compositeId;
     }
 }

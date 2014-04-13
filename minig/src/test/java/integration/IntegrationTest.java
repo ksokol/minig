@@ -1,7 +1,5 @@
 package integration;
 
-import javax.mail.Address;
-import javax.mail.Message;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.io.FileUtils;
@@ -33,13 +31,13 @@ import java.util.Map;
 
 import static com.jayway.jsonpath.JsonPath.read;
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -75,7 +73,6 @@ public class IntegrationTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value("INBOX|" + mm.getMessageID()))
                 .andExpect(jsonPath("$.subject").value("Pingdom Monthly Report 2013-04-01 to 2013-04-30"));
-
     }
 
     @Test
@@ -130,10 +127,6 @@ public class IntegrationTest {
         assertThat(draftBox, hasSize(1));
         assertThat(mime4jMessage.getSender(), is("testuser@localhost"));
 
-        Address[] recipients = draftBox.get(0).getRecipients(Message.RecipientType.TO);
-
-        System.out.println(recipients.length);
-
         ClassPathResource draftSend = new ClassPathResource("json/draft-send.json");
         Map<String, Object> map = om.readValue(draftSend.getInputStream(), Map.class);
 
@@ -152,5 +145,28 @@ public class IntegrationTest {
 
         assertThat(draftBox, hasSize(0));
         assertThat(sendBox, hasSize(1));
+    }
+
+    @Test
+    public void testDeleteAttachedFileFromDraftMessage() throws Exception {
+        MimeMessage mailWithAttachment = new MimeMessageBuilder().setFolder("INBOX.Drafts").build(TestConstants.MULTIPART_WITH_ATTACHMENT);
+        new MailboxBuilder("testuser@localhost").mailbox("INBOX").subscribed().exists().build();
+        Mailbox draftBox = new MailboxBuilder("testuser@localhost").mailbox("INBOX.Drafts").subscribed().exists().build();
+        draftBox.add(mailWithAttachment);
+
+         mockMvc.perform(get(PREFIX + "/message/INBOX.Drafts|" + mailWithAttachment.getMessageID()))
+                .andExpect(jsonPath("$.attachments..fileName").value(contains("1.png", "2.png")));
+
+        String attachmentId = "INBOX.Drafts|" + mailWithAttachment.getMessageID() + "|1.png";
+
+        MvcResult mvcResult = mockMvc.perform(delete(PREFIX + "/attachment/" + attachmentId)).andReturn();
+        Map<String, String> response = om.readValue(mvcResult.getResponse().getContentAsString(), Map.class);
+        String idAfterAttachmentWasRemoved = response.get("id");
+
+        mockMvc.perform(get(PREFIX + "/message/" + idAfterAttachmentWasRemoved))
+                .andExpect(jsonPath("$.attachments..fileName").value(contains("2.png")))
+                .andExpect(jsonPath("$.read").value(true));
+
+        assertThat(mailWithAttachment.getMessageID(), not(equalTo(idAfterAttachmentWasRemoved)));
     }
 }

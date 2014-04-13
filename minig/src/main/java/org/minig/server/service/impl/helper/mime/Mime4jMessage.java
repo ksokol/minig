@@ -352,7 +352,7 @@ public class Mime4jMessage {
     private void deleteAttachment(Multipart multipart, String filename) {
         List<Entity> e = multipart.getBodyParts();
 
-        for (int i = 0; i <= e.size(); i++) {
+        for (int i = 0; i < e.size(); i++) {
             BodyPart part = (BodyPart) e.get(i);
 
             if ("attachment".equalsIgnoreCase(part.getDispositionType()) && filename.equals(part.getFilename())) {

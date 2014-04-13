@@ -16,6 +16,4 @@ public interface AttachmentRepository {
 	public InputStream readAttachmentPayload(CompositeAttachmentId attachmentId);
 
 	CompositeId appendAttachment(CompositeId id, DataSource dataSource);
-
-	CompositeId delete(CompositeAttachmentId attachmentId);
 }

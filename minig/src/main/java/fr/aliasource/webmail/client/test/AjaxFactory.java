@@ -4,16 +4,7 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestBuilder.Method;
 import com.google.gwt.http.client.URL;
 
-import fr.aliasource.webmail.client.shared.IAttachmentMetadata;
-import fr.aliasource.webmail.client.shared.IAttachmentMetadataList;
-import fr.aliasource.webmail.client.shared.IClientMessage;
-import fr.aliasource.webmail.client.shared.IClientMessageList;
-import fr.aliasource.webmail.client.shared.ICreateFolderRequest;
-import fr.aliasource.webmail.client.shared.IDeleteMessagesRequest;
-import fr.aliasource.webmail.client.shared.IFolder;
-import fr.aliasource.webmail.client.shared.IFolderList;
-import fr.aliasource.webmail.client.shared.MessageCopyOrMoveRequest;
-import fr.aliasource.webmail.client.shared.SubmissionRequest;
+import fr.aliasource.webmail.client.shared.*;
 
 public class AjaxFactory {
 
@@ -152,8 +143,8 @@ public class AjaxFactory {
         return JSON_URL + "/attachment/" + id;
     }
 
-    public static Ajax<String> deleteAttachment(String messageId, String attachmentId) {
+    public static Ajax<Id> deleteAttachment(String messageId, String attachmentId) {
         String url = JSON_URL + "/attachment/" + messageId + "|" + attachmentId;
-        return new Ajax<String>(RequestBuilder.DELETE, url, String.class);
+        return new Ajax<Id>(RequestBuilder.DELETE, url, Id.class);
     }
 }
