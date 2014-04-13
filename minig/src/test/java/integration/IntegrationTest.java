@@ -1,5 +1,6 @@
 package integration;
 
+import javax.mail.Flags;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.io.FileUtils;
@@ -145,6 +146,7 @@ public class IntegrationTest {
 
         assertThat(draftBox, hasSize(0));
         assertThat(sendBox, hasSize(1));
+        assertThat(sendBox.get(0).getFlags().contains(Flags.Flag.SEEN), is(true));
     }
 
     @Test

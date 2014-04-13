@@ -155,19 +155,16 @@ public class MailServiceImpl implements MailService {
         }
     }
 
-    // @Override
-    // public void createMessage(MailMessage source) {
-    // Assert.notNull(source);
-    //
-    // mailRepository.save(source);
-    // }
-
     @Override
     public void moveMessageToFolder(CompositeId message, String folder) {
         Assert.notNull(message);
         Assert.hasText(folder);
 
         mailRepository.moveMessage(message, folder);
+
+        MailMessage mm = mailRepository.readPojo(folder, message.getMessageId());
+        mm.setRead(true);
+        mailRepository.updateFlags(mm);
     }
 
     @Override
