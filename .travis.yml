@@ -13,6 +13,5 @@ env:
 script: mvn -f minig/pom.xml test
 after_success: 
  - echo "current branch $TRAVIS_BRANCH on jdk version $TRAVIS_JDK_VERSION"
- - if [[ $TRAVIS_JDK_VERSION == "openjdk7" ]]; then mvn -f minig/pom.xml co
-bertura:cobertura coveralls:cobertura; fi
+ - if [[ $TRAVIS_JDK_VERSION == "openjdk7" ]]; then mvn -f minig/pom.xml cobertura:cobertura coveralls:cobertura; fi
  - if [[ $TRAVIS_BRANCH == "master" && $TRAVIS_JDK_VERSION == "openjdk7" && $TRAVIS_PULL_REQUEST == "false" ]]; then mvn -f minig/pom.xml package -DskipTests; echo "deploying artefact"; curl -X PUT -T minig/target/minig.war -u travis:$PW --cacert cacert-root.crt "https://$DEPLOY_HOST/manager/deploy?update=true&path=/minig" > /dev/null 2>&1; echo "deploy result $?"; fi
