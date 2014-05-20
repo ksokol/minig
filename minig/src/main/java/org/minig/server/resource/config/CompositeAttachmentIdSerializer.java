@@ -11,6 +11,8 @@ import java.net.URLEncoder;
 
 /**
  * @author Kamill Sokol
+ *
+ * TODO remove this custom serialzer after a clear separation between entities and value objects has been established.
  */
 public class CompositeAttachmentIdSerializer extends JsonSerializer<CompositeAttachmentId> {
 
