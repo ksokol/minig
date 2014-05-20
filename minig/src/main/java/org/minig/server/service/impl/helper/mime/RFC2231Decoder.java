@@ -25,7 +25,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Encoder for RFC2231 encoded parameters
+ * Encoder for <a href="http://tools.ietf.org/html/rfc2231">RFC2231</a> encoded parameters
  *
  * RFC2231 string are encoded as
  *
