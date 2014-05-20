@@ -7,6 +7,7 @@ import org.minig.server.TestConstants;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
@@ -38,7 +39,7 @@ public class Mime4jAttachmentMetadataExtractorTest {
 
 		Mime4jAttachmentMetadata attachment = attachments.get(0);
 
-		assertThat(attachment.getSize(), is(851L));
+		assertThat(attachment.getSize(), is(greaterThan(0L)));
 		assertThat(attachment.getMimeType(), is("text/plain"));
 		assertThat(attachment.getFilename(), is("lyrics.txt"));
 	}
