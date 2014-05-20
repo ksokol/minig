@@ -11,10 +11,10 @@ import org.junit.runner.RunWith;
 import org.minig.server.TestConstants;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
 import org.minig.test.javamail.MailboxHolder;
-import org.minig.test.mime4j.Mime4jTestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
@@ -71,7 +71,7 @@ public class IntegrationTest {
         inbox.add(mm);
 
         mockMvc.perform(get(PREFIX + "/message/INBOX|" + mm.getMessageID())).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(content().contentType("application/json; charset=UTF-8"))
                 .andExpect(jsonPath("$.id").value("INBOX|" + mm.getMessageID()))
                 .andExpect(jsonPath("$.subject").value("Pingdom Monthly Report 2013-04-01 to 2013-04-30"));
     }
@@ -86,13 +86,13 @@ public class IntegrationTest {
 
         MvcResult draftCreated = mockMvc.perform(post(PREFIX + "/message/draft").content(draftJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(content().contentType("application/json; charset=UTF-8"))
                 .andReturn();
 
         String draftId = read(draftCreated.getResponse().getContentAsString(), "$.id");
 
         mockMvc.perform(get(PREFIX + "/message/" + draftId)).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType("application/json; charset=UTF-8"))
                 .andExpect(jsonPath("$.id").value(draftId));
 
         MockMultipartFile attachment = new MockMultipartFile("draft.json", "draft.json", "application/json", draftJson.getBytes());
@@ -146,7 +146,7 @@ public class IntegrationTest {
 
         assertThat(draftBox, hasSize(0));
         assertThat(sendBox, hasSize(1));
-        assertThat(sendBox.get(0).getFlags().contains(Flags.Flag.SEEN), is(true));
+		assertThat(sendBox.get(0).getFlags().contains(Flags.Flag.SEEN), is(true));
     }
 
     @Test

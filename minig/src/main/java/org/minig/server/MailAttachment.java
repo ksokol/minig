@@ -21,17 +21,10 @@ import org.minig.server.service.CompositeAttachmentId;
 public class MailAttachment extends CompositeAttachmentId {
 
 	private long size;
-	// private String fileName;
 	private String mime;
-
-	// private String id;
 
 	public MailAttachment() {
 	}
-
-	// public MailAttachment(String id) {
-	// this.id = id;
-	// }
 
 	public long getSize() {
 		return size;
@@ -40,15 +33,6 @@ public class MailAttachment extends CompositeAttachmentId {
 	public void setSize(long size) {
 		this.size = size;
 	}
-
-	//
-	// public String getFileName() {
-	// return fileName;
-	// }
-	//
-	// public void setFileName(String fileName) {
-	// this.fileName = fileName;
-	// }
 
 	public String getMime() {
 		return mime;
@@ -63,6 +47,6 @@ public class MailAttachment extends CompositeAttachmentId {
 	}
 
 	public void setId(String id) {
-		this.id = id;
+		super.setId(id);
 	}
 }

@@ -31,8 +31,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.reset;
@@ -84,15 +82,17 @@ public class AttachmentResourceTest {
         ma.setFileName("filename");
         ma.setId("id");
         ma.setMime("mime");
+		ma.setMessageId("messageId");
+		ma.setFolder("folder");
         ma.setSize(100);
         l.add(ma);
 
         when(attachmentServiceMock.findAttachments(Matchers.<CompositeId> anyObject())).thenReturn(new MailAttachmentList(l));
 
         mockMvc.perform(get(PREFIX + "/attachment/INBOX/test|1")).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(content().contentType("application/json; charset=UTF-8"))
                 .andExpect(jsonPath("attachmentMetadata[0].fileName").value("filename"))
-                .andExpect(jsonPath("attachmentMetadata[0].id").value("id"))
+                .andExpect(jsonPath("attachmentMetadata[0].id").value("folder|messageId|filename"))
                 .andExpect(jsonPath("attachmentMetadata[0].mime").value("mime"))
                 .andExpect(jsonPath("attachmentMetadata[0].size").value(100));
 
@@ -141,4 +141,23 @@ public class AttachmentResourceTest {
                 argThat(org.hamcrest.Matchers.<CompositeId> hasProperty("messageId", IsEqual.<String> equalTo("id"))),
                 Matchers.<DataSource> anyObject());
     }
+
+	@Test
+	public void testReadAttachment_encodedFilename() throws Exception {
+		List<MailAttachment> l = new ArrayList<MailAttachment>();
+		MailAttachment ma = new MailAttachment();
+
+		ma.setFolder("folder");
+		ma.setMessageId("messageId");
+		ma.setFileName("umlaut ä.png");
+
+		l.add(ma);
+
+		when(attachmentServiceMock.findAttachments(Matchers.<CompositeId> anyObject())).thenReturn(new MailAttachmentList(l));
+
+		mockMvc.perform(get(PREFIX + "/attachment/INBOX/test|1"))
+				.andExpect(content().contentType("application/json; charset=UTF-8"))
+				.andExpect(jsonPath("attachmentMetadata[0].fileName").value("umlaut ä.png"))
+				.andExpect(jsonPath("attachmentMetadata[0].id").value("folder|messageId|umlaut+%C3%A4.png"));
+	}
 }

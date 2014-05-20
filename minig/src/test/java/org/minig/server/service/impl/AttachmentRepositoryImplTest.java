@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.minig.server.MailAttachment;
 import org.minig.server.MailAttachmentList;
 import org.minig.server.MailMessage;
+import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.MailRepository;
@@ -32,6 +33,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -102,16 +105,16 @@ public class AttachmentRepositoryImplTest {
         CompositeId expected = new CompositeAttachmentId("INBOX", m.getMessageID(), mailAttachment1.getFileName());
 
         assertEquals(expected.getId(), mailAttachment1.getId());
-        assertThat("image/png; name=\"1.png\"", equalToIgnoringWhiteSpace(mailAttachment1.getMime()));
-        assertEquals(180702, mailAttachment1.getSize());
+        assertThat(mailAttachment1.getMime(), is("image/png"));
+        assertThat(mailAttachment1.getSize(), is(greaterThan(0L)));
 
         assertEquals("2.png", mailAttachment2.getFileName());
 
         expected = new CompositeAttachmentId("INBOX", m.getMessageID(), mailAttachment2.getFileName());
 
         assertEquals(expected.getId(), mailAttachment2.getId());
-        assertThat("image/png; name=\"2.png\"", equalToIgnoringWhiteSpace(mailAttachment2.getMime()));
-        assertEquals(181998, mailAttachment2.getSize());
+        assertThat(mailAttachment2.getMime(), is("image/png"));
+        assertThat(mailAttachment2.getSize(), is(greaterThan(0L)));
     }
 
     @Test
@@ -139,9 +142,21 @@ public class AttachmentRepositoryImplTest {
         assertEquals("1.png", read.getFileName());
         assertEquals(id.getId(), read.getId());
 
-        assertThat("image/png; name=\"1.png\"", equalToIgnoringWhiteSpace(read.getMime()));
-        assertEquals(180702, read.getSize());
+        assertThat(read.getMime(), is("image/png"));
+        assertThat(read.getSize(), is(greaterThan(0L)));
     }
+
+	@Test
+	public void testRead_hasAttachmentWithEncodedFilename() throws MessagingException {
+		MimeMessage m = new MimeMessageBuilder().setFolder("INBOX").build(TestConstants.MULTIPART_ATTACHMENT_BINARY);
+		mockServer.prepareMailBox("INBOX", m);
+
+		CompositeAttachmentId id = new CompositeAttachmentId("INBOX", m.getMessageID(), "umlaut ä.png");
+		MailAttachment ma = uut.read(id);
+
+		assertThat(ma.getFileName(), is("umlaut ä.png"));
+		assertThat(ma.getSize(), is(greaterThan(0L)));
+	}
 
     @Test
     public void testReadAttachmentPayload() throws Exception {

@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
-@RequestMapping(value = "1", produces = "application/json")
+@RequestMapping(value = "1", produces = "application/json; charset=UTF-8")
 public class FolderResource {
 
     @Autowired
     private FolderService folderService;
 
-    @RequestMapping(value = "folder", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "folder", method = RequestMethod.GET)
     @ResponseBody
     public MailFolderList findBySubscribed(@RequestParam(required = false) Boolean subscribed) {
         return folderService.findBySubscribed(subscribed);

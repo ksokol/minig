@@ -130,6 +130,7 @@ public class MessageMapper {
     }
 
     // TODO
+	@Deprecated
     public Mime4jMessage toMessageImpl(Message msg) {
         try {
             // TODO

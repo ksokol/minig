@@ -77,7 +77,7 @@ public class MailResourceTest {
         when(mailServiceMock.findMessagesByFolder(anyString(), anyInt(), anyInt())).thenReturn(mailMessageList);
 
         mockMvc.perform(get(PREFIX + "/message").param("folder", "INBOX")).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.fullLength").value(1))
+                .andExpect(content().contentType("application/json; charset=UTF-8")).andExpect(jsonPath("$.fullLength").value(1))
                 .andExpect(jsonPath("$.page").value(1));
 
         verify(mailServiceMock).findMessagesByFolder("INBOX", 1, 10);
@@ -90,7 +90,7 @@ public class MailResourceTest {
         when(mailServiceMock.findMessagesByFolder(anyString(), anyInt(), anyInt())).thenReturn(mailMessageList);
 
         mockMvc.perform(get(PREFIX + "/message").param("folder", "INBOX").param("page", "7").param("page_length", "11"))
-                .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andExpect(content().contentType("application/json; charset=UTF-8"))
                 .andExpect(jsonPath("$.fullLength").value(5)).andExpect(jsonPath("$.page").value(3));
 
         verify(mailServiceMock).findMessagesByFolder("INBOX", 7, 11);
@@ -105,7 +105,7 @@ public class MailResourceTest {
         when(mailServiceMock.findMessage(Matchers.<CompositeId> anyObject())).thenReturn(mm);
 
         mockMvc.perform(get(PREFIX + "/message/INBOX/deep/folder/structure|1")).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType("application/json; charset=UTF-8"))
                 .andExpect(jsonPath("$.id").value("INBOX/deep/folder/structure|1"));
 
         verify(mailServiceMock).findMessage(
@@ -125,7 +125,7 @@ public class MailResourceTest {
         when(mailServiceMock.findMessage(Matchers.<CompositeId> anyObject())).thenReturn(mm);
 
         mockMvc.perform(get(PREFIX + "/message/INBOX.deep.folder.structure|1")).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType("application/json; charset=UTF-8"))
                 .andExpect(jsonPath("$.id").value("INBOX.deep.folder.structure|1"));
 
         verify(mailServiceMock).findMessage(
