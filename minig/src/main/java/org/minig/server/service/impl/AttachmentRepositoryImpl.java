@@ -3,15 +3,11 @@ package org.minig.server.service.impl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.activation.DataSource;
 import javax.mail.Folder;
 import javax.mail.Message;
-import javax.mail.Part;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.MessageIDTerm;
 
@@ -25,8 +21,6 @@ import org.apache.james.mime4j.util.MimeUtil;
 import org.minig.server.MailAttachment;
 import org.minig.server.MailAttachmentList;
 import org.minig.server.service.*;
-import org.minig.server.service.impl.helper.BodyConverter;
-import org.minig.server.service.impl.helper.BodyConverter.BodyType;
 import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.minig.server.service.impl.helper.mime.Mime4jMessageFactory;
@@ -47,34 +41,24 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
 	@Override
     public MailAttachmentList readMetadata(CompositeId id) {
         Assert.notNull(id);
-        List<MailAttachment> metaDataList = new ArrayList<>();
+		List<MailAttachment> metaDataList = new ArrayList<>();
+		Mime4jMessage mime4jMessage = readInternal(id);
 
-        try {
-            Folder folder = mailContext.getFolder(id.getFolder());
+		if(mime4jMessage == null) {
+			return new MailAttachmentList(metaDataList);
+		}
 
-            if (!folder.exists()) {
-                return new MailAttachmentList();
-            }
+		List<Mime4jAttachment> attachments2 = mime4jMessage.getAttachments();
 
-            Message[] search = folder.search(new MessageIDTerm(id.getMessageId()));
-
-            if (search != null && search[0] != null) {
-  				Mime4jMessage mime4jMessage = Mime4jMessageFactory.from(search[0]);
-				List<Mime4jAttachment> attachments2 = mime4jMessage.getAttachments();
-
-                for (Mime4jAttachment attachment : attachments2) {
-					// TODO
-					MailAttachment metaData = new MailAttachment();
-					metaData.setCompositeId(attachment.getId());
-					metaData.setFileName(attachment.getId().getFileName());
-					metaData.setSize(attachment.getSize());
-					metaData.setMime(attachment.getMimeType());
-					metaDataList.add(metaData);
-                }
-            }
-        } catch (Exception e) {
-            throw new RepositoryException(e.getMessage(), e);
-        }
+		for (Mime4jAttachment attachment : attachments2) {
+			// TODO
+			MailAttachment metaData = new MailAttachment();
+			metaData.setCompositeId(attachment.getId());
+			metaData.setFileName(attachment.getId().getFileName());
+			metaData.setSize(attachment.getSize());
+			metaData.setMime(attachment.getMimeType());
+			metaDataList.add(metaData);
+		}
 
         return new MailAttachmentList(metaDataList);
     }
@@ -82,66 +66,44 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
     @Override
     public MailAttachment read(CompositeAttachmentId id) {
         Assert.notNull(id);
-        MailAttachment metaData = null;
+		MailAttachment metaData = null;
+		Mime4jMessage mime4jMessage = readInternal(id);
 
-        try {
-            Folder folder = mailContext.openFolder(id.getFolder());
-            Message[] search = folder.search(new MessageIDTerm(id.getMessageId()));
+		if(mime4jMessage == null) {
+			return metaData;
+		}
 
-			if (search != null && search.length == 1 && search[0] != null) {
-				Mime4jMessage mime4jMessage = Mime4jMessageFactory.from(search[0]);
-				Mime4jAttachment p = mime4jMessage.getAttachment(id.getFileName());
+		Mime4jAttachment p = mime4jMessage.getAttachment(id.getFileName());
 
-                if (p == null) {
-					return metaData;
-				}
+		if (p == null) {
+			return metaData;
+		}
 
-				// TODO
-				metaData = new MailAttachment();
-				metaData.setCompositeAttachmentId(id);
-				metaData.setFileName(p.getId().getFileName());
-				metaData.setSize(p.getSize());
-				metaData.setMime(p.getMimeType());
-            }
-        } catch (Exception e) {
-            throw new RepositoryException(e.getMessage(), e);
-        }
-
+		// TODO
+		metaData = new MailAttachment();
+		metaData.setCompositeAttachmentId(id);
+		metaData.setFileName(p.getId().getFileName());
+		metaData.setSize(p.getSize());
+		metaData.setMime(p.getMimeType());
         return metaData;
     }
 
     @Override
     public InputStream readAttachmentPayload(CompositeAttachmentId id) {
-        Assert.notNull(id);
+		Assert.notNull(id);
+		Mime4jMessage mime4jMessage = readInternal(id);
 
-		// //
-        // http://stackoverflow.com/questions/1921981/imap-javax-mail-fetching-only-body-without-attachment
-        // TODO
-        // String[] split = attachmentId.split("\\|");
-        //
-        // if (split.length != 3) {
-        // throw new IllegalArgumentException();
-        // }
+		if(mime4jMessage == null) {
+			throw new NotFoundException();
+		}
 
-        try {
-            Folder folder = mailContext.getFolder(id.getFolder());
-            Message[] search = folder.search(new MessageIDTerm(id.getMessageId()));
+		Mime4jAttachment attachment = mime4jMessage.getAttachment(id.getFileName());
 
-            if (search != null && search[0] != null) {
-                Message mm = search[0];
+		if(attachment != null) {
+			return attachment.getData();
+		}
 
-                Part p = (Part) BodyConverter.get(mm, BodyType.ATTACHMENT, id.getFileName());
-
-                if (p != null) {
-                    return p.getInputStream();
-                }
-            }
-
-        } catch (Exception e) {
-            throw new RepositoryException(e.getMessage(), e);
-        }
-
-        throw new NotFoundException();
+		throw new NotFoundException();
     }
 
     @Override
@@ -237,4 +199,33 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
 
         throw new RepositoryException();
     }
+
+	@Override
+	public List<Mime4jAttachment> read(CompositeId id) {
+		Assert.notNull(id);
+		Mime4jMessage mime4jMessage = readInternal(id);
+		if(mime4jMessage == null) {
+			return Collections.emptyList();
+		}
+		return mime4jMessage.getAttachments();
+	}
+
+	private Mime4jMessage readInternal(CompositeId id) {
+		Assert.notNull(id);
+
+		try {
+			Folder folder = mailContext.getFolder(id.getFolder());
+			if (!folder.exists()) {
+				return null;
+			}
+
+			Message[] search = folder.search(new MessageIDTerm(id.getMessageId()));
+			if (search != null && search.length > 0 && search[0] != null) {
+				return Mime4jMessageFactory.from(search[0]);
+			}
+		} catch (Exception e) {
+			throw new RepositoryException(e.getMessage(), e);
+		}
+		return null;
+	}
 }

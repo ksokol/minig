@@ -16,5 +16,6 @@ public class TestConstants {
     public static final String HTML = "src/test/resources/testAppendHtmlAttachment.mail";
 
     public static final String ATTACHMENT_IMAGE_PNG = "src/test/resources/1.png";
+	public static final String MULTIPART_RFC_2231_2_IMAGE = "src/test/resources/multipart_rfc2231_2_image.png";
 
 }

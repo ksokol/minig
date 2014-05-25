@@ -14,16 +14,16 @@ import static org.junit.Assert.assertThat;
 /**
  * @author Kamill Sokol
  */
-public class Mime4jAttachmentMetadataExtractorTest {
+public class Mime4jAttachmentDataExtractorTest {
 
 	@Test
 	public void testBinaryAttachment() throws Exception {
 		MessageImpl message = Mime4jTestHelper.freshMessageImpl(TestConstants.MULTIPART_ATTACHMENT_BINARY);
 
-		List<Mime4jAttachmentMetadata> attachments = Mime4jAttachmentMetadataExtractor.extract(message);
+		List<Mime4jAttachmentData> attachments = Mime4jAttachmentDataExtractor.extract(message);
 		assertThat(attachments, hasSize(1));
 
-		Mime4jAttachmentMetadata attachment = attachments.get(0);
+		Mime4jAttachmentData attachment = attachments.get(0);
 
 		assertThat(attachment.getSize(), is(150L));
 		assertThat(attachment.getMimeType(), is("image/png"));
@@ -34,10 +34,10 @@ public class Mime4jAttachmentMetadataExtractorTest {
 	public void testPlaintextAttachment() throws Exception {
 		MessageImpl message = Mime4jTestHelper.freshMessageImpl(TestConstants.MULTIPART_ATTACHMENT_PLAINTEXT);
 
-		List<Mime4jAttachmentMetadata> attachments = Mime4jAttachmentMetadataExtractor.extract(message);
+		List<Mime4jAttachmentData> attachments = Mime4jAttachmentDataExtractor.extract(message);
 		assertThat(attachments, hasSize(1));
 
-		Mime4jAttachmentMetadata attachment = attachments.get(0);
+		Mime4jAttachmentData attachment = attachments.get(0);
 
 		assertThat(attachment.getSize(), is(greaterThan(0L)));
 		assertThat(attachment.getMimeType(), is("text/plain"));
@@ -48,10 +48,10 @@ public class Mime4jAttachmentMetadataExtractorTest {
 	public void testRFC2231() throws Exception {
 		MessageImpl message = Mime4jTestHelper.freshMessageImpl(TestConstants.MULTIPART_RFC_2231);
 
-		List<Mime4jAttachmentMetadata> attachments = Mime4jAttachmentMetadataExtractor.extract(message);
+		List<Mime4jAttachmentData> attachments = Mime4jAttachmentDataExtractor.extract(message);
 		assertThat(attachments, hasSize(1));
 
-		Mime4jAttachmentMetadata attachment = attachments.get(0);
+		Mime4jAttachmentData attachment = attachments.get(0);
 
 		assertThat(attachment.getSize(), is(150L));
 		assertThat(attachment.getMimeType(), is("image/png"));
@@ -62,10 +62,10 @@ public class Mime4jAttachmentMetadataExtractorTest {
 	public void testRFC2231_2() throws Exception {
 		MessageImpl message = Mime4jTestHelper.freshMessageImpl(TestConstants.MULTIPART_RFC_2231_2);
 
-		List<Mime4jAttachmentMetadata> attachments = Mime4jAttachmentMetadataExtractor.extract(message);
+		List<Mime4jAttachmentData> attachments = Mime4jAttachmentDataExtractor.extract(message);
 		assertThat(attachments, hasSize(1));
 
-		Mime4jAttachmentMetadata attachment = attachments.get(0);
+		Mime4jAttachmentData attachment = attachments.get(0);
 
 		assertThat(attachment.getSize(), is(150L));
 		assertThat(attachment.getMimeType(), is("image/png"));

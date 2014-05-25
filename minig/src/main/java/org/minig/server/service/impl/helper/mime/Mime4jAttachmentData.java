@@ -1,12 +1,15 @@
 package org.minig.server.service.impl.helper.mime;
 
+import java.io.InputStream;
+
 /**
  * @author Kamill Sokol
  */
-final class Mime4jAttachmentMetadata {
+final class Mime4jAttachmentData {
 	private String filename;
 	private long size;
 	private String mimeType;
+	private InputStream data;
 
 	public String getFilename() {
 		return filename;
@@ -30,5 +33,13 @@ final class Mime4jAttachmentMetadata {
 
 	public void setMimeType(String mimeType) {
 		this.mimeType = mimeType;
+	}
+
+	public InputStream getData() {
+		return data;
+	}
+
+	public void setData(InputStream data) {
+		this.data = data;
 	}
 }

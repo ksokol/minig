@@ -197,9 +197,9 @@ public class Mime4jMessage {
 	}
 
 	public List<Mime4jAttachment> getAttachments() {
-		List<Mime4jAttachmentMetadata> metadata = Mime4jAttachmentMetadataExtractor.extract(message);
+		List<Mime4jAttachmentData> metadata = Mime4jAttachmentDataExtractor.extract(message);
 		List<Mime4jAttachment> attachments = new ArrayList<>();
-		for (Mime4jAttachmentMetadata mime4jAttachmentMetadata : metadata) {
+		for (Mime4jAttachmentData mime4jAttachmentMetadata : metadata) {
 			attachments.add(new Mime4jAttachment(id, mime4jAttachmentMetadata));
 		}
 		return attachments;

@@ -15,16 +15,16 @@ import java.util.List;
 /**
  * @author Kamill Sokol
  */
-final class Mime4jAttachmentMetadataExtractor {
-	private Mime4jAttachmentMetadataExtractor() {}
+final class Mime4jAttachmentDataExtractor {
+	private Mime4jAttachmentDataExtractor() {}
 
-	static List<Mime4jAttachmentMetadata> extract(MessageImpl message) {
+	static List<Mime4jAttachmentData> extract(MessageImpl message) {
 		if (!message.isMultipart()) {
 			return Collections.emptyList();
 		}
 
 		List<BodyPart> rawAttachments = getAttachments((Multipart) message.getBody());
-		List<Mime4jAttachmentMetadata> attachments = new ArrayList<>(rawAttachments.size());
+		List<Mime4jAttachmentData> attachments = new ArrayList<>(rawAttachments.size());
 		for (BodyPart bodyPart : rawAttachments) {
 			attachments.add(toMime4jAttachment(bodyPart));
 		}
@@ -51,16 +51,16 @@ final class Mime4jAttachmentMetadataExtractor {
 		return attachments;
 	}
 
-	private static Mime4jAttachmentMetadata toMime4jAttachment(BodyPart bodyPart) {
+	private static Mime4jAttachmentData toMime4jAttachment(BodyPart bodyPart) {
 		if(bodyPart.getBody() instanceof SingleBody) {
 			return extractFromSingleBody(bodyPart);
 		}
 		throw new IllegalArgumentException("unknown bodyPart " + bodyPart.getClass());
 	}
 
-	private static Mime4jAttachmentMetadata extractFromSingleBody(BodyPart bodyPart) {
+	private static Mime4jAttachmentData extractFromSingleBody(BodyPart bodyPart) {
 		SingleBody source = (SingleBody) bodyPart.getBody();
-		Mime4jAttachmentMetadata target = new Mime4jAttachmentMetadata();
+		Mime4jAttachmentData target = new Mime4jAttachmentData();
 
 		target.setMimeType(bodyPart.getMimeType());
 
@@ -75,6 +75,7 @@ final class Mime4jAttachmentMetadataExtractor {
 
 		try(InputStream in = source.getInputStream()) {
 			target.setSize(in.available());
+			target.setData(source.getInputStream());
 		} catch (IOException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
