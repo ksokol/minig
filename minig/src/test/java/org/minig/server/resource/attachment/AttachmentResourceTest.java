@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.minig.RessourceTestConfig;
 import org.minig.server.MailAttachment;
 import org.minig.server.MailAttachmentList;
+import org.minig.server.TestConstants;
 import org.minig.server.service.AttachmentService;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
@@ -90,7 +91,7 @@ public class AttachmentResourceTest {
         when(attachmentServiceMock.findAttachments(Matchers.<CompositeId> anyObject())).thenReturn(new MailAttachmentList(l));
 
         mockMvc.perform(get(PREFIX + "/attachment/INBOX/test|1")).andExpect(status().isOk())
-				.andExpect(content().contentType("application/json; charset=UTF-8"))
+				.andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("attachmentMetadata[0].fileName").value("filename"))
                 .andExpect(jsonPath("attachmentMetadata[0].id").value("folder|messageId|filename"))
                 .andExpect(jsonPath("attachmentMetadata[0].mime").value("mime"))
@@ -156,7 +157,7 @@ public class AttachmentResourceTest {
 		when(attachmentServiceMock.findAttachments(Matchers.<CompositeId> anyObject())).thenReturn(new MailAttachmentList(l));
 
 		mockMvc.perform(get(PREFIX + "/attachment/INBOX/test|1"))
-				.andExpect(content().contentType("application/json; charset=UTF-8"))
+				.andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
 				.andExpect(jsonPath("attachmentMetadata[0].fileName").value("umlaut ä.png"))
 				.andExpect(jsonPath("attachmentMetadata[0].id").value("folder|messageId|umlaut+%C3%A4.png"));
 	}

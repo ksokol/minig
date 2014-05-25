@@ -71,7 +71,7 @@ public class IntegrationTest {
         inbox.add(mm);
 
         mockMvc.perform(get(PREFIX + "/message/INBOX|" + mm.getMessageID())).andExpect(status().isOk())
-				.andExpect(content().contentType("application/json; charset=UTF-8"))
+				.andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.id").value("INBOX|" + mm.getMessageID()))
                 .andExpect(jsonPath("$.subject").value("Pingdom Monthly Report 2013-04-01 to 2013-04-30"));
     }
@@ -86,13 +86,13 @@ public class IntegrationTest {
 
         MvcResult draftCreated = mockMvc.perform(post(PREFIX + "/message/draft").content(draftJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-				.andExpect(content().contentType("application/json; charset=UTF-8"))
+				.andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andReturn();
 
         String draftId = read(draftCreated.getResponse().getContentAsString(), "$.id");
 
         mockMvc.perform(get(PREFIX + "/message/" + draftId)).andExpect(status().isOk())
-                .andExpect(content().contentType("application/json; charset=UTF-8"))
+                .andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.id").value(draftId));
 
         MockMultipartFile attachment = new MockMultipartFile("draft.json", "draft.json", "application/json", draftJson.getBytes());

@@ -1,6 +1,12 @@
 package org.minig.server;
 
+import org.springframework.http.MediaType;
+
+import java.nio.charset.Charset;
+
 public class TestConstants {
+
+	public static final MediaType APPLICATION_JSON_UTF8 = new MediaType("application","json", Charset.forName("UTF-8"));
 
     public static final String MULTIPART_WITH_ATTACHMENT = "src/test/resources/testAttachmentId.mail";
     public static final String MULTIPART_WITH_PLAIN_AND_HTML = "src/test/resources/testBody.mail";
