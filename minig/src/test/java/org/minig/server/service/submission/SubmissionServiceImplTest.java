@@ -21,10 +21,10 @@ import org.minig.server.service.MailRepository;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.ServiceTestConfig;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
 import org.minig.test.javamail.MailboxHolder;
-import org.minig.test.mime4j.Mime4jTestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -151,7 +151,7 @@ public class SubmissionServiceImplTest {
         assertThat(sentBox, Matchers.hasSize(1));
         assertThat(draftsBox, Matchers.hasSize(0));
 
-        Mime4jMessage mime4jMessage = Mime4jTestHelper.convertMimeMessage(inbox.get(0));
+		Mime4jMessage mime4jMessage = Mime4jTestHelper.convertMimeMessage(inbox.get(0));
 
         assertEquals("testuser@localhost", mime4jMessage.getSender());
         assertEquals("msg with attachment", mime4jMessage.getSubject());

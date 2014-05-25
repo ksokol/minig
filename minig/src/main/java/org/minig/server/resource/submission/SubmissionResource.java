@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
-@RequestMapping(value = "1/submission", produces = "application/json")
+@RequestMapping(value = "1/submission", produces = "application/json; charset=UTF-8")
 public class SubmissionResource {
 
     @Autowired

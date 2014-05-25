@@ -1,9 +1,13 @@
 package org.minig.test.javamail;
 
+import org.mockito.Mockito;
+
 import java.util.*;
 
-import javax.mail.Address;
-import javax.mail.Message;
+import javax.mail.*;
+import javax.mail.internet.MimeMessage;
+
+import static org.mockito.Mockito.when;
 
 /**
  * In-memory mailbox that hosts messages.
@@ -13,7 +17,7 @@ import javax.mail.Message;
  * when the message is retrieved, much like how MUA behaves. This flag affects {@link MockFolder#getNewMessageCount()}.
  *
  * @author Kohsuke Kawaguchi
- * @author dev@sokol-web.de
+ * @author Kamill Sokol
  */
 public class Mailbox extends ArrayList<Message> {
     private static final long serialVersionUID = 1L;
@@ -88,6 +92,13 @@ public class Mailbox extends ArrayList<Message> {
 
     @Override
     public boolean add(Message message) {
+		//if(!new MockUtil().isMock(message)) {
+		try {
+			message = new MockedMimeMessageFolderAware((MimeMessage) message);
+		} catch (MessagingException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+		//}
         unread.add(message);
         return super.add(message);
     }
@@ -126,11 +137,26 @@ public class Mailbox extends ArrayList<Message> {
     public String toString() {
         return address + ":" + this.path + " " + super.toString();
     }
-    public boolean delete() {
+
+	public boolean delete() {
         return MailboxHolder.remove(this);
     }
 
     char getSeparator() {
         return separator;
     }
+
+	private class MockedMimeMessageFolderAware extends MimeMessage {
+		private final Folder folderMock = Mockito.mock(Folder.class);
+
+		public MockedMimeMessageFolderAware(MimeMessage source) throws MessagingException {
+			super(source);
+			when(folderMock.getFullName()).thenReturn(path);
+		}
+
+		@Override
+		public Folder getFolder() {
+			return folderMock;
+		}
+	}
 }

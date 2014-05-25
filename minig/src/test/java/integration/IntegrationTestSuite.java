@@ -9,9 +9,4 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ IntegrationTest.class })
 public class IntegrationTestSuite {
 
-    @AfterClass
-    public static void after() {
-        System.out.println("------------ after");
-    }
-
 }

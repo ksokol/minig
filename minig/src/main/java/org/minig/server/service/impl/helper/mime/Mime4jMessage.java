@@ -2,7 +2,6 @@ package org.minig.server.service.impl.helper.mime;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.*;
 
@@ -187,16 +186,24 @@ public class Mime4jMessage {
         }
     }
 
-    public List<BodyPart> getAttachments() {
-        List<BodyPart> attachments = new ArrayList<BodyPart>();
+	public Mime4jAttachment getAttachment(String filename) {
+		List<Mime4jAttachment> attachments = getAttachments();
+		for (Mime4jAttachment attachment : attachments) {
+			if(attachment.getId().getFileName().equals(filename)) {
+				return attachment;
+			}
+		}
+		return null;
+	}
 
-        if (message.isMultipart()) {
-            List<BodyPart> getAttachments = getAttachments((Multipart) message.getBody());
-            attachments.addAll(getAttachments);
-        }
-
-        return attachments;
-    }
+	public List<Mime4jAttachment> getAttachments() {
+		List<Mime4jAttachmentData> metadata = Mime4jAttachmentDataExtractor.extract(message);
+		List<Mime4jAttachment> attachments = new ArrayList<>();
+		for (Mime4jAttachmentData mime4jAttachmentMetadata : metadata) {
+			attachments.add(new Mime4jAttachment(id, mime4jAttachmentMetadata));
+		}
+		return attachments;
+	}
 
     public void addAttachment(DataSource dataSource) {
         BodyPart attachPart = new BodyPart();
@@ -328,25 +335,6 @@ public class Mime4jMessage {
         RawField f = new RawField(key, value);
         Header messageHheader = message.getHeader();
         messageHheader.addField(f);
-    }
-
-    private List<BodyPart> getAttachments(Multipart multipart) {
-        List<BodyPart> attachments = new ArrayList<BodyPart>();
-
-        for (Entity e : multipart.getBodyParts()) {
-            BodyPart part = (BodyPart) e;
-
-            if ("attachment".equalsIgnoreCase(part.getDispositionType())) {
-                attachments.add(part);
-            }
-
-            if (part.isMultipart()) {
-                List<BodyPart> getAttachments = getAttachments((Multipart) part.getBody());
-                attachments.addAll(getAttachments);
-            }
-        }
-
-        return attachments;
     }
 
     private void deleteAttachment(Multipart multipart, String filename) {
