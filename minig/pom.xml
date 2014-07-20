@@ -9,16 +9,7 @@
 		<spring.version>3.2.3.RELEASE</spring.version>
 		<spring.security.version>3.1.3.RELEASE</spring.security.version>
 	</properties>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>2.5.2</version>
-			</plugin>
-		</plugins>
-	</reporting>
-		<build>
+	<build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
@@ -39,6 +30,11 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.5.4</version>
+            </plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
@@ -72,22 +68,23 @@
                     </execution>
                 </executions>
 			</plugin>
-			<plugin>
-			    <groupId>com.kelveden</groupId>
-			    <artifactId>maven-karma-plugin</artifactId>
-			    <version>1.0</version>
-			    <executions>
-			        <execution>
-			            <goals>
-			                <goal>start</goal>
-			            </goals>
-			        </execution>
-			    </executions>
-			    <configuration>
-			    	<configFile>src/test/resources/karma.conf.js</configFile>
-			        <browsers>PhantomJS</browsers>
-			    </configuration>
-			</plugin>
+
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>0.0.15</version>
+                <executions>
+                    <execution>
+                        <id>javascript tests</id>
+                        <goals>
+                            <goal>karma</goal>
+                        </goals>
+                        <configuration>
+                            <karmaConfPath>src/test/resources/karma.conf.js</karmaConfPath>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>maven-jetty-plugin</artifactId>
