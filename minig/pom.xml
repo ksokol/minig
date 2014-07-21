@@ -119,6 +119,11 @@
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>2.0.1</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+            </plugin>
         </plugins>
 	</build>
 	<dependencies>
@@ -298,18 +303,13 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>4.3.1.Final</version>
+            <scope>provided</scope>
 		</dependency>
-		<!--  
-		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib-nodep</artifactId>
-			<version>2.2.2</version>
-		</dependency>
-		-->
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
 			<version>2.5.1</version>
+            <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
