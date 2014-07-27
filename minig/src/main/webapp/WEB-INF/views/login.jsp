@@ -13,7 +13,7 @@
 	</head>
 	<body id="page_body">	
 		<div id="webmail_root">
-			<form action="j_spring_security_check?${pageContext.request.queryString}" method="post">
+			<form action="j_spring_security_check" method="post">
 			<table cellspacing="4" cellpadding="0" style="width: 100%; height: 100%;">
 				<tbody>
 					<tr>
