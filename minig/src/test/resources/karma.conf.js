@@ -27,11 +27,11 @@ var preprocessors = config.preprocessors;
 
     // list of files / patterns to load in the browser
     files: [
-        'src/main/webapp/resources/js/vendor/angular-1.2.21.min.js',
-        'src/main/webapp/resources/js/vendor/angular-resource-1.2.21.min.js',
-        'src/main/webapp/resources/js/vendor/angular-route-1.2.21.min.js',
+        'target/dependency/META-INF/resources/webjars/angularjs/**/angular.js',
+        'target/dependency/META-INF/resources/webjars/angularjs/**/angular-resource.js',
+        'target/dependency/META-INF/resources/webjars/angularjs/**/angular-route.js',
+        'target/dependency/META-INF/resources/webjars/angularjs/**/angular-mocks.js',
         'src/main/webapp/*.html',
-        'src/test/js/angular/angular-mocks-1.2.6.js',
         'src/test/resources/json/*.json' ,
         'src/main/webapp/resources/js/*.js',
         'src/test/js/test.js'
@@ -54,28 +54,22 @@ var preprocessors = config.preprocessors;
 
     ],
 
-
     // test results reporter to use
     // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
     reporters: ['progress', 'junit'],
 
-
     // web server port
     port: 9876,
 
-
     // enable / disable colors in the output (reporters and logs)
     colors: false,
-
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     logLevel: config.LOG_WARN,
 
-
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
-
 
     // Start these browsers, currently available:
     // - Chrome
@@ -87,10 +81,8 @@ var preprocessors = config.preprocessors;
     // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
     browsers: ['PhantomJS'],
 
-
     // If browser does not capture in given timeout [ms], kill it
     captureTimeout: 60000,
-
 
     // Continuous Integration mode
     // if true, it capture browsers, run tests and exit

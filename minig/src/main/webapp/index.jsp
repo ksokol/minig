@@ -14,12 +14,13 @@
     <link rel="stylesheet" href="resources/css/minig.css" type="text/css"/>
 
     <title>MiniG</title>
-    <script src="resources/js/vendor/jquery-2.0.3.min.js"></script>
-    <script src="resources/js/vendor/angular-1.2.21.min.js"></script>
-    <script src="resources/js/vendor/angular-resource-1.2.21.min.js"></script>
-    <script src="resources/js/vendor/angular-route-1.2.21.min.js"></script>
+    <script src="webjars/jquery/2.0.3/jquery.min.js"></script>
 
-    <script src="http://momentjs.com/downloads/moment.min.js"></script>
+    <script src="webjars/angularjs/1.2.20/angular.min.js"></script>
+    <script src="webjars/angularjs/1.2.20/angular-resource.min.js"></script>
+    <script src="webjars/angularjs/1.2.20/angular-route.min.js"></script>
+
+    <script src="webjars/momentjs/2.7.0/min/moment-with-langs.min.js"></script>
 
     <script src="resources/js/config.js"></script>
     <script src="resources/js/service.js"></script>
