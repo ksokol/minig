@@ -157,15 +157,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 	};
 	
 	$scope.hasMailSelected = function() {
-		var hasSelection = getSelectedMails().length === 0;
-		
-		if(hasSelection) {
-			$rootScope.$broadcast("mail.selection");
-		} else {
-			$rootScope.$broadcast("mail.noselection");
-		}
-		
-		return hasSelection;
+		return getSelectedMails().length !== 0;
 	};
 	
 	$scope.deleteMails = function() {

@@ -30,8 +30,7 @@
                                                         <span class="gwt-CheckBox">
                                                             <input type="checkbox" value="on"
                                                                    id="gwt-uid-284" tabindex="0"
-                                                                   ng-model="mail.selected"
-                                                                   ng-change="checkSelection()">
+                                                                   ng-model="mail.selected">
                                                             <label for="gwt-uid-284"></label>
                                                         </span>
                                             </td>

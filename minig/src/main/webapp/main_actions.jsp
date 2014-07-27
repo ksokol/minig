@@ -16,7 +16,7 @@
 													<tbody>
 														<tr>
 															<td align="left" style="vertical-align: middle;">
-																<button type="button" class="gwt-Button deleteButton" ng-disabled="hasMailSelected()" ng-click="deleteMails()">Delete</button>
+																<button type="button" class="gwt-Button deleteButton" ng-disabled="!hasMailSelected()" ng-click="deleteMails()">Delete</button>
 															</td>
 															<td align="left" style="vertical-align: middle;">
 																<table cellspacing="0" cellpadding="0">
@@ -25,7 +25,7 @@
 																			<td inline-folder-select="moveToFolder()" align="left" style="vertical-align: top;">
 																				<div tabindex="0"
 																					class="gwt-ToggleButton dropDownArrowButton noWrap"
-																					ng-class="hasMailSelected() ? 'gwt-ToggleButton-up-disabled' : 'gwt-ToggleButton-up' "
+																					ng-class="hasMailSelected() ? 'gwt-ToggleButton-up' : 'gwt-ToggleButton-up-disabled' "
 																					role="button">
 																					<input type="text" tabindex="-1" role="presentation" style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;">
 																					<div class="html-face">Move to</div>
@@ -35,7 +35,7 @@
 																				style="vertical-align: top;"><div
 																					tabindex="0"
 																					class="gwt-ToggleButton dropDownArrowButton noWrap"
-																					ng-class="hasMailSelected() ? 'gwt-ToggleButton-up-disabled' : 'gwt-ToggleButton-up' "
+																					ng-class="hasMailSelected() ? 'gwt-ToggleButton-up' : 'gwt-ToggleButton-up-disabled' "
 																					role="button">
 																					<input type="text" tabindex="-1"
 																						role="presentation"
@@ -49,7 +49,7 @@
 															<td more-actions align="left" style="vertical-align: middle;">
 																<div tabindex="0"
 																	class="gwt-ToggleButton dropDownArrowButton noWrap"
-																	ng-class="hasMailSelected() ? 'gwt-ToggleButton-up-disabled' : 'gwt-ToggleButton-up' "
+																	ng-class="hasMailSelected() ? 'gwt-ToggleButton-up' : 'gwt-ToggleButton-up-disabled'"
 																	role="button">
 																	<input type="text" tabindex="-1" role="presentation"
 																		style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;">

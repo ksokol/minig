@@ -86,18 +86,22 @@ app.directive("inlineFolderSelect", function($http, $document, $window, $compile
         overlay.css('width', $window.innerWidth);
 
         $scope.$apply(attrs.inlineFolderSelect);
-    }
+    };
 
 	return {
 	    restrict : "A",
 		link: function($scope, element, attrs) {
-			 element.bind("click", function() {
+            element.bind("click", function() {
+                if (!$scope.hasMailSelected()) {
+                    return;
+                }
+
                 if(cached) {
                     build($scope, element, attrs);
                 } else {
                     $rootScope.$broadcast('error', i18nService.resolve("Template not found. Cannot proceed."));
                 }
-			 });
+			});
 		}
 	}
 });
@@ -118,20 +122,19 @@ app.directive("moreActions", function($window, $rootScope) {
         return false;
     });
 
-    $rootScope.$on("more-actions-done", function() {
-        overlay.trigger('click');
-    });
-
     return {
         restrict : "A",
 		link: function($scope, element, attrs) {
-			 element.bind("click", function() {
+	        element.bind("click", function() {
+                if (!$scope.hasMailSelected()) {
+                    return;
+                }
+
                 overlay.css('height', $window.innerHeight);
                 overlay.css('width', $window.innerWidth);
-
                 ma.show();
                 overlay.show();
-			 });
+			});
 		}
     };
 });
