@@ -63,7 +63,11 @@ app.config(function($httpProvider, $routeProvider) {
             controller: 'FolderListCtrl'
         })
         .when('/composer', {
-            templateUrl: "composer.html",
+            templateUrl: "composer.jsp",
+            controller: 'ComposerCtrl'
+        })
+        .when('/composer/:id', {
+            templateUrl: "composer.jsp",
             controller: 'ComposerCtrl'
         })
         .otherwise({redirectTo: '/box'});

@@ -44,12 +44,12 @@
                                                 <img ng-show="showIcon(mail)"
                                                      ng-src="resources/images/{{whichIcon(mail)}}.png">
                                             </td>
-                                            <td class="convRecip" ng-class="!mail.read ? 'bold' : ''">
+                                            <td class="convRecip" ng-class="!mail.read ? 'bold' : ''" ng-click="open(mail)">
                                                 <div class="gwt-Label" style="white-space: nowrap;"
                                                      title="{{mail.sender.email}}">{{mail.sender | displayName}}
                                                 </div>
                                             </td>
-                                            <td class="conversationAndPreviewCol">
+                                            <td class="conversationAndPreviewCol" ng-click="open(mail)">
                                                 <div class="gwt-HTML" style="white-space: nowrap;">
                                                     <span ng-class="!mail.read ? 'conversationUnreadLabel' : ''">{{mail.subject}}</span>
                                                 </div>

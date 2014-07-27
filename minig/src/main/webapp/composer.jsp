@@ -1,8 +1,8 @@
 <div
-        style="width: 100%; height: 100%; padding: 0px; margin: 0px; display: none;"
+        style="width: 100%; height: 100%; padding: 0px; margin: 0px;"
         aria-hidden="true">
 <table cellspacing="0" cellpadding="0"
-       style="width: 100%; height: 100%; display: none;" aria-hidden="true">
+       style="width: 100%; height: 100%;" aria-hidden="true">
 <tbody>
 <tr>
     <td align="left" width="" height="" style="vertical-align: top;"
