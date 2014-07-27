@@ -1,23 +1,22 @@
 
-function FolderListCtrl($scope, $rootScope, FolderResource) {
-	$scope.folders = []
+app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
+    $scope.folders = []
 
-	FolderResource.findAll().$promise.then(function(folders) {
-		$scope.folders = folders;
-	});
-	
+    FolderResource.findAll().then(function (folders) {
+        $scope.folders = folders;
+    });
+
 	$scope.reset = function() {
 		$scope.query = null;
-	}
+	};
 
     $scope.onFolderSelect = function(selectedFolder) {
        $rootScope.$broadcast('folder-intent', selectedFolder);
-    }
-}
+    };
+})
+app.controller('MailOverviewCtrl', function($scope, $rootScope, $routeParams, MailResource, i18nService, INITIAL_MAILBOX) {
 
-function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, i18nService, INITIAL_MAILBOX) {
-
-	$scope.currentFolder = INITIAL_MAILBOX;
+	$scope.currentFolder = ($routeParams.id) ? $routeParams.id : INITIAL_MAILBOX;
 	$scope.currentPage = 1;
 	$scope.selected = [];
 	$scope.folderIntent;
@@ -71,18 +70,6 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
 			mail.selected = flag;
 		});
 	}
-	
-	$scope.$on('$locationChangeSuccess', function(event) {
-		//TODO is there a better way?
-		var hash = ($window.location.hash.length !== 0) ? $window.location.hash.substring(2) : INITIAL_MAILBOX;
-		
-		if($scope.currentFolder !== hash) {
-			$scope.currentPage= 1;
-			$scope.currentFolder = hash;
-		}
-
-		$scope.updateOverview();
-	});
 
     $scope.$on('folder-intent', function(e, folder) {
         var params = {folder: folder, mails: getSelectedMails()};
@@ -137,7 +124,7 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
 		.then(function(data) {
 			$scope.data = data;
 		});
-	}
+	};
 
     $scope.moveToFolder = function() {
         $scope.folderIntent = "move";
@@ -200,12 +187,13 @@ function MailOverviewCtrl($scope, $window, $location, $rootScope, MailResource, 
 			mail.starred = !mail.starred;
 		});
 	}
-}
 
-function FolderSettingsCtrl($scope, $rootScope, FolderResource, INITIAL_MAILBOX) {
+    $scope.updateOverview();
+})
+.controller('FolderSettingsCtrl', function($scope, $rootScope, FolderResource, INITIAL_MAILBOX) {
 
 
-	FolderResource.findAll().$promise.then(function(folders) {
+	FolderResource.findAll().then(function(folders) {
 		$scope.folders = folders;
 	});
 
@@ -214,4 +202,4 @@ function FolderSettingsCtrl($scope, $rootScope, FolderResource, INITIAL_MAILBOX)
 	 //   console.log($scope.newFolder);
 	}
 
-}
+});

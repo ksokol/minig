@@ -2,8 +2,7 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="layout" %>
 
-<layout:layout>
-<div class="gwt-TabPanelBottom" role="tabpanel" ng-controller="FolderSettingsCtrl">
+<div class="gwt-TabPanelBottom" role="tabpanel">
     <div style="width: 100%; height: 100%; padding: 0px; margin: 0px;" aria-hidden="false">
         <table cellspacing="0" cellpadding="0" style="width: 100%; height: 100%;" aria-hidden="false">
             <tbody>
@@ -62,7 +61,7 @@
                                                                             <div class="gwt-HTML">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
                                                                         </td>
                                                                         <td align="left" style="vertical-align: top;"><a
-                                                                                class="gwt-Anchor" href="javascript:;">{{folder | prettyFolderName}}</a>
+                                                                                class="gwt-Anchor" href="#/box?id={{folder.id}}">{{folder | prettyFolderName}}</a>
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>
@@ -102,4 +101,3 @@
         </table>
     </div>
 </div>
-</layout:layout>

@@ -1,9 +1,9 @@
-var app = angular.module("minigApp", ['ngResource'])
+var app = angular.module("minigApp", ['ngResource', 'ngRoute'])
 .constant('API_HOME', 'api/1/')
 .constant('DEFAULT_PAGE_SIZE', 20)
 .constant('INITIAL_MAILBOX', 'INBOX'); //TODO: INBOX shouldn't be hardcoded
 
-app.config(function($httpProvider) {
+app.config(function($httpProvider, $routeProvider) {
 	
     $httpProvider.interceptors.push(function($q, $window, $rootScope, i18nService) {
         return {
@@ -45,5 +45,27 @@ app.config(function($httpProvider) {
             }
         };
     });
+
+    $routeProvider
+        .when('', {
+            redirectTo : '/'
+        })
+        .when('/box', {
+            templateUrl: "box.jsp",
+            controller: 'MailOverviewCtrl'
+        })
+        .when('/box/:id', {
+            templateUrl: "box.jsp",
+            controller: 'MailOverviewCtrl'
+        })
+        .when('/folder', {
+            templateUrl: "folder.jsp",
+            controller: 'FolderListCtrl'
+        })
+        .when('/composer', {
+            templateUrl: "composer.html",
+            controller: 'ComposerCtrl'
+        })
+        .otherwise({redirectTo: '/box'});
 
 });

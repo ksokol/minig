@@ -1,86 +1,101 @@
 <%@ page pageEncoding="UTF-8" %>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="layout" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 
-<layout:layout>
-    <div class="gwt-TabPanelBottom" role="tabpanel" ng-controller="MailOverviewCtrl">
-            <div style="width: 100%; height: 100%; padding: 0px; margin: 0px;" aria-hidden="false">
-                <table cellspacing="0" cellpadding="0" style="width: 100%; height: 100%;" aria-hidden="false">
-                    <tbody>
-                    <tr>
-                        <td align="left" style="vertical-align: top;">
-                            <table cellspacing="0" cellpadding="0" style="width: 100%;">
-                                <tbody>
-                                <tr>
-                                    <td align="left" width="" height="" style="vertical-align: top;" colspan="1">
-                                        <jsp:include page="main_actions.jsp"></jsp:include>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="left" width="" height="" style="vertical-align: top;" colspan="1">
-                                        <div class="dataGrid">
-                                            <table class="conversationTable">
-                                                <colgroup>
-                                                    <col>
-                                                    <col>
-                                                    <col>
-                                                    <col>
-                                                    <col>
-                                                    <col>
-                                                    <col width="80px">
-                                                </colgroup>
-                                                <tbody>
-                                                <tr ng-repeat="mail in data.mailList">
-                                                    <td class="convCb">
-                                                        <span class="gwt-CheckBox">
-                                                            <input type="checkbox" value="on"
-                                                                   id="gwt-uid-284" tabindex="0"
-                                                                   ng-model="mail.selected"
-                                                                   ng-change="checkSelection()">
-                                                            <label for="gwt-uid-284"></label>
-                                                        </span>
-                                                    </td>
-                                                    <td class="convStar" ng-click="clickStar()">
-                                                        <img ng-show="mail.starred" src="resources/images/starred.gif">
-                                                        <img ng-hide="mail.starred"
-                                                             src="resources/images/unstarred.gif">
-                                                    </td>
-                                                    <td class="convStar">
-                                                        <img ng-show="showIcon(mail)"
-                                                             ng-src="resources/images/{{whichIcon(mail)}}.png">
-                                                    </td>
-                                                    <td class="convRecip" ng-class="!mail.read ? 'bold' : ''">
-                                                        <div class="gwt-Label" style="white-space: nowrap;"
-                                                             title="{{mail.sender.email}}">{{mail.sender | displayName}}
-                                                        </div>
-                                                    </td>
-                                                    <td class="conversationAndPreviewCol">
-                                                        <div class="gwt-HTML" style="white-space: nowrap;">
-                                                            <span ng-class="!mail.read ? 'conversationUnreadLabel' : ''">{{mail.subject}}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td class="convAttach">
-                                                        <img ng-show="mail.attachments.length > 0"
-                                                             src="resources/images/paperclip.gif">
-                                                    </td>
-                                                    <td class="convDate" ng-class="!mail.read ? 'bold' : ''">
-                                                        <div class="gwt-Label" style="white-space: nowrap;"
-                                                             title="{{mail.date | date:'yyyy-MM-dd HH:mm:ss'}}">
-                                                            {{mail.date | timeago}}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-</layout:layout>
+<!DOCTYPE html>
+<html ng-app="minigApp">
+<head>
+    <!-- Force rendering with google chrome for IE users -->
+    <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <link rel="icon" type="image/gif" href="resources/images/favicon.ico">
+
+    <link rel="stylesheet" href="resources/css/minig.css" type="text/css"/>
+
+    <title>MiniG</title>
+    <script src="resources/js/vendor/jquery-2.0.3.min.js"></script>
+    <script src="resources/js/vendor/angular-1.2.21.min.js"></script>
+    <script src="resources/js/vendor/angular-resource-1.2.21.min.js"></script>
+    <script src="resources/js/vendor/angular-route-1.2.21.min.js"></script>
+
+    <script src="http://momentjs.com/downloads/moment.min.js"></script>
+
+    <script src="resources/js/config.js"></script>
+    <script src="resources/js/service.js"></script>
+    <script src="resources/js/filter.js"></script>
+    <script src="resources/js/directive.js"></script>
+    <script src="resources/js/resource.js"></script>
+    <script src="resources/js/controller.js"></script>
+</head>
+<body id="page_body">
+<table cellspacing="0" cellpadding="0">
+    <tbody>
+    <tr>
+        <td align="left" width="" height="" style="vertical-align: top;" rowspan="1">
+            <table cellspacing="0" cellpadding="0" style="width: 100%;" class="heading">
+                <tbody>
+                <tr>
+                    <td width="" height="" align="right" style="vertical-align: top;" rowspan="1">
+                        <table cellspacing="4" cellpadding="0" class="headingStdLinks">
+                            <tbody>
+                            <tr>
+                                <td align="left" style="vertical-align: middle;">
+                                    <img loading-indicator id="spinner" src="resources/images/spinner_moz.gif"
+                                         class="gwt-Image" style="display: none;">
+                                </td>
+                                <td align="left" style="vertical-align: top;">
+                                    <div id="username" class="gwt-Label userNameLabel">
+                                        <security:authentication property="name"/>
+                                    </div>
+                                </td>
+                                <td align="left" style="vertical-align: top;">
+                                    <a class="gwt-Anchor logoutLabel" href="j_spring_security_logout">Sign out</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                <tr>
+                    <td align="left" width="" height="1.4em" style="vertical-align: top;" colspan="2">
+                        <table notification cellspacing="0" cellpadding="0" class="statusPanel">
+                            <tbody>
+                            <tr>
+                                <td align="center" style="vertical-align: top;">
+                                    <table style="display:none;" cellspacing="3" cellpadding="0"
+                                           class="notificationMessage">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" style="vertical-align: top;">
+                                                <div id="notification-label" class="gwt-Label"></div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left" width="16%" height="" style="vertical-align: top;" rowspan="1">
+                        <jsp:include page="aside.html"></jsp:include>
+                    </td>
+                    <td align="left" width="" height="" style="vertical-align: top; width: 100%;">
+                        <div ng-view></div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

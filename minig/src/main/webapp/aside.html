@@ -13,7 +13,7 @@
 												<img src="resources/images/envelope.png" class="gwt-Image">
 											</td>
 											<td>
-												<a class="gwt-Anchor noWrap bold" href="composer">Mail composer</a>
+												<a class="gwt-Anchor noWrap bold" href="#/composer">Mail composer</a>
 											</td>
 										</tr>
 									</tbody>
@@ -22,7 +22,7 @@
 						</tr>
 						<tr>
 							<td align="left" style="vertical-align: top;">
-								<a class="gwt-Anchor folderLink currentDefaultLinkSelected" href="mybox">Inbox</a>
+								<a class="gwt-Anchor folderLink currentDefaultLinkSelected" href="#box">Inbox</a>
 							</td>
 						</tr>
 					</tbody>
@@ -86,7 +86,7 @@
 																<tbody>																
 																	<tr ng-repeat="folder in folders | filter:query | subscribed">
 																		<td>
-																			<a class="gwt-Anchor noWrap" href="#/{{folder.id}}" title="{{folder.id}}">{{folder | prettyFolderName}}</a>
+																			<a class="gwt-Anchor noWrap" href="#/box?id={{folder.id}}" title="{{folder.id}}">{{folder | prettyFolderName}}</a>
 																		</td>
 																	</tr>
 																	<tr>
@@ -106,7 +106,7 @@
 														<tbody>
 															<tr>
 																<td align="right" style="vertical-align: top;">
-																	<a class="gwt-Anchor" href="folder">Edit folders</a>
+																	<a class="gwt-Anchor" href="#/folder">Edit folders</a>
 																</td>
 															</tr>
 														</tbody>

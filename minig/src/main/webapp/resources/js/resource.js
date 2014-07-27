@@ -1,5 +1,7 @@
 
-app.factory('FolderResource', function($resource, API_HOME) {
+app.factory('FolderResource', function($q, $resource, API_HOME) {
+    var cache;
+
 	var folderResource =  $resource(API_HOME + 'folder/:id', {}, {_findAll : {method: 'GET', isArray: true, transformResponse: _transFindAll}});
 	
 	function _transFindAll(data) {
@@ -10,10 +12,22 @@ app.factory('FolderResource', function($resource, API_HOME) {
 	}
 	
 	folderResource.findAll = function() {
-		return folderResource._findAll();
+        var deferred = $q.defer();
+
+        if(cache !== undefined) {
+            deferred.resolve(cache);
+        } else {
+            folderResource._findAll().$promise.then(function(folders) {
+                cache = folders;
+                deferred.resolve(cache)
+            });
+        }
+
+        return deferred.promise;
 	}
 	
 	return folderResource;
+
 });
 
 app.factory('MailResource', ['$resource','API_HOME','DEFAULT_PAGE_SIZE','pagerFactory', function($resource, API_HOME, DEFAULT_PAGE_SIZE, pagerFactory) {

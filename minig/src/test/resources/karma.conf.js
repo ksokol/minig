@@ -27,13 +27,14 @@ var preprocessors = config.preprocessors;
 
     // list of files / patterns to load in the browser
     files: [
-        'src/main/webapp/resources/js/vendor/angular-1.2.6.min.js',
-        'src/main/webapp/resources/js/vendor/angular-resource-1.2.6.min.js',
+        'src/main/webapp/resources/js/vendor/angular-1.2.21.min.js',
+        'src/main/webapp/resources/js/vendor/angular-resource-1.2.21.min.js',
+        'src/main/webapp/resources/js/vendor/angular-route-1.2.21.min.js',
         'src/main/webapp/*.html',
         'src/test/js/angular/angular-mocks-1.2.6.js',
         'src/test/resources/json/*.json' ,
         'src/main/webapp/resources/js/*.js',
-        'src/test/js/test.js',
+        'src/test/js/test.js'
     ],
 
     ngJson2JsPreprocessor: {

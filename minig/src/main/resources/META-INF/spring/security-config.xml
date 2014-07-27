@@ -32,7 +32,7 @@
   	<security:http pattern="/**">
   		<security:custom-filter before="FILTER_SECURITY_INTERCEPTOR" ref="myExceptionTranslationFilter"/>
 		<security:intercept-url pattern="/**" access="ROLE_USER"  />
-		<security:form-login login-processing-url="/j_spring_security_check" always-use-default-target="true" default-target-url="/mybox" authentication-failure-url="/login?login=failed" />
+		<security:form-login login-processing-url="/j_spring_security_check" always-use-default-target="true" default-target-url="/" authentication-failure-url="/login?login=failed" />
 		<security:logout logout-success-url="/login" logout-url="/j_spring_security_logout" />
 	</security:http>
 
