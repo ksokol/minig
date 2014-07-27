@@ -70,16 +70,13 @@
                                                             <td class="settingsCell">
                                                                 <a class="gwt-Anchor">Create a subfolder</a></td>
                                                             <td class="settingsCell">
-                                                                <div ng-hide="!folder.editable" class="gwt-HTML">&nbsp;</div>
                                                                 <a ng-show="folder.subscribed && folder.editable" class="gwt-Anchor">Unsubscribe</a>
                                                                 <a ng-hide="folder.subscribed || !folder.editable" class="gwt-Anchor">Subscribe</a>
                                                             </td>
                                                             <td class="settingsCell">
-                                                                <div ng-hide="!folder.editable" class="gwt-HTML">&nbsp;</div>
                                                                 <a ng-show="folder.editable" class="gwt-Anchor">Rename</a>
                                                             </td>
                                                             <td class="settingsCell">
-                                                                <div ng-hide="!folder.editable" class="gwt-HTML">&nbsp;</div>
                                                                 <a ng-show="folder.editable" class="gwt-Anchor">Delete</a>
                                                             </td>
                                                         </tr>
