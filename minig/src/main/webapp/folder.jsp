@@ -60,8 +60,8 @@
                                                                         <td align="left" style="vertical-align: top;">
                                                                             <div class="gwt-HTML">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
                                                                         </td>
-                                                                        <td align="left" style="vertical-align: top;"><a
-                                                                                class="gwt-Anchor" href="#/box?id={{folder.id}}">{{folder | prettyFolderName}}</a>
+                                                                        <td align="left" style="vertical-align: top;">
+                                                                            <a class="gwt-Anchor folder-name" ng-class="{bold: folder.subscribed}" href="#/box?id={{folder.id}}">{{folder | prettyFolderName}}</a>
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>
