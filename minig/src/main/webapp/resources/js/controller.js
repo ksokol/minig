@@ -255,6 +255,10 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         });
     };
 
+    $scope.renameFolder = function(folder) {
+        alert("not implemented yet");
+    };
+
     $scope.refresh();
 
 })
