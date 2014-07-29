@@ -14,6 +14,10 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         $scope.refresh();
     });
 
+    $rootScope.$on('folder-updated', function() {
+        $scope.refresh();
+    });
+
 	$scope.reset = function() {
 		$scope.query = null;
 	};
@@ -242,6 +246,13 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
                 $scope.refresh();
             });
         }
+    };
+
+    $scope.toggleSubscription = function(folder) {
+        folder.subscribed = !folder.subscribed;
+        FolderResource.save(folder).then(function() {
+            $rootScope.$broadcast('folder-updated', folder);
+        });
     };
 
     $scope.refresh();

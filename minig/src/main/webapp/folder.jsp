@@ -70,8 +70,8 @@
                                                             <td class="settingsCell">
                                                                 <a ng-click="selectFolder(folder)" class="gwt-Anchor">{{ "Create a subfolder" | i18n}}</a></td>
                                                             <td class="settingsCell">
-                                                                <a ng-show="folder.subscribed && folder.editable" class="gwt-Anchor">Unsubscribe</a>
-                                                                <a ng-hide="folder.subscribed || !folder.editable" class="gwt-Anchor">Subscribe</a>
+                                                                <a ng-show="folder.subscribed && folder.editable" ng-click="toggleSubscription(folder)" class="gwt-Anchor">Unsubscribe</a>
+                                                                <a ng-hide="folder.subscribed || !folder.editable" ng-click="toggleSubscription(folder)" class="gwt-Anchor">Subscribe</a>
                                                             </td>
                                                             <td class="settingsCell">
                                                                 <a ng-show="folder.editable" class="gwt-Anchor">Rename</a>

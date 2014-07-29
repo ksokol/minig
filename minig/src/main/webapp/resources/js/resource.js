@@ -4,6 +4,7 @@ app.factory('FolderResource', function($q, $resource, folderCache, API_HOME) {
 	var folderResourceGet =  $resource(API_HOME + 'folder/:id', {}, {_findAll : {method: 'GET', isArray: true, transformResponse: _transFindAll}});
     var folderResourcePost =  $resource(API_HOME + 'folder/:id', {'id':'@id'}, {_create : {method: 'POST'}});
     var folderResourceDelete =  $resource(API_HOME + 'folder/:id', {'id':'@id'}, {_delete : {method: 'DELETE'}});
+    var folderResourcePut =  $resource(API_HOME + 'folder/:id', {'id':'@id'}, {_put : {method: 'PUT'}});
 
     function _transFindAll(data) {
 		try {
@@ -43,10 +44,23 @@ app.factory('FolderResource', function($q, $resource, folderCache, API_HOME) {
         return deferred.promise;
     };
 
+    folderResourcePut.save = function(data) {
+        var deferred = $q.defer();
+        var copy = angular.copy(data);
+        copy.id = encodeURIComponent(copy.id);
+
+        folderResourcePut._put(copy).$promise.then(function(result) {
+            folderCache.update(data);
+            deferred.resolve();
+        });
+        return deferred.promise;
+    }
+
     return {
         findAll : folderResourceGet.findAll,
         create : folderResourcePost.create,
-        delete : folderResourceDelete.delete
+        delete : folderResourceDelete.delete,
+        save : folderResourcePut.save
     }
 
 });

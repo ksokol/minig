@@ -113,6 +113,9 @@ app.service('folderCache', function() {
         },
         snapshot : function() {
             return angular.copy(cache);
+        },
+        update : function(data) {
+            update(angular.copy(data));
         }
     };
 
@@ -133,6 +136,17 @@ app.service('folderCache', function() {
         for(i=0;i<=copy.length;i++) {
             if(copy[i].id === id) {
                 copy.splice(i, 1);
+                cache = copy;
+                return;
+            }
+        }
+    };
+
+    function update(data) {
+        var copy = angular.copy(cache);
+        for(i=0;i<=copy.length;i++) {
+            if(copy[i].id === data.id) {
+                copy[i] = data;
                 cache = copy;
                 return;
             }
