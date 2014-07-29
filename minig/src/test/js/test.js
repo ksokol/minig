@@ -14,14 +14,14 @@ describe('FolderListCtrl', function() {
     beforeEach(module('minigApp', 'fixture/folderlist.json'));
 
     beforeEach(inject(function($rootScope, $controller, API_HOME, _$httpBackend_, _fixtureFolderlist_){
-       $httpBackend = _$httpBackend_;
-       fixtureFolderlist = _fixtureFolderlist_;
+        $httpBackend = _$httpBackend_;
+        fixtureFolderlist = _fixtureFolderlist_;
 
-       _$httpBackend_.whenGET(API_HOME+'folder').respond(_fixtureFolderlist_);
+        _$httpBackend_.whenGET(API_HOME+'folder').respond(_fixtureFolderlist_);
 
-       scope = $rootScope.$new();
+        scope = $rootScope.$new();
 
-       $controller('FolderListCtrl', {$scope: scope});
+        $controller('FolderListCtrl', {$scope: scope});
     }));
 
     it('should have correct size', function() {
@@ -85,48 +85,87 @@ describe('MailOverviewCtrl', function() {
     beforeEach(module('minigApp', 'fixture/maillist.json'));
 
     beforeEach(inject(function($rootScope, $controller, API_HOME, _$httpBackend_, _fixtureMaillist_){
-       $httpBackend = _$httpBackend_;
+        $httpBackend = _$httpBackend_;
 
-       _$httpBackend_.whenGET(API_HOME+'message?folder=INBOX&page=1&page_length=20').respond(_fixtureMaillist_);
+        _$httpBackend_.whenGET(API_HOME+'message?folder=INBOX&page=1&page_length=20').respond(_fixtureMaillist_);
 
-       scope = $rootScope.$new();
+        scope = $rootScope.$new();
 
-       $controller('MailOverviewCtrl', {$scope: scope});
+        $controller('MailOverviewCtrl', {$scope: scope});
     }));
 
     it('should have correct size', function() {
         $httpBackend.flush();
         expect(scope.data.mailList.length).toBe(20);
-     //   expect(scope.pager).toEqual({currentPage: 1, pageLength: 20, fullLength: 45, pages: 3, start: 1, end: 20});
+        //   expect(scope.pager).toEqual({currentPage: 1, pageLength: 20, fullLength: 45, pages: 3, start: 1, end: 20});
     });
 
 });
 
 describe("testing directive pagination", function() {
 
-  var compile, scope;
+    var compile, scope;
 
-  beforeEach(module('minigApp', 'fixture/maillist.json', 'htmlTemplates'));
+    beforeEach(module('minigApp', 'fixture/maillist.json', 'htmlTemplates'));
 
-  beforeEach(inject(function($compile, $rootScope, _fixtureMaillist_, templateService, $templateCache, $q) {
-    compile = $compile;
+    beforeEach(inject(function($compile, $rootScope, _fixtureMaillist_, templateService, $templateCache, $q) {
+        compile = $compile;
 
-    spyOn(templateService, 'template').andCallFake(function (params) {
-        var deferred = $q.defer();
-        deferred.resolve($templateCache.get('html/pagination.html'));
-        return deferred.promise;
+        spyOn(templateService, 'template').andCallFake(function (params) {
+            var deferred = $q.defer();
+            deferred.resolve($templateCache.get('html/pagination.html'));
+            return deferred.promise;
+        });
+
+        scope = $rootScope.$new();
+        scope.data = _fixtureMaillist_;
+    }));
+
+    it("should calculate pager and append it to scope", function() {
+        var element = compile('<pagination>')(scope);
+        scope.$digest();
+
+        expect(scope.pager).toEqual({currentPage: 1, fullLength: 45, pageLength: 20, start: 1, end: 20, pages: 3});
+        //TODO test element
     });
 
-    scope = $rootScope.$new();
-    scope.data = _fixtureMaillist_;
-  }));
+});
 
-  it("should calculate pager and append it to scope", function() {
-    var element = compile('<pagination>')(scope);
-    scope.$digest();
+describe('folderCache', function(){
+    var folder = {};
+    var folder0 = {"id":"INBOX"};
+    var folder1 = {"id":"INBOX/a1"};
+    var folder2 = {"id":"INBOX/a2"};
+    var folder3 = {"id":"INBOX/a10"};
 
-    expect(scope.pager).toEqual({currentPage: 1, fullLength: 45, pageLength: 20, start: 1, end: 20, pages: 3});
-    //TODO test element
-  });
+    beforeEach(module('minigApp'));
+
+    it("shouldn't be empty after inserting a folder", function() {
+        inject(function(folderCache) {
+            expect(folderCache.isEmpty()).toBe(true);
+            folderCache.add(folder);
+            expect(folderCache.isEmpty()).toBe(false);
+        });
+    });
+
+    it("should be sorted after subsequent adds", function() {
+        inject(function(folderCache) {
+
+            folderCache.add(folder0);
+            folderCache.add(folder3);
+            folderCache.add(folder2);
+            folderCache.add(folder1);
+
+            expect(folderCache.snapshot()).toEqual([folder0, folder1, folder3, folder2]);
+        });
+    });
+
+    it("snapshot should be sorted", function() {
+        inject(function(folderCache) {
+            folderCache.fill([folder0, folder3, folder2, folder1]);
+            folderCache.evict();
+            expect(folderCache.snapshot()).toEqual([]);
+        });
+    });
 
 });

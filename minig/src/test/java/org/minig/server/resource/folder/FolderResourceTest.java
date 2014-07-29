@@ -19,14 +19,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -34,6 +32,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -131,13 +130,18 @@ public class FolderResourceTest {
     @Test
     public void testCreateFolderInParent() throws Exception {
         CreateFolderRequest request = new CreateFolderRequest();
-        request.setFolder("INBOX/createme/nested2");
+        request.setFolder("nested2");
+        MailFolder mailFolder = new MailFolder();
+        mailFolder.setId("INBOX/createme/nested2");
+
+        when(folderServiceMock.createFolderInParent("INBOX/createme", "nested2")).thenReturn(mailFolder);
 
         String content = new ObjectMapper().writeValueAsString(request);
 
-        mockMvc.perform(post(PREFIX + "/folder/INBOX/createme").contentType(MediaType.APPLICATION_JSON).content(content)).andExpect(
-                status().isCreated());
-        verify(folderServiceMock).createFolderInParent("INBOX/createme", "INBOX/createme/nested2");
+        mockMvc.perform(post(PREFIX + "/folder/INBOX/createme")
+                .contentType(MediaType.APPLICATION_JSON).content(content))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is("INBOX/createme/nested2")));
     }
 
     @Test

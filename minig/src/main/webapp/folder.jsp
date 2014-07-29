@@ -19,10 +19,10 @@
                                             <tbody>
                                             <tr>
                                                 <td align="left" style="vertical-align: middle;">
-                                                    <div class="gwt-HTML">Create a folder:</div>
+                                                    <div class="gwt-HTML">Create a folder in <strong>{{currentFolder.id}}</strong>:</div>
                                                 </td>
                                                 <td align="left" style="vertical-align: top;">
-                                                    <input type="text" class="gwt-TextBox" ng-model="newFolder">
+                                                    <input ng-model="folderName" type="text" class="gwt-TextBox" ng-model="newFolder">
                                                 </td>
                                                 <td align="left" style="vertical-align: top;">
                                                     <button type="button" class="gwt-Button" ng-click="createFolder()">Create</button>
@@ -68,7 +68,7 @@
                                                                 </table>
                                                             </td>
                                                             <td class="settingsCell">
-                                                                <a class="gwt-Anchor">Create a subfolder</a></td>
+                                                                <a ng-click="selectFolder(folder)" class="gwt-Anchor">{{ "Create a subfolder" | i18n}}</a></td>
                                                             <td class="settingsCell">
                                                                 <a ng-show="folder.subscribed && folder.editable" class="gwt-Anchor">Unsubscribe</a>
                                                                 <a ng-hide="folder.subscribed || !folder.editable" class="gwt-Anchor">Subscribe</a>

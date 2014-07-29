@@ -1,32 +1,48 @@
 
-app.factory('FolderResource', function($q, $resource, API_HOME) {
-    var cache;
+app.factory('FolderResource', function($q, $resource, folderCache, API_HOME) {
+    //var cache = [];
 
-	var folderResource =  $resource(API_HOME + 'folder/:id', {}, {_findAll : {method: 'GET', isArray: true, transformResponse: _transFindAll}});
-	
-	function _transFindAll(data) {
+	var folderResourceGet =  $resource(API_HOME + 'folder/:id', {}, {_findAll : {method: 'GET', isArray: true, transformResponse: _transFindAll}});
+    var folderResourcePost =  $resource(API_HOME + 'folder/:id', {'id':'@id'}, {_create : {method: 'POST'}});
+
+    function _transFindAll(data) {
 		try {
 			var json = angular.fromJson(data);
 			return json.folderList;
 		} catch(e) {}
 	}
-	
-	folderResource.findAll = function() {
+
+	folderResourceGet.findAll = function() {
         var deferred = $q.defer();
 
-        if(cache !== undefined) {
-            deferred.resolve(cache);
+        if(!folderCache.isEmpty()) {
+            deferred.resolve(folderCache.snapshot());
         } else {
-            folderResource._findAll().$promise.then(function(folders) {
-                cache = folders;
-                deferred.resolve(cache)
+            folderResourceGet._findAll().$promise.then(function(folders) {
+                folderCache.fill(folders);
+                deferred.resolve(folderCache.snapshot());
             });
         }
 
         return deferred.promise;
-	}
-	
-	return folderResource;
+	};
+
+    folderResourcePost.create = function(data) {
+        var deferred = $q.defer();
+
+        folderResourcePost._create({'id': encodeURIComponent(data.id), 'folder' : data.folder}).$promise.then(function(result) {
+            folderCache.add(result);
+            deferred.resolve(result);
+        });
+
+        return deferred.promise;
+    };
+
+
+    return {
+        findAll : folderResourceGet.findAll,
+        create : folderResourcePost.create
+    }
 
 });
 

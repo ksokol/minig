@@ -186,19 +186,45 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 
     $scope.updateOverview();
 })
-.controller('FolderSettingsCtrl', function($scope, $rootScope, FolderResource, INITIAL_MAILBOX) {
+.controller('FolderSettingsCtrl', function($scope, $rootScope, i18nService, FolderResource, INITIAL_MAILBOX) {
+    $scope.currentFolder;
 
+    $scope.refresh = function() {
+        FolderResource.findAll().then(function(folders) {
+            $scope.folders = folders;
 
-	FolderResource.findAll().then(function(folders) {
-		$scope.folders = folders;
-	});
+            if($scope.currentFolder !== undefined) {
+                return;
+            }
 
-	$scope.createFolder = function() {
-     //   console.log(INITIAL_MAILBOX);
-	 //   console.log($scope.newFolder);
-	}
+            angular.forEach(folders, function(folder) {
+                if(folder.id === INITIAL_MAILBOX) {
+                    $scope.currentFolder = folder;
+                }
+            });
+        });
+    };
+
+    $scope.selectFolder = function(folder) {
+        $scope.currentFolder = folder;
+    };
+
+    $scope.createFolder = function() {
+        if($scope.folderName !== "" && $scope.folderName !== undefined) {
+            FolderResource.create({'id': $scope.currentFolder.id, 'folder' : $scope.folderName}).then(function(result) {
+                $rootScope.$broadcast('notification', i18nService.resolve("Folder created"));
+                $scope.refresh();
+            });
+        } else {
+            $rootScope.$broadcast('notification', i18nService.resolve("Enter a folder name!"));
+        }
+    };
+
+    $scope.refresh();
 
 })
 .controller('ComposerCtrl', function($scope) {
+
+
 
 });

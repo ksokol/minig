@@ -7,7 +7,7 @@ public interface FolderService {
 
 	void createFolderInInbox(String folder);
 
-	void createFolderInParent(String parent, String folder);
+    MailFolder createFolderInParent(String parent, String folder);
 
 	void updateFolder(MailFolder folder);
 

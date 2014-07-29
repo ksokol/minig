@@ -1,11 +1,14 @@
 package org.minig.security;
 
+import java.io.Serializable;
 import java.util.Properties;
 
 import org.minig.MailAuthentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-class SecurityContextMailAuthentication implements MailAuthentication {
+class SecurityContextMailAuthentication implements MailAuthentication, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Override
     public String getEmailAddress() {

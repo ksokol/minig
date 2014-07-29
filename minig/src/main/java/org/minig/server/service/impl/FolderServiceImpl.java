@@ -31,7 +31,7 @@ public class FolderServiceImpl implements FolderService {
 	}
 
 	@Override
-	public void createFolderInParent(String parent, String folder) {
+	public MailFolder createFolderInParent(String parent, String folder) {
 		Assert.hasText(folder, "folder must be not null");
 
 		MailFolder parentFolder = null;
@@ -48,7 +48,7 @@ public class FolderServiceImpl implements FolderService {
 			throw new ServiceException("no parent folder found");
 		}
 
-		folderRepository.create(parentFolder.getId(), folder);
+		return folderRepository.create(parentFolder.getId(), folder);
 	}
 
 	@Override

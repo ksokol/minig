@@ -38,6 +38,10 @@ a,a:visited,a:hover,a:link {
 	color: #0000AA;
 }
 
+a {
+    cursor: pointer;
+}
+
 .labelsList a {
     text-decoration: none;
 }

@@ -60,7 +60,7 @@ app.config(function($httpProvider, $routeProvider) {
         })
         .when('/folder', {
             templateUrl: "folder.jsp",
-            controller: 'FolderListCtrl'
+            controller: 'FolderSettingsCtrl'
         })
         .when('/composer', {
             templateUrl: "composer.jsp",
