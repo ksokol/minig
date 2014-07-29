@@ -77,7 +77,7 @@
                                                                 <a ng-show="folder.editable" class="gwt-Anchor">Rename</a>
                                                             </td>
                                                             <td class="settingsCell">
-                                                                <a ng-show="folder.editable" class="gwt-Anchor">Delete</a>
+                                                                <a ng-show="folder.editable" ng-click="deleteFolder(folder)" class="gwt-Anchor">Delete</a>
                                                             </td>
                                                         </tr>
                                                         </tbody>

@@ -163,8 +163,16 @@ describe('folderCache', function(){
     it("snapshot should be sorted", function() {
         inject(function(folderCache) {
             folderCache.fill([folder0, folder3, folder2, folder1]);
-            folderCache.evict();
+            folderCache.clear();
             expect(folderCache.snapshot()).toEqual([]);
+        });
+    });
+
+    it("should evict element", function() {
+        inject(function(folderCache) {
+            folderCache.fill([folder0, folder3, folder2, folder1]);
+            folderCache.evict(folder2.id);
+            expect(folderCache.snapshot()).toEqual([folder0, folder3, folder1]);
         });
     });
 

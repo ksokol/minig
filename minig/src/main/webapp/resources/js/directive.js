@@ -18,7 +18,7 @@ app.directive("loadingIndicator", function() {
     };
 });
 
-app.directive("notification", function() {
+app.directive("notification", function(i18nService) {
 	var id = null;
 
     return {
@@ -49,6 +49,14 @@ app.directive("notification", function() {
             scope.$on("error", function(e, message) {            	
             	element.find('table').addClass('notification-error');
             	show(message);
+            });
+
+            scope.$on("folder-deleted", function() {
+                show(i18nService.resolve("Folder removed"));
+            });
+
+            scope.$on("folder-created", function() {
+                show(i18nService.resolve("Folder created"));
             });
         }
     };

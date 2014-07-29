@@ -6,12 +6,26 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         $scope.folders = folders;
     });
 
+    $rootScope.$on('folder-created', function() {
+        $scope.refresh();
+    });
+
+    $rootScope.$on('folder-deleted', function() {
+        $scope.refresh();
+    });
+
 	$scope.reset = function() {
 		$scope.query = null;
 	};
 
     $scope.onFolderSelect = function(selectedFolder) {
        $rootScope.$broadcast('folder-intent', selectedFolder);
+    };
+
+    $scope.refresh = function() {
+        FolderResource.findAll().then(function(folders) {
+            $scope.folders = folders;
+        });
     };
 })
 .controller('MailOverviewCtrl', function($scope, $rootScope, $routeParams, $location, MailResource, i18nService, INITIAL_MAILBOX) {
@@ -186,7 +200,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 
     $scope.updateOverview();
 })
-.controller('FolderSettingsCtrl', function($scope, $rootScope, i18nService, FolderResource, INITIAL_MAILBOX) {
+.controller('FolderSettingsCtrl', function($scope, $rootScope, FolderResource, INITIAL_MAILBOX) {
     $scope.currentFolder;
 
     $scope.refresh = function() {
@@ -212,11 +226,21 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
     $scope.createFolder = function() {
         if($scope.folderName !== "" && $scope.folderName !== undefined) {
             FolderResource.create({'id': $scope.currentFolder.id, 'folder' : $scope.folderName}).then(function(result) {
-                $rootScope.$broadcast('notification', i18nService.resolve("Folder created"));
+                $rootScope.$broadcast('folder-created', folder);
                 $scope.refresh();
             });
         } else {
             $rootScope.$broadcast('notification', i18nService.resolve("Enter a folder name!"));
+        }
+    };
+
+    $scope.deleteFolder = function(folder) {
+        //TODO replace me
+        if (confirm('Move folder "' + folder.name + '" to trash?')) {
+            FolderResource.delete(folder.id).then(function() {
+                $rootScope.$broadcast('folder-deleted', folder);
+                $scope.refresh();
+            });
         }
     };
 

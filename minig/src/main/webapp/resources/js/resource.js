@@ -1,9 +1,9 @@
 
 app.factory('FolderResource', function($q, $resource, folderCache, API_HOME) {
-    //var cache = [];
 
 	var folderResourceGet =  $resource(API_HOME + 'folder/:id', {}, {_findAll : {method: 'GET', isArray: true, transformResponse: _transFindAll}});
     var folderResourcePost =  $resource(API_HOME + 'folder/:id', {'id':'@id'}, {_create : {method: 'POST'}});
+    var folderResourceDelete =  $resource(API_HOME + 'folder/:id', {'id':'@id'}, {_delete : {method: 'DELETE'}});
 
     function _transFindAll(data) {
 		try {
@@ -14,7 +14,6 @@ app.factory('FolderResource', function($q, $resource, folderCache, API_HOME) {
 
 	folderResourceGet.findAll = function() {
         var deferred = $q.defer();
-
         if(!folderCache.isEmpty()) {
             deferred.resolve(folderCache.snapshot());
         } else {
@@ -23,25 +22,31 @@ app.factory('FolderResource', function($q, $resource, folderCache, API_HOME) {
                 deferred.resolve(folderCache.snapshot());
             });
         }
-
         return deferred.promise;
 	};
 
     folderResourcePost.create = function(data) {
         var deferred = $q.defer();
-
         folderResourcePost._create({'id': encodeURIComponent(data.id), 'folder' : data.folder}).$promise.then(function(result) {
             folderCache.add(result);
             deferred.resolve(result);
         });
-
         return deferred.promise;
     };
 
+    folderResourceDelete.delete = function(id) {
+        var deferred = $q.defer();
+        folderResourceDelete._delete({'id': encodeURIComponent(id)}).$promise.then(function(result) {
+            folderCache.clear();
+            deferred.resolve();
+        });
+        return deferred.promise;
+    };
 
     return {
         findAll : folderResourceGet.findAll,
-        create : folderResourcePost.create
+        create : folderResourcePost.create,
+        delete : folderResourceDelete.delete
     }
 
 });
