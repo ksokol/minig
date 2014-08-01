@@ -1,4 +1,4 @@
-var app = angular.module("minigApp", ['ngResource', 'ngRoute'])
+var app = angular.module("minigApp", ['ngResource', 'ngRoute', 'LocalStorageModule'])
 .constant('API_HOME', 'api/1/')
 .constant('DEFAULT_PAGE_SIZE', 20)
 .constant('INITIAL_MAILBOX', 'INBOX'); //TODO: INBOX shouldn't be hardcoded
@@ -54,7 +54,7 @@ app.config(function($httpProvider, $routeProvider) {
             templateUrl: "box.jsp",
             controller: 'MailOverviewCtrl'
         })
-        .when('/box/:id', {
+        .when('/box', {
             templateUrl: "box.jsp",
             controller: 'MailOverviewCtrl'
         })
@@ -65,6 +65,10 @@ app.config(function($httpProvider, $routeProvider) {
         .when('/composer', {
             templateUrl: "composer.jsp",
             controller: 'ComposerCtrl'
+        })
+        .when('/message', {
+            templateUrl: "message.jsp",
+            controller: 'MessageCtrl'
         })
         .when('/composer/:id', {
             templateUrl: "composer.jsp",

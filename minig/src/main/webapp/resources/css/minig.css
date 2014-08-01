@@ -2676,3 +2676,9 @@ textarea {
 .folder-name.bold {
     font-weight: bold;
 }
+
+.back {
+    color: #fff;
+    text-decoration: underline;
+    color: white !important;
+}

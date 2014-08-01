@@ -153,3 +153,64 @@ app.service('folderCache', function() {
         }
     }
 });
+
+app.service('routeService', function($rootScope, $route, $location, $log, localStorageService) {
+
+    $rootScope.$on('$routeChangeError', function(event, next, current) {
+        $log.error(event)
+    });
+
+    $rootScope.$on('$routeChangeStart', function(event, next, current) {
+        localStorageService.set('lastRoute', {'path' : current.originalPath, 'params': current.params });
+        localStorageService.set('currentRoute', {'path' : next.originalPath, 'params': next.params });
+    });
+
+    var _navigate = function(route) {
+        $log.info("navigate to ", route);
+        $location.url(route);
+    }
+
+    var navigateToPrevious =function() {
+        var url = previous();
+        _navigate(url);
+    };
+
+    var previous =function() {
+        var lastRoute = localStorageService.get('lastRoute');
+        localStorageService.remove('lastRoute');
+
+        if(!lastRoute) {
+            return "#/box";
+        }
+
+        if(!lastRoute.params && Object.keys(lastRoute.params).length == 0) {
+            return lastRoute.path;
+        }
+        var url = "#"+lastRoute.path + "?";
+        for(k in lastRoute.params) {
+            url = url + k + "=" + encodeURIComponent(lastRoute.params[k]) + "&";
+        }
+
+        $log.info("previous route ", url);
+        return url;
+    };
+
+    var currentRoute = function(route) {
+        var currentRoute = localStorageService.get('currentRoute');
+        if(!currentRoute) {
+            return false;
+        }
+        return currentRoute.path === "/"+route;
+    };
+
+    var navigateTo = function(route) {
+        _navigate("/"+route);
+    };
+
+    return {
+        navigateToPrevious : navigateToPrevious,
+        previous: previous,
+        currentRoute : currentRoute,
+        navigateTo : navigateTo
+    };
+});

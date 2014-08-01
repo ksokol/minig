@@ -115,6 +115,7 @@ app.directive("inlineFolderSelect", function($http, $document, $window, $compile
 });
 
 app.directive("moreActions", function($window, $rootScope) {
+
     return {
         restrict : "A",
 		link: function($scope, element, attrs) {
@@ -209,3 +210,81 @@ app.directive("pagination", function(DEFAULT_PAGE_SIZE, $http, $compile, pagerFa
         }
     }
 });
+
+app.directive('backLink', ['$location', 'routeService', function($location, routeService) {
+    return {
+        restrict: 'E',
+        template: '<a class="gwt-Anchor noWrap back" href="{{url}}">{{"« Back" | i18n }}</a>',
+        link: function (scope, elem, attrs) {
+            scope.url = routeService.previous();
+
+            if(routeService.currentRoute('message')) {
+                elem.show();
+            } else {
+                elem.hide();
+            }
+        }
+    };
+}]);
+
+app.directive("mainActions", function($rootScope, routeService, MailResource) {
+
+    var _folderIntentDone = function _folderIntentDone(folderAction) {
+        $rootScope.$broadcast('folder-intent-done', folderAction);
+    };
+
+    return {
+        restrict: "E",
+        templateUrl: 'main_actions.jsp',
+        link: function($scope, element, attrs) {
+
+            $scope.moveToFolder = function() {
+                $scope.folderIntent = "move";
+            };
+
+            $scope.copyToFolder = function() {
+                $scope.folderIntent = "copy";
+            };
+
+            $scope.$on('folder-intent', function(e, folder) {
+                var params = {folder: folder, mails: $scope.getSelectedMails()};
+
+                switch($scope.folderIntent)    {
+                    case "copy": MailResource.copy(params).$promise.then(_folderIntentDone("copy")); break;
+                    case "move": MailResource.move(params).$promise.then(_folderIntentDone("move")); break;
+                }
+            });
+        }
+    }
+});
+
+app.directive("selectOptions", function($rootScope, routeService, MailResource) {
+
+    return {
+        restrict: "A",
+        link: function($scope, element, attrs) {
+            if(routeService.currentRoute('message')) {
+                element.hide();
+            } else {
+                element.show();
+            }
+
+            var _selectAll = function(flag) {
+                angular.forEach($scope.getMails(), function(mail) {
+                    console.log("mail ", mail)
+                    mail.selected = flag;
+                });
+            }
+
+            $scope.selectNone = function() {
+                _selectAll(false);
+            };
+
+            $scope.selectAll = function() {
+                _selectAll(true);
+            };
+
+        }
+    }
+});
+

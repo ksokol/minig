@@ -16,9 +16,10 @@
     <title>MiniG</title>
     <script src="webjars/jquery/2.0.3/jquery.min.js"></script>
 
-    <script src="webjars/angularjs/1.2.20/angular.min.js"></script>
+    <script src="webjars/angularjs/1.2.20/angular.js"></script>
     <script src="webjars/angularjs/1.2.20/angular-resource.min.js"></script>
-    <script src="webjars/angularjs/1.2.20/angular-route.min.js"></script>
+    <script src="webjars/angularjs/1.2.20/angular-route.js"></script>
+    <script src="resources/js/angular-local-storage.min.js"></script>
 
     <script src="webjars/momentjs/2.7.0/min/moment-with-langs.min.js"></script>
 

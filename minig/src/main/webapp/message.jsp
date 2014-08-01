@@ -1,0 +1,807 @@
+<div class="gwt-TabPanelBottom" role="tabpanel">
+    <div style="width: 100%; height: 100%; padding: 0px; margin: 0px;" aria-hidden="false">
+        <table cellspacing="0" cellpadding="0" style="width: 100%; height: 100%;" aria-hidden="false">
+            <tbody>
+            <tr>
+                <td align="left" style="vertical-align: top;">
+                    <table cellspacing="0" cellpadding="0" style="width: 100%;">
+                        <tbody>
+                        <tr>
+                            <td width="" height="" align="left" style="vertical-align: top;" colspan="1">
+                                <!-- <jsp:include page="main_actions.jsp"></jsp:include> -->
+
+                                <main-actions />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="" height="" align="left" style="vertical-align: top;">
+                                <table cellspacing="0" cellpadding="0" class="conversationDisplay" style="width: 100%;">
+                                    <tbody>
+                                    <tr>
+                                        <td align="left" style="vertical-align: top;">
+                                            <div class="conversationTitle" style="width: 100%;"><b>{{mail.subject}}</b></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="left" style="vertical-align: top;">
+                                            <table cellspacing="0" cellpadding="0" style="width: 100%;">
+                                                <tbody>
+                                                <tr>
+                                                    <td align="left" style="vertical-align: top;">
+                                                        <table cellspacing="0" cellpadding="0" style="width: 100%;">
+                                                            <tbody>
+                                                            <tr>
+                                                                <td align="left" style="vertical-align: top;">
+                                                                    <table class="singleMessageHeader"
+                                                                           style="width: 100%;">
+                                                                        <colgroup>
+                                                                            <col>
+                                                                        </colgroup>
+                                                                        <tbody>
+                                                                        <tr>
+                                                                            <td><img class="gwt-Image"
+                                                                                     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAOCAYAAADwikbvAAAA7UlEQVR42mNgwAPsgw79ZyAH+MZs+9/U0PsfRJOsOSZt9f9/l7X/g2iSbT2yJuL//ytaYJpo24MTNv1PyFwO1gjDID5IHGugpOcu+j93UsX//Sti/9/Z4/b/x3kDFM1fzxr9v73H/f+e5fFgdcnZS//DAxNk6pND9igacGGQurCk9f8xnPvwgBNejSB5rM6HGfD8iC1WjU8P2+HWSMh2kJ8Jav4LjFtsmn9d1MOvGZQgQAo/nTb9P6GzCRi/2/9P6akDhzZIPCp1DW7NOYXz/k8FKka3ITBuy/95k8vAUYpTs3vEbrwpySVsH4o8AOtAF7lgHN4xAAAAAElFTkSuQmCC">
+                                                                            </td>
+                                                                            <td class="recipientsCol">
+                                                                                <div class="gwt-HTML recipients"><span
+                                                                                        class="bold noWrap recipientLabel1">{{mail.sender.email}}</span>&nbsp;to&nbsp;<span
+                                                                                        class="noWrap recipientLabel2">{{mail.to}}</span>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td><a class="gwt-Anchor recipientsDetails"
+                                                                                   href="javascript:;"
+                                                                                   aria-hidden="false">show detail</a>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="gwt-Label noWrap recipientsDate">
+                                                                                    {{mail.date | timeago}}
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td align="left" style="vertical-align: top;">
+                                                                    <table cellspacing="0" cellpadding="0"
+                                                                           style="width: 100%;"
+                                                                           class="singleMessageBody">
+                                                                        <tbody>
+                                                                        <tr>
+                                                                            <td align="left"
+                                                                                style="vertical-align: top;">
+                                                                                <table class="messageDetails"
+                                                                                       style="display: none;"
+                                                                                       aria-hidden="true">
+                                                                                    <colgroup>
+                                                                                        <col>
+                                                                                    </colgroup>
+                                                                                    <tbody>
+                                                                                    <tr>
+                                                                                        <td class="keys">From</td>
+                                                                                        <td>
+                                                                                            <div class="gwt-Label recipientLabel1 messageSenderLabel bold">{{mail.sender.email}}</div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="keys">To</td>
+                                                                                        <td>
+                                                                                            <div class="gwt-HTML"><span
+                                                                                                    class="noWrap recipientLabel2">{{mail.to}}</span>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="keys">Date</td>
+                                                                                        <td>
+                                                                                            <div class="gwt-Label">{{mail.date}}
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="keys">Subject</td>
+                                                                                        <td>
+                                                                                            <div class="gwt-Label">{{mail.subject}}
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td align="left"
+                                                                                style="vertical-align: top;">
+                                                                                <table cellspacing="0" cellpadding="0"
+                                                                                       class="messageText">
+                                                                                    <tbody>
+                                                                                        <td>{{mail.body.plain}}</td>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td align="left"
+                                                                                style="vertical-align: top;">
+                                                                                <table cellspacing="0" cellpadding="0">
+                                                                                    <tbody></tbody>
+                                                                                </table>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td align="left"
+                                                                                style="vertical-align: top;">
+                                                                                <table cellspacing="3" cellpadding="0"
+                                                                                       style="width: 100%;"
+                                                                                       class="replyZone">
+                                                                                    <tbody>
+                                                                                    <tr>
+                                                                                        <td width="" height=""
+                                                                                            align="left"
+                                                                                            style="vertical-align: top;"
+                                                                                            colspan="1">
+                                                                                            <table cellspacing="4"
+                                                                                                   cellpadding="0">
+                                                                                                <tbody>
+                                                                                                <tr>
+                                                                                                    <td align="left"
+                                                                                                        style="vertical-align: top;">
+                                                                                                        <a class="gwt-Anchor replyLink"
+                                                                                                           href="javascript:;">Reply</a>
+                                                                                                    </td>
+                                                                                                    <td align="left"
+                                                                                                        style="vertical-align: top;">
+                                                                                                        <a class="gwt-Anchor replyToAllLink"
+                                                                                                           href="javascript:;">Reply
+                                                                                                            to all</a>
+                                                                                                    </td>
+                                                                                                    <td align="left"
+                                                                                                        style="vertical-align: top;">
+                                                                                                        <a class="gwt-Anchor forwardLink"
+                                                                                                           href="javascript:;">Forward</a>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                                </tbody>
+                                                                                            </table>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td width="" height=""
+                                                                                            align="left"
+                                                                                            style="vertical-align: top;">
+                                                                                            <textarea
+                                                                                                    class="gwt-TextArea"
+                                                                                                    style="width: 40em;"
+                                                                                                    rows="3"></textarea>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </td>
+                                                                        </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="width: 100%; height: 100%; padding: 0px; margin: 0px; display: none;" aria-hidden="true">
+        <table cellspacing="0" cellpadding="0" style="width: 100%; height: 100%; display: none;" aria-hidden="true">
+            <tbody>
+            <tr>
+                <td width="" height="" align="left" style="vertical-align: top;" colspan="1">
+                    <table cellspacing="4" cellpadding="0">
+                        <tbody>
+                        <tr>
+                            <td align="left" style="vertical-align: top;">
+                                <button type="button" class="gwt-Button">Send</button>
+                            </td>
+                            <td align="left" style="vertical-align: top;">
+                                <button type="button" class="gwt-Button">Save now</button>
+                            </td>
+                            <td align="left" style="vertical-align: top;">
+                                <button type="button" class="gwt-Button">Discard</button>
+                            </td>
+                            <td align="left" style="vertical-align: middle;">
+                                <div class="gwt-Label"></div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td width="" height="" align="left" style="vertical-align: top;" colspan="1">
+                    <table cellspacing="0" cellpadding="0" class="enveloppe">
+                        <tbody>
+                        <tr>
+                            <td align="left" style="vertical-align: top;">
+                                <table cellspacing="0" cellpadding="0" class="enveloppeField">
+                                    <tbody>
+                                    <tr>
+                                        <td align="left" style="vertical-align: middle;">
+                                            <div class="gwt-Label">To:</div>
+                                        </td>
+                                        <td width="100%" align="left" style="vertical-align: top;">
+                                            <div class="wrap">
+                                                <div></div>
+                                                <input type="text" class="gwt-TextBox"></div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left" style="vertical-align: top;">
+                                <table cellspacing="0" cellpadding="0" class="enveloppeField" style="display: none;"
+                                       aria-hidden="true">
+                                    <tbody>
+                                    <tr>
+                                        <td align="left" style="vertical-align: middle;">
+                                            <div class="gwt-Label">Cc:</div>
+                                        </td>
+                                        <td width="100%" align="left" style="vertical-align: top;">
+                                            <div class="wrap">
+                                                <div></div>
+                                                <input type="text" class="gwt-TextBox"></div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left" style="vertical-align: top;">
+                                <table cellspacing="0" cellpadding="0" class="enveloppeField" style="display: none;"
+                                       aria-hidden="true">
+                                    <tbody>
+                                    <tr>
+                                        <td align="left" style="vertical-align: middle;">
+                                            <div class="gwt-Label">Bcc:</div>
+                                        </td>
+                                        <td width="100%" align="left" style="vertical-align: top;">
+                                            <div class="wrap">
+                                                <div></div>
+                                                <input type="text" class="gwt-TextBox"></div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left" style="vertical-align: top;">
+                                <table cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                    <tr>
+                                        <td align="left" style="vertical-align: top;">
+                                            <div class="gwt-Label"></div>
+                                        </td>
+                                        <td align="left" style="vertical-align: top;">
+                                            <table cellspacing="2" cellpadding="0" class="panelActions">
+                                                <tbody>
+                                                <tr>
+                                                    <td align="left" style="vertical-align: top;"><a class="gwt-Anchor"
+                                                                                                     href="javascript:;"
+                                                                                                     aria-hidden="false">Add
+                                                        Cc</a></td>
+                                                    <td align="left" style="vertical-align: top;"><a class="gwt-Anchor"
+                                                                                                     href="javascript:;"
+                                                                                                     aria-hidden="false">Add
+                                                        Bcc</a></td>
+                                                    <td align="left" style="vertical-align: top;"><a class="gwt-Anchor"
+                                                                                                     href="javascript:;"
+                                                                                                     style="display: none;"
+                                                                                                     aria-hidden="true">Edit
+                                                        subject</a></td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left" style="vertical-align: top;">
+                                <table cellspacing="0" cellpadding="0" class="enveloppeField" aria-hidden="false">
+                                    <tbody>
+                                    <tr>
+                                        <td align="left" style="vertical-align: middle;">
+                                            <div class="gwt-Label">Subject:</div>
+                                        </td>
+                                        <td width="100%" align="left" style="vertical-align: top;"><input type="text"
+                                                                                                          class="gwt-TextBox">
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left" style="vertical-align: top;">
+                                <table cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                    <tr>
+                                        <td align="left" style="vertical-align: top;">
+                                            <table cellspacing="0" cellpadding="0" class="enveloppeField">
+                                                <tbody>
+                                                <tr>
+                                                    <td align="left" style="vertical-align: top;">
+                                                        <table cellspacing="0" cellpadding="0">
+                                                            <tbody></tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="left" style="vertical-align: top;">
+                                                        <table cellspacing="0" cellpadding="0" class="panelActions">
+                                                            <tbody>
+                                                            <tr>
+                                                                <td align="left" style="vertical-align: top;">
+                                                                    <div class="gwt-Label"></div>
+                                                                </td>
+                                                                <td align="left" style="vertical-align: top;"><a
+                                                                        class="gwt-Anchor" href="javascript:;">Attach a
+                                                                    file</a></td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left" style="vertical-align: top;">
+                                <table cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                    <tr>
+                                        <td align="left" style="vertical-align: top;">
+                                            <div class="gwt-Label"></div>
+                                        </td>
+                                        <td align="left" style="vertical-align: middle;"><span
+                                                class="enveloppeField"><input type="checkbox" value="on" id="gwt-uid-1"
+                                                                              tabindex="0"><label for="gwt-uid-1">Very
+                                            important message</label></span></td>
+                                        <td align="left" style="vertical-align: top;"><span class="gwt-CheckBox"><input
+                                                type="checkbox" value="on" id="gwt-uid-2" tabindex="0"><label
+                                                for="gwt-uid-2">Ask for a disposition notification</label></span></td>
+                                        <td align="left" style="vertical-align: top;"><span class="gwt-CheckBox"><input
+                                                type="checkbox" value="on" id="gwt-uid-3" tabindex="0"><label
+                                                for="gwt-uid-3">Return receipt</label></span></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td width="" height="" align="left" style="vertical-align: top;">
+                    <table cellspacing="0" cellpadding="0" style="width: 100%;">
+                        <tbody>
+                        <tr>
+                            <td align="left" style="vertical-align: top;">
+                                <table cellspacing="0" cellpadding="0" class="bodyEditor">
+                                    <tbody>
+                                    <tr>
+                                        <td width="" height="" align="left" style="vertical-align: top;" colspan="1">
+                                            <div style="width: 100%; height: 35px;">
+                                                <div style="width: 100%; height: 100%; padding: 0px; margin: 0px;"
+                                                     aria-hidden="false">
+                                                    <table cellspacing="0" cellpadding="0" class="panelActions"
+                                                           style="width: 100%; height: 100%;" aria-hidden="false">
+                                                        <tbody>
+                                                        <tr>
+                                                            <td align="left" style="vertical-align: middle;"><a
+                                                                    class="gwt-Anchor" href="javascript:;">Rich
+                                                                formatting »</a></td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div style="width: 100%; height: 100%; padding: 0px; margin: 0px; display: none;"
+                                                     aria-hidden="true">
+                                                    <table class="panelActions"
+                                                           style="width: 100%; height: 100%; display: none;"
+                                                           aria-hidden="true">
+                                                        <colgroup>
+                                                            <col>
+                                                        </colgroup>
+                                                        <tbody>
+                                                        <tr>
+                                                            <td width="100%">
+                                                                <table cellspacing="0" cellpadding="0">
+                                                                    <tbody>
+                                                                    <tr>
+                                                                        <td align="left" style="vertical-align: top;">
+                                                                            <table cellspacing="0" cellpadding="0"
+                                                                                   style="width: 100%;">
+                                                                                <tbody>
+                                                                                <tr>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-ToggleButton gwt-ToggleButton-up"
+                                                                                             role="button"
+                                                                                             title="Toggle Bold"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAJElEQVR42mNgGAVDBvwngCk2FJ/YMDVwNAxJN5Am6XAUDBcAAEbIOsY2U3mTAAAAAElFTkSuQmCC) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-ToggleButton gwt-ToggleButton-up"
+                                                                                             role="button"
+                                                                                             title="Toggle Italic"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/gif;base64,R0lGODlhFAAUAJEAAAAAAHt7e4SEhP///yH5BAEAAAMALAAAAAAUABQAAAIgnI+py+0Po0Sg1jmqwOHiGnDeBIoAlgGhZFnoC8fyDBUAOw==) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-ToggleButton gwt-ToggleButton-up"
+                                                                                             role="button"
+                                                                                             title="Toggle Underline"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/gif;base64,R0lGODlhFAAUAJEAAAAAAHt7e////////yH5BAEAAAIALAAAAAAUABQAAAIplI+py+0PF5hA0Prm0ZBbnIGe441NCZJiegKBEJgtFdXKhdv6zve+UAAAOw==) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div class="gwt-HTML">
+                                                                                            &nbsp;</div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-ToggleButton gwt-ToggleButton-up"
+                                                                                             role="button" title="Font"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/gif;base64,R0lGODlhFAAUALMAAAAAABodIicrMzQ6RE5XZltld2h0iHWCmYKRqo+fu5yuzKm83f///////////////yH5BAEAAA8ALAAAAAAUABQAAARA8MlJq704622A/4CgeYsCGNKBYgUgdcqWTp5cBSBhP+ZKf5gDIGGpYQiAxY42WEoWJ+ejZUMAYtblACjter/eCAA7) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-ToggleButton gwt-ToggleButton-up"
+                                                                                             role="button" title="Size"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/gif;base64,R0lGODlhFAAUAJEAAAAAAIiXsv///////yH5BAEAAAIALAAAAAAUABQAAAIxlI+py+0PGZi0OnBmvhkbD2lSJYoLFngqaB1pYgqx8CKzUndP/oFLWiJFhsSi8RgpAAA7) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-ToggleButton gwt-ToggleButton-up"
+                                                                                             role="button"
+                                                                                             title="Text Color"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/gif;base64,R0lGODlhFAAUALMAAAAAAAAA/wB7AP8AAACEAP8A/3t7e4SEhAD/////AP///////////////////////yH5BAEAAA8ALAAAAAAUABQAAARa8MlJq73Ygs17fsC0iV8ojedHoWrFtmJozDSNjcagG0hv3DLd4NBD/C64w2G2XGo6h4T0ICAIjhmDNGGwErAYg1LcPKgMgbShwAZfDunAgV1wW5hNsR3G7/MjADs=) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-ToggleButton gwt-ToggleButton-up"
+                                                                                             role="button"
+                                                                                             title="Background Color"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/gif;base64,R0lGODlhFAAUAJEAAAAAAP////37B////yH5BAEAAAMALAAAAAAUABQAAAI5nI+py+0PF5i0KoEFyJNnYXwb1pFf+HFjCg4suaYoW7JzWsvum587HfO9NMHMTVTEMCqTiPMJjUIKADs=) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div class="gwt-HTML">
+                                                                                            &nbsp;</div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-PushButton gwt-PushButton-up"
+                                                                                             role="button"
+                                                                                             title="Left Justify"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/gif;base64,R0lGODlhFAAUAIAAAAAAAP///yH5BAEAAAEALAAAAAAUABQAAAIejI+py+0PE5i01hitxTzoD3QOOIkZeZkLqrbuCxsFADs=) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-PushButton gwt-PushButton-up"
+                                                                                             role="button"
+                                                                                             title="Center"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/gif;base64,R0lGODlhFAAUAIAAAAAAAP///yH5BAEAAAEALAAAAAAUABQAAAIdjI+py+0PE5i01oiDtTnuD3QQOIkPyZkNqrbuCxcAOw==) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-PushButton gwt-PushButton-up"
+                                                                                             role="button"
+                                                                                             title="Right Justify"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAH0lEQVR42mNgGAXUBv/JxIPfxaNhOBqGIysMRwHpAADGwEe5v4tWjAAAAABJRU5ErkJggg==) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-ToggleButton gwt-ToggleButton-up"
+                                                                                             role="button"
+                                                                                             title="Toggle Strikethrough"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/gif;base64,R0lGODlhFAAUAIAAAAABAP///yH5BAEAAAEALAAAAAAUABQAAAInjI+py+0PHZggVDhPxtd0uVmRFYLUSY1p1K3PVzZhzFTniOf6zjMFADs=) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-PushButton gwt-PushButton-up"
+                                                                                             role="button"
+                                                                                             title="Indent Right"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/gif;base64,R0lGODlhFAAUAJEAAAAAAP///////wAAACH5BAEAAAIALAAAAAAUABQAAAIjlI+py+0Po5wHVIBzVphqa3zbpUkfeSYdJYCtOLLyTNf2LRQAOw==) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-PushButton gwt-PushButton-up"
+                                                                                             role="button"
+                                                                                             title="Indent Left"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/gif;base64,R0lGODlhFAAUAJEAAAAAAP///////wAAACH5BAEAAAIALAAAAAAUABQAAAIjlI+py+0Po5wIGICzVpgKbX1gd4wTeI1htVKhmnnyTNf2fRQAOw==) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-PushButton gwt-PushButton-up"
+                                                                                             role="button"
+                                                                                             title="Insert Horizontal Rule"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/gif;base64,R0lGODlhFAAUAIAAAAAAAP///yH5BAEAAAEALAAAAAAUABQAAAIajI+py+0Po5y0OoCz1mr73H2eRZbmiabqUwAAOw==) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-PushButton gwt-PushButton-up"
+                                                                                             role="button"
+                                                                                             title="Insert Ordered List"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/gif;base64,R0lGODlhFAAUAIAAAAAAAP///yH5BAEAAAEALAAAAAAUABQAAAIjjI+py+0MwIMn2rvkTHZ7132VcZWZSEbommqiW2Lnq7L2vRUAOw==) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-PushButton gwt-PushButton-up"
+                                                                                             role="button"
+                                                                                             title="Insert Unordered List"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAIklEQVR42mNgGPHgPxKmmYH/icD0c+FopIxGymikjALaAAC2dzXLcl5hjgAAAABJRU5ErkJggg==) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                    <td align="left"
+                                                                                        style="vertical-align: middle;">
+                                                                                        <div tabindex="0"
+                                                                                             class="gwt-PushButton gwt-PushButton-up"
+                                                                                             role="button"
+                                                                                             title="Remove Formatting"
+                                                                                             aria-pressed="false"><input
+                                                                                                type="text"
+                                                                                                tabindex="-1"
+                                                                                                role="presentation"
+                                                                                                style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><img
+                                                                                                border="0"
+                                                                                                style="width:20px;height:20px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAABB0lEQVR42tWUsQ2DMBBFyQSICShCTwEdlijooECiCR0jMAIjMAIjMAILINHSMQIj/OTAJpAQTEApctKXsDk9f9+drCh/G03ToKoqqXYDVVWl5E3xHHnwk5GmKbquQxiGE4T+kXtd18W+PAiUJMk8+c1RnucoigK76ye+y7Kc3M0d9X0P0tfNIbcCuNvRVlCtBJDqeQrGAYNM0zzvjgovgPzq5+J1XE7BeAdXBxjj/nNtGPLDsiybgK7rYg4TEjBYFuA4+NgIDlhoCb0AmoYRZq/D2rZFXde7tQmjYIxJHwMhGFfApmsywPMAPzjucHBmP5yx0RkCH4gi4BYfnwJytljHMX72MN8BS744G4gNMaUAAAAASUVORK5CYII=) no-repeat 0px 0px;"
+                                                                                                src="https://sokol-web.de/minig/minig/clear.cache.gif"
+                                                                                                onload="this.__gwtLastUnhandledEvent=&quot;load&quot;;"
+                                                                                                class="gwt-Image"></div>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                            <td style="vertical-align: middle;"><a class="gwt-Anchor"
+                                                                                                   href="javascript:;">«&nbsp;Hide</a>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="" height="" align="left" style="vertical-align: top;">
+                                            <div class="whiteBackground">
+                                                <iframe class="gwt-RichTextArea" style="height: 139px;"></iframe>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td width="" height="" align="left" style="vertical-align: top;" colspan="1">
+                    <table cellspacing="4" cellpadding="0">
+                        <tbody>
+                        <tr>
+                            <td align="left" style="vertical-align: top;">
+                                <button type="button" class="gwt-Button">Send</button>
+                            </td>
+                            <td align="left" style="vertical-align: top;">
+                                <button type="button" class="gwt-Button">Save now</button>
+                            </td>
+                            <td align="left" style="vertical-align: top;">
+                                <button type="button" class="gwt-Button">Discard</button>
+                            </td>
+                            <td align="left" style="vertical-align: middle;">
+                                <div class="gwt-Label"></div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>

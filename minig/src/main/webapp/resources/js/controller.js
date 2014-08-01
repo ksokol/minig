@@ -40,20 +40,14 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 	$scope.folderIntent;
 	$scope.data;
 
-	function _getMails() {
+	$scope.getMails = function() {
 	    return ($scope.data && $scope.data.mailList) ? $scope.data.mailList : [];
 	};
-
-    function _folderIntentDone() {
-        $scope.updateOverview();
-        $rootScope.$broadcast('folder-intent-done');
-        $scope.folderIntent = null;
-    }
 
     function _updateFlags(fnDecide) {
         var tmp = [];
 
-        angular.forEach(getSelectedMails(), function(mail) {
+        angular.forEach($scope.getSelectedMails(), function(mail) {
             if(fnDecide(mail)) {
                 tmp.push(mail);
             }
@@ -71,32 +65,25 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         $rootScope.$broadcast("more-actions-done");
     }
 
-	function getSelectedMails() {
-		var selected = [];
-
-		angular.forEach(_getMails(), function(mail) {
-			if(mail.selected) {
-				selected.push(mail);
-			}
-		});
-
+    $scope.getSelectedMails = function() {
+        var selected = [];
+        angular.forEach($scope.getMails(), function(mail) {
+            if(mail.selected) {
+                selected.push(mail);
+            }
+        });
 		return selected;
-	}
+	};
 
-	function selectAll(flag) {
-		angular.forEach(_getMails(), function(mail) {
-			mail.selected = flag;
-		});
-	}
 
-    $scope.$on('folder-intent', function(e, folder) {
-        var params = {folder: folder, mails: getSelectedMails()};
 
-        switch($scope.folderIntent)    {
-            case "copy": MailResource.copy(params).$promise.then(_folderIntentDone); break;
-            case "move": MailResource.move(params).$promise.then(_folderIntentDone); break;
-        }
+
+
+    $scope.$on('folder-intent-done', function(e) {
+        $scope.updateOverview();
     });
+
+
 
     $scope.$on('mark-as-read', function(e) {
         _updateFlags(function(mail) {
@@ -144,14 +131,6 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 		});
 	};
 
-    $scope.moveToFolder = function() {
-        $scope.folderIntent = "move";
-    };
-
-    $scope.copyToFolder = function() {
-        $scope.folderIntent = "copy";
-    };
-
 	$scope.showIcon = function(mail) {
 		return mail.answered || mail.forwarded;
 	};
@@ -166,25 +145,17 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 		}
 	};
 
-	$scope.selectAll = function() {
-		selectAll(true);
-	};
-	
-	$scope.selectNone = function() {
-		selectAll(false);
-	};
-	
 	$scope.hasMailSelected = function() {
-		return getSelectedMails().length !== 0;
+		return $scope.getSelectedMails().length !== 0;
 	};
 	
 	$scope.deleteMails = function() {
-		var selectedMails = getSelectedMails();
+		var selectedMails = $scope.getSelectedMails();
 
 		MailResource.deleteMails(selectedMails).$promise
 		.then(function() {
 			$rootScope.$broadcast('notification', i18nService.resolve("Message(s) deleted"));
-			updateOverview();			
+			$scope.updateOverview();
 		});
 	};
 	
@@ -199,12 +170,13 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 	};
 
     $scope.open = function(mail) {
-        $location.url("/composer?id=" + mail.id);
+        //TODO drafts!
+        $location.url("/message?id=" + mail.id);
     };
 
     $scope.updateOverview();
 })
-.controller('FolderSettingsCtrl', function($scope, $rootScope, FolderResource, INITIAL_MAILBOX) {
+.controller('FolderSettingsCtrl', function($scope, $rootScope, $location, FolderResource, INITIAL_MAILBOX) {
     $scope.currentFolder;
 
     $scope.refresh = function() {
@@ -262,8 +234,62 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
     $scope.refresh();
 
 })
-.controller('ComposerCtrl', function($scope) {
+.controller('MessageCtrl', function($scope, $rootScope, $routeParams, routeService, MailResource, i18nService) {
+    $scope.mail;
 
+    $scope.$on('folder-intent-done', function(e, folderAction) {
+        if(folderAction === "move") {
+            $rootScope.$broadcast('notification', i18nService.resolve("Message moved"));
+            routeService.navigateToPrevious();
+        } else {
+            $rootScope.$broadcast('notification', i18nService.resolve("Message copied"));
+        }
+    });
 
+    $scope.getSelectedMails = function() {
+        var selected = [];
+        if($scope.mail !== undefined) {
+            selected.push($scope.mail);
+        }
+        return selected;
+    };
 
+    $scope.hasMailSelected = function() {
+        return $scope.getSelectedMails().length > 0;
+    };
+
+    $scope.deleteMails = function() {
+        if (!confirm('Do you really want to delete this message?')) {
+            return;
+        }
+
+        MailResource.delete($scope.mail.id)
+        .then(function() {
+            $rootScope.$broadcast('notification', i18nService.resolve("Message deleted"));
+            routeService.navigateToPrevious();
+        });
+    };
+
+    $scope.refresh = function() {
+        MailResource.load($routeParams.id).then(function(mail) {
+            $scope.mail = mail;
+        })
+        .catch(function(e) {
+            $rootScope.$broadcast('error', i18nService.resolve("Message does not exists"));
+            routeService.navigateTo("box");
+        });
+    };
+
+    $scope.refresh();
+})
+.controller('ComposerCtrl', function($scope, $routeParams, MailResource) {
+    $scope.mail;
+
+    $scope.refresh = function() {
+        MailResource.load($routeParams.id).then(function(mail) {
+            $scope.mail = mail;
+        });
+    };
+
+    $scope.refresh();
 });

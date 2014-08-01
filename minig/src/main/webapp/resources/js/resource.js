@@ -65,7 +65,7 @@ app.factory('FolderResource', function($q, $resource, folderCache, API_HOME) {
 
 });
 
-app.factory('MailResource', ['$resource','API_HOME','DEFAULT_PAGE_SIZE','pagerFactory', function($resource, API_HOME, DEFAULT_PAGE_SIZE, pagerFactory) {
+app.factory('MailResource', ['$q', '$resource','API_HOME','DEFAULT_PAGE_SIZE','pagerFactory', function($q, $resource, API_HOME, DEFAULT_PAGE_SIZE, pagerFactory) {
 	var defaults = {page: 1, page_length: DEFAULT_PAGE_SIZE};
 	
 	var messageDelete = $resource(API_HOME+'message/delete', {}, {deleteMails: {method: 'PUT', isArray:true, transformRequest: _transMessageDelete }});
@@ -73,8 +73,10 @@ app.factory('MailResource', ['$resource','API_HOME','DEFAULT_PAGE_SIZE','pagerFa
 	var messageUpdateFlag = $resource(API_HOME+'message/flag', {}, {updateFlags: {method: 'PUT', isArray:true, transformRequest: _transMessageUpdateFlags}});
 	var messageMove = $resource(API_HOME+'message/move', {}, {moveMessage: {method: 'PUT', isArray:true, transformRequest: _transMessageMoveCopy}});
 	var messageCopy = $resource(API_HOME+'message/copy', {}, {copyMessage: {method: 'PUT', isArray:true, transformRequest: _transMessageMoveCopy}});
+    var messageLoad = $resource(API_HOME+'message/:id', {'id':'@id'}, {_load: {method: 'GET'}});
+    var messageDeleteSingle = $resource(API_HOME+'message/:id', {'id':'@id'}, {_delete: {method: 'DELETE' }});;
 
-	function _transMessageDelete(mails) {
+    function _transMessageDelete(mails) {
 		var idList = [];
 		
 		angular.forEach(mails, function(value) {
@@ -109,13 +111,34 @@ app.factory('MailResource', ['$resource','API_HOME','DEFAULT_PAGE_SIZE','pagerFa
 
         return angular.toJson({folder: folder, messageIdList: ids});
 	}
+
+    messageLoad.load = function(id) {
+        var deferred = $q.defer();
+        messageLoad._load({ 'id' : encodeURIComponent(id)}).$promise.then(function(result) {
+            deferred.resolve(result);
+        })
+        .catch(function(error) {
+            deferred.reject(error);
+        });
+        return deferred.promise;
+    };
+
+    messageDeleteSingle.delete = function(id) {
+        var deferred = $q.defer();
+        messageDeleteSingle._delete({ 'id' : encodeURIComponent(id)}).$promise.then(function(result) {
+            deferred.resolve(result);
+        });
+        return deferred.promise;
+    };
 	
 	return {
 		findByFolder: messageByFolder.findByFolder,
 		deleteMails: messageDelete.deleteMails,
 		updateFlags: messageUpdateFlag.updateFlags,
 		move: messageMove.moveMessage,
-		copy: messageCopy.copyMessage
+		copy: messageCopy.copyMessage,
+        load: messageLoad.load,
+        delete: messageDeleteSingle.delete
 	};
 	
 }]);

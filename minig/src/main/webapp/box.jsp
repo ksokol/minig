@@ -8,7 +8,7 @@
                         <tbody>
                         <tr>
                             <td align="left" width="" height="" style="vertical-align: top;" colspan="1">
-                                <jsp:include page="main_actions.jsp"></jsp:include>
+                                <main-actions />
                             </td>
                         </tr>
                         <tr>

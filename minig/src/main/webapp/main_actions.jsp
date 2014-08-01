@@ -15,6 +15,9 @@
 												<table cellspacing="3" cellpadding="0" class="actionBox">
 													<tbody>
 														<tr>
+                                                            <td align="left" style="vertical-align: middle;">
+                                                                <back-link />
+                                                            </td>
 															<td align="left" style="vertical-align: middle;">
 																<button type="button" class="gwt-Button deleteButton" ng-disabled="!hasMailSelected()" ng-click="deleteMails()">Delete</button>
 															</td>
@@ -86,12 +89,9 @@
 												</table>
 											</td>
 										</tr>
-										<tr></tr>
-										<tr>
-											<td align="left" width="" height=""
-												style="vertical-align: top;" colspan="1"><table
-													cellspacing="3" cellpadding="0"
-													class="panelActions selectionBox">
+										<tr select-options>
+											<td align="left" style="vertical-align: top;" colspan="1">
+                                                <table cellspacing="3" cellpadding="0" class="panelActions">
 													<tbody>
 														<tr>
 															<td align="left" style="vertical-align: top;">
@@ -105,10 +105,12 @@
 															</td>
 														</tr>
 													</tbody>
-												</table></td>
+												</table>
+                                            </td>
 										</tr>
 									</tbody>
-								</table></td>
+								</table>
+                            </td>
 							<td align="right" width="" height="" style="vertical-align: top;" rowspan="1">
                                 <pagination />
                             </td>
