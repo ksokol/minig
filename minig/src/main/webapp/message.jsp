@@ -39,8 +39,9 @@
                                                                         </colgroup>
                                                                         <tbody>
                                                                         <tr>
-                                                                            <td><img class="gwt-Image"
-                                                                                     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAOCAYAAADwikbvAAAA7UlEQVR42mNgwAPsgw79ZyAH+MZs+9/U0PsfRJOsOSZt9f9/l7X/g2iSbT2yJuL//ytaYJpo24MTNv1PyFwO1gjDID5IHGugpOcu+j93UsX//Sti/9/Z4/b/x3kDFM1fzxr9v73H/f+e5fFgdcnZS//DAxNk6pND9igacGGQurCk9f8xnPvwgBNejSB5rM6HGfD8iC1WjU8P2+HWSMh2kJ8Jav4LjFtsmn9d1MOvGZQgQAo/nTb9P6GzCRi/2/9P6akDhzZIPCp1DW7NOYXz/k8FKka3ITBuy/95k8vAUYpTs3vEbrwpySVsH4o8AOtAF7lgHN4xAAAAAElFTkSuQmCC">
+                                                                            <td>
+                                                                                <img ng-show="mail.starred" src="resources/images/starred.gif">
+                                                                                <img ng-hide="mail.starred" src="resources/images/unstarred.gif">
                                                                             </td>
                                                                             <td class="recipientsCol">
                                                                                 <div class="gwt-HTML recipients"><span

@@ -131,6 +131,8 @@ app.directive("moreActions", function($window, $rootScope) {
             ma.find('a').on('click', function() {
                 var event = angular.element(this).attr("data-event");
                 $rootScope.$broadcast(event);
+                ma.hide();
+                overlay.hide();
                 return false;
             });
 
@@ -271,7 +273,6 @@ app.directive("selectOptions", function($rootScope, routeService, MailResource) 
 
             var _selectAll = function(flag) {
                 angular.forEach($scope.getMails(), function(mail) {
-                    console.log("mail ", mail)
                     mail.selected = flag;
                 });
             }

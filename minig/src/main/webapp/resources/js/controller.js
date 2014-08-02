@@ -237,6 +237,16 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 .controller('MessageCtrl', function($scope, $rootScope, $routeParams, routeService, MailResource, i18nService) {
     $scope.mail;
 
+
+    function _updateFlags(mail) {
+        MailResource.updateFlags([mail]).$promise
+        .catch(function() {
+            $scope.updateOverview();
+        });
+
+        $rootScope.$broadcast("more-actions-done");
+    }
+
     $scope.$on('folder-intent-done', function(e, folderAction) {
         if(folderAction === "move") {
             $rootScope.$broadcast('notification', i18nService.resolve("Message moved"));
@@ -269,6 +279,26 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
             routeService.navigateToPrevious();
         });
     };
+
+    $scope.$on('mark-as-read', function(e) {
+        $scope.mail.read = true;
+        _updateFlags($scope.mail);
+    });
+
+    $scope.$on('mark-as-unread', function(e) {
+        $scope.mail.read = false;
+        _updateFlags($scope.mail);
+    });
+
+    $scope.$on('add-star', function(e) {
+        $scope.mail.starred = true;
+        _updateFlags($scope.mail);
+    });
+
+    $scope.$on('remove-star', function(e) {
+        $scope.mail.starred = false;
+        _updateFlags($scope.mail);
+    });
 
     $scope.refresh = function() {
         MailResource.load($routeParams.id).then(function(mail) {
