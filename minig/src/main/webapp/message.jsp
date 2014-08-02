@@ -39,7 +39,7 @@
                                                                         </colgroup>
                                                                         <tbody>
                                                                         <tr>
-                                                                            <td>
+                                                                            <td ng-click="clickStar()" class="star">
                                                                                 <img ng-show="mail.starred" src="resources/images/starred.gif">
                                                                                 <img ng-hide="mail.starred" src="resources/images/unstarred.gif">
                                                                             </td>

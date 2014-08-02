@@ -237,7 +237,6 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 .controller('MessageCtrl', function($scope, $rootScope, $routeParams, routeService, MailResource, i18nService) {
     $scope.mail;
 
-
     function _updateFlags(mail) {
         MailResource.updateFlags([mail]).$promise
         .catch(function() {
@@ -299,6 +298,15 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         $scope.mail.starred = false;
         _updateFlags($scope.mail);
     });
+
+    $scope.clickStar = function() {
+        $scope.mail.starred = !$scope.mail.starred;
+
+        MailResource.updateFlags($scope.mail).$promise
+        .catch(function() {
+            $scope.mail.starred = !$scope.mail.starred;
+        });
+    };
 
     $scope.refresh = function() {
         MailResource.load($routeParams.id).then(function(mail) {

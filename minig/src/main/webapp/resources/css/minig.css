@@ -1751,15 +1751,17 @@ html>body .dataGrid {
 .recipientsCol {
 	overflow: hidden;
 	width: 100%;
-	cursor: pointer;
 	height: 1em;
 }
 
 .recipients {
 	white-space: nowrap;
 	width: 0;
-	cursor: pointer;
 	height: 1em;
+}
+
+.star {
+    cursor: pointer;
 }
 
 .recipientsDetails {
