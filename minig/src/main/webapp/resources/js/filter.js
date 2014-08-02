@@ -14,6 +14,21 @@ app.filter('timeago', function(timeService) {
 	}
 });
 
+app.filter('dateformat', function(timeService) {
+
+    return function(date) {
+        if(date) {
+            try {
+                return timeService.humanReadable(date);
+            } catch(e) {
+                return "";
+            }
+        } else {
+            return "";
+        }
+    }
+});
+
 app.filter('i18n', function(i18nService) {
 	
 	return function(text) {

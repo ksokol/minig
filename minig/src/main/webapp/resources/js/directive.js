@@ -326,3 +326,18 @@ app.directive("recipientPanel", function() {
         template: '<span class="noWrap recipientLabel2">{{formatRecipient(mail.to)}}</span>'
     }
 });
+
+app.directive("conversationDisplay", function() {
+
+    return {
+        restrict: "C",
+        controller :  [ "$scope", function ($scope) {
+
+            $scope.hideDetails = true;
+
+            $scope.toggleDetails = function() {
+                $scope.hideDetails = !$scope.hideDetails;
+            }
+        }]
+    }
+});

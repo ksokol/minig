@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.map.util.ISO8601DateFormat;
 import org.minig.server.resource.argumentresolver.CompositeIdHandlerMethodArgumentResolver;
 import org.minig.server.resource.argumentresolver.StringIdHandlerMethodArgumentResolver;
 import org.springframework.context.annotation.Bean;
@@ -63,6 +65,8 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
     private ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.configure(SerializationConfig.Feature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
+        objectMapper.setDateFormat(new ISO8601DateFormat());
         return objectMapper;
     }
 
