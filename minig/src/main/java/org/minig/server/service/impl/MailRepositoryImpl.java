@@ -12,6 +12,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.MessageIDTerm;
 
+import org.apache.log4j.Logger;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
 import org.minig.server.service.CompositeId;
@@ -26,6 +27,8 @@ import org.springframework.util.Assert;
 
 @Component
 class MailRepositoryImpl implements MailRepository {
+
+    private static final Logger log = Logger.getLogger(MailRepositoryImpl.class);
 
     @Autowired
     private MailContext mailContext;
@@ -94,7 +97,7 @@ class MailRepositoryImpl implements MailRepository {
                 Message[] search = storeFolder.search(new MessageIDTerm(id.getMessageId()));
                 count = search.length;
 
-                if (search.length == 1 && search[0] != null) {
+                if (search.length > 0 && search[0] != null) {
                     return mapper.convertFull(search[0]);
                 }
             }
@@ -103,8 +106,7 @@ class MailRepositoryImpl implements MailRepository {
         }
 
         if (count > 1) {
-            // TODO
-            throw new RuntimeException("more than one message found");
+            log.warn(String.format("found more than one message for [%s]", id));
         }
 
         return null;
