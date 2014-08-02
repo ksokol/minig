@@ -289,3 +289,40 @@ app.directive("selectOptions", function($rootScope, routeService, MailResource) 
     }
 });
 
+app.directive("senderPanel", function() {
+
+    return {
+        restrict: "E",
+        replace : true,
+        controller :  [ "$scope", function ($scope) {
+            $scope.formatSender = function(sender) {
+                if(sender === undefined) {
+                    return "undisclosed sender";
+                }
+                return sender.email;
+            }
+        }],
+        template: '<span class="bold noWrap recipientLabel1">{{formatSender(mail.sender)}}</span>'
+    }
+});
+
+app.directive("recipientPanel", function() {
+
+    return {
+        restrict: "E",
+        replace : true,
+        controller :  [ "$scope", function ($scope) {
+            $scope.formatRecipient = function(recipients) {
+                var formatted = "";
+                if(recipients === undefined) {
+                    return "undisclosed recipients";
+                }
+                angular.forEach(recipients, function(recipient) {
+                    formatted = formatted + recipient.email + ", ";
+                });
+                return formatted.substring(0, formatted.length - 2);
+            }
+        }],
+        template: '<span class="noWrap recipientLabel2">{{formatRecipient(mail.to)}}</span>'
+    }
+});

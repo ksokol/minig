@@ -44,9 +44,10 @@
                                                                                 <img ng-hide="mail.starred" src="resources/images/unstarred.gif">
                                                                             </td>
                                                                             <td class="recipientsCol">
-                                                                                <div class="gwt-HTML recipients"><span
-                                                                                        class="bold noWrap recipientLabel1">{{mail.sender.email}}</span>&nbsp;to&nbsp;<span
-                                                                                        class="noWrap recipientLabel2">{{mail.to}}</span>
+                                                                                <div class="gwt-HTML recipients">
+                                                                                    <sender-panel></sender-panel>
+                                                                                    &nbsp;to&nbsp;
+                                                                                    <recipient-panel></recipient-panel>
                                                                                 </div>
                                                                             </td>
                                                                             <td><a class="gwt-Anchor recipientsDetails"
