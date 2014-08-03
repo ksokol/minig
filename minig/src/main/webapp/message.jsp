@@ -95,6 +95,12 @@
                                                                                             <div class="gwt-Label">{{mail.subject}}</div>
                                                                                         </td>
                                                                                     </tr>
+                                                                                    <tr ng-show="mail.mailer">
+                                                                                        <td class="keys">Mail-by</td>
+                                                                                        <td>
+                                                                                            <div class="gwt-Label">{{mail.mailer}}</div>
+                                                                                        </td>
+                                                                                    </tr>
                                                                                     </tbody>
                                                                                 </table>
                                                                             </td>
