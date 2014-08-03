@@ -215,3 +215,33 @@ app.service('routeService', function($rootScope, $route, $location, $log, localS
         navigateTo : navigateTo
     };
 });
+
+app.service('submissionService',['$q', '$http', 'API_HOME', function($q, $http, API_HOME) {
+
+
+    var _submission = function(mail) {
+        var deferred = $q.defer();
+
+        if(!angular.isDefined(mail) && !angular.isDefined(mail.id)) {
+            deferred.reject("mail id undefined");
+            return;
+        }
+
+        $http({method: 'POST', url: API_HOME +'/submission/disposition/'+encodeURIComponent(mail.id)})
+        .success(function() {
+            deferred.resolve();
+        })
+        .error(function(data) {
+            deferred.reject(data);
+        });
+
+        return deferred.promise;
+    };
+
+    return {
+
+        disposition: _submission
+
+    };
+
+}]);

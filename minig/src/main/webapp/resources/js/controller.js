@@ -240,7 +240,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
     function _updateFlags(mail) {
         MailResource.updateFlags([mail]).$promise
         .catch(function() {
-            $scope.updateOverview();
+                $rootScope.$broadcast("error", i18nService.resolve("something wnet wrong"));
         });
 
         $rootScope.$broadcast("more-actions-done");

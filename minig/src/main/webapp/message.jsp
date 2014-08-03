@@ -30,8 +30,7 @@
                                                             <tbody>
                                                             <tr>
                                                                 <td align="left" style="vertical-align: top;">
-                                                                    <table class="singleMessageHeader"
-                                                                           style="width: 100%;">
+                                                                    <table class="singleMessageHeader" style="width: 100%;">
                                                                         <colgroup>
                                                                             <col>
                                                                         </colgroup>
@@ -105,6 +104,36 @@
                                                                                 </table>
                                                                             </td>
                                                                         </tr>
+
+
+                                                                        <tr>
+                                                                            <td align="left" style="vertical-align: top;">
+                                                                                <table ng-show="showDispositionNotification" cellspacing="0" cellpadding="0" aria-hidden="false" class="dispositionNotificationPanel">
+                                                                                    <tbody>
+                                                                                    <tr>
+                                                                                        <td align="left" style="vertical-align: top;">
+                                                                                            <table cellspacing="0" cellpadding="0" class="content">
+                                                                                                <tbody>
+                                                                                                <tr>
+                                                                                                    <td align="left" style="vertical-align: top;">
+                                                                                                        <div class="gwt-Label"><recipient-panel></recipient-panel> would like to be notified of this mail delivery :</div>
+                                                                                                    </td>
+                                                                                                    <td align="left" style="vertical-align: top;">
+                                                                                                        <a class="gwt-Anchor" ng-click="acceptDisposition()">Accept</a>
+                                                                                                    </td>
+                                                                                                    <td align="left" style="vertical-align: top;">
+                                                                                                        <a class="gwt-Anchor" ng-click="declineDisposition()">Later</a>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                                </tbody>
+                                                                                            </table>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </td>
+                                                                        </tr>
+
                                                                         <tr>
                                                                             <td align="left" style="vertical-align: top;">
                                                                                 <message-text>

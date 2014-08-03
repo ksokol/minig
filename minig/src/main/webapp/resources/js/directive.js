@@ -368,3 +368,36 @@ app.directive("messageText", function() {
         }
     }
 });
+
+app.directive("dispositionNotificationPanel", function($rootScope, submissionService, i18nService) {
+
+    return {
+        restrict: "C",
+        controller :  [ "$scope", function ($scope) {
+            $scope.showDispositionNotification = false;
+
+            $scope.declineDisposition = function() {
+                $scope.showDispositionNotification = false;
+            };
+
+            $scope.acceptDisposition = function() {
+                submissionService.disposition($scope.mail)
+                .then(function() {
+                    $rootScope.$broadcast('notification', i18nService.resolve("Disposition sent"));
+                    $scope.showDispositionNotification = false;
+                })
+                .catch(function(error) {
+                    $rootScope.$broadcast('error', i18nService.resolve(error));
+                });
+            };
+
+            $scope.$watch('mail', function(mail) {
+                if (!mail) {
+                    return;
+                }
+                $scope.showDispositionNotification = $scope.mail.dispositionNotification.length > 0
+            });
+        }]
+    }
+
+});
