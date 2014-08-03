@@ -8,8 +8,6 @@
                         <tbody>
                         <tr>
                             <td width="" height="" align="left" style="vertical-align: top;" colspan="1">
-                                <!-- <jsp:include page="main_actions.jsp"></jsp:include> -->
-
                                 <main-actions />
                             </td>
                         </tr>
@@ -103,11 +101,19 @@
                                                                         </tr>
                                                                         <tr>
                                                                             <td align="left" style="vertical-align: top;">
-                                                                                <table cellspacing="0" cellpadding="0" class="messageText">
-                                                                                    <tbody>
-                                                                                        <td>{{mail.body.plain}}</td>
-                                                                                    </tbody>
-                                                                                </table>
+                                                                                <message-text>
+                                                                                    <table cellspacing="0" cellpadding="0" class="messageText">
+                                                                                        <tbody>
+                                                                                            <tr ng-repeat="line in messageText track by $index">
+                                                                                                <td align="left" style="vertical-align: top;">
+                                                                                                    <div class="gwt-HTML wrapword">
+                                                                                                        {{line}}<br>
+                                                                                                    </div>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </message-text>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>

@@ -24,7 +24,7 @@ app.directive("notification", function(i18nService) {
     return {
         restrict : "A",
         link : function(scope, element, attrs) {
-        	
+
         	function show(message) {
         		 clearTimeout(id);
         		 var div = element.find('div');
@@ -32,7 +32,7 @@ app.directive("notification", function(i18nService) {
              	 element.find('table').css({"display" : ""});
              	 hide();
         	}
-        	
+
         	function hide() {
             	id = setTimeout(function() {
             		element.find('table').css({"display" : "none"});
@@ -41,12 +41,12 @@ app.directive("notification", function(i18nService) {
             		element.find('table').removeClass('notification-error');
             	}, 3000);
         	}
-        	
+
             scope.$on("notification", function(e, message) {
-            	show(message);            	
+            	show(message);
             });
-            
-            scope.$on("error", function(e, message) {            	
+
+            scope.$on("error", function(e, message) {
             	element.find('table').addClass('notification-error');
             	show(message);
             });
@@ -332,12 +332,39 @@ app.directive("conversationDisplay", function() {
     return {
         restrict: "C",
         controller :  [ "$scope", function ($scope) {
-
             $scope.hideDetails = true;
 
             $scope.toggleDetails = function() {
                 $scope.hideDetails = !$scope.hideDetails;
             }
         }]
+    }
+});
+
+app.directive("messageText", function() {
+
+    var formatPlain = function (text) {
+        return text.split("\r\n");
+    };
+
+    var formatHtml = function (html) {
+        return html.split(/<\s*b\s*r\s*\/?>/g);
+    };
+
+    return {
+        restrict: "E",
+        link: function ($scope, element, attrs) {
+            $scope.$watch('mail', function(mail) {
+                if(!mail) {
+                    return;
+                }
+                //TODO support html mails
+                if(mail.body.plain) {
+                    $scope.messageText = formatPlain(mail.body.plain);
+                } else {
+                    $scope.messageText = formatHtml(mail.body.html);
+                }
+            });
+        }
     }
 });
