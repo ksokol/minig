@@ -65,7 +65,7 @@ app.factory('FolderResource', function($q, $resource, folderCache, API_HOME) {
 
 });
 
-app.factory('MailResource', ['$q', '$resource','API_HOME','DEFAULT_PAGE_SIZE','pagerFactory', function($q, $resource, API_HOME, DEFAULT_PAGE_SIZE, pagerFactory) {
+app.factory('MailResource', ['$q', '$resource','API_HOME','DEFAULT_PAGE_SIZE', function($q, $resource, API_HOME, DEFAULT_PAGE_SIZE) {
 	var defaults = {page: 1, page_length: DEFAULT_PAGE_SIZE};
 	
 	var messageDelete = $resource(API_HOME+'message/delete', {}, {deleteMails: {method: 'PUT', isArray:true, transformRequest: _transMessageDelete }});
@@ -74,7 +74,7 @@ app.factory('MailResource', ['$q', '$resource','API_HOME','DEFAULT_PAGE_SIZE','p
 	var messageMove = $resource(API_HOME+'message/move', {}, {moveMessage: {method: 'PUT', isArray:true, transformRequest: _transMessageMoveCopy}});
 	var messageCopy = $resource(API_HOME+'message/copy', {}, {copyMessage: {method: 'PUT', isArray:true, transformRequest: _transMessageMoveCopy}});
     var messageLoad = $resource(API_HOME+'message/:id', {'id':'@id'}, {_load: {method: 'GET'}});
-    var messageDeleteSingle = $resource(API_HOME+'message/:id', {'id':'@id'}, {_delete: {method: 'DELETE' }});;
+    var messageDeleteSingle = $resource(API_HOME+'message/:id', {'id':'@id'}, {_delete: {method: 'DELETE' }});
 
     function _transMessageDelete(mails) {
 		var idList = [];
@@ -141,4 +141,22 @@ app.factory('MailResource', ['$q', '$resource','API_HOME','DEFAULT_PAGE_SIZE','p
         delete: messageDeleteSingle.delete
 	};
 	
+}]);
+
+app.factory('AttachmentResource', ['$q', '$resource','API_HOME', function($q, $resource, API_HOME) {
+
+    var attachmentGet = $resource(API_HOME+'attachment/:id', {'id' : '@id'}, {findById: {method: 'GET' }});
+
+    var findById = function(id) {
+        var deferred = $q.defer();
+        attachmentGet.findById({ 'id' : encodeURIComponent(id)}).$promise.then(function(result) {
+            deferred.resolve(result);
+        });
+        return deferred.promise;
+    };
+
+    return {
+        findById: findById
+    };
+
 }]);

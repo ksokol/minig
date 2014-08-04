@@ -398,3 +398,29 @@ app.directive("dispositionNotificationPanel", function($rootScope, submissionSer
     }
 
 });
+
+
+app.directive("attachmentPanel", function($rootScope, i18nService, AttachmentResource) {
+
+    return {
+        restrict: "E",
+        replace: true,
+        controller :  [ "$scope", function ($scope) {
+            $scope.attachments = [];
+
+            $scope.load = function(mail) {
+                if(!mail || mail.attachments.length === 0) {
+                    return;
+                }
+                AttachmentResource.findById(mail.id)
+                .then(function(attachments) {
+                    $scope.attachments = attachments.attachmentMetadata;
+                });
+            };
+        }],
+        link: function ($scope) {
+            $scope.$watch('mail', $scope.load);
+        }
+    }
+
+});
