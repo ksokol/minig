@@ -98,6 +98,7 @@ app.directive("inlineFolderSelect", function($http, $document, $window, $compile
 
 	return {
 	    restrict : "A",
+
 		link: function($scope, element, attrs) {
             element.bind("click", function() {
                 if (!$scope.hasMailSelected()) {
@@ -150,12 +151,12 @@ app.directive("moreActions", function($window, $rootScope) {
     };
 });
 
-app.directive("pagination", function(DEFAULT_PAGE_SIZE, $http, $compile, pagerFactory, templateService) {
+app.directive("pagination", function(DEFAULT_PAGE_SIZE, pagerFactory) {
 
     return {
         restrict: "E",
+        templateUrl: "pagination.html",
         controller: function($scope) {
-
             $scope.pager = {
                 pages: 1,
                 currentPage: 1,
@@ -165,49 +166,45 @@ app.directive("pagination", function(DEFAULT_PAGE_SIZE, $http, $compile, pagerFa
 
             $scope.isFirstPage = function() {
                 return $scope.pager.currentPage === 1;
-            }
+            };
 
             $scope.isLastPage = function() {
                 return $scope.pager.currentPage === $scope.pager.pages;
-            }
+            };
 
             $scope.firstPage = function() {
                 $scope.pager.currentPage = 1;
                 $scope.currentPage = $scope.pager.currentPage;
                 $scope.updateOverview();
-            }
+            };
 
             $scope.lastPage = function() {
                 $scope.pager.currentPage = $scope.pager.pages;
                 $scope.currentPage = $scope.pager.currentPage;
                 $scope.updateOverview();
-            }
+            };
 
             $scope.nextPage = function() {
                 $scope.pager.currentPage = $scope.pager.currentPage+1;
                 $scope.currentPage = $scope.pager.currentPage;
                 $scope.updateOverview();
-            }
+            };
 
             $scope.previousPage = function() {
                 $scope.pager.currentPage = $scope.pager.currentPage-1;
                 $scope.currentPage = $scope.pager.currentPage;
                 $scope.updateOverview();
-            }
-        },
-        link: function($scope, element, attrs) {
+            };
+
+            $scope.showPager = function() {
+                return $scope.pager.start !== undefined;
+            };
+
             $scope.$watch('data', function(data) {
-                if(data) {
-                    templateService.template("pagination.html")
-                    .then(function(html) {
-                         $scope.pager = pagerFactory.newInstance(data.page, data.pageLength, data.fullLength);
-
-                         var compiled = $compile(html);
-                         var elem = angular.element(compiled($scope));
-
-                         element.html(elem);
-                    });
+                if(!data) {
+                    return;
                 }
+                $scope.pager = pagerFactory.newInstance(data.page, data.pageLength, data.fullLength);
             });
         }
     }
@@ -275,7 +272,7 @@ app.directive("selectOptions", function($rootScope, routeService, MailResource) 
                 angular.forEach($scope.getMails(), function(mail) {
                     mail.selected = flag;
                 });
-            }
+            };
 
             $scope.selectNone = function() {
                 _selectAll(false);

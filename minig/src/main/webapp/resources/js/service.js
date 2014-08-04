@@ -69,30 +69,6 @@ app.service('pagerFactory',['DEFAULT_PAGE_SIZE', function(DEFAULT_PAGE_SIZE) {
     }
 }]);
 
-app.service('templateService',['$templateCache', '$q', '$http', function($templateCache, $q, $http) {
-
-    return {
-        template: function(name) {
-            deferred = $q.defer();
-
-            var tmpl = $templateCache.get(name);
-
-            if(tmpl) {
-                deferred.resolve(tmpl);
-            } else {
-                $http.get(name)
-                    .success(function(html) {
-                        $templateCache.put(name, html)
-                        deferred.resolve(html);
-                    });
-            }
-
-            return deferred.promise;
-        }
-    }
-
-}]);
-
 app.service('folderCache', function() {
     var cache = [];
 

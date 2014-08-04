@@ -97,37 +97,27 @@ describe('MailOverviewCtrl', function() {
     it('should have correct size', function() {
         $httpBackend.flush();
         expect(scope.data.mailList.length).toBe(20);
-        //   expect(scope.pager).toEqual({currentPage: 1, pageLength: 20, fullLength: 45, pages: 3, start: 1, end: 20});
     });
 
 });
 
 describe("testing directive pagination", function() {
 
-    var compile, scope;
-
     beforeEach(module('minigApp', 'fixture/maillist.json', 'htmlTemplates'));
 
-    beforeEach(inject(function($compile, $rootScope, _fixtureMaillist_, templateService, $templateCache, $q) {
-        compile = $compile;
-
-        spyOn(templateService, 'template').andCallFake(function (params) {
-            var deferred = $q.defer();
-            deferred.resolve($templateCache.get('html/pagination.html'));
-            return deferred.promise;
-        });
-
+    it("should calculate pager and append it to scope", inject(function($compile, $rootScope, _fixtureMaillist_, _$httpBackend_) {
+        _$httpBackend_.whenGET('pagination.html').respond("pagination.html");
         scope = $rootScope.$new();
-        scope.data = _fixtureMaillist_;
-    }));
 
-    it("should calculate pager and append it to scope", function() {
-        var element = compile('<pagination>')(scope);
+        var element = $compile('<pagination data="data"></pagination>')(scope);
+        _$httpBackend_.flush();
+
+        scope.data = _fixtureMaillist_;
         scope.$digest();
 
         expect(scope.pager).toEqual({currentPage: 1, fullLength: 45, pageLength: 20, start: 1, end: 20, pages: 3});
         //TODO test element
-    });
+    }));
 
 });
 

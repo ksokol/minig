@@ -104,8 +104,6 @@
                                                                                 </table>
                                                                             </td>
                                                                         </tr>
-
-
                                                                         <tr>
                                                                             <td align="left" style="vertical-align: top;">
                                                                                 <table ng-show="showDispositionNotification" cellspacing="0" cellpadding="0" aria-hidden="false" class="dispositionNotificationPanel">
@@ -133,7 +131,6 @@
                                                                                 </table>
                                                                             </td>
                                                                         </tr>
-
                                                                         <tr>
                                                                             <td align="left" style="vertical-align: top;">
                                                                                 <message-text>
