@@ -424,3 +424,58 @@ app.directive("attachmentPanel", function($rootScope, i18nService, AttachmentRes
     }
 
 });
+
+app.directive("recipientInput", function() {
+
+    var pattern = /(.+)@(.+){2,}\.(.+){2,}/;
+
+    //32 is blank
+    //225 is @
+    //13 is enter
+    var keyCodes = [13,32,225];
+
+    return {
+        restrict: "E",
+        replace : true,
+        template:'<div class="wrap">' +
+                 '   <div>' +
+                 '       <table cellspacing="0" cellpadding="0" title="" class="recipient" ng-repeat="recipient in recipients track by $index">' +
+                 '           <tbody>' +
+                 '               <tr>' +
+                 '                 <td align="left" style="vertical-align: middle;">' +
+                 '                     <div class="gwt-Label">{{recipient.email}}</div>' +
+                 '                 </td>' +
+                 '                 <td align="left" style="vertical-align: middle;">' +
+                 '                     <img src="resources/images/x.gif" class="deleteRecip" title="Remove" ng-click="remove(recipient)">' +
+                 '                  </td>' +
+                 '               </tr>' +
+                 '            </tbody>' +
+                 '        </table>' +
+                 '      </div>' +
+                 '   <input type="text" class="gwt-TextBox" ng-model="recipient" ng-keyup="change($event)" ng-blur="blur($event)">' +
+                 '</div>',
+        scope: {
+            recipients : "="
+        },
+        controller :  [ "$scope", function ($scope) {
+
+            var add = function(recipient) {
+                $scope.recipients.push({displayName: recipient, email: recipient, display: recipient});
+                $scope.recipient = null;
+            };
+
+            $scope.remove = function(recipient) {
+                var indexOf = $scope.recipients.indexOf(recipient);
+                indexOf !== -1 && $scope.recipients.splice(indexOf,1);
+            };
+
+            $scope.change = function(event) {
+                keyCodes.indexOf(event.keyCode) !== -1 && pattern.test($scope.recipient) && add($scope.recipient);
+            };
+
+            $scope.blur = function(event) {
+                pattern.test($scope.recipient) && add($scope.recipient);
+            };
+        }]
+    }
+});

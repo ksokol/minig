@@ -356,6 +356,10 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         });
     };
 
+    $scope.save = function() {
+
+    };
+
     $scope.discard = function() {
         routeService.navigateToPrevious();
     };

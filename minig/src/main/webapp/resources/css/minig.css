@@ -2224,7 +2224,8 @@ td.settingsCell {
 }
 
 .enveloppe .gwt-TextBox {
-	width: 100%;
+	width: 99%;
+    background-color: white;
 }
 
 .enveloppe .gwt-SuggestBox {

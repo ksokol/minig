@@ -10,7 +10,7 @@
             <td align="left" style="vertical-align: top;"><button
                     type="button" class="gwt-Button">Send</button></td>
             <td align="left" style="vertical-align: top;"><button
-                    type="button" class="gwt-Button">Save now</button></td>
+                    type="button" class="gwt-Button" ng-click="save()">Save now</button></td>
             <td align="left" style="vertical-align: top;">
                 <button type="button" class="gwt-Button" ng-click="discard()">Discard</button>
             </td>
@@ -22,59 +22,56 @@
     </table></td>
 </tr>
 <tr>
-    <td align="left" width="" height="" style="vertical-align: top;"
-        colspan="1"><table cellspacing="0" cellpadding="0"
-                           class="enveloppe">
+    <td align="left" width="" height="" style="vertical-align: top;" colspan="1">
+        <table cellspacing="0" cellpadding="0" class="enveloppe">
         <tbody>
         <tr>
-            <td align="left" style="vertical-align: top;"><table
-                    cellspacing="0" cellpadding="0" class="enveloppeField">
-                <tbody>
-                <tr>
-                    <td align="left" style="vertical-align: middle;"><div
-                            class="gwt-Label">To:</div></td>
-                    <td align="left" width="100%" style="vertical-align: top;"><div
-                            class="wrap">
-                        <div></div>
-                        <input type="text" class="gwt-TextBox" value="{{mail.to}}">
-                    </div></td>
-                </tr>
-                </tbody>
-            </table></td>
+            <td align="left" style="vertical-align: top;">
+                <table cellspacing="0" cellpadding="0" class="enveloppeField">
+                    <tbody>
+                        <tr>
+                            <td align="left" style="vertical-align: middle;">
+                                <div class="gwt-Label">To:</div>
+                            </td>
+                            <td align="left" width="100%" style="vertical-align: top;">
+                                <recipient-input recipients="mail.to" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
         </tr>
-        <tr>
-            <td align="left" style="vertical-align: top;"><table
-                    cellspacing="0" cellpadding="0" class="enveloppeField"
-                    style="display: none;" aria-hidden="true">
-                <tbody>
-                <tr>
-                    <td align="left" style="vertical-align: middle;"><div
-                            class="gwt-Label">Cc:</div></td>
-                    <td align="left" width="100%" style="vertical-align: top;"><div
-                            class="wrap">
-                        <div></div>
-                        <input type="text" class="gwt-TextBox">
-                    </div></td>
-                </tr>
-                </tbody>
-            </table></td>
+        <tr ng-show="showCc">
+            <td align="left" style="vertical-align: top;">
+                <table cellspacing="0" cellpadding="0" class="enveloppeField" aria-hidden="true">
+                    <tbody>
+                        <tr>
+                            <td align="left" style="vertical-align: middle;">
+                                <div class="gwt-Label">Cc:</div>
+                            </td>
+                            <td align="left" width="100%" style="vertical-align: top;">
+                                <recipient-input recipients="mail.cc" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
         </tr>
-        <tr>
-            <td align="left" style="vertical-align: top;"><table
-                    cellspacing="0" cellpadding="0" class="enveloppeField"
-                    style="display: none;" aria-hidden="true">
+        <tr ng-show="showBcc">
+            <td align="left" style="vertical-align: top;">
+                <table cellspacing="0" cellpadding="0" class="enveloppeField" aria-hidden="true">
                 <tbody>
                 <tr>
-                    <td align="left" style="vertical-align: middle;"><div
-                            class="gwt-Label">Bcc:</div></td>
-                    <td align="left" width="100%" style="vertical-align: top;"><div
-                            class="wrap">
-                        <div></div>
-                        <input type="text" class="gwt-TextBox">
-                    </div></td>
+                    <td align="left" style="vertical-align: middle;">
+                        <div class="gwt-Label">Bcc:</div>
+                    </td>
+                    <td align="left" width="100%" style="vertical-align: top;">
+                        <recipient-input recipients="mail.bcc" />
+                    </td>
                 </tr>
                 </tbody>
-            </table></td>
+            </table>
+            </td>
         </tr>
         <tr>
             <td align="left" style="vertical-align: top;"><table
@@ -87,12 +84,11 @@
                             cellspacing="2" cellpadding="0" class="panelActions">
                         <tbody>
                         <tr>
-                            <td align="left" style="vertical-align: top;"><a
-                                    class="gwt-Anchor" href="javascript:;"
-                                    aria-hidden="false">Add Cc</a></td>
-                            <td align="left" style="vertical-align: top;"><a
-                                    class="gwt-Anchor" href="javascript:;"
-                                    aria-hidden="false">Add Bcc</a></td>
+                            <td align="left" style="vertical-align: top;" ng-hide="showCc">
+                                <a class="gwt-Anchor" ng-click="showCc = true" aria-hidden="false">Add Cc</a>
+                            </td>
+                            <td align="left" style="vertical-align: top;" ng-hide="showBcc">
+                                <a class="gwt-Anchor" ng-click="showBcc = true" aria-hidden="false">Add Bcc</a></td>
                             <td align="left" style="vertical-align: top;"><a
                                     class="gwt-Anchor" href="javascript:;"
                                     style="display: none;" aria-hidden="true">Edit
