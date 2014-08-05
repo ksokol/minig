@@ -82,12 +82,13 @@ describe('PagerFactory', function(){
 describe('MailOverviewCtrl', function() {
     var scope, $httpBackend;
 
-    beforeEach(module('minigApp', 'fixture/maillist.json'));
+    beforeEach(module('minigApp', 'fixture/maillist.json', 'htmlTemplates'));
 
     beforeEach(inject(function($rootScope, $controller, API_HOME, _$httpBackend_, _fixtureMaillist_){
         $httpBackend = _$httpBackend_;
 
         _$httpBackend_.whenGET(API_HOME+'message?folder=INBOX&page=1&page_length=20').respond(_fixtureMaillist_);
+        _$httpBackend_.whenGET('box.jsp').respond("box.jsp");
 
         scope = $rootScope.$new();
 

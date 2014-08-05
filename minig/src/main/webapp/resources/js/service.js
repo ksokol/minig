@@ -138,7 +138,9 @@ app.service('routeService', function($rootScope, $route, $location, $log, localS
     });
 
     $rootScope.$on('$routeChangeStart', function(event, next, current) {
-        localStorageService.set('lastRoute', {'path' : current.originalPath, 'params': current.params });
+        if(current) {
+            localStorageService.set('lastRoute', {'path' : current.originalPath, 'params': current.params });
+        }
         localStorageService.set('currentRoute', {'path' : next.originalPath, 'params': next.params });
     });
 
