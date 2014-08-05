@@ -32,7 +32,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         });
     };
 })
-.controller('MailOverviewCtrl', function($scope, $rootScope, $routeParams, $location, MailResource, i18nService, INITIAL_MAILBOX) {
+.controller('MailOverviewCtrl', function($scope, $rootScope, $routeParams, $location, MailResource, i18nService, draftService, routeService, INITIAL_MAILBOX) {
 
 	$scope.currentFolder = ($routeParams.id) ? $routeParams.id : INITIAL_MAILBOX;
 	$scope.currentPage = 1;
@@ -164,8 +164,11 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 	};
 
     $scope.open = function(mail) {
-        //TODO drafts!
-        $location.url("/message?id=" + mail.id);
+        if(draftService.isDraft(mail)) {
+            routeService.navigateTo({path:"composer", params: {id: mail.id }});
+            return;
+        }
+        routeService.navigateTo({path:"message", params: {id: mail.id }});
     };
 
     $scope.updateOverview();
@@ -336,12 +339,17 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 
     $scope.refresh();
 })
-.controller('ComposerCtrl', function($scope, $routeParams, MailResource, composerService) {
+.controller('ComposerCtrl', function($scope, $rootScope, $routeParams, MailResource, draftService, composerService, routeService, i18nService) {
     $scope.mail;
 
     $scope.refresh = function() {
         MailResource.load($routeParams.id).then(function(mail) {
-            $scope.mail = mail;
+            if(draftService.isDraft(mail)) {
+                $scope.mail = mail;
+                return;
+            }
+            $rootScope.$broadcast("error", i18nService.resolve("This is not a draft"));
+            routeService.navigateTo({path: 'box'});
         });
     };
 

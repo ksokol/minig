@@ -1,5 +1,5 @@
 
-app.service('timeService',['$q', '$timeout', '$window', function($q, $timeout, $window) {
+app.service('timeService',function() {
 
     return {
         humanReadableAbbr: function(date) {
@@ -9,7 +9,7 @@ app.service('timeService',['$q', '$timeout', '$window', function($q, $timeout, $
             return moment(date).format("LLLL");
         }
     }
-}]);
+});
 
 app.service('i18nService',['$locale', function($locale) {
 
@@ -160,7 +160,7 @@ app.service('routeService', function($rootScope, $route, $location, $log, localS
             return "#/box";
         }
 
-        if(!lastRoute.params && Object.keys(lastRoute.params).length == 0) {
+        if(!lastRoute.params || Object.keys(lastRoute.params).length == 0) {
             return lastRoute.path;
         }
         var url = "#"+lastRoute.path + "?";
@@ -181,7 +181,7 @@ app.service('routeService', function($rootScope, $route, $location, $log, localS
     };
 
     var navigateTo = function(route) {
-        if(!route.params && Object.keys(route.params).length == 0) {
+        if(!route.params || Object.keys(route.params).length == 0) {
             return _navigate("/"+route.path);
         }
 
@@ -297,8 +297,14 @@ app.service('draftService',['$q', '$http', 'API_HOME', function($q, $http, API_H
         return deferred.promise;
     };
 
+    var _isDraft = function(mail) {
+        //TODO
+        return mail.folder.startsWith("INBOX/Drafts");
+    };
+
     return {
-        save: _save
+        save: _save,
+        isDraft: _isDraft
     };
 
 }]);
