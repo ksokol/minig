@@ -30,10 +30,8 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
-
 import fr.aliasource.webmail.client.I18N;
 import fr.aliasource.webmail.client.ctrl.WebmailController;
-import fr.aliasource.webmail.client.reader.AttachmentDisplay;
 import fr.aliasource.webmail.client.shared.IAttachmentMetadata;
 import fr.aliasource.webmail.client.test.Ajax;
 import fr.aliasource.webmail.client.test.AjaxCallback;
@@ -102,7 +100,6 @@ public class AttachmentUploadWidget extends FormPanel {
 		HorizontalPanel hp = new HorizontalPanel();
 		dp.add(hp, DockPanel.CENTER);
 		hp.clear();
-		hp.add(new AttachmentDisplay(meta));
 	}
 
 	private void buildUpload(final DockPanel dp) {
@@ -189,7 +186,6 @@ public class AttachmentUploadWidget extends FormPanel {
 				public void onSuccess(IAttachmentMetadata meta) {
 					upSpinner.setVisible(false);
 					hp.clear();
-					hp.add(new AttachmentDisplay(meta));
 				}
 
 				@Override

@@ -16,8 +16,6 @@
 
 package fr.aliasource.webmail.client;
 
-import java.util.List;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -35,16 +33,14 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-
 import fr.aliasource.webmail.client.composer.MailComposer;
-import fr.aliasource.webmail.client.conversations.ConversationListPanel;
 import fr.aliasource.webmail.client.ctrl.WebmailController;
-import fr.aliasource.webmail.client.settings.SettingsPanel;
 import fr.aliasource.webmail.client.shared.IClientMessageList;
 import fr.aliasource.webmail.client.shared.IFolder;
 import fr.aliasource.webmail.client.test.Ajax;
 import fr.aliasource.webmail.client.test.AjaxCallback;
-import fr.aliasource.webmail.client.test.AjaxFactory;
+
+import java.util.List;
 
 /**
  * Webmail main ui
@@ -57,9 +53,7 @@ import fr.aliasource.webmail.client.test.AjaxFactory;
 public class View extends DockPanel implements IFolderSelectionListener {
 
     private TabPanel tp;
-    private ConversationPanel conversationPanel;
     private MailComposer composer;
-    private SettingsPanel settingsPanel;
     private HorizontalPanel statusPanel;
     private IFolder currentFolder;
     private int currentTab;
@@ -69,13 +63,6 @@ public class View extends DockPanel implements IFolderSelectionListener {
     public static final int COMPOSER = 1;
     public static final int SETTINGS = 2;
 
-    /**
-     * Create a new webmail panel.
-     * 
-     * @param caller
-     * @param settings
-     * @param password
-     */
     public View() {
         this.currentTab = -1;
 
@@ -129,14 +116,9 @@ public class View extends DockPanel implements IFolderSelectionListener {
 
     private Widget createTabPanel() {
         tp = new TabPanel();
-        conversationPanel = new ConversationPanel(this);
-        tp.add(conversationPanel, "Conversations");
 
         composer = new MailComposer(View.this);
         tp.add(composer, "Mail Composer");
-
-        settingsPanel = new SettingsPanel(View.this);
-        tp.add(settingsPanel, "Settings");
 
         tp.addSelectionHandler(new SelectionHandler<Integer>() {
             @Override
@@ -158,7 +140,7 @@ public class View extends DockPanel implements IFolderSelectionListener {
     public void fetchMessages(String folderName, final int page) {
         getSpinner().startSpinning();
 
-        Ajax<IClientMessageList> builder = AjaxFactory.fetchMessages(folderName, ConversationListPanel.PAGE_LENGTH, page);
+        Ajax<IClientMessageList> builder = null;
 
         try {
             builder.send(new AjaxCallback<IClientMessageList>() {
@@ -173,7 +155,6 @@ public class View extends DockPanel implements IFolderSelectionListener {
 
                 @Override
                 public void onSuccess(IClientMessageList object) {
-                    conversationPanel.showConversations(object, page);
                     getSpinner().stopSpinning();
                 }
             });
@@ -251,15 +232,6 @@ public class View extends DockPanel implements IFolderSelectionListener {
         return tp;
     }
 
-    public void showConversation(String conversationId, int page) {
-        selectTab(CONVERSATIONS);
-        conversationPanel.showConversation(conversationId, page);
-    }
-
-    public void showComposer(String messageId) {
-        conversationPanel.showComposer(messageId);
-    }
-
     public void folderSelected(IFolder f) {
         selectTab(CONVERSATIONS);
         fetchMessages(f.getId(), 1);
@@ -287,7 +259,6 @@ public class View extends DockPanel implements IFolderSelectionListener {
 
     public void showFolderSettings() {
         selectTab(View.SETTINGS);
-        settingsPanel.showFolderSettings();
     }
 
     public boolean confirmFolderAction(int nbConversations, IFolder folderName) {
