@@ -36,7 +36,7 @@
                     <td align="left" width="100%" style="vertical-align: top;"><div
                             class="wrap">
                         <div></div>
-                        <input type="text" class="gwt-TextBox">
+                        <input type="text" class="gwt-TextBox" value="{{mail.to}}">
                     </div></td>
                 </tr>
                 </tbody>
@@ -112,8 +112,9 @@
                 <tr>
                     <td align="left" style="vertical-align: middle;"><div
                             class="gwt-Label">Subject:</div></td>
-                    <td align="left" width="100%" style="vertical-align: top;"><input
-                            type="text" class="gwt-TextBox"></td>
+                    <td align="left" width="100%" style="vertical-align: top;">
+                        <input
+                            type="text" class="gwt-TextBox" value="{{mail.subject}}"></td>
                 </tr>
                 </tbody>
             </table></td>

@@ -181,7 +181,16 @@ app.service('routeService', function($rootScope, $route, $location, $log, localS
     };
 
     var navigateTo = function(route) {
-        _navigate("/"+route);
+        if(!route.params && Object.keys(route.params).length == 0) {
+            return _navigate("/"+route.path);
+        }
+
+        var url = "/"+route.path+"?";
+        for(k in route.params) {
+            url = url + k + "=" + encodeURIComponent(route.params[k]) + "&";
+        }
+
+        _navigate(url);
     };
 
     return {
@@ -193,7 +202,6 @@ app.service('routeService', function($rootScope, $route, $location, $log, localS
 });
 
 app.service('submissionService',['$q', '$http', 'API_HOME', function($q, $http, API_HOME) {
-
 
     var _submission = function(mail) {
         var deferred = $q.defer();
@@ -215,9 +223,82 @@ app.service('submissionService',['$q', '$http', 'API_HOME', function($q, $http, 
     };
 
     return {
-
         disposition: _submission
+    };
 
+}]);
+
+app.service('composerService',['$q', '$http', 'API_HOME', function() {
+
+    var _createForward = function(mail) {
+        var copy = angular.copy(mail);
+        delete copy.id;
+
+        delete copy.to;
+        delete copy.sender;
+        copy.subject = "Fwd: " + copy.subject;
+
+        //TODO body
+
+        return copy;
+    };
+
+    var _reply = function(mail) {
+        var copy = angular.copy(mail);
+        delete copy.id;
+
+        copy.to = [copy.sender];
+        delete copy.sender;
+        copy.subject = "Re: " + copy.subject;
+
+        //TODO body
+
+        return copy;
+    };
+
+    var _replyToAll = function(mail) {
+        var copy = angular.copy(mail);
+
+        copy.to = [copy.sender];
+        delete copy.sender;
+        copy.subject = "Re: " + copy.subject;
+
+        return copy;
+    };
+
+    return {
+        createForward: _createForward,
+        reply: _reply,
+        replyToAll: _replyToAll
+    };
+
+}]);
+
+app.service('draftService',['$q', '$http', 'API_HOME', function($q, $http, API_HOME) {
+
+    var _save = function(mail) {
+        var deferred = $q.defer();
+        var id = "";
+        var method = "POST";
+
+        if(!angular.isDefined(mail) && !angular.isDefined(mail.id)) {
+            id = "/" + encodeURIComponent(mail.id);
+            method = "PUT";
+        }
+
+        $http({method: method, url: API_HOME +'message/draft'+id, data: mail})
+            .success(function(result) {
+                deferred.resolve(result.id);
+            })
+            .error(function(data) {
+                deferred.reject(data);
+            });
+
+        return deferred.promise;
+    };
+
+    return {
+        save: _save
     };
 
 }]);

@@ -196,43 +196,22 @@
                                                                                        class="replyZone">
                                                                                     <tbody>
                                                                                     <tr>
-                                                                                        <td width="" height=""
-                                                                                            align="left"
-                                                                                            style="vertical-align: top;"
-                                                                                            colspan="1">
-                                                                                            <table cellspacing="4"
-                                                                                                   cellpadding="0">
+                                                                                        <td width="" height="" align="left" style="vertical-align: top;" colspan="1">
+                                                                                            <table cellspacing="4" cellpadding="0">
                                                                                                 <tbody>
                                                                                                 <tr>
-                                                                                                    <td align="left"
-                                                                                                        style="vertical-align: top;">
-                                                                                                        <a class="gwt-Anchor replyLink"
-                                                                                                           href="javascript:;">Reply</a>
+                                                                                                    <td align="left" style="vertical-align: top;">
+                                                                                                        <a class="gwt-Anchor replyLink" ng-click="reply()">Reply</a>
                                                                                                     </td>
-                                                                                                    <td align="left"
-                                                                                                        style="vertical-align: top;">
-                                                                                                        <a class="gwt-Anchor replyToAllLink"
-                                                                                                           href="javascript:;">Reply
-                                                                                                            to all</a>
+                                                                                                    <td align="left" style="vertical-align: top;">
+                                                                                                        <a class="gwt-Anchor replyToAllLink" ng-click="replyToAll()">Reply to all</a>
                                                                                                     </td>
-                                                                                                    <td align="left"
-                                                                                                        style="vertical-align: top;">
-                                                                                                        <a class="gwt-Anchor forwardLink"
-                                                                                                           href="javascript:;">Forward</a>
+                                                                                                    <td align="left" style="vertical-align: top;">
+                                                                                                        <a class="gwt-Anchor forwardLink" ng-click="forward()">Forward</a>
                                                                                                     </td>
                                                                                                 </tr>
                                                                                                 </tbody>
                                                                                             </table>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                    <tr>
-                                                                                        <td width="" height=""
-                                                                                            align="left"
-                                                                                            style="vertical-align: top;">
-                                                                                            <textarea
-                                                                                                    class="gwt-TextArea"
-                                                                                                    style="width: 40em;"
-                                                                                                    rows="3"></textarea>
                                                                                         </td>
                                                                                     </tr>
                                                                                     </tbody>

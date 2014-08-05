@@ -48,11 +48,7 @@ app.config(function($httpProvider, $routeProvider) {
 
     $routeProvider
         .when('', {
-            redirectTo : '/'
-        })
-        .when('/box', {
-            templateUrl: "box.jsp",
-            controller: 'MailOverviewCtrl'
+            redirectTo : '/box'
         })
         .when('/box', {
             templateUrl: "box.jsp",
@@ -69,10 +65,6 @@ app.config(function($httpProvider, $routeProvider) {
         .when('/message', {
             templateUrl: "message.jsp",
             controller: 'MessageCtrl'
-        })
-        .when('/composer/:id', {
-            templateUrl: "composer.jsp",
-            controller: 'ComposerCtrl'
         })
         .otherwise({redirectTo: '/box'});
 

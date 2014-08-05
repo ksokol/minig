@@ -75,15 +75,9 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 		return selected;
 	};
 
-
-
-
-
     $scope.$on('folder-intent-done', function(e) {
         $scope.updateOverview();
     });
-
-
 
     $scope.$on('mark-as-read', function(e) {
         _updateFlags(function(mail) {
@@ -234,7 +228,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
     $scope.refresh();
 
 })
-.controller('MessageCtrl', function($scope, $rootScope, $routeParams, routeService, MailResource, i18nService) {
+.controller('MessageCtrl', function($scope, $rootScope, $routeParams, routeService, MailResource, i18nService, draftService, composerService) {
     $scope.mail;
 
     function _updateFlags(mail) {
@@ -244,6 +238,13 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         });
 
         $rootScope.$broadcast("more-actions-done");
+    };
+
+    function saveAndNavigateToComposer(mail) {
+        draftService.save(mail)
+        .then(function(id) {
+            routeService.navigateTo({path:"composer", params: {id: id }});
+        });
     }
 
     $scope.$on('folder-intent-done', function(e, folderAction) {
@@ -318,9 +319,24 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         });
     };
 
+    $scope.reply = function() {
+        var reply = composerService.reply($scope.mail);
+        saveAndNavigateToComposer(reply);
+    };
+
+    $scope.replyToAll = function() {
+        var replyToAll = composerService.replyToAll($scope.mail);
+        saveAndNavigateToComposer(replyToAll);
+    };
+
+    $scope.forward = function() {
+        var forward = composerService.createForward($scope.mail);
+        saveAndNavigateToComposer(forward);
+    };
+
     $scope.refresh();
 })
-.controller('ComposerCtrl', function($scope, $routeParams, MailResource) {
+.controller('ComposerCtrl', function($scope, $routeParams, MailResource, composerService) {
     $scope.mail;
 
     $scope.refresh = function() {
