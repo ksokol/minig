@@ -1,8 +1,6 @@
-<div
-        style="width: 100%; height: 100%; padding: 0px; margin: 0px;"
-        aria-hidden="true">
-<table cellspacing="0" cellpadding="0"
-       style="width: 100%; height: 100%;" aria-hidden="true">
+<div class="gwt-TabPanelBottom" role="tabpanel">
+<div style="width: 100%; height: 100%; padding: 0px; margin: 0px;" aria-hidden="true">
+<table cellspacing="0" cellpadding="0" style="width: 100%; height: 100%;" aria-hidden="true">
 <tbody>
 <tr>
     <td align="left" width="" height="" style="vertical-align: top;"
@@ -13,10 +11,12 @@
                     type="button" class="gwt-Button">Send</button></td>
             <td align="left" style="vertical-align: top;"><button
                     type="button" class="gwt-Button">Save now</button></td>
-            <td align="left" style="vertical-align: top;"><button
-                    type="button" class="gwt-Button">Discard</button></td>
-            <td align="left" style="vertical-align: middle;"><div
-                    class="gwt-Label"></div></td>
+            <td align="left" style="vertical-align: top;">
+                <button type="button" class="gwt-Button" ng-click="discard()">Discard</button>
+            </td>
+            <td align="left" style="vertical-align: middle;">
+                <div class="gwt-Label"></div>
+            </td>
         </tr>
         </tbody>
     </table></td>
@@ -525,14 +525,17 @@
                     type="button" class="gwt-Button">Send</button></td>
             <td align="left" style="vertical-align: top;"><button
                     type="button" class="gwt-Button">Save now</button></td>
-            <td align="left" style="vertical-align: top;"><button
-                    type="button" class="gwt-Button">Discard</button></td>
-            <td align="left" style="vertical-align: middle;"><div
-                    class="gwt-Label"></div></td>
+            <td align="left" style="vertical-align: top;">
+                <button type="button" class="gwt-Button" ng-click="discard()">Discard</button>
+            </td>
+            <td align="left" style="vertical-align: middle;">
+                <div class="gwt-Label"></div>
+            </td>
         </tr>
         </tbody>
     </table></td>
 </tr>
 </tbody>
 </table>
+</div>
 </div>

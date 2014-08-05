@@ -213,7 +213,7 @@ app.directive("pagination", function(DEFAULT_PAGE_SIZE, pagerFactory) {
 app.directive('backLink', ['$location', 'routeService', function($location, routeService) {
     return {
         restrict: 'E',
-        template: '<a class="gwt-Anchor noWrap back" href="{{url}}">{{"« Back" | i18n }}</a>',
+        template: '<a class="gwt-Anchor noWrap back" href="#{{url}}">{{"« Back" | i18n }}</a>',
         link: function (scope, elem, attrs) {
             scope.url = routeService.previous();
 

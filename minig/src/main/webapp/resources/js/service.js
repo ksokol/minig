@@ -157,13 +157,13 @@ app.service('routeService', function($rootScope, $route, $location, $log, localS
         localStorageService.remove('lastRoute');
 
         if(!lastRoute) {
-            return "#/box";
+            return "/box";
         }
 
         if(!lastRoute.params || Object.keys(lastRoute.params).length == 0) {
             return lastRoute.path;
         }
-        var url = "#"+lastRoute.path + "?";
+        var url = lastRoute.path + "?";
         for(k in lastRoute.params) {
             url = url + k + "=" + encodeURIComponent(lastRoute.params[k]) + "&";
         }

@@ -32,7 +32,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         });
     };
 })
-.controller('MailOverviewCtrl', function($scope, $rootScope, $routeParams, $location, MailResource, i18nService, draftService, routeService, INITIAL_MAILBOX) {
+.controller('MailOverviewCtrl', function($scope, $rootScope, $routeParams, MailResource, i18nService, draftService, routeService, INITIAL_MAILBOX) {
 
 	$scope.currentFolder = ($routeParams.id) ? $routeParams.id : INITIAL_MAILBOX;
 	$scope.currentPage = 1;
@@ -343,6 +343,9 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
     $scope.mail;
 
     $scope.refresh = function() {
+        if(!$routeParams.id) {
+            return;
+        }
         MailResource.load($routeParams.id).then(function(mail) {
             if(draftService.isDraft(mail)) {
                 $scope.mail = mail;
@@ -351,6 +354,10 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
             $rootScope.$broadcast("error", i18nService.resolve("This is not a draft"));
             routeService.navigateTo({path: 'box'});
         });
+    };
+
+    $scope.discard = function() {
+        routeService.navigateToPrevious();
     };
 
     $scope.refresh();
