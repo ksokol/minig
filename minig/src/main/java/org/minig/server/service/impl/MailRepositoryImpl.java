@@ -12,7 +12,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.MessageIDTerm;
 
-import org.apache.log4j.Logger;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
 import org.minig.server.service.CompositeId;
@@ -21,6 +20,8 @@ import org.minig.server.service.NotFoundException;
 import org.minig.server.service.RepositoryException;
 import org.minig.server.service.impl.helper.MessageMapper;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -28,7 +29,7 @@ import org.springframework.util.Assert;
 @Component
 class MailRepositoryImpl implements MailRepository {
 
-    private static final Logger log = Logger.getLogger(MailRepositoryImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(MailRepositoryImpl.class);
 
     @Autowired
     private MailContext mailContext;
