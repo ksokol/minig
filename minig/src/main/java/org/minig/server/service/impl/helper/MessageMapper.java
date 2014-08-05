@@ -617,7 +617,9 @@ public class MessageMapper {
 
         if (source.getTo() != null) {
             for (MailMessageAddress address : source.getTo()) {
-                target.addTo(address.getEmail());
+                if(address.getEmail() != null) {
+                    target.addTo(address.getEmail());
+                }
             }
         }
 
