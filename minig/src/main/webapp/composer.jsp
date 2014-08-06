@@ -519,25 +519,7 @@
 </tbody>
 </table></td>
 </tr>
-<tr>
-    <td align="left" width="" height="" style="vertical-align: top;"
-        colspan="1"><table cellspacing="4" cellpadding="0">
-        <tbody>
-        <tr>
-            <td align="left" style="vertical-align: top;"><button
-                    type="button" class="gwt-Button">Send</button></td>
-            <td align="left" style="vertical-align: top;"><button
-                    type="button" class="gwt-Button">Save now</button></td>
-            <td align="left" style="vertical-align: top;">
-                <button type="button" class="gwt-Button" ng-click="discard()">Discard</button>
-            </td>
-            <td align="left" style="vertical-align: middle;">
-                <div class="gwt-Label"></div>
-            </td>
-        </tr>
-        </tbody>
-    </table></td>
-</tr>
+
 </tbody>
 </table>
 </div>
