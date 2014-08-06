@@ -150,28 +150,35 @@
             </table></td>
         </tr>
         <tr>
-            <td align="left" style="vertical-align: top;"><table
-                    cellspacing="0" cellpadding="0">
-                <tbody>
-                <tr>
-                    <td align="left" style="vertical-align: top;"><div
-                            class="gwt-Label"></div></td>
-                    <td align="left" style="vertical-align: middle;"><span
-                            class="enveloppeField"><input type="checkbox"
-                                                          value="on" id="gwt-uid-1" tabindex="0"><label
-                            for="gwt-uid-1">Very important message</label></span></td>
-                    <td align="left" style="vertical-align: top;"><span
-                            class="gwt-CheckBox"><input type="checkbox"
-                                                        value="on" id="gwt-uid-2" tabindex="0"><label
-                            for="gwt-uid-2">Ask for a disposition
-                        notification</label></span></td>
-                    <td align="left" style="vertical-align: top;"><span
-                            class="gwt-CheckBox"><input type="checkbox"
-                                                        value="on" id="gwt-uid-3" tabindex="0"><label
-                            for="gwt-uid-3">Return receipt</label></span></td>
-                </tr>
-                </tbody>
-            </table></td>
+            <td align="left" style="vertical-align: top;">
+                <table cellspacing="0" cellpadding="0">
+                    <tbody>
+                        <tr>
+                            <td align="left" style="vertical-align: top;">
+                                <div class="gwt-Label"></div>
+                            </td>
+                            <td align="left" style="vertical-align: middle;">
+                                <span class="enveloppeField">
+                                    <input type="checkbox" value="true" id="gwt-uid-1" tabindex="0" ng-model="mail.highPriority">
+                                    <label for="gwt-uid-1">Very important message</label>
+                                </span>
+                            </td>
+                            <td align="left" style="vertical-align: top;">
+                                <span class="gwt-CheckBox">
+                                    <input type="checkbox" value="on" id="gwt-uid-2" tabindex="0" ng-model="mail.askForDispositionNotification">
+                                    <label for="gwt-uid-2">Ask for a disposition notification</label>
+                                </span>
+                            </td>
+                            <td align="left" style="vertical-align: top;">
+                                <span class="gwt-CheckBox">
+                                    <input type="checkbox" value="true" id="gwt-uid-3" tabindex="0"  ng-model="mail.receipt">
+                                    <label for="gwt-uid-3">Return receipt</label>
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
         </tr>
         </tbody>
     </table></td>

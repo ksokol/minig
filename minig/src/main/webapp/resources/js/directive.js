@@ -439,7 +439,7 @@ app.directive("recipientInput", function() {
         replace : true,
         template:'<div class="wrap">' +
                  '   <div>' +
-                 '       <table cellspacing="0" cellpadding="0" title="" class="recipient" ng-repeat="recipient in recipients track by $index">' +
+                 '       <table cellspacing="0" cellpadding="0" title="" class="recipient" ng-repeat="recipient in recipients">' +
                  '           <tbody>' +
                  '               <tr>' +
                  '                 <td align="left" style="vertical-align: middle;">' +
@@ -460,8 +460,18 @@ app.directive("recipientInput", function() {
         controller :  [ "$scope", function ($scope) {
 
             var add = function(recipient) {
-                $scope.recipients.push({displayName: recipient, email: recipient, display: recipient});
+                var found = false;
+                angular.forEach($scope.recipients,function(val) {
+                    if(val.email === recipient) {
+                        found = true;
+                    }
+                });
                 $scope.recipient = null;
+                if(found) {
+                    return;
+                }
+                $scope.recipients.push({displayName: recipient, email: recipient, display: recipient});
+
             };
 
             $scope.remove = function(recipient) {
@@ -475,6 +485,7 @@ app.directive("recipientInput", function() {
 
             $scope.blur = function(event) {
                 pattern.test($scope.recipient) && add($scope.recipient);
+                $scope.recipient = null;
             };
         }]
     }
