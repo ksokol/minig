@@ -1,13 +1,11 @@
 package org.minig.server.service.impl;
 
-import java.util.List;
-import java.util.logging.Logger;
-
 import org.minig.MailAuthentication;
 import org.minig.server.MailFolder;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
 import org.minig.server.MailMessageList;
+import org.minig.server.service.AttachmentRepository;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.FolderRepository;
 import org.minig.server.service.MailRepository;
@@ -19,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
+import java.util.logging.Logger;
 
 @Service
 public class MailServiceImpl implements MailService {
@@ -182,13 +183,9 @@ public class MailServiceImpl implements MailService {
     @Override
     public MailMessage createDraftMessage(MailMessage message) {
         message.setSender(new MailMessageAddress(authentication.getAddress()));
-
         Mime4jMessage mime4jMessage = mapper.toMime4jMessage(message);
 
         String messageId = mailRepository.save(mime4jMessage, folderRepository.getDraft().getId());
-
-        // return mailRepository.saveInFolder(message,
-        // folderRepository.getDraft().getId());
 
         MailMessage readPojo = mailRepository.readPojo(folderRepository.getDraft().getId(), messageId);
         readPojo.setRead(Boolean.TRUE);
@@ -199,19 +196,21 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public MailMessage updateDraftMessage(MailMessage message) {
-
         Mime4jMessage mimeMessage = mailRepository.read(message.getFolder(), message.getMessageId());
 
-        // TEST
+        mimeMessage.clearRecipients();
+        if(message.getTo() != null) {
+            for (MailMessageAddress mailMessageAddress : message.getTo()) {
+                mimeMessage.addRecipient(mailMessageAddress.getEmail());
+            }
+        }
+
         mimeMessage.getMessage().setSubject(message.getSubject());
         mimeMessage.setHtml(message.getBody().getHtml());
         mimeMessage.setPlain(message.getBody().getPlain());
 
-        String save = mailRepository.save(mimeMessage, message.getFolder());
-
+        String saved = mailRepository.save(mimeMessage, message.getFolder());
         mailRepository.delete(message);
-
-        return mailRepository.readPojo(message.getFolder(), save);
-        // return createDraftMessage(message);
+        return mailRepository.readPojo(message.getFolder(), saved);
     }
 }

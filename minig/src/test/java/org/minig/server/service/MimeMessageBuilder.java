@@ -2,6 +2,7 @@ package org.minig.server.service;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -260,6 +261,16 @@ public class MimeMessageBuilder {
         } catch (AddressException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
+        return this;
+    }
+
+    public MimeMessageBuilder setRecipientTo(List<InternetAddress> recipients) {
+        if(recipients == null) {
+            recipientToList = Collections.emptyList();
+        } else {
+            recipientToList = recipients;
+        }
+
         return this;
     }
 

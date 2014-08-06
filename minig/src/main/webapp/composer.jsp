@@ -3,21 +3,22 @@
 <table cellspacing="0" cellpadding="0" style="width: 100%; height: 100%;" aria-hidden="true">
 <tbody>
 <tr>
-    <td align="left" width="" height="" style="vertical-align: top;"
-        colspan="1"><table cellspacing="4" cellpadding="0">
+    <td align="left" width="" height="" style="vertical-align: top;" colspan="1"><table cellspacing="4" cellpadding="0">
         <tbody>
-        <tr>
-            <td align="left" style="vertical-align: top;"><button
-                    type="button" class="gwt-Button">Send</button></td>
-            <td align="left" style="vertical-align: top;"><button
-                    type="button" class="gwt-Button" ng-click="save()">Save now</button></td>
-            <td align="left" style="vertical-align: top;">
-                <button type="button" class="gwt-Button" ng-click="discard()">Discard</button>
-            </td>
-            <td align="left" style="vertical-align: middle;">
-                <div class="gwt-Label"></div>
-            </td>
-        </tr>
+            <tr>
+                <td align="left" style="vertical-align: top;">
+                    <button type="button" class="gwt-Button" ng-click="send()">Send</button>
+                </td>
+                <td align="left" style="vertical-align: top;">
+                    <button type="button" class="gwt-Button" ng-click="save()">Save now</button>
+                </td>
+                <td align="left" style="vertical-align: top;">
+                    <button type="button" class="gwt-Button" ng-click="discard()">Discard</button>
+                </td>
+                <td align="left" style="vertical-align: middle;">
+                    <div class="gwt-Label"></div>
+                </td>
+            </tr>
         </tbody>
     </table></td>
 </tr>
@@ -101,19 +102,20 @@
             </table></td>
         </tr>
         <tr>
-            <td align="left" style="vertical-align: top;"><table
-                    cellspacing="0" cellpadding="0" class="enveloppeField"
-                    aria-hidden="false">
-                <tbody>
-                <tr>
-                    <td align="left" style="vertical-align: middle;"><div
-                            class="gwt-Label">Subject:</div></td>
-                    <td align="left" width="100%" style="vertical-align: top;">
-                        <input
-                            type="text" class="gwt-TextBox" value="{{mail.subject}}"></td>
-                </tr>
-                </tbody>
-            </table></td>
+            <td align="left" style="vertical-align: top;">
+                <table cellspacing="0" cellpadding="0" class="enveloppeField" aria-hidden="false">
+                    <tbody>
+                        <tr>
+                            <td align="left" style="vertical-align: middle;">
+                                <div class="gwt-Label">Subject:</div>
+                            </td>
+                            <td align="left" width="100%" style="vertical-align: top;">
+                                <input type="text" class="gwt-TextBox" ng-model="mail.subject">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
         </tr>
         <tr>
             <td align="left" style="vertical-align: top;"><table

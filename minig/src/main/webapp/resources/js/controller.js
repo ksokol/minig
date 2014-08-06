@@ -339,8 +339,12 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 
     $scope.refresh();
 })
-.controller('ComposerCtrl', function($scope, $rootScope, $routeParams, MailResource, draftService, composerService, routeService, i18nService) {
-    $scope.mail;
+.controller('ComposerCtrl', function($scope, $rootScope, $routeParams, MailResource, draftService, composerService, routeService, i18nService, submissionService) {
+    $scope.mail = {
+        to : [],
+        cc: [],
+        bcc : []
+    };
 
     $scope.refresh = function() {
         if(!$routeParams.id) {
@@ -356,8 +360,20 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         });
     };
 
-    $scope.save = function() {
+    $scope.send = function() {
+        submissionService.submission($scope.mail)
+        .then(function() {
+            routeService.navigateToPrevious();
+            $rootScope.$broadcast('notification', i18nService.resolve("Mail sent"));
+        });
+    };
 
+    $scope.save = function() {
+        draftService.save($scope.mail)
+        .then(function(id) {
+            routeService.navigateTo({path:"composer", params: {id: id }});
+            $rootScope.$broadcast('notification', i18nService.resolve("Draft saved"));
+        });
     };
 
     $scope.discard = function() {

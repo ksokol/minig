@@ -382,7 +382,12 @@ public class Mime4jMessage {
         message.setFrom(mb);
     }
 
-    public void setRecipient(String recipient) {
+    public void clearRecipients() {
+        to.clear();
+        message.setTo((Address) null);
+    }
+
+    public void addRecipient(String recipient) {
         String[] split = recipient.split("@");
         Mailbox mb = new Mailbox(split[0], split[1]);
 

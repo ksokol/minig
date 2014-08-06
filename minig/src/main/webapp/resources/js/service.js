@@ -205,7 +205,7 @@ app.service('routeService', function($rootScope, $route, $location, $log, localS
 
 app.service('submissionService',['$q', '$http', 'API_HOME', function($q, $http, API_HOME) {
 
-    var _submission = function(mail) {
+    var _disposition = function(mail) {
         var deferred = $q.defer();
 
         if(!angular.isDefined(mail) && !angular.isDefined(mail.id)) {
@@ -213,7 +213,7 @@ app.service('submissionService',['$q', '$http', 'API_HOME', function($q, $http, 
             return;
         }
 
-        $http({method: 'POST', url: API_HOME +'/submission/disposition/'+encodeURIComponent(mail.id)})
+        $http({method: 'POST', url: API_HOME +'/submission/disposition/'+mail.id})
         .success(function() {
             deferred.resolve();
         })
@@ -224,8 +224,30 @@ app.service('submissionService',['$q', '$http', 'API_HOME', function($q, $http, 
         return deferred.promise;
     };
 
+    var _submission = function(mail) {
+        var deferred = $q.defer();
+
+        if(!angular.isDefined(mail) && !angular.isDefined(mail.id)) {
+            deferred.reject("mail id undefined");
+            return;
+        }
+
+        var data = {clientMessage: mail};
+
+        $http({method: 'POST', url: API_HOME +'submission', data: data})
+            .success(function() {
+                deferred.resolve();
+            })
+            .error(function(data) {
+                deferred.reject(data);
+            });
+
+        return deferred.promise;
+    };
+
     return {
-        disposition: _submission
+        disposition: _disposition,
+        submission: _submission
     };
 
 }]);
@@ -283,8 +305,8 @@ app.service('draftService',['$q', '$http', 'API_HOME', function($q, $http, API_H
         var id = "";
         var method = "POST";
 
-        if(!angular.isDefined(mail) && !angular.isDefined(mail.id)) {
-            id = "/" + encodeURIComponent(mail.id);
+        if(angular.isDefined(mail) && angular.isDefined(mail.id)) {
+            id = "/" + mail.id;
             method = "PUT";
         }
 

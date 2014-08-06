@@ -1,10 +1,12 @@
 package org.minig.server.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -12,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailMessage;
+import org.minig.server.MailMessageAddress;
 import org.minig.server.MailMessageList;
 import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeId;
@@ -25,8 +28,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -367,10 +373,18 @@ public class MailServiceImplTest {
         MailMessage m = new MailMessage();
         m.setSubject("draft message");
 
-        uut.createDraftMessage(m);
+        MailMessageAddress recipient = new MailMessageAddress();
+        recipient.setDisplayName("sender@localhost");
+        recipient.setEmail("sender@localhost");
+        m.setTo(Arrays.asList(recipient));
+
+        MailMessage draftMessage = uut.createDraftMessage(m);
 
         mockServer.verifyMessageCount("INBOX.Drafts", 1);
-        assertEquals("draft message", uut.firstPageMessagesByFolder("INBOX.Drafts").getMailList().get(0).getSubject());
+        assertThat(draftMessage.getSubject(), is("draft message"));
+        assertThat(draftMessage.getTo(), hasSize(1));
+        assertThat(draftMessage.getTo().get(0).getEmail(), is("sender@localhost"));
+        assertThat(draftMessage.getTo().get(0).getDisplayName(), is("sender@localhost"));
     }
 
     @Test
@@ -389,15 +403,37 @@ public class MailServiceImplTest {
         mm.getBody().setHtml(replacedBody);
 
         MailMessage updateDraftMessage = uut.updateDraftMessage(mm);
-        MailMessage findMessage = uut.findMessage(updateDraftMessage);
 
         mockServer.verifyMessageCount("INBOX.Drafts", 1);
 
-        assertFalse(id.getId().equals(findMessage.getId()));
-        assertEquals(2, findMessage.getAttachments().size());
-        assertEquals(replacedBody, findMessage.getBody().getPlain());
-        assertEquals(replacedBody, findMessage.getBody().getHtml());
-        assertEquals("save draft", findMessage.getSubject());
-        assertEquals("1.png", findMessage.getAttachments().get(0).getFileName());
+        assertFalse(id.getId().equals(updateDraftMessage.getId()));
+        assertEquals(2, updateDraftMessage.getAttachments().size());
+        assertEquals(replacedBody, updateDraftMessage.getBody().getPlain());
+        assertEquals(replacedBody, updateDraftMessage.getBody().getHtml());
+        assertEquals("save draft", updateDraftMessage.getSubject());
+        assertEquals("1.png", updateDraftMessage.getAttachments().get(0).getFileName());
+    }
+
+    @Test
+    public void testUpdateDraftMessage2() throws MessagingException {
+        String recipient = "sender@localhost";
+        MimeMessage m = new MimeMessageBuilder().setFolder("INBOX.Drafts").setRecipientTo((List) null).build();
+        mockServer.prepareMailBox("INBOX.Drafts", m);
+
+        CompositeId id = new CompositeId("INBOX.Drafts", m.getMessageID());
+
+        MailMessage mm = new MailMessage();
+        mm.setCompositeId(id);
+        MailMessageAddress recipientAddress = new MailMessageAddress();
+        recipientAddress.setDisplayName(recipient);
+        recipientAddress.setEmail(recipient);
+        mm.setTo(Arrays.asList(recipientAddress));
+
+        MailMessage updateDraftMessage = uut.updateDraftMessage(mm);
+
+        mockServer.verifyMessageCount("INBOX.Drafts", 1);
+        assertThat(updateDraftMessage.getTo(), hasSize(1));
+        assertThat(updateDraftMessage.getTo().get(0).getEmail(), is(recipient));
+        assertThat(updateDraftMessage.getTo().get(0).getDisplayName(), is(recipient));
     }
 }
