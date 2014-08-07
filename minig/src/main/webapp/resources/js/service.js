@@ -332,3 +332,37 @@ app.service('draftService',['$q', '$http', 'API_HOME', function($q, $http, API_H
     };
 
 }]);
+
+app.service('attachmentService',['$q', '$http', 'API_HOME', function($q, $http, API_HOME) {
+
+    var _save = function(attachment) {
+        var deferred = $q.defer();
+        var id = "";
+        var method = "POST";
+
+        $http({
+            method: method,
+            url: API_HOME +'attachment/'+attachment.messageId,
+            headers: {
+                'Content-Type': undefined
+            },
+            data: attachment.data,
+            transformRequest: function (data) {
+                return data;
+            }
+        })
+        .success(function(result) {
+            deferred.resolve(result.id);
+        })
+        .error(function(data) {
+            deferred.reject(data);
+        });
+
+        return deferred.promise;
+    };
+
+    return {
+        save: _save
+    };
+
+}]);

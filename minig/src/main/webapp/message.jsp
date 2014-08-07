@@ -150,7 +150,7 @@
                                                                         </tr>
                                                                         <tr>
                                                                             <td align="left" style="vertical-align: top;">
-                                                                                <attachment-panel id="mail.id" />
+                                                                                <attachment-panel id="{{mail.id}}" />
                                                                             </td>
                                                                         </tr>
                                                                         <tr>

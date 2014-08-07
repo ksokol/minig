@@ -41,21 +41,14 @@ public class AttachmentResource {
         }
 
         if (id instanceof CompositeAttachmentId) {
-
             MailAttachment findAttachment = attachmentService.findAttachment((CompositeAttachmentId) id);
-
             ResponseEntity<?> responseEntity = new ResponseEntity<MailAttachment>(findAttachment, responseHeaders, HttpStatus.OK);
-
             return responseEntity;
         }
 
-        else if (id instanceof CompositeId) {
-
+        if (id instanceof CompositeId) {
             MailAttachmentList findAttachments = attachmentService.findAttachments(id);
-
-            ResponseEntity<MailAttachmentList> responseEntity = new ResponseEntity<MailAttachmentList>(findAttachments, responseHeaders,
-                    HttpStatus.OK);
-
+            ResponseEntity<MailAttachmentList> responseEntity = new ResponseEntity<MailAttachmentList>(findAttachments, responseHeaders, HttpStatus.OK);
             return responseEntity;
         }
 
@@ -74,32 +67,15 @@ public class AttachmentResource {
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "attachment/**", method = RequestMethod.POST)
     @ResponseBody
-    public String uploadAttachment(@Id CompositeId id, MultipartRequest file) throws IOException {
+    public CompositeId uploadAttachment(@Id CompositeId id, MultipartRequest file) throws IOException {
         CompositeId addAttachment = id;
-
         for (Entry<String, MultipartFile> entry : file.getFileMap().entrySet()) {
-
             addAttachment = attachmentService.addAttachment(addAttachment, new MultipartfileDataSource(entry.getValue()));
-
         }
-
         if (addAttachment != null) {
-            // TODO: hack for GWT right now
-            return addAttachment.getId();
+            return addAttachment;
         }
-
-        // TODO
         throw new NotFoundException();
-        // List<MultipartFile> list = file.getMultiFileMap().get("myfilename");
-        //
-        // System.out.println(list.get(0).getBytes());
-        // MailAttachment attachment = attachmentService.findAttachment(id);
-        //
-        // response.setContentType(attachment.getMime());
-        // response.setHeader("Content-Disposition", "attachment; filename=" +
-        // attachment.getFileName());
-        // attachmentService.readAttachment(id, response.getOutputStream());
-
     }
 
     @ResponseStatus(value = HttpStatus.OK)

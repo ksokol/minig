@@ -406,7 +406,7 @@ app.directive("attachmentPanel", function($rootScope, i18nService, AttachmentRes
         restrict: "E",
         replace: true,
         scope: {
-            id: "="
+            id: "@"
         },
         templateUrl:'attachment.jsp',
         controller :  [ "$scope", function ($scope) {
@@ -492,4 +492,30 @@ app.directive("recipientInput", function() {
             };
         }]
     }
+});
+
+app.directive("attachmentUpload", function() {
+
+    return {
+        restrict: "E",
+        replace: true,
+        scope: {
+            mail: "=",
+            after: "&"
+        },
+        templateUrl: 'attachment-upload.jsp',
+        controller: [ "$scope", "attachmentService", function ($scope, attachmentService) {
+            // http://stackoverflow.com/questions/17922557/angularjs-how-to-check-for-changes-in-file-input-fields
+            $scope.blur = function(element) {
+                var file = element.files[0];
+                var formData = new FormData();
+                formData.append(file.name, file);
+                attachmentService.save({messageId: $scope.mail.id, data: formData})
+                .then(function(result) {
+                    $scope.mail.id = result;
+                });
+            }
+        }]
+    }
+
 });

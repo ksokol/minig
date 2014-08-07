@@ -127,22 +127,13 @@
                         <tbody>
                         <tr>
                             <td align="left" style="vertical-align: top;">
-                                <attachment-panel id="mail.id" />
+                                <attachment-panel id="{{mail.id}}" />
                             </td>
                         </tr>
                         <tr>
-                            <td align="left" style="vertical-align: top;"><table
-                                    cellspacing="0" cellpadding="0" class="panelActions">
-                                <tbody>
-                                <tr>
-                                    <td align="left" style="vertical-align: top;"><div
-                                            class="gwt-Label"></div></td>
-                                    <td align="left" style="vertical-align: top;"><a
-                                            class="gwt-Anchor" href="javascript:;">Attach
-                                        a file</a></td>
-                                </tr>
-                                </tbody>
-                            </table></td>
+                            <td>
+                                <attachment-upload mail="mail"/>
+                            </td>
                         </tr>
                         </tbody>
                     </table></td>
