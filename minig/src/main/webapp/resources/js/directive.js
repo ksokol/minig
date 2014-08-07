@@ -352,7 +352,7 @@ app.directive("messageText", function() {
         restrict: "E",
         link: function ($scope, element, attrs) {
             $scope.$watch('mail', function(mail) {
-                if(!mail) {
+                if(!mail || !mail.body) {
                     return;
                 }
                 //TODO support html mails
@@ -392,7 +392,7 @@ app.directive("dispositionNotificationPanel", function($rootScope, submissionSer
                 if (!mail) {
                     return;
                 }
-                $scope.showDispositionNotification = $scope.mail.dispositionNotification.length > 0
+                $scope.showDispositionNotification = $scope.mail.dispositionNotification && $scope.mail.dispositionNotification.length > 0
             });
         }]
     }
@@ -405,21 +405,24 @@ app.directive("attachmentPanel", function($rootScope, i18nService, AttachmentRes
     return {
         restrict: "E",
         replace: true,
+        scope: {
+            id: "="
+        },
+        templateUrl:'attachment.jsp',
         controller :  [ "$scope", function ($scope) {
-            $scope.attachments = [];
 
-            $scope.load = function(mail) {
-                if(!mail || mail.attachments.length === 0) {
+            $scope.load = function(id) {
+                if(!id) {
                     return;
                 }
-                AttachmentResource.findById(mail.id)
+                AttachmentResource.findById(id)
                 .then(function(attachments) {
                     $scope.attachments = attachments.attachmentMetadata;
                 });
-            };
-        }],
+           };
+        }]        ,
         link: function ($scope) {
-            $scope.$watch('mail', $scope.load);
+            $scope.$watch('id', $scope.load);
         }
     }
 

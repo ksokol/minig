@@ -126,10 +126,9 @@
                             cellspacing="0" cellpadding="0" class="enveloppeField">
                         <tbody>
                         <tr>
-                            <td align="left" style="vertical-align: top;"><table
-                                    cellspacing="0" cellpadding="0">
-                                <tbody></tbody>
-                            </table></td>
+                            <td align="left" style="vertical-align: top;">
+                                <attachment-panel id="mail.id" />
+                            </td>
                         </tr>
                         <tr>
                             <td align="left" style="vertical-align: top;"><table
