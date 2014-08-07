@@ -127,7 +127,7 @@
                         <tbody>
                         <tr>
                             <td align="left" style="vertical-align: top;">
-                                <attachment-panel id="{{mail.id}}" />
+                                <attachment-panel attachments="mail.attachmentMetadata" />
                             </td>
                         </tr>
                         <tr>

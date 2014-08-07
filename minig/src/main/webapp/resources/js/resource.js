@@ -142,21 +142,3 @@ app.factory('MailResource', ['$q', '$resource','API_HOME','DEFAULT_PAGE_SIZE', f
 	};
 	
 }]);
-
-app.factory('AttachmentResource', ['$q', '$resource','API_HOME', function($q, $resource, API_HOME) {
-
-    var attachmentGet = $resource(API_HOME+'attachment/:id', {'id' : '@id'}, {findById: {method: 'GET' }});
-
-    var findById = function(id) {
-        var deferred = $q.defer();
-        attachmentGet.findById({ 'id' : encodeURIComponent(id)}).$promise.then(function(result) {
-            deferred.resolve(result);
-        });
-        return deferred.promise;
-    };
-
-    return {
-        findById: findById
-    };
-
-}]);

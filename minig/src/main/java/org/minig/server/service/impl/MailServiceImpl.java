@@ -1,6 +1,7 @@
 package org.minig.server.service.impl;
 
 import org.minig.MailAuthentication;
+import org.minig.server.MailAttachmentList;
 import org.minig.server.MailFolder;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
@@ -35,6 +36,9 @@ public class MailServiceImpl implements MailService {
     @Autowired
     private MailAuthentication authentication;
 
+    @Autowired
+    private AttachmentRepository attachmentRepository;
+
     // TODO
     @Autowired
     private MessageMapper mapper;
@@ -65,9 +69,10 @@ public class MailServiceImpl implements MailService {
 
         if (message == null) {
             throw new NotFoundException();
-        } else {
-            return message;
         }
+        MailAttachmentList mailAttachmentList = attachmentRepository.readMetadata(id);
+        message.setAttachmentMetadata(mailAttachmentList.getAttachmentMetadata());
+        return message;
     }
 
     @Override

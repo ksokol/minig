@@ -43,6 +43,7 @@ public class MailMessage extends CompositeId {
     private Boolean receipt;
     private Boolean mdnSent;
     private Boolean deleted;
+    private List<MailAttachment> attachmentMetadata;
 
     public String getSubject() {
         return subject;
@@ -202,4 +203,11 @@ public class MailMessage extends CompositeId {
         this.deleted = deleted;
     }
 
+    public List<MailAttachment> getAttachmentMetadata() {
+        return attachmentMetadata;
+    }
+
+    public void setAttachmentMetadata(List<MailAttachment> attachmentMetadata) {
+        this.attachmentMetadata = attachmentMetadata;
+    }
 }

@@ -424,6 +424,10 @@ public class MailServiceImplTest {
 
         MailMessage mm = new MailMessage();
         mm.setCompositeId(id);
+        mm.setAskForDispositionNotification(true);
+        mm.setHighPriority(true);
+        mm.setReceipt(true);
+
         MailMessageAddress recipientAddress = new MailMessageAddress();
         recipientAddress.setDisplayName(recipient);
         recipientAddress.setEmail(recipient);

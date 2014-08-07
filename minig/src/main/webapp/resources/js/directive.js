@@ -400,30 +400,15 @@ app.directive("dispositionNotificationPanel", function($rootScope, submissionSer
 });
 
 
-app.directive("attachmentPanel", function($rootScope, i18nService, AttachmentResource) {
+app.directive("attachmentPanel", function() {
 
     return {
         restrict: "E",
         replace: true,
         scope: {
-            id: "@"
+            attachments: "="
         },
-        templateUrl:'attachment.jsp',
-        controller :  [ "$scope", function ($scope) {
-
-            $scope.load = function(id) {
-                if(!id) {
-                    return;
-                }
-                AttachmentResource.findById(id)
-                .then(function(attachments) {
-                    $scope.attachments = attachments.attachmentMetadata;
-                });
-           };
-        }]        ,
-        link: function ($scope) {
-            $scope.$watch('id', $scope.load);
-        }
+        templateUrl:'attachment.jsp'
     }
 
 });

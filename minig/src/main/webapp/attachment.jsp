@@ -1,6 +1,6 @@
 <table cellspacing="0" cellpadding="0">
     <tbody>
-        <tr ng-repeat="attachment in attachments">
+        <tr ng-repeat="attachment in attachments track by $index">
             <td align="left" style="vertical-align: top;">
                 <table>
                     <colgroup>
