@@ -376,10 +376,6 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         });
     };
 
-    $scope.afterUpload = function(id) {
-        console.log("called after upload", id)
-    };
-
     $scope.discard = function() {
         routeService.navigateToPrevious();
     };

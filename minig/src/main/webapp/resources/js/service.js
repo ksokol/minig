@@ -213,6 +213,8 @@ app.service('submissionService',['$q', '$http', 'API_HOME', function($q, $http, 
             return;
         }
 
+        mail.date = new Date();
+
         $http({method: 'POST', url: API_HOME +'/submission/disposition/'+mail.id})
         .success(function() {
             deferred.resolve();
@@ -309,6 +311,8 @@ app.service('draftService',['$q', '$http', 'API_HOME', function($q, $http, API_H
             id = "/" + mail.id;
             method = "PUT";
         }
+
+        mail.date = new Date();
 
         $http({method: method, url: API_HOME +'message/draft'+id, data: mail})
             .success(function(result) {
