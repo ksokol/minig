@@ -30,6 +30,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -412,6 +413,7 @@ public class MailServiceImplTest {
         assertEquals(replacedBody, updateDraftMessage.getBody().getHtml());
         assertEquals("save draft", updateDraftMessage.getSubject());
         assertEquals("1.png", updateDraftMessage.getAttachments().get(0).getFileName());
+        assertThat(updateDraftMessage.getDate(), notNullValue());
     }
 
     @Test
@@ -427,6 +429,7 @@ public class MailServiceImplTest {
         mm.setAskForDispositionNotification(true);
         mm.setHighPriority(true);
         mm.setReceipt(true);
+        mm.setDate(new Date());
 
         MailMessageAddress recipientAddress = new MailMessageAddress();
         recipientAddress.setDisplayName(recipient);
@@ -439,5 +442,9 @@ public class MailServiceImplTest {
         assertThat(updateDraftMessage.getTo(), hasSize(1));
         assertThat(updateDraftMessage.getTo().get(0).getEmail(), is(recipient));
         assertThat(updateDraftMessage.getTo().get(0).getDisplayName(), is(recipient));
+        assertThat(updateDraftMessage.getAskForDispositionNotification(), is(true));
+        assertThat(updateDraftMessage.getHighPriority(), is(true));
+        assertThat(updateDraftMessage.getReceipt(), is(true));
+        assertThat(updateDraftMessage.getDate(), notNullValue());
     }
 }

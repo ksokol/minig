@@ -29,8 +29,14 @@ import org.minig.server.service.CompositeId;
 
 public class Mime4jMessage {
 
+    private static final String X_DRAFT_INFO = "X-Mozilla-Draft-Info";
+    private static final String MDN_SENT = "$MDNSent";
+    private static final String X_PRIORITY = "X-PRIORITY";
+
     private CompositeId id;
     private MessageImpl message;
+    private boolean receipt;
+    private boolean askForDispositionNotification;
 
     private Set<Address> to = new HashSet<Address>();
 
@@ -252,7 +258,6 @@ public class Mime4jMessage {
     }
 
     public void setDate(Date date) {
-        // TODO timezone
         message.setDate(date);
     }
 
@@ -319,8 +324,8 @@ public class Mime4jMessage {
 
     public void setHeader(String key, String value) {
         RawField f = new RawField(key, value);
-        Header messageHheader = message.getHeader();
-        messageHheader.addField(f);
+        Header messageHeader = message.getHeader();
+        messageHeader.setField(f);
     }
 
     private List<BodyPart> getAttachments(Multipart multipart) {
@@ -396,6 +401,24 @@ public class Mime4jMessage {
         message.setTo(to);
     }
 
+    public void setAskForDispositionNotification(Boolean askForDispositionNotification) {
+        this.askForDispositionNotification = askForDispositionNotification == null ? false : true;
+        updateXPriority();
+    }
+
+    public void setHighPriority(Boolean highPriority) {
+        if(highPriority != null && highPriority) {
+            setHeader(X_PRIORITY, "1");
+            return;
+        }
+        message.getHeader().removeFields(X_PRIORITY);
+    }
+
+    public void setReceipt(Boolean receipt) {
+        this.receipt = receipt == null ? false : true;
+        updateXPriority();
+    }
+
     private String parseBodyParts(Multipart multipart, String mimeType) {
         TextBody bodyPart = getBodyPart(multipart, mimeType);
         return getReadablePart(bodyPart);
@@ -447,6 +470,29 @@ public class Mime4jMessage {
         }
 
         return null;
+    }
+
+    private void updateXPriority() {
+        String value = null;
+
+        if(this.receipt) {
+            value = "receipt=1";
+        }
+
+        if(this.askForDispositionNotification) {
+            if(value == null) {
+                value += "DSN=1";
+            } else {
+                value += "; DSN=1";
+            }
+        }
+
+        Header header = message.getHeader();
+        if(value == null) {
+            header.removeFields(X_DRAFT_INFO);
+        }
+
+        setHeader(X_DRAFT_INFO, value);
     }
 
     // TODO

@@ -214,6 +214,15 @@ public class MailServiceImpl implements MailService {
         mimeMessage.setHtml(message.getBody().getHtml());
         mimeMessage.setPlain(message.getBody().getPlain());
 
+        mimeMessage.setAskForDispositionNotification(message.getAskForDispositionNotification());
+        mimeMessage.setHighPriority(message.getHighPriority());
+        mimeMessage.setReceipt(message.getReceipt());
+        mimeMessage.setDate(message.getDate());
+
+        message.getAskForDispositionNotification();
+        message.getHighPriority();
+        message.getReceipt();
+
         String saved = mailRepository.save(mimeMessage, message.getFolder());
         mailRepository.delete(message);
         return mailRepository.readPojo(message.getFolder(), saved);
