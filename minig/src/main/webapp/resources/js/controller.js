@@ -353,6 +353,8 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         MailResource.load($routeParams.id).then(function(mail) {
             if(draftService.isDraft(mail)) {
                 $scope.mail = mail;
+                $scope.showCc = $scope.mail.cc.length > 0;
+                $scope.showBcc = $scope.mail.bcc.length > 0;
                 return;
             }
             $rootScope.$broadcast("error", i18nService.resolve("This is not a draft"));

@@ -39,6 +39,8 @@ public class Mime4jMessage {
     private boolean askForDispositionNotification;
 
     private Set<Address> to = new HashSet<Address>();
+    private Set<Address> cc = new HashSet<Address>();
+    private Set<Address> bcc = new HashSet<Address>();
 
     public Mime4jMessage(MessageImpl message) {
         this.message = message;
@@ -389,7 +391,17 @@ public class Mime4jMessage {
 
     public void clearRecipients() {
         to.clear();
-        message.setTo((Address) null);
+        message.setTo(to);
+    }
+
+    public void clearCc() {
+        cc.clear();
+        message.setCc(cc);
+    }
+
+    public void clearBcc() {
+        bcc.clear();
+        message.setBcc(bcc);
     }
 
     public void addRecipient(String recipient) {
@@ -399,6 +411,20 @@ public class Mime4jMessage {
         to.add(mb);
 
         message.setTo(to);
+    }
+
+    public void addCc(String recipient) {
+        String[] split = recipient.split("@");
+        Mailbox mb = new Mailbox(split[0], split[1]);
+        cc.add(mb);
+        message.setCc(cc);
+    }
+
+    public void addBcc(String recipient) {
+        String[] split = recipient.split("@");
+        Mailbox mb = new Mailbox(split[0], split[1]);
+        bcc.add(mb);
+        message.setBcc(bcc);
     }
 
     public void setAskForDispositionNotification(Boolean askForDispositionNotification) {

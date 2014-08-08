@@ -201,12 +201,28 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public MailMessage updateDraftMessage(MailMessage message) {
+        //TODO maybe saving message and appending attachments from old message is a better approach?
         Mime4jMessage mimeMessage = mailRepository.read(message.getFolder(), message.getMessageId());
 
         mimeMessage.clearRecipients();
+        mimeMessage.clearCc();
+        mimeMessage.clearBcc();
+
         if(message.getTo() != null) {
             for (MailMessageAddress mailMessageAddress : message.getTo()) {
                 mimeMessage.addRecipient(mailMessageAddress.getEmail());
+            }
+        }
+
+        if(message.getCc() != null) {
+            for (MailMessageAddress mailMessageAddress : message.getCc()) {
+                mimeMessage.addCc(mailMessageAddress.getEmail());
+            }
+        }
+
+        if(message.getBcc() != null) {
+            for (MailMessageAddress mailMessageAddress : message.getBcc()) {
+                mimeMessage.addBcc(mailMessageAddress.getEmail());
             }
         }
 

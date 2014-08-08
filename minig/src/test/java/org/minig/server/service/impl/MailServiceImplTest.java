@@ -389,7 +389,7 @@ public class MailServiceImplTest {
     }
 
     @Test
-    public void testUpdateDraftMessage() throws MessagingException {
+    public void testAttachmentsOnUpdateDraftMessage() throws MessagingException {
         String replacedBody = "replaced plain " + new Date().toString();
 
         MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_ATTACHMENT);
@@ -413,11 +413,10 @@ public class MailServiceImplTest {
         assertEquals(replacedBody, updateDraftMessage.getBody().getHtml());
         assertEquals("save draft", updateDraftMessage.getSubject());
         assertEquals("1.png", updateDraftMessage.getAttachments().get(0).getFileName());
-        assertThat(updateDraftMessage.getDate(), notNullValue());
     }
 
     @Test
-    public void testUpdateDraftMessage2() throws MessagingException {
+    public void testUpdateDraftMessage() throws MessagingException {
         String recipient = "sender@localhost";
         MimeMessage m = new MimeMessageBuilder().setFolder("INBOX.Drafts").setRecipientTo((List) null).build();
         mockServer.prepareMailBox("INBOX.Drafts", m);
@@ -434,14 +433,28 @@ public class MailServiceImplTest {
         MailMessageAddress recipientAddress = new MailMessageAddress();
         recipientAddress.setDisplayName(recipient);
         recipientAddress.setEmail(recipient);
-        mm.setTo(Arrays.asList(recipientAddress));
+        List<MailMessageAddress> addresses = Arrays.asList(recipientAddress);
+
+        mm.setTo(addresses);
+        mm.setCc(addresses);
+        mm.setBcc(addresses);
 
         MailMessage updateDraftMessage = uut.updateDraftMessage(mm);
 
         mockServer.verifyMessageCount("INBOX.Drafts", 1);
+
         assertThat(updateDraftMessage.getTo(), hasSize(1));
         assertThat(updateDraftMessage.getTo().get(0).getEmail(), is(recipient));
         assertThat(updateDraftMessage.getTo().get(0).getDisplayName(), is(recipient));
+
+        assertThat(updateDraftMessage.getCc(), hasSize(1));
+        assertThat(updateDraftMessage.getCc().get(0).getEmail(), is(recipient));
+        assertThat(updateDraftMessage.getCc().get(0).getDisplayName(), is(recipient));
+
+        assertThat(updateDraftMessage.getBcc(), hasSize(1));
+        assertThat(updateDraftMessage.getBcc().get(0).getEmail(), is(recipient));
+        assertThat(updateDraftMessage.getBcc().get(0).getDisplayName(), is(recipient));
+
         assertThat(updateDraftMessage.getAskForDispositionNotification(), is(true));
         assertThat(updateDraftMessage.getHighPriority(), is(true));
         assertThat(updateDraftMessage.getReceipt(), is(true));
