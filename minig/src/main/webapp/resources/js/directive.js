@@ -408,7 +408,17 @@ app.directive("attachmentPanel", function() {
         scope: {
             attachments: "="
         },
-        templateUrl:'attachment.jsp'
+        templateUrl:'attachment.jsp',
+        controller :  [ "$scope", "routeService","attachmentService", function ($scope, routeService, attachmentService) {
+            $scope.showDelete = routeService.currentRoute("composer");
+
+            $scope.delete = function(attachment) {
+                attachmentService.delete(attachment.id)
+                .then(function(id) {
+                    console.log("done", id)
+                });
+            };
+        }]
     }
 
 });

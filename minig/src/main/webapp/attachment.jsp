@@ -28,6 +28,9 @@
                     </tbody>
                 </table>
             </td>
+            <td align="left" style="vertical-align: top;" ng-show="showDelete">
+                <a class="gwt-Anchor" ng-click="delete(attachment)">Delete</a>
+            </td>
         </tr>
     </tbody>
 </table>

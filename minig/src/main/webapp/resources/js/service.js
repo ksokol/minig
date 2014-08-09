@@ -365,8 +365,26 @@ app.service('attachmentService',['$q', '$http', 'API_HOME', function($q, $http, 
         return deferred.promise;
     };
 
+    var _delete = function(id) {
+        var deferred = $q.defer();
+
+        $http({
+            method: "DELETE",
+            url: API_HOME +'attachment/'+id
+        })
+        .success(function(result) {
+            deferred.resolve(result.id);
+        })
+        .error(function(data) {
+            deferred.reject(data);
+        });
+
+        return deferred.promise;
+    };
+
     return {
-        save: _save
+        save: _save,
+        delete: _delete
     };
 
 }]);

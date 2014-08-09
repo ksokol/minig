@@ -2697,3 +2697,7 @@ textarea {
     word-break: break-all;
     white-space: normal;
 }
+
+.gwt-Anchor {
+    text-decoration: underline;
+}
