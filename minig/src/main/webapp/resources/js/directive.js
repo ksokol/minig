@@ -504,3 +504,16 @@ app.directive("attachmentUpload", function() {
     }
 
 });
+
+app.directive("bodyEditor", function() {
+    return {
+        restrict: "C",
+        controller: [ "$scope", "localStorageService", function ($scope, localStorageService) {
+            $scope.showRichFormatting = localStorageService.get("showRichFormatting");
+
+            $scope.$watch("showRichFormatting", function(e) {
+                localStorageService.set("showRichFormatting", $scope.showRichFormatting);
+            });
+        }]
+    }
+});
