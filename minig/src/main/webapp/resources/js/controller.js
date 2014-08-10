@@ -382,6 +382,18 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         routeService.navigateToPrevious();
     };
 
+    $scope.delete = function() {
+        if (!confirm('Do you really want to delete this message?')) {
+            return;
+        }
+
+        MailResource.delete($scope.mail.id)
+        .then(function() {
+            $rootScope.$broadcast('notification', i18nService.resolve("Message deleted"));
+            routeService.navigateToPrevious();
+        });
+    };
+
     $scope.$watch("mail.id", function(id) {
         if(!id) {
             return;

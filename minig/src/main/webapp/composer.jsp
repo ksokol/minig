@@ -16,6 +16,9 @@
                 <td align="left" style="vertical-align: top;">
                     <button type="button" class="gwt-Button" ng-click="discard()">Discard</button>
                 </td>
+                <td align="left" style="vertical-align: top;">
+                    <button type="button" class="gwt-Button" ng-click="delete()">Delete</button>
+                </td>
                 <td align="left" style="vertical-align: middle;">
                     <div class="gwt-Label"></div>
                 </td>
