@@ -150,7 +150,7 @@
                                                                         </tr>
                                                                         <tr>
                                                                             <td align="left" style="vertical-align: top;">
-                                                                                <attachment-panel attachments="mail.attachmentMetadata" />
+                                                                                <attachment-panel mail="mail" />
                                                                             </td>
                                                                         </tr>
                                                                         <tr>

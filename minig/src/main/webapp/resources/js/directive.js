@@ -406,7 +406,7 @@ app.directive("attachmentPanel", function() {
         restrict: "E",
         replace: true,
         scope: {
-            attachments: "="
+            mail: "="
         },
         templateUrl:'attachment.jsp',
         controller :  [ "$scope", "routeService","attachmentService", function ($scope, routeService, attachmentService) {
@@ -415,7 +415,7 @@ app.directive("attachmentPanel", function() {
             $scope.delete = function(attachment) {
                 attachmentService.delete(attachment.id)
                 .then(function(id) {
-                    console.log("done", id)
+                    $scope.mail.id = id;
                 });
             };
         }]
