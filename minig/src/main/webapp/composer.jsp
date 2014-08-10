@@ -94,10 +94,6 @@
                             </td>
                             <td align="left" style="vertical-align: top;" ng-hide="showBcc">
                                 <a class="gwt-Anchor" ng-click="showBcc = true" aria-hidden="false">Add Bcc</a></td>
-                            <td align="left" style="vertical-align: top;"><a
-                                    class="gwt-Anchor" href="javascript:;"
-                                    style="display: none;" aria-hidden="true">Edit
-                                subject</a></td>
                         </tr>
                         </tbody>
                     </table></td>
@@ -114,7 +110,7 @@
                                 <div class="gwt-Label">Subject:</div>
                             </td>
                             <td align="left" width="100%" style="vertical-align: top;">
-                                <input type="text" class="gwt-TextBox" ng-model="mail.subject">
+                                <input type="text" class="gwt-TextBox subject-input" ng-model="mail.subject">
                             </td>
                         </tr>
                     </tbody>
