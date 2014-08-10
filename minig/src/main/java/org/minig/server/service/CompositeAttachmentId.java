@@ -29,6 +29,8 @@ public class CompositeAttachmentId extends CompositeId {
 
 	public void setCompositeAttachmentId(CompositeAttachmentId id) {
 		setId(id.getId());
+		setMessageId(id.getMessageId());
+		setFolder(id.getFolder());
 	}
 
 	@Override

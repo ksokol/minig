@@ -1,0 +1,34 @@
+Message-ID: <6080306@localhost>
+Date: Sun, 18 May 2014 20:11:12 +0200
+From: <testuser@localhost>
+MIME-Version: 1.0
+To: testuser@localhost
+Subject: attachment with umlaut
+Content-Type: multipart/mixed;
+ boundary="------------040008020602060504020401"
+
+This is a multi-part message in MIME format.
+--------------040008020602060504020401
+Content-Type: text/html; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-15">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    <br>
+  </body>
+</html>
+
+--------------040008020602060504020401
+Content-Type: image/png;
+ name="umlaut =?ISO-8859-15?Q?=E4=2Epng?="
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="umlaut =?ISO-8859-15?Q?=E4=2Epng?="
+
+iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAAsTAAALEwEAmpwY
+AAAAB3RJTUUH3gUSEgoTt+MZ0QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJ
+TVBkLmUHAAAADElEQVQI12NQUVEBAADcAG1CtICDAAAAAElFTkSuQmCC
+--------------040008020602060504020401--

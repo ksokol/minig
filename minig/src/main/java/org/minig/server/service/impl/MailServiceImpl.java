@@ -76,6 +76,19 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
+    public Mime4jMessage findById(CompositeId id) {
+        Assert.notNull(id);
+
+        Mime4jMessage message = mailRepository.read(id.getFolder(), id.getMessageId());
+
+        if (message == null) {
+            throw new NotFoundException();
+        } else {
+            return message;
+        }
+    }
+
+    @Override
     public void deleteMessages(List<CompositeId> messageIdList) {
         Assert.notNull(messageIdList);
 
@@ -148,19 +161,16 @@ public class MailServiceImpl implements MailService {
         }
     }
 
-    // @Override
-    // public void createMessage(MailMessage source) {
-    // Assert.notNull(source);
-    //
-    // mailRepository.save(source);
-    // }
-
     @Override
     public void moveMessageToFolder(CompositeId message, String folder) {
         Assert.notNull(message);
         Assert.hasText(folder);
 
         mailRepository.moveMessage(message, folder);
+
+        MailMessage mm = mailRepository.readPojo(folder, message.getMessageId());
+        mm.setRead(true);
+        mailRepository.updateFlags(mm);
     }
 
     @Override
@@ -188,9 +198,13 @@ public class MailServiceImpl implements MailService {
     @Override
     public MailMessage createDraftMessage(MailMessage message) {
         message.setSender(new MailMessageAddress(authentication.getAddress()));
+
         Mime4jMessage mime4jMessage = mapper.toMime4jMessage(message);
 
         String messageId = mailRepository.save(mime4jMessage, folderRepository.getDraft().getId());
+
+        // return mailRepository.saveInFolder(message,
+        // folderRepository.getDraft().getId());
 
         MailMessage readPojo = mailRepository.readPojo(folderRepository.getDraft().getId(), messageId);
         readPojo.setRead(Boolean.TRUE);
@@ -235,10 +249,7 @@ public class MailServiceImpl implements MailService {
         mimeMessage.setReceipt(message.getReceipt());
         mimeMessage.setDate(message.getDate());
 
-        message.getAskForDispositionNotification();
-        message.getHighPriority();
-        message.getReceipt();
-
+        //TODO what about other flags?
         String saved = mailRepository.save(mimeMessage, message.getFolder());
         mailRepository.delete(message);
         return mailRepository.readPojo(message.getFolder(), saved);

@@ -6,23 +6,20 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import javax.mail.Address;
+import javax.mail.*;
 import javax.mail.Flags.Flag;
-import javax.mail.Folder;
-import javax.mail.Message;
 import javax.mail.Message.RecipientType;
-import javax.mail.MessagingException;
-import javax.mail.Session;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.minig.server.MailMessageAddress;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 public class MimeMessageBuilder {
 
@@ -179,6 +176,10 @@ public class MimeMessageBuilder {
         return m;
     }
 
+    private <T> T readOnly(T mock) {
+        return doThrow(new IllegalWriteException("IMAPMessage is read-only")).when(mock);
+    }
+
     public MimeMessage build(String file) {
         try {
             MimeMessage mimeMessage = new MimeMessage(null, new FileInputStream(file));
@@ -188,6 +189,25 @@ public class MimeMessageBuilder {
 
             when(folderMock.getFullName()).thenReturn(folder);
             when(spy.getFolder()).thenReturn(folderMock);
+
+            /*
+             * taken from com.sun.mail.imap.IMAPMessage
+             */
+            readOnly(spy).setHeader(anyString(), anyString());
+            readOnly(spy).addHeader(anyString(), anyString());
+            readOnly(spy).removeHeader(anyString());
+            readOnly(spy).setFrom(Matchers.<Address>anyObject());
+            readOnly(spy).addFrom(Matchers.<Address[]>anyObject());
+            readOnly(spy).setSender(Matchers.<Address>anyObject());
+            readOnly(spy).setRecipients(Matchers.<Message.RecipientType>anyObject(), Matchers.<Address[]>anyObject());
+            readOnly(spy).addRecipients(Matchers.<Message.RecipientType>anyObject(), Matchers.<Address[]>anyObject());
+            readOnly(spy).setReplyTo(Matchers.<Address[]>anyObject());
+            readOnly(spy).setSubject(anyString(), anyString());
+            readOnly(spy).setSentDate(Matchers.<Date>anyObject());
+            readOnly(spy).setContentLanguage(Matchers.<String[]>anyObject());
+            readOnly(spy).setDisposition(anyString());
+            readOnly(spy).setContentID(anyString());
+            readOnly(spy).setContentMD5(anyString());
 
             return spy;
         } catch (Exception e) {

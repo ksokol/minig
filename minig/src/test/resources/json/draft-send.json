@@ -1,0 +1,16 @@
+{
+    "to": [
+        {
+            "email": "testuser@localhost",
+            "displayName": "testuser@localhost"
+        }
+    ],
+    "body": {
+        "html": "test<br>"
+    },
+    "subject": "test1",
+    "receipt": false,
+    "date": "2014-08-09T13:43:08.073Z",
+    "mailer": "MiniG Webmail",
+    "highPriority": false
+}

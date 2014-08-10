@@ -2,12 +2,16 @@ package org.minig.server.resource;
 
 import java.util.List;
 
+import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.module.SimpleModule;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.util.ISO8601DateFormat;
 import org.minig.server.resource.argumentresolver.CompositeIdHandlerMethodArgumentResolver;
 import org.minig.server.resource.argumentresolver.StringIdHandlerMethodArgumentResolver;
+import org.minig.server.resource.config.CompositeAttachmentIdSerializer;
+import org.minig.server.service.CompositeAttachmentId;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +20,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
@@ -53,6 +57,7 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(configuredMappingJacksonHttpMessageConverter());
+        converters.add(new StringHttpMessageConverter());
         converters.add(new FormHttpMessageConverter());
     }
 
@@ -67,7 +72,11 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
         objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.configure(SerializationConfig.Feature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
         objectMapper.setDateFormat(new ISO8601DateFormat());
-        return objectMapper;
-    }
 
+		SimpleModule testModule = new SimpleModule("MinigModule", new Version(1, 0, 0, null));
+		testModule.addSerializer(CompositeAttachmentId.class, new CompositeAttachmentIdSerializer());
+		objectMapper.registerModule(testModule);
+
+		return objectMapper;
+	}
 }

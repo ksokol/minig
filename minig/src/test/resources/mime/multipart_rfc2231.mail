@@ -1,0 +1,33 @@
+Message-ID: <537B2807.1080609@sokol-web.de>
+Date: Tue, 20 May 2014 12:01:43 +0200
+MIME-Version: 1.0
+Subject: test
+Content-Type: multipart/mixed;
+ boundary="------------040708070302080205040103"
+
+This is a multi-part message in MIME format.
+--------------040708070302080205040103
+Content-Type: text/html; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-15">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    <br>
+  </body>
+</html>
+
+--------------040708070302080205040103
+Content-Type: image/png;
+ name="umlaut =?ISO-8859-15?Q?=E4=2Epng?="
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename*=ISO-8859-15''%75%6D%6C%61%75%74%20%E4%2E%70%6E%67
+
+iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAAsTAAALEwEAmpwY
+AAAAB3RJTUUH3gUSEgoTt+MZ0QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJ
+TVBkLmUHAAAADElEQVQI12NQUVEBAADcAG1CtICDAAAAAElFTkSuQmCC
+--------------040708070302080205040103--

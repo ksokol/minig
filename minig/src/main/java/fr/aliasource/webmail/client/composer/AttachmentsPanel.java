@@ -34,6 +34,7 @@ import fr.aliasource.webmail.client.TailCall;
 import fr.aliasource.webmail.client.ctrl.WebmailController;
 import fr.aliasource.webmail.client.shared.IAttachmentMetadata;
 import fr.aliasource.webmail.client.shared.IAttachmentMetadataList;
+import fr.aliasource.webmail.client.shared.Id;
 import fr.aliasource.webmail.client.test.Ajax;
 import fr.aliasource.webmail.client.test.AjaxCallback;
 import fr.aliasource.webmail.client.test.AjaxFactory;
@@ -89,6 +90,8 @@ public class AttachmentsPanel extends VerticalPanel {
 	public void setAttachments(IAttachmentMetadataList list) {
 		// AttachmentUploadWidget uw = newFileUpload(alreadyOnServer);
 		// attachList.add(uw);
+
+        attachList.clear();
 
 		for (IAttachmentMetadata meta : list.getAttachmentMetadata()) {
 			// HorizontalPanel hp = new HorizontalPanel();
@@ -151,16 +154,19 @@ public class AttachmentsPanel extends VerticalPanel {
 		messageId = null;
 	}
 
-	public void dropAttachment(final String attachmentId) {
-		Ajax<String> request = AjaxFactory.deleteAttachment(messageId, attachmentId);
+	public void dropAttachment(final AttachmentUploadWidget attachment) {
+		Ajax<Id> request = AjaxFactory.deleteAttachment(messageId, attachment.getAttachmentId());
 		WebmailController.get().getView().getSpinner().startSpinning();
 
 		try {
-			request.send(new AjaxCallback<String>() {
+			request.send(new AjaxCallback<Id>() {
 
 				@Override
-				public void onSuccess(String object) {
-					managedIds.remove(attachmentId);
+				public void onSuccess(Id object) {
+                    messageId = object.getId();
+                    composer.setMessageId(object.getId());
+					managedIds.remove(attachment.getAttachmentId());
+                    attachList.remove(attachment);
 					WebmailController.get().getView().getSpinner().stopSpinning();
 				}
 

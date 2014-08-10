@@ -130,6 +130,7 @@ public class MessageMapper {
     }
 
     // TODO
+	@Deprecated
     public Mime4jMessage toMessageImpl(Message msg) {
         try {
             // TODO
@@ -576,7 +577,6 @@ public class MessageMapper {
     }
 
     public Mime4jMessage toMime4jMessage(MailMessage source) {
-        // try {
         MessageBuilder newMessageBuilder = messageServiceFactory.newMessageBuilder();
         MessageImpl message = (MessageImpl) newMessageBuilder.newMessage();
         Mime4jMessage target = new Mime4jMessage(message);
@@ -638,22 +638,12 @@ public class MessageMapper {
         }
 
         if (source.getHighPriority() != null && source.getHighPriority()) {
-            // target.setPriority(1);
             target.setHeader(X_PRIORITY, "1");
         }
 
-        // source.getAttachments();
-        // source.getDispositionNotification()
-        // source.getFwdMessages()
-        //
-        // MimeMessage mimeMessage = target.getMimeMessage();
-
-        // mimeMessage.setHeader(X_DRAFT_INFO, draftInfo);
         target.setHeader(X_DRAFT_INFO, draftInfo);
+
         return target;
-        // } catch (Exception e) {
-        // throw new RuntimeException(e.getMessage(), e);
-        // }
     }
 
     /**

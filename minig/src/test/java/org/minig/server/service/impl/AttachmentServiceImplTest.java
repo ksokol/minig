@@ -25,7 +25,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -128,4 +130,22 @@ public class AttachmentServiceImplTest {
 
         assertTrue(Arrays.equals(expected, byteArray));
     }
+
+
+	@Test
+	public void testReadAttachment_hasAttachment2() throws Exception {
+		MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_RFC_2231_2);
+		CompositeAttachmentId id = new CompositeAttachmentId("INBOX", m.getMessageID(), "umlaut ä veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery long.png");
+
+		mockServer.prepareMailBox("INBOX", m);
+
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+		uut.readAttachment(id, byteArrayOutputStream);
+
+		byte[] byteArray = byteArrayOutputStream.toByteArray();
+		byte[] expected = IOUtils.toByteArray(new FileInputStream(TestConstants.MULTIPART_RFC_2231_2_IMAGE));
+
+		assertThat(byteArray, is(expected));
+	}
 }

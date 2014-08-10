@@ -1,10 +1,14 @@
 package org.minig.server.service.submission;
 
+import java.io.IOException;
 import java.util.Properties;
 
+import javax.mail.BodyPart;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.minig.MailAuthentication;
 import org.minig.server.service.impl.MailContext;

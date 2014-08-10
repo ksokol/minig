@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.minig.RessourceTestConfig;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
+import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.MailService;
 import org.mockito.Matchers;
@@ -77,7 +78,7 @@ public class MailResourceTest {
         when(mailServiceMock.findMessagesByFolder(anyString(), anyInt(), anyInt())).thenReturn(mailMessageList);
 
         mockMvc.perform(get(PREFIX + "/message").param("folder", "INBOX")).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.fullLength").value(1))
+                .andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$.fullLength").value(1))
                 .andExpect(jsonPath("$.page").value(1));
 
         verify(mailServiceMock).findMessagesByFolder("INBOX", 1, 10);
@@ -90,7 +91,7 @@ public class MailResourceTest {
         when(mailServiceMock.findMessagesByFolder(anyString(), anyInt(), anyInt())).thenReturn(mailMessageList);
 
         mockMvc.perform(get(PREFIX + "/message").param("folder", "INBOX").param("page", "7").param("page_length", "11"))
-                .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.fullLength").value(5)).andExpect(jsonPath("$.page").value(3));
 
         verify(mailServiceMock).findMessagesByFolder("INBOX", 7, 11);
@@ -105,7 +106,7 @@ public class MailResourceTest {
         when(mailServiceMock.findMessage(Matchers.<CompositeId> anyObject())).thenReturn(mm);
 
         mockMvc.perform(get(PREFIX + "/message/INBOX/deep/folder/structure|1")).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.id").value("INBOX/deep/folder/structure|1"));
 
         verify(mailServiceMock).findMessage(
@@ -125,7 +126,7 @@ public class MailResourceTest {
         when(mailServiceMock.findMessage(Matchers.<CompositeId> anyObject())).thenReturn(mm);
 
         mockMvc.perform(get(PREFIX + "/message/INBOX.deep.folder.structure|1")).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.id").value("INBOX.deep.folder.structure|1"));
 
         verify(mailServiceMock).findMessage(
@@ -156,7 +157,7 @@ public class MailResourceTest {
 
         doNothing().when(mailServiceMock).updateMessageFlags(any(MailMessage.class));
 
-        mockMvc.perform(put(PREFIX + "/message/flag/INBOX/folder|1").contentType(MediaType.APPLICATION_JSON).content(content)).andExpect(
+        mockMvc.perform(put(PREFIX + "/message/flag/INBOX/folder|1").contentType(TestConstants.APPLICATION_JSON_UTF8).content(content)).andExpect(
                 status().isOk());
 
         verify(mailServiceMock).updateMessageFlags(
@@ -169,7 +170,7 @@ public class MailResourceTest {
 
         doNothing().when(mailServiceMock).updateMessagesFlags(any(MailMessageList.class));
 
-        mockMvc.perform(put(PREFIX + "/message/flag").contentType(MediaType.APPLICATION_JSON).content(content)).andExpect(status().isOk());
+        mockMvc.perform(put(PREFIX + "/message/flag").contentType(TestConstants.APPLICATION_JSON_UTF8).content(content)).andExpect(status().isOk());
 
         verify(mailServiceMock).updateMessagesFlags(any(MailMessageList.class));
     }
@@ -180,7 +181,7 @@ public class MailResourceTest {
 
         doNothing().when(mailServiceMock).moveMessagesToFolder(Matchers.<List<CompositeId>> anyObject(), anyString());
 
-        mockMvc.perform(put(PREFIX + "/message/move").contentType(MediaType.APPLICATION_JSON).content(content)).andExpect(status().isOk());
+        mockMvc.perform(put(PREFIX + "/message/move").contentType(TestConstants.APPLICATION_JSON_UTF8).content(content)).andExpect(status().isOk());
 
         verify(mailServiceMock).moveMessagesToFolder(Matchers.<List<CompositeId>> anyObject(), anyString());
     }
@@ -195,7 +196,7 @@ public class MailResourceTest {
 
         doNothing().when(mailServiceMock).copyMessagesToFolder(any(List.class), anyString());
 
-        mockMvc.perform(put(PREFIX + "/message/copy").contentType(MediaType.APPLICATION_JSON).content(content)).andExpect(status().isOk());
+        mockMvc.perform(put(PREFIX + "/message/copy").contentType(TestConstants.APPLICATION_JSON_UTF8).content(content)).andExpect(status().isOk());
 
         verify(mailServiceMock).copyMessagesToFolder(request.getMessageIdList(), "INBOX");
     }
@@ -209,7 +210,7 @@ public class MailResourceTest {
 
         doNothing().when(mailServiceMock).deleteMessages(any(List.class));
 
-        mockMvc.perform(put(PREFIX + "/message/delete").contentType(MediaType.APPLICATION_JSON).content(content))
+        mockMvc.perform(put(PREFIX + "/message/delete").contentType(TestConstants.APPLICATION_JSON_UTF8).content(content))
                 .andExpect(status().isOk());
 
         verify(mailServiceMock).deleteMessages(request.getMessageIdList());

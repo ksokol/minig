@@ -38,6 +38,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
@@ -47,6 +48,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * @author Kamill Sokol
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = RessourceTestConfig.class)
@@ -82,15 +86,17 @@ public class AttachmentResourceTest {
         ma.setFileName("filename");
         ma.setId("id");
         ma.setMime("mime");
+		ma.setMessageId("messageId");
+		ma.setFolder("folder");
         ma.setSize(100);
         l.add(ma);
 
         when(attachmentServiceMock.findAttachments(Matchers.<CompositeId> anyObject())).thenReturn(new MailAttachmentList(l));
 
         mockMvc.perform(get(PREFIX + "/attachment/INBOX/test|1")).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("attachmentMetadata[0].fileName").value("filename"))
-                .andExpect(jsonPath("attachmentMetadata[0].id").value("id"))
+                .andExpect(jsonPath("attachmentMetadata[0].id").value("folder|messageId|filename"))
                 .andExpect(jsonPath("attachmentMetadata[0].mime").value("mime"))
                 .andExpect(jsonPath("attachmentMetadata[0].size").value(100));
 
@@ -98,7 +104,6 @@ public class AttachmentResourceTest {
                 argThat(org.hamcrest.Matchers.<CompositeId> hasProperty("messageId", IsEqual.<String> equalTo("1"))));
         verify(attachmentServiceMock).findAttachments(
                 argThat(org.hamcrest.Matchers.<CompositeId> hasProperty("folder", IsEqual.<String> equalTo("INBOX/test"))));
-
     }
 
     @Test
@@ -124,59 +129,39 @@ public class AttachmentResourceTest {
         mockMvc.perform(get(PREFIX + "/attachment/INBOX/test|<id@localhost>|1.png").param("download", "true")).andExpect(status().isOk())
                 .andExpect(content().bytes(expected)).andExpect(header().string("Content-Disposition", "attachment; filename=filename"))
                 .andExpect(header().string("Content-Type", "mime"));
-
     }
 
     @Test
     public void testUploadAttachment() throws Exception {
-        // final byte[] expected = IOUtils.toByteArray(new
-        // FileInputStream("src/test/resources/1.png"));
+        CompositeAttachmentId compositeId = new CompositeAttachmentId("INBOX/test", "id", "data.txt");
 
-        // MockMultipartFile mockMultipartFile = new
-        // MockMultipartFile("filename", new
-        // FileInputStream("src/test/resources/1.png"));
+        when(attachmentServiceMock.addAttachment(Matchers.<CompositeId>anyObject(), Matchers.<MultipartfileDataSource>anyObject()))
+                .thenReturn(compositeId);
 
-        // MailAttachment ma = new MailAttachment();
-        //
-        // ma.setFileName("filename");
-        // ma.setId("id");
-        // ma.setMime("mime");
-        //
-        // when(attachmentServiceMock.findAttachment(Matchers.<CompositeAttachmentId>
-        // anyObject())).thenReturn(ma);
-        //
-        // doAnswer(new Answer<Void>() {
-        // @Override
-        // public Void answer(InvocationOnMock invocation) throws Throwable {
-        // OutputStream out = (OutputStream) invocation.getArguments()[1];
-        // IOUtils.copy(new ByteArrayInputStream(expected), out);
-        // return null;
-        // }
-        // }).when(attachmentServiceMock).readAttachment(Matchers.<CompositeAttachmentId>
-        // anyObject(), Matchers.<OutputStream> anyObject());
-
-        // mockMvc.perform( file(null) post(PREFIX +
-        // "/attachment/INBOX/test").contentType(MediaType.MULTIPART_FORM_DATA).content(expected)).andExpect(
-        // status().isCreated()
-
-        // MockMultipartHttpServletRequestBuilder
-        // mockMultipartHttpServletRequestBuilder = new
-        // MockMultipartHttpServletRequestBuilder(mockMultipartFile);
-
-        mockMvc.perform(fileUpload(PREFIX + "/attachment/INBOX/test|id").file("filename", "data".getBytes())
-        // .andExpect(model().attribute("message",
-        // "File 'myfilename' uploaded successfully")
-        );
+        mockMvc.perform(fileUpload(PREFIX + "/attachment/INBOX/test|id").file("data.txt", "data".getBytes()))
+                .andExpect(content().string("{\"id\":\"INBOX/test|id|data.txt\",\"messageId\":\"id\",\"folder\":\"INBOX/test\",\"fileName\":\"data.txt\"}"));
 
         verify(attachmentServiceMock).addAttachment(
                 argThat(org.hamcrest.Matchers.<CompositeId> hasProperty("messageId", IsEqual.<String> equalTo("id"))),
                 Matchers.<DataSource> anyObject());
-
-        // )
-        // .andExpect(header().string("Content-Disposition",
-        // "attachment; filename=filename"))
-        // .andExpect(header().string("Content-Type", "mime")
-        // );
-
     }
+
+	@Test
+	public void testReadAttachment_encodedFilename() throws Exception {
+		List<MailAttachment> l = new ArrayList<MailAttachment>();
+		MailAttachment ma = new MailAttachment();
+
+		ma.setFolder("folder");
+		ma.setMessageId("messageId");
+		ma.setFileName("umlaut ä.png");
+
+		l.add(ma);
+
+		when(attachmentServiceMock.findAttachments(Matchers.<CompositeId> anyObject())).thenReturn(new MailAttachmentList(l));
+
+		mockMvc.perform(get(PREFIX + "/attachment/INBOX/test|1"))
+				.andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
+				.andExpect(jsonPath("attachmentMetadata[0].fileName").value("umlaut ä.png"))
+				.andExpect(jsonPath("attachmentMetadata[0].id").value("folder|messageId|umlaut+%C3%A4.png"));
+	}
 }

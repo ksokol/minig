@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
+import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 
 public interface MailService {
 
@@ -11,7 +12,13 @@ public interface MailService {
 
 	MailMessageList findMessagesByFolder(String folder, int page, int pageLength);
 
+    /*
+     * use findById() instead
+     */
+    @Deprecated
 	MailMessage findMessage(CompositeId id);
+
+    Mime4jMessage findById(CompositeId id);
 
 	void deleteMessages(List<CompositeId> messageIdList);
 

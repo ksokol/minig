@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
-@RequestMapping(value = "1", produces = "application/json")
+@RequestMapping(value = "1", produces = "application/json; charset=UTF-8")
 class MailResource {
 
     @Autowired

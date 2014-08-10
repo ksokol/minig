@@ -22,6 +22,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FileUpload;
@@ -147,18 +148,26 @@ public class AttachmentUploadWidget extends FormPanel {
 				uploadInfo.setText("File '" + attachementId + "' attached.");
 				hp.add(uploadInfo);
 
-				String results = event.getResults().trim();
-				int indexOf = results.indexOf("</noscript>");
-				String cut = results.substring(indexOf + 11).trim();
-				String replaceAll = cut.replaceAll("&gt;", ">").replaceAll("&lt;", "<");
+                String results = event.getResults().trim();
 
-				messageId = replaceAll;
-				attachPanel.setMessageId(replaceAll);
+                //TODO GWT must be replaced!!!!
+                if(results.startsWith("<pre>")) {
+                    String cut = results.substring(5, results.length() -6).trim();
+                    messageId = cut.replaceAll("&gt;", ">").replaceAll("&lt;", "<");
+                } else if(results.startsWith("<noscript>")) {
+                    int indexOf = results.indexOf("</noscript>");
+                    String cut = results.substring(indexOf + 11).trim();
+                    messageId = cut.replaceAll("&gt;", ">").replaceAll("&lt;", "<");
+                } else {
+                    Window.alert("wrong response: " + results);
+                    return;
+                }
+
+				attachPanel.setMessageId(messageId);
 
 				dp.remove(upload);
 				dp.add(hp, DockPanel.CENTER);
 				updateMetadata(hp);
-
 			}
 		});
 
@@ -208,8 +217,8 @@ public class AttachmentUploadWidget extends FormPanel {
 		final AttachmentUploadWidget auw = this;
 		return new ClickHandler() {
 			public void onClick(ClickEvent ev) {
-				attachPanel.getAttachList().remove(auw);
-				attachPanel.dropAttachment(auw.attachementId);
+				//attachPanel.getAttachList().remove(auw);
+				attachPanel.dropAttachment(auw);
 				//
 				// if (attachPanel.getAttachList().getWidgetCount() == 1) {
 				// attachPanel.reset();
@@ -220,5 +229,9 @@ public class AttachmentUploadWidget extends FormPanel {
 			}
 		};
 	}
+
+    public String getAttachmentId() {
+        return this.attachementId;
+    }
 
 }

@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.minig.RessourceTestConfig;
 import org.minig.server.MailFolder;
 import org.minig.server.MailFolderList;
+import org.minig.server.TestConstants;
 import org.minig.server.service.FolderService;
 import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,14 +61,14 @@ public class FolderResourceTest {
     public void testFindBySubscribed_params() throws Exception {
         when(folderServiceMock.findBySubscribed(Matchers.<Boolean> anyObject())).thenReturn(new MailFolderList());
 
-        mockMvc.perform(get(PREFIX + "/folder")).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(get(PREFIX + "/folder")).andExpect(status().isOk()).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8));
         verify(folderServiceMock).findBySubscribed(null);
 
         reset(folderServiceMock);
 
         when(folderServiceMock.findBySubscribed(Matchers.<Boolean> anyObject())).thenReturn(new MailFolderList());
 
-        mockMvc.perform(get(PREFIX + "/folder").param("subscribed", "true")).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(PREFIX + "/folder").param("subscribed", "true")).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
         verify(folderServiceMock).findBySubscribed(true);
 
@@ -75,7 +76,7 @@ public class FolderResourceTest {
 
         when(folderServiceMock.findBySubscribed(Matchers.<Boolean> anyObject())).thenReturn(new MailFolderList());
 
-        mockMvc.perform(get(PREFIX + "/folder").param("subscribed", "false")).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(PREFIX + "/folder").param("subscribed", "false")).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
         verify(folderServiceMock).findBySubscribed(false);
     }
@@ -91,7 +92,7 @@ public class FolderResourceTest {
 
         when(folderServiceMock.findById(anyString())).thenReturn(new MailFolder());
 
-        mockMvc.perform(get(PREFIX + "/folder/INBOX.test")).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(PREFIX + "/folder/INBOX.test")).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
         verify(folderServiceMock).findById("INBOX.test");
 
@@ -99,7 +100,7 @@ public class FolderResourceTest {
 
         when(folderServiceMock.findById(anyString())).thenReturn(new MailFolder());
 
-        mockMvc.perform(get(PREFIX + "/folder/INBOX.test%20test")).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(PREFIX + "/folder/INBOX.test%20test")).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
         verify(folderServiceMock).findById("INBOX.test test");
     }
@@ -111,7 +112,7 @@ public class FolderResourceTest {
 
         when(folderServiceMock.findById(anyString())).thenReturn(mailFolder);
 
-        mockMvc.perform(get(PREFIX + "/folder/INBOX")).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(PREFIX + "/folder/INBOX")).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.id").value("INBOX"));
         verify(folderServiceMock).findById("INBOX");
     }

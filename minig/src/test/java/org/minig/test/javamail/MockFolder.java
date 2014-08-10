@@ -196,6 +196,7 @@ class MockFolder extends Folder {
                 msg.saveChanges();
             }
 
+            msg.setFlag(Flag.SEEN, false);
             mailbox.add(msg);
         }
     }

@@ -1,27 +1,21 @@
 package org.minig.server.service.impl.helper.mime;
 
-import org.apache.james.mime4j.message.MessageServiceFactoryImpl;
-import org.junit.Test;
+import java.util.Date;
+
+import javax.activation.FileDataSource;
+
+import org.junit.*;
 import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeId;
 
-import javax.activation.FileDataSource;
-import java.util.Date;
-
-import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Kamill Sokol
  */
 public class Mime4jMessageTest {
-
-    private MessageServiceFactoryImpl messageServiceFactory = new MessageServiceFactoryImpl();
 
     @Test
     public void testSetPlain() throws Exception {
@@ -74,23 +68,29 @@ public class Mime4jMessageTest {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.HTML);
         assertThat(mime4jMessage.getAttachments(), hasSize(0));
 
+<<<<<<< HEAD
         mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_1_PNG));
+
+        assertEquals(1, mime4jMessage.getAttachments().size());
+=======
+        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_PNG));
 		assertThat(mime4jMessage.getAttachments(), hasSize(1));
+>>>>>>> origin/master
     }
 
     @Test
     public void testSetMultipart6() throws Exception {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.MULTIPART_WITH_PLAIN_AND_ATTACHMENT);
 
-        assertThat(mime4jMessage.getPlain(), is(equalToIgnoringWhiteSpace("plain text")));
-        assertThat(mime4jMessage.getHtml(), is(""));
+        assertEquals("plain text", mime4jMessage.getPlain().trim());
+        assertEquals("", mime4jMessage.getHtml().trim());
 
         String replacedBody = "replaced plain " + new Date().toString();
         mime4jMessage.setPlain(replacedBody);
         mime4jMessage.setHtml(replacedBody);
 
-        assertThat(mime4jMessage.getPlain(), is(replacedBody));
-        assertThat(mime4jMessage.getHtml(), is(replacedBody));
+        assertEquals(replacedBody, mime4jMessage.getPlain());
+        assertEquals(replacedBody, mime4jMessage.getHtml());
     }
 
     @Test
@@ -143,8 +143,14 @@ public class Mime4jMessageTest {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.PLAIN);
         assertThat(mime4jMessage.getAttachments(), hasSize(0));
 
+<<<<<<< HEAD
         mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_1_PNG));
+
+        assertEquals(1, mime4jMessage.getAttachments().size());
+=======
+        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_PNG));
         assertThat(mime4jMessage.getAttachments(), hasSize(1));
+>>>>>>> origin/master
     }
 
     @Test
@@ -152,8 +158,14 @@ public class Mime4jMessageTest {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
         assertThat(mime4jMessage.getAttachments(), hasSize(0));
 
+<<<<<<< HEAD
         mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_1_PNG));
+
+        assertEquals(1, mime4jMessage.getAttachments().size());
+=======
+        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_PNG));
         assertThat(mime4jMessage.getAttachments(), hasSize(1));
+>>>>>>> origin/master
     }
 
     @Test
@@ -161,8 +173,14 @@ public class Mime4jMessageTest {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.MULTIPART_WITH_ATTACHMENT);
 		assertThat(mime4jMessage.getAttachments(), hasSize(2));
 
+<<<<<<< HEAD
         mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_1_PNG));
+
+        assertEquals(3, mime4jMessage.getAttachments().size());
+=======
+        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_PNG));
 		assertThat(mime4jMessage.getAttachments(), hasSize(3));
+>>>>>>> origin/master
     }
 
     @Test
