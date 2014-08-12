@@ -197,16 +197,15 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public MailMessage createDraftMessage(MailMessage message) {
-        message.setSender(new MailMessageAddress(authentication.getAddress()));
+        message.setSender(new MailMessageAddress(authentication.getEmailAddress()));
 
         Mime4jMessage mime4jMessage = mapper.toMime4jMessage(message);
 
         String messageId = mailRepository.save(mime4jMessage, folderRepository.getDraft().getId());
 
-        // return mailRepository.saveInFolder(message,
-        // folderRepository.getDraft().getId());
+        CompositeId compositeId = new CompositeId(folderRepository.getDraft().getId(), messageId);
 
-        MailMessage readPojo = mailRepository.readPojo(folderRepository.getDraft().getId(), messageId);
+        MailMessage readPojo = findMessage(compositeId);
         readPojo.setRead(Boolean.TRUE);
         mailRepository.updateFlags(readPojo);
 

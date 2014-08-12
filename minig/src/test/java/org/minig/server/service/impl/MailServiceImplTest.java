@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
+import org.minig.server.MailMessageBody;
 import org.minig.server.MailMessageList;
 import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeId;
@@ -374,6 +375,10 @@ public class MailServiceImplTest {
         MailMessage m = new MailMessage();
         m.setSubject("draft message");
 
+        MailMessageBody body = new MailMessageBody();
+        body.setPlain("plain body");
+        m.setBody(body);
+
         MailMessageAddress recipient = new MailMessageAddress();
         recipient.setDisplayName("sender@localhost");
         recipient.setEmail("sender@localhost");
@@ -386,6 +391,7 @@ public class MailServiceImplTest {
         assertThat(draftMessage.getTo(), hasSize(1));
         assertThat(draftMessage.getTo().get(0).getEmail(), is("sender@localhost"));
         assertThat(draftMessage.getTo().get(0).getDisplayName(), is("sender@localhost"));
+        assertThat(draftMessage.getBody().getPlain(), is("plain body"));
     }
 
     @Test

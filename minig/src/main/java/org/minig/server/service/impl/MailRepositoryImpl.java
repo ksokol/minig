@@ -1,17 +1,5 @@
 package org.minig.server.service.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.mail.FetchProfile;
-import javax.mail.Flags;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import javax.mail.search.MessageIDTerm;
-
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
 import org.minig.server.service.CompositeId;
@@ -25,6 +13,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+
+import javax.mail.FetchProfile;
+import javax.mail.Flags;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import javax.mail.search.MessageIDTerm;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 class MailRepositoryImpl implements MailRepository {
@@ -257,31 +256,20 @@ class MailRepositoryImpl implements MailRepository {
 
     @Override
     public String save(Mime4jMessage message, String folder) {
-        // Assert.notNull(source, "message is null");
-        // Assert.notNull(source.getId(), "message.id is null");
-        // Assert.hasText(folder);
+        Assert.notNull(message, "message is null");
+        Assert.hasText(folder, "folder is null");
 
         try {
             MimeMessage target = mapper.toMimeMessage(message);
             target.saveChanges();
             Folder storeFolder = mailContext.openFolder(folder);
             storeFolder.appendMessages(new Message[] { target });
-
-            // Message[] search = storeFolder.search(new
-            // MessageIDTerm(target.getHeader("Message-ID")[0]));
-            //
-            // if (search != null && search.length == 1 && search[0] != null) {
-            // MailMessage convertShort = mapper.convertShort(search[0]);
-            // return convertShort;
-            // }
             storeFolder.close(false);
 
             return target.getHeader("Message-ID")[0];
         } catch (Exception e) {
             throw new RepositoryException(e.getMessage(), e);
         }
-
-        // throw new RepositoryException("error during save");
     }
 
     @Override

@@ -47,7 +47,7 @@ public class MessageMapper {
     private static final String FORWARDED = "$Forwarded";
 
     // TODO
-    MessageServiceFactoryImpl messageServiceFactory = new MessageServiceFactoryImpl();
+    private MessageServiceFactoryImpl messageServiceFactory = new MessageServiceFactoryImpl();
 
     @Autowired
     private MailContext mailContext;
@@ -675,5 +675,13 @@ public class MessageMapper {
         }
 
         return l;
+    }
+
+    public MailContext getMailContext() {
+        return mailContext;
+    }
+
+    public void setMailContext(MailContext mailContext) {
+        this.mailContext = mailContext;
     }
 }
