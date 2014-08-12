@@ -27,11 +27,13 @@ var preprocessors = config.preprocessors;
 
     // list of files / patterns to load in the browser
     files: [
+        //TODO replace by a function which adds files automatically
         'target/dependency/META-INF/resources/webjars/angularjs/**/angular.js',
         'target/dependency/META-INF/resources/webjars/angularjs/**/angular-resource.js',
         'target/dependency/META-INF/resources/webjars/angularjs/**/angular-route.js',
         'target/dependency/META-INF/resources/webjars/angularjs/**/angular-sanitize.js',
         'target/dependency/META-INF/resources/webjars/angularjs/**/angular-mocks.js',
+        'target/dependency/META-INF/resources/webjars/textAngular/**/textAngular.js',
         'src/main/webapp/*.html',
         'src/test/resources/json/*.json' ,
         'src/main/webapp/resources/js/*.js',
