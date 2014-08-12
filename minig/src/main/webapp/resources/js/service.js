@@ -254,7 +254,7 @@ app.service('submissionService',['$q', '$http', 'API_HOME', function($q, $http, 
 
 }]);
 
-app.service('composerService',['$q', '$http', 'API_HOME', function() {
+app.service('composerService',['citeService', function(citeService) {
 
     var _createForward = function(mail) {
         var copy = angular.copy(mail);
@@ -274,10 +274,12 @@ app.service('composerService',['$q', '$http', 'API_HOME', function() {
         delete copy.id;
 
         copy.to = [copy.sender];
-        delete copy.sender;
         copy.subject = "Re: " + copy.subject;
 
-        //TODO body
+        copy.body.html = citeService.citeAsHtml(copy);
+        copy.body.plain = citeService.citeAsPlain(copy);
+
+        delete copy.sender;
 
         return copy;
     };
@@ -300,6 +302,49 @@ app.service('composerService',['$q', '$http', 'API_HOME', function() {
 
 }]);
 
+app.service('citeService',['i18nService', function(i18nService) {
+
+    var _split = function (text) {
+        var split = text.split("\r\n");
+        if(split.length === 1) {
+            return text.split("\n");
+        }
+        return split;
+    };
+
+    var _citeAsPlain = function(mail) {
+        var cited = "On " + mail.date +" "+ mail.sender.email + " wrote: ";
+
+        var split = _split(mail.body.plain);
+        angular.forEach(split, function(val) {
+            cited = cited + "> " + val + "\r\n";
+        });
+
+        return cited;
+    };
+
+    var _citeAsHtml = function(mail) {
+
+        var cited = '<div class="moz-cite-prefix">On ' + mail.date +' '+ mail.sender.email + ' wrote:<br></div>';
+
+        cited = cited + '<blockquote type="cite" cite="mid:TODO">';
+
+        //we do not cite html bodies
+        var split = _split(mail.body.plain);
+        angular.forEach(split, function(val) {
+            cited = cited + val + "<br>";
+        });
+
+        return cited + "</blockquote>";
+    };
+
+    return {
+        citeAsPlain: _citeAsPlain,
+        citeAsHtml: _citeAsHtml
+    }
+
+}]);
+
 app.service('draftService',['$q', '$http', 'API_HOME', function($q, $http, API_HOME) {
 
     var _save = function(mail) {
@@ -312,6 +357,7 @@ app.service('draftService',['$q', '$http', 'API_HOME', function($q, $http, API_H
             method = "PUT";
         }
 
+        //TODO reply-to
         mail.date = new Date();
 
         $http({method: method, url: API_HOME +'message/draft'+id, data: mail})
