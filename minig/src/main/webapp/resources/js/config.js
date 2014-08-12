@@ -1,4 +1,4 @@
-var app = angular.module("minigApp", ['ngResource', 'ngRoute', 'LocalStorageModule', 'ngSanitize'])
+var app = angular.module("minigApp", ['ngResource', 'ngRoute', 'LocalStorageModule', 'ngSanitize', 'minigTextAngular'])
 .constant('API_HOME', 'api/1/')
 .constant('DEFAULT_PAGE_SIZE', 20)
 .constant('INITIAL_MAILBOX', 'INBOX'); //TODO: INBOX shouldn't be hardcoded
@@ -47,25 +47,39 @@ app.config(function($httpProvider, $routeProvider) {
     });
 
     $routeProvider
-        .when('', {
-            redirectTo : '/box'
-        })
-        .when('/box', {
-            templateUrl: "box.jsp",
-            controller: 'MailOverviewCtrl'
-        })
-        .when('/folder', {
-            templateUrl: "folder.jsp",
-            controller: 'FolderSettingsCtrl'
-        })
-        .when('/composer', {
-            templateUrl: "composer.jsp",
-            controller: 'ComposerCtrl'
-        })
-        .when('/message', {
-            templateUrl: "message.jsp",
-            controller: 'MessageCtrl'
-        })
-        .otherwise({redirectTo: '/box'});
+    .when('', {
+        redirectTo : '/box'
+    })
+    .when('/box', {
+        templateUrl: "box.jsp",
+        controller: 'MailOverviewCtrl'
+    })
+    .when('/folder', {
+        templateUrl: "folder.jsp",
+        controller: 'FolderSettingsCtrl'
+    })
+    .when('/composer', {
+        templateUrl: "composer.jsp",
+        controller: 'ComposerCtrl'
+    })
+    .when('/message', {
+        templateUrl: "message.jsp",
+        controller: 'MessageCtrl'
+    })
+    .otherwise({redirectTo: '/box'});
 
 });
+
+angular.module('minigTextAngular', ['textAngular'])
+    .config(['$provide', function($provide){
+        $provide.decorator('taOptions', ['$delegate', function(taOptions){
+            taOptions.toolbar = [
+              //  ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'pre', 'quote'],
+                ['bold', 'italics', 'underline', 'ul', 'ol', 'redo', 'undo', 'clear'],
+                ['justifyLeft','justifyCenter','justifyRight'],
+                ['html', 'insertImage', 'insertLink', 'unlink']
+            ];
+            return taOptions; // whatever you return will be the taOptions
+        }]);
+
+    }]);

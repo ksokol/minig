@@ -439,6 +439,11 @@
             <artifactId>angularjs</artifactId>
             <version>1.2.20</version>
         </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>textAngular</artifactId>
+            <version>1.2.0</version>
+        </dependency>
 	</dependencies>
 	<url>http://code.google.com/p/minig/</url>
 	<version>3.0-SNAPSHOT</version>

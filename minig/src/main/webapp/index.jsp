@@ -21,7 +21,7 @@
     <script src="webjars/angularjs/1.2.20/angular-route.min.js"></script>
     <script src="webjars/angularjs/1.2.20/angular-sanitize.min.js"></script>
     <script src="resources/js/angular-local-storage.min.js"></script>
-
+    <script src="webjars/textAngular/1.2.0/textAngular.min.js"></script>
     <script src="webjars/momentjs/2.7.0/min/moment-with-langs.min.js"></script>
 
     <script src="resources/js/config.js"></script>

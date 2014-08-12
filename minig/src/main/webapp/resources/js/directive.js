@@ -341,7 +341,11 @@ app.directive("conversationDisplay", function() {
 app.directive("messageText", function() {
 
     var formatPlain = function (text) {
-        return text.split("\r\n");
+        var split = text.split("\r\n");
+        if(split.length === 1) {
+            return text.split("\n");
+        }
+        return split;
     };
 
     var formatHtml = function (html) {

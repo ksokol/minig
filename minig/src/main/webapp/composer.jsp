@@ -481,8 +481,9 @@
     <tr>
         <td align="left" width="" height="" style="vertical-align: top;">
             <div class="whiteBackground">
-            <iframe class="gwt-RichTextArea" style="height: 324px;"></iframe>
-        </div></td>
+                <text-angular ng-model="mail.body.html"></text-angular>
+            </div>
+        </td>
     </tr>
 </tbody>
 </table></td>
