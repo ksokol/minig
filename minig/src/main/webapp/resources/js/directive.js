@@ -537,10 +537,9 @@ app.directive("bodyEditor", function(localStorageService) {
             localStorageService.set("showRichFormatting", angular.element(this).data("show-rich"));
         });
 
-        scope.$on("destroy", function() {
+        scope.$on("$destroy", function() {
             element.find('#hide').unbind();
             element.find('#show').unbind();
-            console.log("unbind")
         });
 
         if(richFormatting === "false") {
