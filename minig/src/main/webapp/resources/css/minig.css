@@ -859,25 +859,10 @@ html>body .gwt-DecoratedPopupPanel .popupBottomRight {
 	border-width: 1px;
 }
 
-.gwt-RichTextToolbar .gwt-ToggleButton-up-hovering {
-	margin-right: 4px;
-	margin-bottom: 4px;
-	padding: 0px 1px 0px 0px;
+.btn.active {
+    background-position: 0 -513px;
 	border-width: 1px;
-}
-
-.gwt-RichTextToolbar .gwt-ToggleButton-down {
-	margin-right: 4px;
-	margin-bottom: 4px;
-	padding: 0px 0px 0px 1px;
-	border-width: 1px;
-}
-
-.gwt-RichTextToolbar .gwt-ToggleButton-down-hovering {
-	margin-right: 4px;
-	margin-bottom: 4px;
-	padding: 0px 0px 0px 1px;
-	border-width: 1px;
+    border: 1px inset #ccc;
 }
 
 .gwt-StackPanel {
