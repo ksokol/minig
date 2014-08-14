@@ -313,7 +313,7 @@ app.service('citeService',['i18nService', function(i18nService) {
     };
 
     var _citeAsPlain = function(mail) {
-        var cited = "On " + mail.date +" "+ mail.sender.email + " wrote: ";
+        var cited = "\r\n\r\nOn " + mail.date +" "+ mail.sender.email + " wrote: ";
 
         var split = _split(mail.body.plain);
         angular.forEach(split, function(val) {
@@ -325,7 +325,7 @@ app.service('citeService',['i18nService', function(i18nService) {
 
     var _citeAsHtml = function(mail) {
 
-        var cited = '<div class="moz-cite-prefix">On ' + mail.date +' '+ mail.sender.email + ' wrote:<br></div>';
+        var cited = '<br><br><div class="moz-cite-prefix">On ' + mail.date +' '+ mail.sender.email + ' wrote:<br></div>';
 
         cited = cited + '<blockquote type="cite" cite="mid:TODO">';
 
