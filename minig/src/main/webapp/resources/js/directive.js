@@ -519,15 +519,47 @@ app.directive("attachmentUpload", function() {
 
 });
 
-app.directive("bodyEditor", function() {
+app.directive("bodyEditor", function(localStorageService) {
+
+    var prepareToolbar = function(scope, element) {
+        var toolbar = element.find('.btn-toolbar');
+        var richFormatting = localStorageService.get("showRichFormatting") || "false";
+
+        toolbar.append('<div class="btn-group richFormattingToggle" data-show-rich="false" style="float: right;"><a class="gwt-Anchor" style="color: #fff;">« Hide</a></div>');
+        toolbar.find(".btn-group:first").before('<div data-show-rich="true" class="btn-group richFormattingToggle hidden"><a class="gwt-Anchor" style="color: #fff;">Rich formatting »</a></div>');
+
+        var buttons = element.find('.btn');
+        var toggles = element.find('.richFormattingToggle');
+
+        toggles.bind('click', function(e) {
+            buttons.toggleClass("hidden");
+            toggles.toggleClass("hidden");
+            localStorageService.set("showRichFormatting", angular.element(this).data("show-rich"));
+        });
+
+        scope.$on("destroy", function() {
+            element.find('#hide').unbind();
+            element.find('#show').unbind();
+            console.log("unbind")
+        });
+
+        if(richFormatting === "false") {
+            buttons.toggleClass("hidden");
+            toggles.toggleClass("hidden");
+        }
+    };
+
     return {
         restrict: "C",
-        controller: [ "$scope", "localStorageService", function ($scope, localStorageService) {
-            $scope.showRichFormatting = localStorageService.get("showRichFormatting");
+        link: function(scope, element) {
+            //TODO mimics old toolbar show/hide. will be removed with the next ui redesign
+            prepareToolbar(scope, element)
 
-            $scope.$watch("showRichFormatting", function(e) {
-                localStorageService.set("showRichFormatting", $scope.showRichFormatting);
-            });
-        }]
+//          scope.$watch("mail", function(mail) {
+//              if(mail === undefined || mail.body === undefined) {
+//                  return;
+//              }
+//          });
+        }
     }
 });
