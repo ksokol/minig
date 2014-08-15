@@ -519,7 +519,7 @@ app.directive("attachmentUpload", function() {
 
 });
 
-app.directive("bodyEditor", function(localStorageService) {
+app.directive("bodyEditor", function(localStorageService, textAngularManager, htmlConversion) {
 
     var prepareToolbar = function(scope, element) {
         var toolbar = element.find('.btn-toolbar');
@@ -554,11 +554,12 @@ app.directive("bodyEditor", function(localStorageService) {
             //TODO mimics old toolbar show/hide. will be removed with the next ui redesign
             prepareToolbar(scope, element)
 
-//          scope.$watch("mail", function(mail) {
-//              if(mail === undefined || mail.body === undefined) {
-//                  return;
-//              }
-//          });
+            textAngularManager.retrieveEditor('htmlEditor').scope.$watch("html", function(html) {
+                if(!scope.mail || !scope.mail.body) {
+                    return;
+                }
+                scope.mail.body.plain = htmlConversion.convert(html);
+            });
         }
     }
 });

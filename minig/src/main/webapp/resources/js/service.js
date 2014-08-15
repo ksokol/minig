@@ -313,6 +313,7 @@ app.service('citeService',['i18nService', function(i18nService) {
     };
 
     var _citeAsPlain = function(mail) {
+        //TODO localize
         var cited = "\r\n\r\nOn " + mail.date +" "+ mail.sender.email + " wrote: ";
 
         var split = _split(mail.body.plain);
@@ -324,9 +325,8 @@ app.service('citeService',['i18nService', function(i18nService) {
     };
 
     var _citeAsHtml = function(mail) {
-
+        //TODO localize
         var cited = '<br><br><div class="moz-cite-prefix">On ' + mail.date +' '+ mail.sender.email + ' wrote:<br></div>';
-
         cited = cited + '<blockquote type="cite" cite="mid:TODO">';
 
         //we do not cite html bodies
@@ -344,6 +344,20 @@ app.service('citeService',['i18nService', function(i18nService) {
     }
 
 }]);
+
+app.service('htmlConversion', function() {
+
+    var _convert = function(html) {
+        //TODO need to preserve quotation, simple formatting, convert html entities
+        //http://stackoverflow.com/questions/17289448/angularjs-to-output-plain-text-instead-of-html
+        var run1 = String(html).replace(/<br\w?\/?>/gm, '\r\n');
+        return String(run1).replace(/<[^>]+>/gm, '');
+    };
+
+    return {
+        convert: _convert
+    }
+});
 
 app.service('draftService',['$q', '$http', 'API_HOME', function($q, $http, API_HOME) {
 
