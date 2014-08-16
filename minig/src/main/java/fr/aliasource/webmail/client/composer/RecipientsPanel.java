@@ -16,13 +16,13 @@
 
 package fr.aliasource.webmail.client.composer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import com.google.gwt.event.dom.client.*;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -31,11 +31,12 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-
 import fr.aliasource.webmail.client.I18N;
-import fr.aliasource.webmail.client.View;
 import fr.aliasource.webmail.client.shared.IEmailAddress;
-import fr.aliasource.webmail.client.test.BeanFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * The address selection widget used in mail composer
@@ -54,7 +55,7 @@ public class RecipientsPanel extends HorizontalPanel {
 
     private static String PATTERN_EMAIL = "[a-zA-Z_0-9\\-.]+@[a-zA-Z_0-9\\-.]+\\.[a-z]+";
 
-    public RecipientsPanel(View ui, String label) {
+    public RecipientsPanel(String label) {
         super();
         token = -1;
         Label recipientType = new Label(label);
@@ -271,7 +272,7 @@ public class RecipientsPanel extends HorizontalPanel {
                 display = display.substring(0, idx);
             }
 
-            IEmailAddress a = BeanFactory.instance.emailAddress().as();
+            IEmailAddress a = null;
             a.setDisplayName(display);
             a.setEmail(r);
 
