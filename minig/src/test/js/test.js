@@ -168,3 +168,34 @@ describe('folderCache', function(){
     });
 
 });
+
+describe('htmlConversion', function() {
+    beforeEach(module('minigApp'));
+
+    beforeEach(inject(function(htmlConversion) {
+        sut = htmlConversion;
+    }));
+
+    it("should be empty string", function() {
+        var resultEmpty = sut.convertToPlain("");
+        expect(resultEmpty).toEqual("");
+
+        var resultEmpty2 = sut.convertToPlain(null);
+        expect(resultEmpty2).toEqual("");
+    });
+
+    it("should be bold string", function() {
+        var resultEmpty = sut.convertToPlain("<b>bold</b>");
+        expect(resultEmpty).toEqual("**bold**");
+    });
+
+    it("should be plain string", function() {
+        var resultEmpty = sut.convertToPlain("<div>plain</div>");
+        expect(resultEmpty).toEqual("plain");
+    });
+
+    it("should be quoted string", function() {
+        var resultEmpty = sut.convertToPlain("<blockquote>quote</blockquote>");
+        expect(resultEmpty).toEqual("> quote");
+    });
+});
