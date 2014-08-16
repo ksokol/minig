@@ -164,8 +164,8 @@ public class IntegrationTest {
         String attachmentId = "INBOX.Drafts|" + mailWithAttachment.getMessageID() + "|1.png";
 
         MvcResult mvcResult = mockMvc.perform(delete(PREFIX + "/attachment/" + attachmentId)).andReturn();
-        Map<String, String> response = om.readValue(mvcResult.getResponse().getContentAsString(), Map.class);
-        String idAfterAttachmentWasRemoved = response.get("id");
+        Map<String, Map<String, String>> response = om.readValue(mvcResult.getResponse().getContentAsString(), Map.class);
+        String idAfterAttachmentWasRemoved = response.get("id").get("id");
 
         mockMvc.perform(get(PREFIX + "/message/" + idAfterAttachmentWasRemoved))
                 .andExpect(jsonPath("$.attachments..fileName").value(contains("2.png")))

@@ -81,7 +81,7 @@ public class AttachmentResource {
         MailAttachmentList attachments = attachmentService.findAttachments(newMailId);
 
         Map<String, Object> map = new HashMap<>();
-        map.put("id", newMailId.getId());
+        map.put("id", newMailId);
         map.put("attachmentMetadata", attachments.getAttachmentMetadata());
         return map;
     }
@@ -94,7 +94,7 @@ public class AttachmentResource {
         MailAttachmentList attachments = attachmentService.findAttachments(newMailId);
 
         Map<String, Object> map = new HashMap<>();
-        map.put("id", newMailId.getId());
+        map.put("id", newMailId);
         map.put("attachmentMetadata", attachments.getAttachmentMetadata());
         return map;
     }

@@ -147,7 +147,7 @@ public class AttachmentResourceTest {
         when(attachmentServiceMock.findAttachments(compositeId)).thenReturn(mailAttachmentList);
 
         mockMvc.perform(fileUpload(PREFIX + "/attachment/INBOX/test|id").file("data.txt", "data".getBytes()))
-                .andExpect(content().string("{\"id\":\"INBOX/test|id|data.txt\",\"attachmentMetadata\":[{\"id\":\"INBOX/test|id|file.html\",\"messageId\":\"id\",\"folder\":\"INBOX/test\",\"fileName\":\"file.html\",\"mime\":\"text/html\",\"size\":42}]}"));
+                .andExpect(content().string("{\"id\":{\"id\":\"INBOX/test|id|data.txt\",\"messageId\":\"id\",\"folder\":\"INBOX/test\",\"fileName\":\"data.txt\"},\"attachmentMetadata\":[{\"id\":\"INBOX/test|id|file.html\",\"messageId\":\"id\",\"folder\":\"INBOX/test\",\"fileName\":\"file.html\",\"mime\":\"text/html\",\"size\":42}]}"));
 
         verify(attachmentServiceMock).addAttachment(
                 argThat(org.hamcrest.Matchers.<CompositeId> hasProperty("messageId", IsEqual.<String> equalTo("id"))),
