@@ -1,6 +1,8 @@
 package org.minig.server.resource.attachment;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletResponse;
@@ -8,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.minig.server.MailAttachment;
 import org.minig.server.MailAttachmentList;
 import org.minig.server.resource.Id;
+import org.minig.server.resource.exception.ClientIllegalArgumentException;
 import org.minig.server.service.AttachmentService;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
@@ -25,6 +28,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 
+/**
+ * @author Kamill Sokol
+ */
 @Controller
 @RequestMapping(value = "1", produces = "application/json; charset=UTF-8")
 public class AttachmentResource {
@@ -65,22 +71,31 @@ public class AttachmentResource {
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "attachment/**", method = RequestMethod.POST)
     @ResponseBody
-    public CompositeId uploadAttachment(@Id CompositeId id, MultipartRequest file) throws IOException {
-        CompositeId addAttachment = id;
-        for (Entry<String, MultipartFile> entry : file.getFileMap().entrySet()) {
-            addAttachment = attachmentService.addAttachment(addAttachment, new MultipartfileDataSource(entry.getValue()));
+    public Map<String, Object> uploadAttachment(@Id CompositeId id, MultipartRequest file) throws IOException {
+        if(file.getFileMap().size() > 1) {
+            throw new ClientIllegalArgumentException("too many files");
         }
-        if (addAttachment != null) {
-            return addAttachment;
-        }
-        throw new NotFoundException();
+
+        MultipartFile multipartFile = file.getFileMap().values().iterator().next();
+        CompositeId newMailId = attachmentService.addAttachment(id, new MultipartfileDataSource(multipartFile));
+        MailAttachmentList attachments = attachmentService.findAttachments(newMailId);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", newMailId.getId());
+        map.put("attachmentMetadata", attachments.getAttachmentMetadata());
+        return map;
     }
 
     @ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "attachment/**", method = RequestMethod.DELETE)
     @ResponseBody
-    public CompositeId deleteAttachment(@Id CompositeAttachmentId id) {
-        CompositeId compositeId = attachmentService.deleteAttachment(id);
-        return compositeId;
+    public Map<String, Object> deleteAttachment(@Id CompositeAttachmentId id) {
+        CompositeId newMailId = attachmentService.deleteAttachment(id);
+        MailAttachmentList attachments = attachmentService.findAttachments(newMailId);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", newMailId.getId());
+        map.put("attachmentMetadata", attachments.getAttachmentMetadata());
+        return map;
     }
 }

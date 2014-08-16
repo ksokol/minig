@@ -1,13 +1,5 @@
 package org.minig.server.resource.attachment;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.activation.DataSource;
-
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.core.IsEqual;
 import org.junit.Before;
@@ -24,7 +16,6 @@ import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -32,21 +23,26 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.activation.DataSource;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
  * @author Kamill Sokol
@@ -138,8 +134,20 @@ public class AttachmentResourceTest {
         when(attachmentServiceMock.addAttachment(Matchers.<CompositeId>anyObject(), Matchers.<MultipartfileDataSource>anyObject()))
                 .thenReturn(compositeId);
 
+        MailAttachment mailAttachment = new MailAttachment();
+        mailAttachment.setFileName("file.html");
+        mailAttachment.setMessageId(compositeId.getMessageId());
+        mailAttachment.setFolder(compositeId.getFolder());
+        mailAttachment.setMime("text/html");
+        mailAttachment.setSize(42);
+
+        MailAttachmentList mailAttachmentList = new MailAttachmentList();
+        mailAttachmentList.setAttachmentMetadata(Arrays.asList(mailAttachment));
+
+        when(attachmentServiceMock.findAttachments(compositeId)).thenReturn(mailAttachmentList);
+
         mockMvc.perform(fileUpload(PREFIX + "/attachment/INBOX/test|id").file("data.txt", "data".getBytes()))
-                .andExpect(content().string("{\"id\":\"INBOX/test|id|data.txt\",\"messageId\":\"id\",\"folder\":\"INBOX/test\",\"fileName\":\"data.txt\"}"));
+                .andExpect(content().string("{\"id\":\"INBOX/test|id|data.txt\",\"attachmentMetadata\":[{\"id\":\"INBOX/test|id|file.html\",\"messageId\":\"id\",\"folder\":\"INBOX/test\",\"fileName\":\"file.html\",\"mime\":\"text/html\",\"size\":42}]}"));
 
         verify(attachmentServiceMock).addAttachment(
                 argThat(org.hamcrest.Matchers.<CompositeId> hasProperty("messageId", IsEqual.<String> equalTo("id"))),

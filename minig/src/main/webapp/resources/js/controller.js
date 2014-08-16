@@ -372,8 +372,9 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 
     $scope.save = function() {
         draftService.save($scope.mail)
-        .then(function(id) {
-            routeService.navigateTo({path:"composer", params: {id: id }});
+        .then(function(mail) {
+            $scope.mail.id = mail.id;
+            $scope.mail.attachmentMetadata = mail.attachmentMetadata;
             $rootScope.$broadcast('notification', i18nService.resolve("Draft saved"));
         });
     };
@@ -398,6 +399,8 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         if(!id) {
             return;
         }
+
+        $scope.mail.id = id;
         routeService.navigateTo({path:"composer", params: {id: id }});
     });
 

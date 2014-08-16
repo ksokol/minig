@@ -418,8 +418,9 @@ app.directive("attachmentPanel", function() {
 
             $scope.delete = function(attachment) {
                 attachmentService.delete(attachment.id)
-                .then(function(id) {
-                    $scope.mail.id = id;
+                .then(function(result) {
+                    $scope.mail.attachmentMetadata = result.attachmentMetadata;
+                    $scope.mail.id = result.id;
                 });
             };
         }]
@@ -511,7 +512,12 @@ app.directive("attachmentUpload", function() {
                 formData.append(file.name, file);
                 attachmentService.save({messageId: $scope.mail.id, data: formData})
                 .then(function(result) {
-                    $scope.mail.id = result;
+                    $scope.mail.attachmentMetadata = result.attachmentMetadata; //.push(result.metaData);
+                    $scope.mail.id = result.id;
+                    delete element.files;
+                    delete $scope.file;
+                    element.value = null;
+                    $scope.showUploadButton = false;
                 });
             }
         }]

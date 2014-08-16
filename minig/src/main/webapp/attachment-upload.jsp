@@ -20,8 +20,6 @@
                                         <img src="resources/images/spinner_moz.gif" class="gwt-Image" style="display: none;"
                                             aria-hidden="true">
                                     </td>
-                                    <td align="left" style="vertical-align: top;"><a class="gwt-Anchor"
-                                                                                     href="javascript:;">Delete</a></td>
                                 </tr>
                                 </tbody>
                             </table>

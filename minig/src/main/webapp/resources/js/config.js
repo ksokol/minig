@@ -60,7 +60,8 @@ app.config(function($httpProvider, $routeProvider) {
     })
     .when('/composer', {
         templateUrl: "composer.jsp",
-        controller: 'ComposerCtrl'
+        controller: 'ComposerCtrl',
+        reloadOnSearch: false
     })
     .when('/message', {
         templateUrl: "message.jsp",

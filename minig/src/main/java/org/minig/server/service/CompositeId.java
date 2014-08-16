@@ -1,7 +1,10 @@
 package org.minig.server.service;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 
-//@JsonIgnoreProperties(ignoreUnknown = true)
+/**
+ * @author Kamill Sokol
+ */
 public class CompositeId {
 
 	public static final String SEPARATOR = "|";
@@ -27,6 +30,7 @@ public class CompositeId {
 		return id;
 	}
 
+    @JsonIgnore
 	public String getMessageId() {
 		return messageId;
 	}

@@ -147,7 +147,7 @@ app.service('routeService', function($rootScope, $route, $location, $log, localS
     var _navigate = function(route) {
         $log.info("navigate to ", route);
         $location.url(route);
-    }
+    };
 
     var navigateToPrevious =function() {
         var url = previous();
@@ -373,7 +373,7 @@ app.service('draftService',['$q', '$http', 'API_HOME', function($q, $http, API_H
 
         $http({method: method, url: API_HOME +'message/draft'+id, data: mail})
             .success(function(result) {
-                deferred.resolve(result.id);
+                deferred.resolve(result);
             })
             .error(function(data) {
                 deferred.reject(data);
@@ -413,7 +413,7 @@ app.service('attachmentService',['$q', '$http', 'API_HOME', function($q, $http, 
             }
         })
         .success(function(result) {
-            deferred.resolve(result.id);
+            deferred.resolve(result);
         })
         .error(function(data) {
             deferred.reject(data);
@@ -430,7 +430,7 @@ app.service('attachmentService',['$q', '$http', 'API_HOME', function($q, $http, 
             url: API_HOME +'attachment/'+id
         })
         .success(function(result) {
-            deferred.resolve(result.id);
+            deferred.resolve(result);
         })
         .error(function(data) {
             deferred.reject(data);
