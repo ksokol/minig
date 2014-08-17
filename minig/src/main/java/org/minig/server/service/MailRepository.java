@@ -18,9 +18,6 @@ public interface MailRepository {
 
     void delete(CompositeId id);
 
-    @Deprecated
-    MailMessage saveInFolder(MailMessage message, String folder);
-
     String save(Mime4jMessage message, String folder);
 
     void updateFlags(MailMessage message);

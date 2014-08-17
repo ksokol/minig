@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @author Kamill Sokol
+ */
 @Component
 class MailRepositoryImpl implements MailRepository {
 
@@ -228,30 +231,6 @@ class MailRepositoryImpl implements MailRepository {
             e.printStackTrace();
             throw new RepositoryException(e.getMessage(), e);
         }
-    }
-
-    @Override
-    public MailMessage saveInFolder(MailMessage source, String folder) {
-        Assert.notNull(source, "message is null");
-        // Assert.notNull(source.getId(), "message.id is null");
-        Assert.hasText(folder);
-
-        try {
-            Message target = mapper.toMessage(source);
-            Folder storeFolder = mailContext.getFolder(folder, true);
-            storeFolder.appendMessages(new Message[] { target });
-
-            Message[] search = storeFolder.search(new MessageIDTerm(target.getHeader("Message-ID")[0]));
-
-            if (search != null && search.length == 1 && search[0] != null) {
-                MailMessage convertShort = mapper.convertShort(search[0]);
-                return convertShort;
-            }
-        } catch (Exception e) {
-            throw new RepositoryException(e.getMessage(), e);
-        }
-
-        throw new RepositoryException("error during save");
     }
 
     @Override

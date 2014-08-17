@@ -25,6 +25,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * @author Kamill Sokol
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { ServiceTestConfig.class })
 @ActiveProfiles("test")
@@ -170,19 +173,6 @@ public class MailRepositoryImplTest {
         uut.delete(findByFolder.getMailList().get(0));
         findByFolder = uut.findByFolder("INBOX", 1, 1);
         assertEquals(0, findByFolder.getFullLength());
-    }
-
-    @Test
-    public void testSaveInFolder() {
-        MailMessageList findByFolder = uut.findByFolder("INBOX", 1, 1);
-        assertEquals(0, findByFolder.getFullLength());
-
-        MailMessage mm = new MailMessage();
-        MailMessage saved = uut.saveInFolder(mm, "INBOX");
-
-        findByFolder = uut.findByFolder("INBOX", 1, 1);
-        assertEquals(1, findByFolder.getFullLength());
-        assertTrue(saved.getId().startsWith("INBOX|"));
     }
 
     @Test
