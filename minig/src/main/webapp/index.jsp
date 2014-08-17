@@ -23,7 +23,7 @@
     <script src="webjars/textAngular/1.2.0/textAngular.min.js"></script>
     <script src="webjars/momentjs/2.7.0/min/moment-with-langs.min.js"></script>
     <script src="resources/js/he.js"></script>
-    <script src="resources/js/md.js"></script>
+    <script src="resources/js/md-3.0.2.min.js"></script>
     <script src="resources/js/config.js"></script>
     <script src="resources/js/service.js"></script>
     <script src="resources/js/filter.js"></script>
