@@ -475,7 +475,13 @@ app.directive("recipientInput", function() {
                     return;
                 }
                 $scope.recipients.push({displayName: recipient, email: recipient, display: recipient});
+            };
 
+            var removeLast = function() {
+                var len = $scope.recipients.length;
+                if(len >= 0) {
+                    $scope.remove($scope.recipients[len-1]);
+                }
             };
 
             $scope.remove = function(recipient) {
@@ -485,6 +491,7 @@ app.directive("recipientInput", function() {
 
             $scope.change = function(event) {
                 keyCodes.indexOf(event.keyCode) !== -1 && pattern.test($scope.recipient) && add($scope.recipient);
+                event.keyCode === 8 && removeLast();
             };
 
             $scope.blur = function(event) {
