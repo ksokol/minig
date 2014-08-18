@@ -54,7 +54,7 @@ app.factory('FolderResource', function($q, $resource, folderCache, API_HOME) {
             deferred.resolve();
         });
         return deferred.promise;
-    }
+    };
 
     return {
         findAll : folderResourceGet.findAll,
@@ -65,7 +65,7 @@ app.factory('FolderResource', function($q, $resource, folderCache, API_HOME) {
 
 });
 
-app.factory('MailResource', ['$q', '$resource','API_HOME','DEFAULT_PAGE_SIZE', function($q, $resource, API_HOME, DEFAULT_PAGE_SIZE) {
+app.factory('MailResource', ['$q', '$resource','mailCache', 'API_HOME','DEFAULT_PAGE_SIZE', function($q, $resource, mailCache, API_HOME, DEFAULT_PAGE_SIZE) {
 	var defaults = {page: 1, page_length: DEFAULT_PAGE_SIZE};
 	
 	var messageDelete = $resource(API_HOME+'message/delete', {}, {deleteMails: {method: 'PUT', isArray:true, transformRequest: _transMessageDelete }});
@@ -114,18 +114,26 @@ app.factory('MailResource', ['$q', '$resource','API_HOME','DEFAULT_PAGE_SIZE', f
 
     messageLoad.load = function(id) {
         var deferred = $q.defer();
-        messageLoad._load({ 'id' : encodeURIComponent(id)}).$promise.then(function(result) {
-            deferred.resolve(result);
-        })
-        .catch(function(error) {
-            deferred.reject(error);
-        });
+        var cached = mailCache.get(id);
+
+        if(cached) {
+            deferred.resolve(cached);
+        } else {
+            messageLoad._load({ 'id' : encodeURIComponent(id)}).$promise.then(function(result) {
+                mailCache.add(result);
+                deferred.resolve(result);
+            })
+            .catch(function(error) {
+                deferred.reject(error);
+            });
+        }
         return deferred.promise;
     };
 
     messageDeleteSingle.delete = function(id) {
         var deferred = $q.defer();
         messageDeleteSingle._delete({ 'id' : encodeURIComponent(id)}).$promise.then(function(result) {
+            mailCache.evict(id);
             deferred.resolve(result);
         });
         return deferred.promise;

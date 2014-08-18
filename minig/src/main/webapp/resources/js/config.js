@@ -1,6 +1,7 @@
 var app = angular.module("minigApp", ['ngResource', 'ngRoute', 'LocalStorageModule', 'ngSanitize', 'minigTextAngular'])
 .constant('API_HOME', 'api/1/')
 .constant('DEFAULT_PAGE_SIZE', 20)
+.constant('MAIL_CACHE_SIZE', 5)
 .constant('INITIAL_MAILBOX', 'INBOX'); //TODO: INBOX shouldn't be hardcoded
 
 app.config(function($httpProvider, $routeProvider) {

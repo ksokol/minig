@@ -131,6 +131,69 @@ app.service('folderCache', function() {
     }
 });
 
+app.service('mailCache', function($log, MAIL_CACHE_SIZE) {
+    var cache = [];
+
+    var _remove = function(id) {
+        var copy = angular.copy(cache);
+        for(i=0;i<copy.length;i++) {
+            if(copy[i].id === id) {
+                copy.splice(i, 1);
+                cache = copy;
+                return;
+            }
+        }
+    };
+
+    var _add = function(mail) {
+        _remove(mail.id);
+        var copy = angular.copy(cache);
+
+        if(copy.length == MAIL_CACHE_SIZE) {
+            $log.info("hit max. cache size of ", MAIL_CACHE_SIZE, " elements. recycling last.");
+            copy = copy.slice(0, copy.length -1);
+        }
+
+        $log.info("caching ", mail.id);
+        copy.push({id: mail.id, data: mail});
+        cache = copy;
+        $log.info("cache ", cache.length, "/", MAIL_CACHE_SIZE);
+    };
+
+    var _get = function(id) {
+        $log.info("searching cache for ", id);
+        var copy = angular.copy(cache);
+        for(i=0;i<copy.length;i++) {
+            $log.info("comparing keys ", copy[i].id, " with ", id);
+            if(copy[i].id === id) {
+                $log.info("cache hit ", id);
+                return copy[i].data;
+            }
+        }
+        $log.info("cache miss for ", id);
+    };
+
+    return {
+        clear : function() {
+            cache = [];
+        },
+        evict : function(id) {
+            _remove(id);
+        },
+        add : function(data) {
+            _add(data);
+        },
+        get : function(id) {
+            return _get(id);
+        },
+        size : function() {
+            return cache.length;
+        }
+    };
+
+
+});
+
 app.service('routeService', function($rootScope, $route, $location, $log, localStorageService) {
 
     $rootScope.$on('$routeChangeError', function(event, next, current) {
@@ -362,7 +425,7 @@ app.service('htmlConversion', function() {
     }
 });
 
-app.service('draftService',['$q', '$http', 'API_HOME', function($q, $http, API_HOME) {
+app.service('draftService',['$q', '$http', 'mailCache', 'API_HOME', function($q, $http, mailCache, API_HOME) {
 
     var _save = function(mail) {
         var deferred = $q.defer();
@@ -379,6 +442,7 @@ app.service('draftService',['$q', '$http', 'API_HOME', function($q, $http, API_H
 
         $http({method: method, url: API_HOME +'message/draft'+id, data: mail})
             .success(function(result) {
+                mailCache.add(result);
                 deferred.resolve(result);
             })
             .error(function(data) {

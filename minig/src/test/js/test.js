@@ -169,6 +169,45 @@ describe('folderCache', function(){
 
 });
 
+describe('mailCache', function() {
+    var mail1 = {id : "1"};
+    var mail2 = {id : "2"};
+
+    beforeEach(module('minigApp'));
+
+    beforeEach(inject(function(mailCache) {
+        sut = mailCache;
+    }));
+
+
+    it("should have size of 2", function() {
+        expect(sut.size()).toBe(0);
+        sut.add(mail1);
+        expect(sut.size()).toBe(1);
+        sut.add(mail2);
+        expect(sut.size()).toBe(2);
+    });
+
+    it("should have size of 1", function() {
+        expect(sut.size()).toBe(0);
+        sut.add(mail1);
+        expect(sut.size()).toBe(1);
+        sut.add(mail1);
+        expect(sut.size()).toBe(1);
+    });
+
+    it("should evict cache entries", function() {
+        expect(sut.size()).toBe(0);
+        sut.add(mail1);
+        expect(sut.size()).toBe(1);
+        sut.add(mail2);
+        expect(sut.size()).toBe(2);
+        sut.evict(mail1.id);
+        expect(sut.size()).toBe(1);
+        expect(sut.get(mail2.id)).toEqual(mail2);
+    });
+});
+
 describe('htmlConversion', function() {
     beforeEach(module('minigApp'));
 
