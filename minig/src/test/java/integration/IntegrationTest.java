@@ -134,12 +134,9 @@ public class IntegrationTest {
         Map<String, Object> map = om.readValue(draftSend.getInputStream(), Map.class);
 
         String draftId = read(draftCreated.getResponse().getContentAsString(), "$.id");
-
-        HashMap<String, Object> stringObjectHashMap = new HashMap<>();
-        stringObjectHashMap.put("clientMessage", map);
         map.put("id", draftId);
 
-        String s = om.writeValueAsString(stringObjectHashMap);
+        String s = om.writeValueAsString(map);
 
         mockMvc.perform(post(PREFIX + "/submission")
                 .content(s)

@@ -237,7 +237,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
     function _updateFlags(mail) {
         MailResource.updateFlags([mail]).$promise
         .catch(function() {
-                $rootScope.$broadcast("error", i18nService.resolve("something wnet wrong"));
+            $rootScope.$broadcast("error", i18nService.resolve("something wnet wrong"));
         });
 
         $rootScope.$broadcast("more-actions-done");
@@ -245,8 +245,8 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 
     function saveAndNavigateToComposer(mail) {
         draftService.save(mail)
-        .then(function(id) {
-            routeService.navigateTo({path:"composer", params: {id: id }});
+        .then(function(savedMail) {
+            routeService.navigateTo({path:"composer", params: {id: savedMail.id }});
         });
     }
 

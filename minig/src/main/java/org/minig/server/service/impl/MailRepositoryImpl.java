@@ -135,6 +135,11 @@ class MailRepositoryImpl implements MailRepository {
     }
 
     @Override
+    public List<CompositeId> findByMessageId(String messageId) {
+        return findByMessageIdAndFolder(new MessageIDTerm(messageId), mailContext.getInbox());
+    }
+
+    @Override
     public MailMessage readPojo(String folder, String messageId) {
 
         try {
@@ -289,4 +294,64 @@ class MailRepositoryImpl implements MailRepository {
         }
     }
 
+    @Override
+    public void setAnsweredFlag(CompositeId id, boolean answered) {
+        if(id == null) {
+            return;
+        }
+
+        try {
+            log.info("setting flagAsAnswered to {} on message {}", answered, id);
+            Folder folder = mailContext.openFolder(id.getFolder());
+            Message[] messages = folder.search(new MessageIDTerm(id.getMessageId()));
+
+            for (Message m : messages) {
+                m.setFlag(Flags.Flag.ANSWERED, answered);
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+    }
+
+    private List<CompositeId> findByMessageIdAndFolder(MessageIDTerm searchTerm, Folder folder) {
+        List<CompositeId> messages = new ArrayList<>();
+        try {
+            if(!folder.exists()) {
+                log.info("{} folder does not exist", folder.getFullName());
+                return messages;
+            }
+
+            if(!mailContext.isSystemFolder(folder)) {
+                log.info("{} folder is system folder", folder.getFullName());
+                return messages;
+            }
+
+            Folder[] list = folder.list();
+            for (Folder childFolder : list) {
+                messages.addAll(findByMessageIdAndFolder(searchTerm, childFolder));
+            }
+
+            if(folder.getType() == Folder.HOLDS_FOLDERS) {
+                log.info("{} can not contain messages. type {}", folder.getFullName(), folder.getType());
+                return messages;
+            }
+
+            if(!folder.isOpen()) {
+                folder.open(Folder.READ_ONLY);
+            }
+
+            Message[] search = folder.search(searchTerm);
+
+            for (Message message : search) {
+                messages.add(new CompositeId(folder.getFullName(), message.getHeader("Message-ID")[0]));
+            }
+
+            if(search.length == 0) {
+                folder.close(false);
+            }
+        } catch (MessagingException e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+        return messages;
+    }
 }

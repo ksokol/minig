@@ -44,6 +44,8 @@ public class Mime4jMessage {
     private static final String X_DRAFT_INFO = "X-Mozilla-Draft-Info";
     private static final String MDN_SENT = "$MDNSent";
     private static final String X_PRIORITY = "X-PRIORITY";
+    public static final String IN_REPLY_TO = "In-Reply-To";
+    public static final String REFERENCES = "References";
 
     private CompositeId id;
     private MessageImpl message;
@@ -306,41 +308,19 @@ public class Mime4jMessage {
         bcc.add(mb);
     }
 
-    //
-    // public void addTo(String email, String name) {
-    // AddressList to = message.getTo();
-    //
-    // if (to == null) {
-    // to = new AddressList(new ArrayList<Address>(), true);
-    // message.setTo(to);
-    // }
-    //
-    // Mailbox mb = new Mailbox(name, email);
-    // to.add(mb);
-    // }
-
     public void addTo(String email) {
         AddressList to = message.getTo();
-
         List<Address> boxes = new ArrayList<Address>();
 
         if (to != null) {
             boxes.addAll(to.subList(0, to.size()));
         }
 
-        // if (to == null) {
-        // to = new AddressList(new ArrayList<Address>(), true);
-        // message.setTo(to);
-        // }
-
         String[] split = email.split("@");
         Mailbox mb = new Mailbox(split[0], split[1]);
 
         boxes.add(mb);
-
         message.setTo(boxes);
-
-        // to.add(mb);
     }
 
     public void clearTo() {
@@ -478,33 +458,22 @@ public class Mime4jMessage {
         return message.getSubject();
     }
 
+    public void setInReplyTo(String inReplyTo) {
+        setHeader(IN_REPLY_TO, inReplyTo);
+        setHeader(REFERENCES, inReplyTo);
+    }
+
+    public String getInReplyTo() {
+        Field field = getMessage().getHeader().getField(IN_REPLY_TO);
+        if(field == null) {
+            return null;
+        }
+        return field.getBody();
+    }
+
     private String parseBodyParts(Multipart multipart, String mimeType) {
         TextBody bodyPart = getBodyPart(multipart, mimeType);
         return getReadablePart(bodyPart);
-        //
-        // try {
-        //
-        // getBodyPart(multipart, mimeType);
-        //
-        // List<Entity> bodyParts = multipart.getBodyParts();
-        //
-        // for (Entity e : bodyParts) {
-        // BodyPart part = (BodyPart) e;
-        //
-        // if (part.isMimeType(mimeType)) {
-        // return getReadablePart(part.getBody());
-        //
-        // }
-        //
-        // if (part.isMultipart()) {
-        // return parseBodyParts((Multipart) part.getBody(), mimeType);
-        // }
-        // }
-        //
-        // return "";
-        // } catch (Exception e) {
-        // throw new RuntimeException(e.getMessage(), e);
-        // }
     }
 
     private IndexOfResult getIndexOf(List<Entity> bodyParts, String mimeType) {

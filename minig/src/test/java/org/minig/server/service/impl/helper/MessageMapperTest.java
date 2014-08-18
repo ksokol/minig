@@ -21,6 +21,7 @@ import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -77,7 +78,7 @@ public class MessageMapperTest {
         MimeMessageBuilder builder = new MimeMessageBuilder();
         MimeMessage m = builder.setRecipientTo("recipient2@localhost").setRecipientCc("recipient11@localhost")
                 .setRecipientBcc("recipient21@localhost").setRecipientDispositionNotification("recipient101@localhost")
-                .setHighPriority(true).setReceipt(true).setAskForDispositionNotification(true).mock();
+                .setHighPriority(true).setReceipt(true).setAskForDispositionNotification(true).setInReplyTo("inReplyTo").mock();
 
         MailMessage c = uut.convertFull(m);
 
@@ -97,6 +98,7 @@ public class MessageMapperTest {
         assertEquals(builder.isAskForDispositionNotification(), c.getAskForDispositionNotification());
         assertEquals(builder.isReceipt(), c.getReceipt());
         assertEquals(builder.isDeleted(), c.getDeleted());
+        assertThat(c.getInReplyTo(), is("inReplyTo"));
 
         assertNotNull(c.getAttachments());
     }
@@ -190,9 +192,21 @@ public class MessageMapperTest {
         MailMessageBody mailMessageBody = new MailMessageBody();
         mailMessageBody.setPlain("plain");
         mailMessage.setBody(mailMessageBody);
+        mailMessage.setInReplyTo("inReplyTo");
 
         Mime4jMessage mime4jMessage = uut.toMime4jMessage(mailMessage);
         assertThat(mime4jMessage.getPlain(), is("plain"));
+        assertThat(mime4jMessage.getInReplyTo(), is("inReplyTo"));
+        assertThat(mime4jMessage.getMessage().getHeader().getField("References").getBody(), is("inReplyTo"));
+    }
+
+    @Test
+    public void testToMime4jMessageNPEcheck() {
+        MailMessage mailMessage = new MailMessage();
+
+        Mime4jMessage mime4jMessage = uut.toMime4jMessage(mailMessage);
+        assertThat(mime4jMessage.getPlain(), is(""));
+        assertThat(mime4jMessage.getInReplyTo(), nullValue());
     }
 
     @Test

@@ -36,6 +36,9 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author ksokol@communicode.de
+ */
 @Component
 public class MessageMapper {
 
@@ -45,6 +48,8 @@ public class MessageMapper {
     private static final Pattern DSN = Pattern.compile(".*DSN=(1);?.*");
     private static final String MDN_SENT = "$MDNSent";
     private static final String FORWARDED = "$Forwarded";
+    public static final String MESSAGE_ID = "Message-ID";
+    public static final String IN_REPLY_TO = "In-Reply-To";
 
     // TODO
     private MessageServiceFactoryImpl messageServiceFactory = new MessageServiceFactoryImpl();
@@ -79,24 +84,6 @@ public class MessageMapper {
         }
     }
 
-    public MailMessage convertAttachments(Message msg) {
-        if (msg == null) {
-            return new MailMessage();
-        }
-
-        try {
-            MailMessage cm = new MailMessage();
-
-            setMessageId(cm, (MimeMessage) msg);
-            setFolder(cm, msg);
-            setAttachmentId(cm, msg);
-
-            return cm;
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-    }
-
     public MailMessage convertFull(Message msg) {
         if (msg == null) {
             return new MailMessage();
@@ -121,6 +108,7 @@ public class MessageMapper {
             setAskForDispositionNotification(cm, msg);
             setForwarded(cm, msg);
             setMdnSent(cm, msg);
+            setInReplyTo(cm, msg);
 
             return cm;
         } catch (Exception e) {
@@ -163,23 +151,6 @@ public class MessageMapper {
             MimeMessage mimeMessage = new MimeMessage(mailContext.getSession(), byteArrayInputStream);
 
             return mimeMessage;
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-    }
-
-    public MailMessage convertId(Message msg) {
-        if (msg == null) {
-            return new MailMessage();
-        }
-
-        try {
-            MailMessage cm = new MailMessage();
-
-            setMessageId(cm, (MimeMessage) msg);
-            setFolder(cm, msg);
-
-            return cm;
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -362,7 +333,7 @@ public class MessageMapper {
         for (String attachmentId : attachmentIdList) {
             CompositeAttachmentId id = new CompositeAttachmentId();
 
-            id.setMessageId(msg.getHeader("Message-ID")[0]);
+            id.setMessageId(msg.getHeader(MESSAGE_ID)[0]);
             id.setFolder(msg.getFolder().getFullName());
             id.setFileName(attachmentId);
 
@@ -398,8 +369,16 @@ public class MessageMapper {
         }
     }
 
+    private void setInReplyTo(MailMessage cm, Message msg) throws MessagingException {
+        String[] header = msg.getHeader(IN_REPLY_TO);
+        if (header == null || header.length != 1) {
+            return;
+        }
+        cm.setInReplyTo(header[0]);
+    }
+
     private List<MailMessageAddress> getRecipients(Message msg, RecipientType type) throws MessagingException {
-        List<MailMessageAddress> recipientList = new ArrayList<MailMessageAddress>();
+        List<MailMessageAddress> recipientList = new ArrayList<>();
 
         Address[] recipients = msg.getRecipients(type);
         if (recipients != null) {
@@ -514,66 +493,6 @@ public class MessageMapper {
 
     public Message toMessage(MailMessage source) {
         return this.toMimeMessage(source);
-
-        // try {
-        // MimeMessage message = mailHelper.createMimeMessage();
-        // MimeMessageHelper target = null;
-        //
-        // if (source.getBody() != null) {
-        // if (source.getBody().getPlain() != null && source.getBody().getHtml()
-        // != null) {
-        // target = new MimeMessageHelper(message, true, "UTF-8");
-        // target.setText(source.getBody().getPlain(),
-        // source.getBody().getHtml());
-        // } else if (source.getBody().getPlain() != null &&
-        // source.getBody().getHtml() == null) {
-        // target = new MimeMessageHelper(message, "UTF-8");
-        // target.setText(source.getBody().getPlain());
-        // } else {
-        // target = new MimeMessageHelper(message, "UTF-8");
-        // target.setText(source.getBody().getHtml(), true);
-        // }
-        // }
-        //
-        // if (source.getSender() != null) {
-        // target.setFrom(source.getSender().getEmail(),
-        // source.getSender().getEmail());
-        // }
-        //
-        // if (source.getSubject() != null) {
-        // target.setSubject(source.getSubject());
-        // }
-        //
-        // if (source.getDate() != null) {
-        // target.setSentDate(source.getDate());
-        // }
-        //
-        // if (source.getCc() != null) {
-        // for (MailMessageAddress address : source.getCc()) {
-        // target.addCc(address.getEmail(), address.getDisplayName());
-        // }
-        // }
-        //
-        // if (source.getBcc() != null) {
-        // for (MailMessageAddress address : source.getBcc()) {
-        // target.addCc(address.getEmail(), address.getDisplayName());
-        // }
-        // }
-        //
-        // if (source.getTo() != null) {
-        // for (MailMessageAddress address : source.getTo()) {
-        // target.addTo(address.getEmail(), address.getDisplayName());
-        // }
-        // }
-        //
-        // // source.getAttachments();
-        // // source.getDispositionNotification()
-        // // source.getFwdMessages()
-        //
-        // return target.getMimeMessage();
-        // } catch (Exception e) {
-        // throw new MailException(e);
-        // }
     }
 
     public Mime4jMessage toMime4jMessage(MailMessage source) {
@@ -643,6 +562,10 @@ public class MessageMapper {
 
         target.setHeader(X_DRAFT_INFO, draftInfo);
 
+        if(source.getInReplyTo() != null) {
+            target.setInReplyTo(source.getInReplyTo());
+        }
+
         return target;
     }
 
@@ -670,7 +593,6 @@ public class MessageMapper {
                 List<String> s = getAttachmentIds(mp.getBodyPart(i));
 
                 l.addAll(s);
-
             }
         }
 

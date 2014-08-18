@@ -14,18 +14,22 @@ import org.minig.server.service.MailService;
 import org.minig.server.service.NotFoundException;
 import org.minig.server.service.impl.helper.MessageMapper;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.logging.Logger;
 
+/**
+ * @author Kamill Sokol
+ */
 @Service
 public class MailServiceImpl implements MailService {
 
-    private static final Logger logger = Logger.getLogger("MailService");
+    private static final Logger log = LoggerFactory.getLogger(MailServiceImpl.class);
 
     @Autowired
     private MailRepository mailRepository;
@@ -156,7 +160,7 @@ public class MailServiceImpl implements MailService {
             try {
                 updateMessageFlags(m);
             } catch (Exception e) {
-                logger.info(e.getMessage());
+                log.info(e.getMessage());
             }
         }
     }
@@ -252,5 +256,19 @@ public class MailServiceImpl implements MailService {
         String saved = mailRepository.save(mimeMessage, message.getFolder());
         mailRepository.delete(message);
         return mailRepository.readPojo(message.getFolder(), saved);
+    }
+
+    @Override
+    public void flagAsAnswered(String messageId) {
+        if(!StringUtils.hasText(messageId)) {
+            return;
+        }
+
+        List<CompositeId> messages = mailRepository.findByMessageId(messageId);
+        log.info("found {} message(s) for messageId {}", messages.size(), messageId);
+
+        for(CompositeId compositeId : messages) {
+            mailRepository.setAnsweredFlag(compositeId, true);
+        }
     }
 }

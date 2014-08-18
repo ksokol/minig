@@ -10,13 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import javax.mail.internet.MimeMessage;
-
+/**
+ * @author Kamill Sokol
+ */
 @Component
 class SubmissionServiceImpl implements SubmissionService {
-
-    // private static final Logger logger =
-    // Logger.getLogger(SubmissionServiceImpl.class.getName());
 
     @Autowired
     private MessageMapper messageMapper;
@@ -32,11 +30,6 @@ class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     public void sendMessage(MailMessage message) {
-        sendMessage(message, null);
-    }
-
-    @Override
-    public void sendMessage(MailMessage message, CompositeId replyTo) {
         Assert.notNull(message);
 
         Mime4jMessage mime4jMessage = null;
@@ -56,12 +49,7 @@ class SubmissionServiceImpl implements SubmissionService {
         }
 
         mailService.moveMessageToFolder(mime4jMessage.getId(), folderRepository.getSent().getId());
-
-        if (replyTo != null && replyTo.getId() != null) {
-            MailMessage updateFlag = mailService.findMessage(replyTo);
-            updateFlag.setAnswered(true);
-            mailService.updateMessageFlags(updateFlag);
-        }
+        mailService.flagAsAnswered(message.getInReplyTo());
     }
 
     @Override

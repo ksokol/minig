@@ -71,4 +71,9 @@ public class CompositeId {
 			id = folder + SEPARATOR + messageId;
 		}
 	}
+
+    @Override
+    public String toString() {
+        return new StringBuilder(folder).append(SEPARATOR).append(messageId).toString();
+    }
 }

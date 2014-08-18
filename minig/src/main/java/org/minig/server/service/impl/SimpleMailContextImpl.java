@@ -20,6 +20,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author Kamill Sokol
+ */
 @Component
 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Profile("prod")
@@ -135,6 +138,23 @@ public class SimpleMailContextImpl implements MailContext, DisposableBean {
     @Override
     public Folder getSent() {
         return getFolder(authentication.getSentFolder());
+    }
+
+    @Override
+    public boolean isSystemFolder(Folder folder) {
+        if(folder == null || folder.getFullName() == null) {
+            return false;
+        }
+        if(authentication.getTrashFolder().equals(folder.getFullName())) {
+            return false;
+        }
+        if(authentication.getSentFolder().equals(folder.getFullName())) {
+            return false;
+        }
+        if(authentication.getDraftsFolder().equals(folder.getFullName())) {
+            return false;
+        }
+        return true;
     }
 
     @Override

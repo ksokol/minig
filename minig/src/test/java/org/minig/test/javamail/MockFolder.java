@@ -64,7 +64,7 @@ class MockFolder extends Folder {
             }
             case "%": {
                 for (Mailbox mb : all) {
-                    if (mb.path.matches(mailbox.path + "\\.?[\\w]*")) {
+                    if (mb.path.matches(mailbox.path + "\\.[\\w]*$")) {
                         mockFolders.add(new MockFolder(getStore(), mb));
                     }
                 }

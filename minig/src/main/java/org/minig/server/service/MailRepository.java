@@ -4,6 +4,11 @@ import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 
+import java.util.List;
+
+/**
+ * @author Kamill Sokol
+ */
 public interface MailRepository {
 
     MailMessageList findByFolder(String folder, int page, int pageLength);
@@ -12,6 +17,8 @@ public interface MailRepository {
     MailMessage read(CompositeId id);
 
     Mime4jMessage read(String folder, String messageId);
+
+    List<CompositeId> findByMessageId(String messageId);
 
     @Deprecated
     MailMessage readPojo(String folder, String messageId);
@@ -28,4 +35,5 @@ public interface MailRepository {
 
     void copyMessage(CompositeId id, String target);
 
+    void setAnsweredFlag(CompositeId id, boolean answered);
 }

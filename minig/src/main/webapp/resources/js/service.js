@@ -234,9 +234,7 @@ app.service('submissionService',['$q', '$http', 'API_HOME', function($q, $http, 
             return;
         }
 
-        var data = {clientMessage: mail};
-
-        $http({method: 'POST', url: API_HOME +'submission', data: data})
+        $http({method: 'POST', url: API_HOME +'submission', data: mail})
             .success(function() {
                 deferred.resolve();
             })
@@ -262,6 +260,8 @@ app.service('composerService',['citeService', function(citeService) {
 
         delete copy.to;
         delete copy.sender;
+
+        //TODO localize
         copy.subject = "Fwd: " + copy.subject;
 
         //TODO body
@@ -274,10 +274,13 @@ app.service('composerService',['citeService', function(citeService) {
         delete copy.id;
 
         copy.to = [copy.sender];
+
+        //TODO localize
         copy.subject = "Re: " + copy.subject;
 
         copy.body.html = citeService.citeAsHtml(copy);
         copy.body.plain = citeService.citeAsPlain(copy);
+        copy.inReplyTo = mail.messageId;
 
         delete copy.sender;
 
@@ -289,7 +292,10 @@ app.service('composerService',['citeService', function(citeService) {
 
         copy.to = [copy.sender];
         delete copy.sender;
+
+        //TODO localize
         copy.subject = "Re: " + copy.subject;
+        copy.inReplyTo = mail.messageId;
 
         return copy;
     };
