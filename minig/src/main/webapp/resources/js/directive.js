@@ -579,3 +579,14 @@ app.directive("bodyEditor", function(localStorageService, textAngularManager, ht
         }
     }
 });
+
+app.directive('userNameLabel', ['userService', function(userService) {
+
+    return {
+        restrict: "C",
+        link: function(scope, element) {
+            userService.setCurrentEmail(element.text().trim());
+        }
+    }
+
+}]);

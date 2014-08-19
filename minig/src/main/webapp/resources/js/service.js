@@ -315,7 +315,7 @@ app.service('submissionService',['$q', '$http', 'API_HOME', function($q, $http, 
 
 }]);
 
-app.service('composerService',['citeService', function(citeService) {
+app.service('composerService',['citeService','userService', function(citeService, userService) {
 
     var _createForward = function(mail) {
         var copy = angular.copy(mail);
@@ -352,13 +352,31 @@ app.service('composerService',['citeService', function(citeService) {
 
     var _replyToAll = function(mail) {
         var copy = angular.copy(mail);
+        delete copy.id;
 
-        copy.to = [copy.sender];
-        delete copy.sender;
+        var tmp = [];
+
+        for(i=0;i<copy.to.length;i++) {
+            tmp[copy.to[i].email] = copy.to[i];
+        }
+
+        tmp[copy.sender.email] = copy.sender;
+        delete tmp[userService.getCurrentEmail()];
+
+        var recipients = [];
+        for(k in tmp) {
+            recipients.push(tmp[k]);
+        }
+
+        copy.to = recipients;
 
         //TODO localize
         copy.subject = "Re: " + copy.subject;
+        copy.body.html = citeService.citeAsHtml(copy);
+        copy.body.plain = citeService.citeAsPlain(copy);
         copy.inReplyTo = mail.messageId;
+
+        delete copy.sender;
 
         return copy;
     };
@@ -515,3 +533,16 @@ app.service('attachmentService',['$q', '$http', 'API_HOME', function($q, $http, 
     };
 
 }]);
+
+app.service('userService', function() {
+    var currentEmail;
+
+    return {
+        setCurrentEmail: function(email) {
+            currentEmail = email;
+        },
+        getCurrentEmail: function() {
+            return currentEmail;
+        }
+    }
+});
