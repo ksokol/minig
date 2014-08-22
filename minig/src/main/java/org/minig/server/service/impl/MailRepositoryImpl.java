@@ -91,25 +91,18 @@ class MailRepositoryImpl implements MailRepository {
     @Override
     public MailMessage read(CompositeId id) {
         Assert.notNull(id);
-        int count = 0;
 
         try {
             Folder storeFolder = mailContext.getFolder(id.getFolder(), true);
 
             if (storeFolder.exists()) {
                 Message[] search = storeFolder.search(new MessageIDTerm(id.getMessageId()));
-                count = search.length;
-
-                if (search.length > 0 && search[0] != null) {
+                if (search.length > 0) {
                     return mapper.convertFull(search[0]);
                 }
             }
         } catch (Exception e) {
             throw new RepositoryException(e.getMessage(), e);
-        }
-
-        if (count > 1) {
-            log.warn(String.format("found more than one message for [%s]", id));
         }
 
         return null;
