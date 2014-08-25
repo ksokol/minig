@@ -568,7 +568,7 @@ app.directive("bodyEditor", function(localStorageService, textAngularManager, ht
         restrict: "C",
         link: function(scope, element) {
             //TODO mimics old toolbar show/hide. will be removed with the next ui redesign
-            prepareToolbar(scope, element)
+            prepareToolbar(scope, element);
 
             textAngularManager.retrieveEditor('htmlEditor').scope.$watch("html", function(html) {
                 if(!scope.mail || !scope.mail.body) {

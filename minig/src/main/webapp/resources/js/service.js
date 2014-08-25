@@ -321,13 +321,14 @@ app.service('composerService',['citeService','userService', function(citeService
         var copy = angular.copy(mail);
         delete copy.id;
 
+        //TODO localize
+        copy.subject = "[Fwd: " + copy.subject +"]";
+
+        copy.body.html = citeService.forwardAsHtml(copy);
+        copy.body.plain = citeService.forwardAsPlain(copy);
+
         delete copy.to;
         delete copy.sender;
-
-        //TODO localize
-        copy.subject = "Fwd: " + copy.subject;
-
-        //TODO body
 
         return copy;
     };
@@ -346,6 +347,8 @@ app.service('composerService',['citeService','userService', function(citeService
         copy.inReplyTo = mail.messageId;
 
         delete copy.sender;
+        delete copy.cc;
+        delete copy.bcc;
 
         return copy;
     };
@@ -377,6 +380,8 @@ app.service('composerService',['citeService','userService', function(citeService
         copy.inReplyTo = mail.messageId;
 
         delete copy.sender;
+        delete copy.cc;
+        delete copy.bcc;
 
         return copy;
     };
@@ -389,7 +394,7 @@ app.service('composerService',['citeService','userService', function(citeService
 
 }]);
 
-app.service('citeService',['i18nService', function(i18nService) {
+app.service('citeService',['$interpolate', 'i18nService', function($interpolate, i18nService) {
 
     var _split = function (text) {
         var split = text.split("\r\n");
@@ -419,15 +424,52 @@ app.service('citeService',['i18nService', function(i18nService) {
         //we do not cite html bodies
         var split = _split(mail.body.plain);
         angular.forEach(split, function(val) {
-            cited = cited + val + "<br>";
+            cited = cited + he.encode(val) + "<br>";
         });
 
         return cited + "</blockquote>";
     };
 
+    var _forwardAsPlain = function(mail) {
+        //TODO localize
+        var forward = "\r\n\r\n-------- Original Message --------\r\n";
+        forward = forward + "Subject: " + mail.subject + "\r\n";
+        forward = forward + "Date: " + mail.date + "\r\n";
+        forward = forward + "From: " + "\r\n";
+        forward = forward + "To: " + "\r\n\r\n";
+
+        var split = _split(mail.body.plain);
+        angular.forEach(split, function(val) {
+            forward = forward + val + "\r\n";
+        });
+
+        return forward;
+    };
+
+    var _forwardAsHtml = function(mail) {
+        var tmpl = "<br><br>-------- {{'Original Message' | i18n}} --------<br>" +
+                   "<strong>{{'Subject' | i18n}}</strong>: {{mail.subject}}<br>" +
+                   "<strong>{{'Date' | i18n}}</strong>: {{mail.date}}<br>" +
+                   "<strong>{{'From' | i18n}}</strong>: {{mail.sender.email}}<br>" +
+                   "<strong>{{'To' | i18n}}</strong>: {{mail.to}}<br><br>" +
+                   "{{body}}";
+
+        //we do not cite html bodies
+        var forward = "";
+        var split = _split(mail.body.plain);
+        angular.forEach(split, function(val) {
+            forward = forward + he.encode(val) + "<br>";
+        });
+
+        var exp = $interpolate(tmpl);
+        return exp({mail: mail, body: forward});
+    };
+
     return {
         citeAsPlain: _citeAsPlain,
-        citeAsHtml: _citeAsHtml
+        citeAsHtml: _citeAsHtml,
+        forwardAsPlain: _forwardAsPlain,
+        forwardAsHtml: _forwardAsHtml
     }
 
 }]);
