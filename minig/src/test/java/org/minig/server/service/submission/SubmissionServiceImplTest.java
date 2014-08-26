@@ -102,10 +102,9 @@ public class SubmissionServiceImplTest {
         mm.setSubject("msg with forward");
         mm.getBody().setHtml(expectedBody);
         mm.getBody().setPlain(expectedBody);
+        mm.setForwardedMessageId(toBeForwarded.getMessageID());
 
-        CompositeId compositeId = new CompositeId("INBOX.test", toBeForwarded.getMessageID());
-
-        uut.forwardMessage(mm, compositeId);
+        uut.sendMessage(mm);
 
         assertThat(sentBox, hasSize(1));
         assertThat(inbox, hasSize(1));

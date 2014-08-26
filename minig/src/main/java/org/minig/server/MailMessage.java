@@ -32,6 +32,7 @@ public class MailMessage extends CompositeId {
     private Boolean deleted;
     private List<MailAttachment> attachmentMetadata;
     private String inReplyTo;
+    private String forwardedMessageId;
 
     public String getSubject() {
         return subject;
@@ -205,5 +206,13 @@ public class MailMessage extends CompositeId {
 
     public void setInReplyTo(String inReplyTo) {
         this.inReplyTo = inReplyTo;
+    }
+
+    public String getForwardedMessageId() {
+        return forwardedMessageId;
+    }
+
+    public void setForwardedMessageId(String forwardedMessageId) {
+        this.forwardedMessageId = forwardedMessageId;
     }
 }

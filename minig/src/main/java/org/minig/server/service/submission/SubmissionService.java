@@ -10,6 +10,4 @@ public interface SubmissionService {
 
     void sendMessage(MailMessage message);
 
-    void forwardMessage(MailMessage message, CompositeId forwardedMessage);
-
 }

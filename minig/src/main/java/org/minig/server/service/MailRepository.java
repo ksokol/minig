@@ -36,4 +36,6 @@ public interface MailRepository {
     void copyMessage(CompositeId id, String target);
 
     void setAnsweredFlag(CompositeId id, boolean answered);
+
+    void setForwardedFlag(CompositeId id, boolean answered);
 }

@@ -193,11 +193,14 @@ public class MessageMapperTest {
         mailMessageBody.setPlain("plain");
         mailMessage.setBody(mailMessageBody);
         mailMessage.setInReplyTo("inReplyTo");
+        mailMessage.setForwardedMessageId("forwardId");
 
         Mime4jMessage mime4jMessage = uut.toMime4jMessage(mailMessage);
         assertThat(mime4jMessage.getPlain(), is("plain"));
         assertThat(mime4jMessage.getInReplyTo(), is("inReplyTo"));
         assertThat(mime4jMessage.getMessage().getHeader().getField("References").getBody(), is("inReplyTo"));
+        assertThat(mime4jMessage.getForwardedMessageId(), is("forwardId"));
+
     }
 
     @Test
@@ -207,6 +210,7 @@ public class MessageMapperTest {
         Mime4jMessage mime4jMessage = uut.toMime4jMessage(mailMessage);
         assertThat(mime4jMessage.getPlain(), is(""));
         assertThat(mime4jMessage.getInReplyTo(), nullValue());
+        assertThat(mime4jMessage.getForwardedMessageId(), nullValue());
     }
 
     @Test

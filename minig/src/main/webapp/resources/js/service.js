@@ -326,9 +326,11 @@ app.service('composerService',['citeService','userService', function(citeService
 
         copy.body.html = citeService.forwardAsHtml(copy);
         copy.body.plain = citeService.forwardAsPlain(copy);
+        copy.forwardedMessageId = mail.messageId;
 
         delete copy.to;
         delete copy.sender;
+        delete copy.inReplyTo;
 
         return copy;
     };
@@ -349,6 +351,7 @@ app.service('composerService',['citeService','userService', function(citeService
         delete copy.sender;
         delete copy.cc;
         delete copy.bcc;
+        delete copy.forwardedMessageId;
 
         return copy;
     };

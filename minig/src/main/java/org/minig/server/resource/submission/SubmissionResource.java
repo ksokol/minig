@@ -33,12 +33,6 @@ public class SubmissionResource {
     }
 
     @ResponseStatus(value = HttpStatus.CREATED)
-    @RequestMapping(value = "forward/**", method = RequestMethod.POST)
-    public void forward(@Id CompositeId forwardedMessageId, @RequestBody MailMessage mailMessage) {
-        mailSendService.forwardMessage(mailMessage, forwardedMessageId);
-    }
-
-    @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "disposition/**", method = RequestMethod.POST)
     public void send(@Id CompositeId id) {
         dispositionService.senDispsoition(id);

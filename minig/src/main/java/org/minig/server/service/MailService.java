@@ -45,4 +45,6 @@ public interface MailService {
 
     void flagAsAnswered(String messageId);
 
+    void flagAsForwarded(String messageId);
+
 }

@@ -48,8 +48,9 @@ public class MessageMapper {
     private static final Pattern DSN = Pattern.compile(".*DSN=(1);?.*");
     private static final String MDN_SENT = "$MDNSent";
     private static final String FORWARDED = "$Forwarded";
-    public static final String MESSAGE_ID = "Message-ID";
-    public static final String IN_REPLY_TO = "In-Reply-To";
+    private static final String MESSAGE_ID = "Message-ID";
+    private static final String IN_REPLY_TO = "In-Reply-To";
+    private static final String FORWARDED_MESSAGE_ID = "X-Forwarded-Message-Id";
 
     // TODO
     private MessageServiceFactoryImpl messageServiceFactory = new MessageServiceFactoryImpl();
@@ -109,11 +110,20 @@ public class MessageMapper {
             setForwarded(cm, msg);
             setMdnSent(cm, msg);
             setInReplyTo(cm, msg);
+            setForwardedMessageId(cm, msg);
 
             return cm;
         } catch (Exception e) {
             // TODO
             throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    private void setForwardedMessageId(MailMessage cm, Message msg) throws MessagingException {
+        String[] header = msg.getHeader(FORWARDED_MESSAGE_ID);
+
+        if (header != null && header.length == 1) {
+            cm.setForwardedMessageId(header[0]);
         }
     }
 
@@ -561,10 +571,8 @@ public class MessageMapper {
         }
 
         target.setHeader(X_DRAFT_INFO, draftInfo);
-
-        if(source.getInReplyTo() != null) {
-            target.setInReplyTo(source.getInReplyTo());
-        }
+        target.setInReplyTo(source.getInReplyTo());
+        target.setForwardedMessageId(source.getForwardedMessageId());
 
         return target;
     }

@@ -306,6 +306,26 @@ class MailRepositoryImpl implements MailRepository {
         }
     }
 
+    @Override
+    public void setForwardedFlag(CompositeId id, boolean answered) {
+        if(id == null) {
+            return;
+        }
+
+        try {
+            log.info("setting flagAsForwarded to {} on message {}", answered, id);
+            Folder folder = mailContext.openFolder(id.getFolder());
+            Message[] messages = folder.search(new MessageIDTerm(id.getMessageId()));
+
+            for (Message m : messages) {
+                Flags forwardedFlag = new Flags("$Forwarded");
+                m.setFlags(forwardedFlag, true);
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+    }
+
     private List<CompositeId> findByMessageIdAndFolder(MessageIDTerm searchTerm, Folder folder) {
         List<CompositeId> messages = new ArrayList<>();
         try {

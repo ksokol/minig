@@ -271,4 +271,18 @@ public class MailServiceImpl implements MailService {
             mailRepository.setAnsweredFlag(compositeId, true);
         }
     }
+
+    @Override
+    public void flagAsForwarded(String messageId) {
+        if(!StringUtils.hasText(messageId)) {
+            return;
+        }
+
+        List<CompositeId> messages = mailRepository.findByMessageId(messageId);
+        log.info("found {} message(s) for messageId {}", messages.size(), messageId);
+
+        for(CompositeId compositeId : messages) {
+            mailRepository.setForwardedFlag(compositeId, true);
+        }
+    }
 }

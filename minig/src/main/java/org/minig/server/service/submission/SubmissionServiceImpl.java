@@ -1,10 +1,8 @@
 package org.minig.server.service.submission;
 
 import org.minig.server.MailMessage;
-import org.minig.server.service.CompositeId;
 import org.minig.server.service.FolderRepository;
 import org.minig.server.service.MailService;
-import org.minig.server.service.impl.helper.MessageMapper;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,9 +13,6 @@ import org.springframework.util.Assert;
  */
 @Component
 class SubmissionServiceImpl implements SubmissionService {
-
-    @Autowired
-    private MessageMapper messageMapper;
 
     @Autowired
     private MailService mailService;
@@ -49,37 +44,12 @@ class SubmissionServiceImpl implements SubmissionService {
         }
 
         mailService.moveMessageToFolder(mime4jMessage.getId(), folderRepository.getSent().getId());
-        mailService.flagAsAnswered(message.getInReplyTo());
-    }
 
-    @Override
-    public void forwardMessage(MailMessage message, CompositeId forwardedMessage) {
-        Assert.notNull(forwardedMessage);
-        Assert.notNull(message);
-
-        MailMessage mm;
-        MailMessage findMessage;
-        Mime4jMessage mime4jMessage = null;
-
-        if (message.getId() == null) {
-            mm = mailService.createDraftMessage(message);
-            findMessage = mailService.findMessage(mm);
-            mime4jMessage = messageMapper.toMime4jMessage(findMessage);
-        } else if (message.getId().startsWith(folderRepository.getDraft().getId())) {
-            mm = mailService.updateDraftMessage(message);
-            findMessage = mailService.findMessage(mm);
-            mime4jMessage = messageMapper.toMime4jMessage(findMessage);
+        if(message.getInReplyTo() != null) {
+            mailService.flagAsAnswered(message.getInReplyTo());
         }
-
-        submission.submit(mime4jMessage);
-
-        mailService.moveMessageToFolder(mime4jMessage.getId(), folderRepository.getSent().getId());
-
-        if (forwardedMessage.getId() != null) {
-            // mime4jMessage = messageMapper.toMime4jMessage(message);
-            MailMessage updateFlag = mailService.findMessage(forwardedMessage);
-            updateFlag.setForwarded(true);
-            mailService.updateMessageFlags(updateFlag);
+        if(message.getForwardedMessageId() != null) {
+            mailService.flagAsForwarded(message.getForwardedMessageId());
         }
     }
 }

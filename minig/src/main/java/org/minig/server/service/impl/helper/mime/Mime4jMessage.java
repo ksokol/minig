@@ -29,6 +29,7 @@ import org.apache.james.mime4j.message.MultipartImpl;
 import org.apache.james.mime4j.stream.Field;
 import org.apache.james.mime4j.stream.RawField;
 import org.minig.server.service.CompositeId;
+import org.springframework.util.StringUtils;
 
 public class Mime4jMessage {
 
@@ -44,8 +45,9 @@ public class Mime4jMessage {
     private static final String X_DRAFT_INFO = "X-Mozilla-Draft-Info";
     private static final String MDN_SENT = "$MDNSent";
     private static final String X_PRIORITY = "X-PRIORITY";
-    public static final String IN_REPLY_TO = "In-Reply-To";
-    public static final String REFERENCES = "References";
+    private static final String IN_REPLY_TO = "In-Reply-To";
+    private static final String REFERENCES = "References";
+    private static final String FORWARDED_MESSAGE_ID = "X-Forwarded-Message-Id";
 
     private CompositeId id;
     private MessageImpl message;
@@ -328,6 +330,9 @@ public class Mime4jMessage {
     }
 
     public void setHeader(String key, String value) {
+        if(StringUtils.isEmpty(key) || StringUtils.isEmpty(value)) {
+            return;
+        }
         RawField f = new RawField(key, value);
         Header messageHeader = message.getHeader();
         messageHeader.setField(f);
@@ -469,6 +474,18 @@ public class Mime4jMessage {
             return null;
         }
         return field.getBody();
+    }
+
+    public String getForwardedMessageId() {
+        Field field = getMessage().getHeader().getField(FORWARDED_MESSAGE_ID);
+        if(field == null) {
+            return null;
+        }
+        return field.getBody();
+    }
+
+    public void setForwardedMessageId(String forwardedMessageId) {
+        setHeader(FORWARDED_MESSAGE_ID, forwardedMessageId);
     }
 
     private String parseBodyParts(Multipart multipart, String mimeType) {
