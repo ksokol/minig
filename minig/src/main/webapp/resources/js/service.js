@@ -397,7 +397,7 @@ app.service('composerService',['citeService','userService', function(citeService
 
 }]);
 
-app.service('citeService',['$interpolate', 'i18nService', function($interpolate, i18nService) {
+app.service('citeService',['$interpolate', 'i18nService', function($interpolate) {
 
     var _split = function (text) {
         var split = text.split("\r\n");
@@ -408,53 +408,59 @@ app.service('citeService',['$interpolate', 'i18nService', function($interpolate,
     };
 
     var _citeAsPlain = function(mail) {
-        //TODO localize
-        var cited = "\r\n\r\nOn " + mail.date +" "+ mail.sender.email + " wrote: ";
+        var tmpl = "\r\n\r\n{{'On' | i18n}} {{mail.date}} {{mail.sender | displayName}} {{'wrote' | i18n}}: \r\n{{body}}";
 
+        var cited="";
         var split = _split(mail.body.plain);
         angular.forEach(split, function(val) {
             cited = cited + "> " + val + "\r\n";
         });
 
-        return cited;
+        var exp = $interpolate(tmpl);
+        return exp({mail: mail, body: cited});
     };
 
     var _citeAsHtml = function(mail) {
-        //TODO localize
-        var cited = '<br><br><div class="moz-cite-prefix">On ' + mail.date +' '+ mail.sender.email + ' wrote:<br></div>';
-        cited = cited + '<blockquote type="cite" cite="mid:TODO">';
+        var tmpl = '<br><br>'+
+                   '<div class="moz-cite-prefix">'+
+                   "{{'On' | i18n}} {{mail.date}} {{mail.sender | displayName}} {{'wrote' | i18n}}:<br>"+
+                   '</div><blockquote type="cite" cite="mid:{{mail.messageId}}">{{body}}</blockquote>';
 
         //we do not cite html bodies
+        var cited="";
         var split = _split(mail.body.plain);
         angular.forEach(split, function(val) {
             cited = cited + he.encode(val) + "<br>";
         });
 
-        return cited + "</blockquote>";
+        var exp = $interpolate(tmpl);
+        return exp({mail: mail, body: cited});
     };
 
     var _forwardAsPlain = function(mail) {
-        //TODO localize
-        var forward = "\r\n\r\n-------- Original Message --------\r\n";
-        forward = forward + "Subject: " + mail.subject + "\r\n";
-        forward = forward + "Date: " + mail.date + "\r\n";
-        forward = forward + "From: " + "\r\n";
-        forward = forward + "To: " + "\r\n\r\n";
+        var tmpl = "<br><br>-------- {{'Original Message' | i18n}} --------\r\n" +
+                      "{{'Subject' | i18n}}: {{mail.subject}}\r\n" +
+                      "{{'Date' | i18n}}: {{mail.date}}\r\n" +
+                      "{{'From' | i18n}}: {{mail.sender.email| displayName}}\r\n" +
+                      "{{'To' | i18n}}: {{mail.to | displayName}}\r\n\r\n" +
+                      "{{body}}";
 
+        var forward="";
         var split = _split(mail.body.plain);
         angular.forEach(split, function(val) {
             forward = forward + val + "\r\n";
         });
 
-        return forward;
+        var exp = $interpolate(tmpl);
+        return exp({mail: mail, body: forward});
     };
 
     var _forwardAsHtml = function(mail) {
         var tmpl = "<br><br>-------- {{'Original Message' | i18n}} --------<br>" +
                    "<strong>{{'Subject' | i18n}}</strong>: {{mail.subject}}<br>" +
                    "<strong>{{'Date' | i18n}}</strong>: {{mail.date}}<br>" +
-                   "<strong>{{'From' | i18n}}</strong>: {{mail.sender.email}}<br>" +
-                   "<strong>{{'To' | i18n}}</strong>: {{mail.to}}<br><br>" +
+                   "<strong>{{'From' | i18n}}</strong>: {{mail.sender.email | displayName}}<br>" +
+                   "<strong>{{'To' | i18n}}</strong>: {{mail.to | displayName}}<br><br>" +
                    "{{body}}";
 
         //we do not cite html bodies
