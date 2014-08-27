@@ -43,8 +43,10 @@
                                                                             <td class="recipientsCol">
                                                                                 <div class="gwt-HTML recipients">
                                                                                     <sender-panel></sender-panel>
+                                                                                    <span class="bold noWrap recipientLabel1">{{mail.sender | displayName}}</span>
                                                                                     &nbsp;to&nbsp;
                                                                                     <recipient-panel></recipient-panel>
+                                                                                    <span class="noWrap recipientLabel2">{{mail.to | displayName}}</span>
                                                                                 </div>
                                                                             </td>
                                                                             <td>

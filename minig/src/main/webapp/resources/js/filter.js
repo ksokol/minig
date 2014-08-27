@@ -52,18 +52,38 @@ app.filter('subscribed', function() {
 });
 
 app.filter('displayName', function(i18nService) {
+
+    var formatEmail = function(email) {
+        if(email && email.displayName) {
+            return email.displayName;
+        }
+        return email.email;
+    };
+
 	
 	return function(sender) {
-		if(sender) {
-			if(sender && sender.displayName) {
-				return sender.displayName;
-			} else {
-				sender.email;
-			}
-		} else {
-			return i18nService.resolve("undisclosed recipient");
-		}
-		
+		if(!sender) {
+            return i18nService.resolve("undisclosed recipient");
+        }
+
+        if(angular.isString(sender)) {
+            return sender;
+        }
+
+        if(!angular.isArray(sender)) {
+            return formatEmail(sender);
+        }
+
+        var formatted = "";
+        for(i=0;i<sender.length;i++) {
+            formatted = formatted + formatEmail(sender[i])+ ", ";
+        }
+
+        if(formatted.length === 0) {
+            return i18nService.resolve("undisclosed recipient");
+        }
+
+        return formatted.substr(0, formatted.length -2);
 	}
 });
 

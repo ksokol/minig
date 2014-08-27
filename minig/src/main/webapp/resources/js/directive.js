@@ -286,44 +286,6 @@ app.directive("selectOptions", function($rootScope, routeService, MailResource) 
     }
 });
 
-app.directive("senderPanel", function() {
-
-    return {
-        restrict: "E",
-        replace : true,
-        controller :  [ "$scope", function ($scope) {
-            $scope.formatSender = function(sender) {
-                if(sender === undefined) {
-                    return "undisclosed sender";
-                }
-                return sender.email;
-            }
-        }],
-        template: '<span class="bold noWrap recipientLabel1">{{formatSender(mail.sender)}}</span>'
-    }
-});
-
-app.directive("recipientPanel", function() {
-
-    return {
-        restrict: "E",
-        replace : true,
-        controller :  [ "$scope", function ($scope) {
-            $scope.formatRecipient = function(recipients) {
-                var formatted = "";
-                if(recipients === undefined) {
-                    return "undisclosed recipients";
-                }
-                angular.forEach(recipients, function(recipient) {
-                    formatted = formatted + recipient.email + ", ";
-                });
-                return formatted.substring(0, formatted.length - 2);
-            }
-        }],
-        template: '<span class="noWrap recipientLabel2">{{formatRecipient(mail.to)}}</span>'
-    }
-});
-
 app.directive("conversationDisplay", function() {
 
     return {
@@ -447,7 +409,7 @@ app.directive("recipientInput", function() {
                  '           <tbody>' +
                  '               <tr>' +
                  '                 <td align="left" style="vertical-align: middle;">' +
-                 '                     <div class="gwt-Label">{{recipient.email}}</div>' +
+                 '                     <div class="gwt-Label">{{recipient | displayName}}</div>' +
                  '                 </td>' +
                  '                 <td align="left" style="vertical-align: middle;">' +
                  '                     <img src="resources/images/x.gif" class="deleteRecip" title="Remove" ng-click="remove(recipient)">' +
