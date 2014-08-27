@@ -128,7 +128,7 @@ class MailRepositoryImpl implements MailRepository {
     }
 
     @Override
-    public List<CompositeId> findByMessageId(String messageId) {
+    public CompositeId findByMessageId(String messageId) {
         return findByMessageIdAndFolder(new MessageIDTerm(messageId), mailContext.getInbox());
     }
 
@@ -232,6 +232,11 @@ class MailRepositoryImpl implements MailRepository {
     }
 
     @Override
+    public void delete(String folder, String messageId) {
+        delete(new CompositeId(folder, messageId));
+    }
+
+    @Override
     public String save(Mime4jMessage message, String folder) {
         Assert.notNull(message, "message is null");
         Assert.hasText(folder, "folder is null");
@@ -294,7 +299,7 @@ class MailRepositoryImpl implements MailRepository {
         }
 
         try {
-            log.info("setting flagAsAnswered to {} on message {}", answered, id);
+            log.debug("setting flagAsAnswered to {} on message {}", answered, id);
             Folder folder = mailContext.openFolder(id.getFolder());
             Message[] messages = folder.search(new MessageIDTerm(id.getMessageId()));
 
@@ -313,7 +318,7 @@ class MailRepositoryImpl implements MailRepository {
         }
 
         try {
-            log.info("setting flagAsForwarded to {} on message {}", answered, id);
+            log.debug("setting flagAsForwarded to {} on message {}", answered, id);
             Folder folder = mailContext.openFolder(id.getFolder());
             Message[] messages = folder.search(new MessageIDTerm(id.getMessageId()));
 
@@ -326,27 +331,38 @@ class MailRepositoryImpl implements MailRepository {
         }
     }
 
-    private List<CompositeId> findByMessageIdAndFolder(MessageIDTerm searchTerm, Folder folder) {
-        List<CompositeId> messages = new ArrayList<>();
+    @Override
+    public String save(Mime4jMessage message) {
+        Assert.notNull(message, "message is null");
+        return save(message, message.getId().getFolder());
+    }
+
+    private CompositeId findByMessageIdAndFolder(MessageIDTerm searchTerm, Folder folder) {
+        CompositeId compositeId = null;
         try {
             if(!folder.exists()) {
-                log.info("{} folder does not exist", folder.getFullName());
-                return messages;
+                log.debug("{} folder does not exist", folder.getFullName());
+                return compositeId;
             }
 
             if(!mailContext.isSystemFolder(folder)) {
-                log.info("{} folder is system folder", folder.getFullName());
-                return messages;
+                log.debug("{} folder is system folder", folder.getFullName());
+                return compositeId;
             }
 
             Folder[] list = folder.list();
             for (Folder childFolder : list) {
-                messages.addAll(findByMessageIdAndFolder(searchTerm, childFolder));
+                compositeId = findByMessageIdAndFolder(searchTerm, childFolder);
+
+                if(compositeId != null) {
+                    log.debug("found {} in folder {}", searchTerm.getPattern(), folder.getFullName());
+                    return compositeId;
+                }
             }
 
             if(folder.getType() == Folder.HOLDS_FOLDERS) {
-                log.info("{} can not contain messages. type {}", folder.getFullName(), folder.getType());
-                return messages;
+                log.debug("{} can not contain messages. type {}", folder.getFullName(), folder.getType());
+                return compositeId;
             }
 
             if(!folder.isOpen()) {
@@ -356,7 +372,7 @@ class MailRepositoryImpl implements MailRepository {
             Message[] search = folder.search(searchTerm);
 
             for (Message message : search) {
-                messages.add(new CompositeId(folder.getFullName(), message.getHeader("Message-ID")[0]));
+                compositeId = new CompositeId(folder.getFullName(), message.getHeader("Message-ID")[0]);
             }
 
             if(search.length == 0) {
@@ -365,6 +381,6 @@ class MailRepositoryImpl implements MailRepository {
         } catch (MessagingException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
-        return messages;
+        return compositeId;
     }
 }

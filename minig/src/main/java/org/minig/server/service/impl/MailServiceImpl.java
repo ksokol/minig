@@ -13,12 +13,14 @@ import org.minig.server.service.MailRepository;
 import org.minig.server.service.MailService;
 import org.minig.server.service.NotFoundException;
 import org.minig.server.service.impl.helper.MessageMapper;
+import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -201,13 +203,25 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public MailMessage createDraftMessage(MailMessage message) {
-        message.setSender(new MailMessageAddress(authentication.getEmailAddress()));
+        String folderId = folderRepository.getDraft().getId();
 
         Mime4jMessage mime4jMessage = mapper.toMime4jMessage(message);
+        mime4jMessage.setFrom(authentication.getEmailAddress());
 
-        String messageId = mailRepository.save(mime4jMessage, folderRepository.getDraft().getId());
+        if(StringUtils.hasText(message.getForwardedMessageId())) {
+            CompositeId compositeId = mailRepository.findByMessageId(message.getForwardedMessageId());
 
-        CompositeId compositeId = new CompositeId(folderRepository.getDraft().getId(), messageId);
+            if (compositeId != null) {
+                List<Mime4jAttachment> attachments = attachmentRepository.read(compositeId);
+
+                for (Mime4jAttachment attachment : attachments) {
+                    mime4jMessage.addAttachment(new Mime4jAttachmentDataSource(attachment));
+                }
+            }
+        }
+
+        String saved = mailRepository.save(mime4jMessage, folderId);
+        CompositeId compositeId = new CompositeId(folderId, saved);
 
         MailMessage readPojo = findMessage(compositeId);
         readPojo.setRead(Boolean.TRUE);
@@ -264,12 +278,10 @@ public class MailServiceImpl implements MailService {
             return;
         }
 
-        List<CompositeId> messages = mailRepository.findByMessageId(messageId);
-        log.info("found {} message(s) for messageId {}", messages.size(), messageId);
+        CompositeId messages = mailRepository.findByMessageId(messageId);
+        log.debug("found {} message for messageId {}", messages, messageId);
 
-        for(CompositeId compositeId : messages) {
-            mailRepository.setAnsweredFlag(compositeId, true);
-        }
+         mailRepository.setAnsweredFlag(messages, true);
     }
 
     @Override
@@ -278,11 +290,15 @@ public class MailServiceImpl implements MailService {
             return;
         }
 
-        List<CompositeId> messages = mailRepository.findByMessageId(messageId);
-        log.info("found {} message(s) for messageId {}", messages.size(), messageId);
+        CompositeId compositeId = mailRepository.findByMessageId(messageId);
 
-        for(CompositeId compositeId : messages) {
-            mailRepository.setForwardedFlag(compositeId, true);
+        if(compositeId == null) {
+            log.debug("could not find message for messageId {}", messageId);
+            return;
         }
+
+        log.debug("found {} for messageId {}", compositeId.getId(), messageId);
+
+        mailRepository.setForwardedFlag(compositeId, true);
     }
 }

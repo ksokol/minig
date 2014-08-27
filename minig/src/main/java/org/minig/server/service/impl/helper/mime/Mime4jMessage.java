@@ -344,6 +344,7 @@ public class Mime4jMessage {
         for (Entity e : multipart.getBodyParts()) {
             BodyPart part = (BodyPart) e;
 
+            //TODO what about inline attachments?
             if ("attachment".equalsIgnoreCase(part.getDispositionType())) {
                 attachments.add(part);
             }

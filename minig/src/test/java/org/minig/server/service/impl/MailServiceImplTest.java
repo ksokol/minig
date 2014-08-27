@@ -24,6 +24,8 @@ import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.NotFoundException;
 import org.minig.server.service.ServiceTestConfig;
 import org.minig.server.service.SmtpAndImapMockServer;
+import org.minig.test.javamail.Mailbox;
+import org.minig.test.javamail.MailboxBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -465,5 +467,32 @@ public class MailServiceImplTest {
         assertThat(updateDraftMessage.getHighPriority(), is(true));
         assertThat(updateDraftMessage.getReceipt(), is(true));
         assertThat(updateDraftMessage.getDate(), notNullValue());
+    }
+
+    @Test
+    public void testCreateDraftWithForwardAndAttachments() throws MessagingException {
+        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_ATTACHMENT);
+
+        new MailboxBuilder("testuser@localhost").mailbox("INBOX").exists(true).subscribed().build().add(m);
+        new MailboxBuilder("testuser@localhost").mailbox("INBOX.Drafts").exists(true).subscribed().build();
+
+        MailMessage mm = new MailMessage();
+        mm.setForwardedMessageId(m.getMessageID());
+
+        MailMessage updateDraftMessage = uut.createDraftMessage(mm);
+
+        assertThat(updateDraftMessage.getAttachmentMetadata(), hasSize(2));
+    }
+
+    @Test
+    public void testCreateDraftWithInvalidForwardAndAttachments() throws MessagingException {
+        new MailboxBuilder("testuser@localhost").mailbox("INBOX.Drafts").exists(true).subscribed().build();
+
+        MailMessage mm = new MailMessage();
+        mm.setForwardedMessageId("42");
+
+        MailMessage updateDraftMessage = uut.createDraftMessage(mm);
+
+        assertThat(updateDraftMessage.getAttachmentMetadata(), hasSize(0));
     }
 }

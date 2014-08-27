@@ -121,6 +121,24 @@ public class SubmissionServiceImplTest {
     }
 
     @Test
+    public void testInvalidForwardMessage() throws MessagingException {
+        new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX").subscribed().exists().build();
+        new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Drafts").subscribed().exists().build();
+
+        Mailbox inbox = new MailboxBuilder("test@example.com").mailbox("INBOX").subscribed().exists().build();
+        Mailbox sentBox = new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Sent").subscribed().exists().build();
+
+        MailMessage mm = new MailMessage();
+        mm.setTo(Arrays.asList(new MailMessageAddress("test@example.com")));
+        mm.setForwardedMessageId("42");
+
+        uut.sendMessage(mm);
+
+        assertThat(sentBox, hasSize(1));
+        assertThat(inbox, hasSize(1));
+    }
+
+    @Test
     public void testSendDraftMessage() throws MessagingException, IOException, MimeException {
         MimeMessage toBeSend = new MimeMessageBuilder().setFolder("INBOX.Drafts").build(TestConstants.MULTIPART_WITH_PLAIN_AND_ATTACHMENT);
         Mime4jMessage mime4jMessageToBeSend = Mime4jTestHelper.convertMimeMessage(toBeSend);

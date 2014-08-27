@@ -27,6 +27,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -210,10 +212,9 @@ public class MailRepositoryImplTest {
         child1b.add(message);
         child2bChild1b.add(message);
 
-        List<CompositeId> byMessageId = uut.findByMessageId(messageID);
+        CompositeId byMessageId = uut.findByMessageId(messageID);
 
-        assertThat(byMessageId, hasSize(2));
-
+        assertThat(byMessageId.getId(), is(new CompositeId("INBOX.child2b.child1b", message.getMessageID()).getId()));
     }
 
 }
