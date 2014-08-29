@@ -35,6 +35,6 @@ public class SubmissionResource {
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "disposition/**", method = RequestMethod.POST)
     public void send(@Id CompositeId id) {
-        dispositionService.senDispsoition(id);
+        dispositionService.sendDisposition(id);
     }
 }

@@ -23,6 +23,8 @@ public class TestConstants {
 	public static final String MULTIPART_RFC_2231_2 = "src/test/resources/mime/multipart_rfc2231_2.mail";
     public static final String PLAIN = "src/test/resources/mime/testAppendPlainAttachment.mail";
     public static final String HTML = "src/test/resources/mime/testAppendHtmlAttachment.mail";
+    public static final String DISPOSITION_NOTIFICATION = "src/test/resources/mime/testDispositionNotification.mail";
+    public static final String NESTED_MESSAGE = "src/test/resources/mime/testNestedMessage.mail";
 
     public static final String ATTACHMENT_IMAGE_1_PNG = "src/test/resources/image/1.png";
     public static final String ATTACHMENT_IMAGE_FOLDER_GIF = "src/test/resources/image/folder.gif";

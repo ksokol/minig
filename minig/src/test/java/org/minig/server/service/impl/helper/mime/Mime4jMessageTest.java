@@ -1,12 +1,12 @@
 package org.minig.server.service.impl.helper.mime;
 
-import org.apache.james.mime4j.message.MessageServiceFactoryImpl;
 import org.junit.Test;
 import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeId;
 
 import javax.activation.FileDataSource;
 import java.util.Date;
+import java.util.Scanner;
 
 import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 import static org.hamcrest.Matchers.hasSize;
@@ -20,8 +20,6 @@ import static org.junit.Assert.assertTrue;
  * @author Kamill Sokol
  */
 public class Mime4jMessageTest {
-
-    private MessageServiceFactoryImpl messageServiceFactory = new MessageServiceFactoryImpl();
 
     @Test
     public void testSetPlain() throws Exception {
@@ -203,4 +201,17 @@ public class Mime4jMessageTest {
 		Mime4jAttachment attachment = mime4jMessage.getAttachments().get(0);
 		assertThat(attachment.getId().getId(), is("folder|messageId|umlaut ä.png"));
 	}
+
+    @Test
+    public void testMime4jNestedMessage() throws Exception {
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.NESTED_MESSAGE);
+
+        assertThat(mime4jMessage.getAttachments(), hasSize(1));
+
+        Mime4jAttachment attachment = mime4jMessage.getAttachment("Disposition Notification Test.eml");
+        String text = new Scanner(attachment.getData()).useDelimiter("\\A").next();
+
+        assertThat(attachment.getMimeType(), is("text/plain"));
+        assertThat(text, equalToIgnoringWhiteSpace("Body nested"));
+    }
 }
