@@ -1,10 +1,14 @@
 package org.minig.server.service.impl.helper.mime;
 
+import org.apache.james.mime4j.dom.address.Address;
+import org.apache.james.mime4j.dom.address.AddressList;
+import org.apache.james.mime4j.dom.address.Mailbox;
 import org.junit.Test;
 import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeId;
 
 import javax.activation.FileDataSource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -185,11 +189,13 @@ public class Mime4jMessageTest {
     public void testAddTo() throws Exception {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.MULTIPART_WITH_ATTACHMENT);
 
-        mime4jMessage.addTo("test1@localhost");
-        mime4jMessage.addTo("test1@localhost");
-        mime4jMessage.addTo("test2@localhost");
+        mime4jMessage.addTo("testuser1@localhost");
+        ArrayList<Address> addresses = new ArrayList<>(3);
+        addresses.add(new Mailbox("testuser", "localhost"));
+        addresses.add(new Mailbox("testuser1", "localhost"));
+        AddressList addressList = new AddressList(addresses, false);
 
-        System.out.println(mime4jMessage.getMessage().getTo());
+        assertThat(mime4jMessage.getMessage().getTo(), is(addressList));
     }
 
 	@Test
