@@ -7,6 +7,7 @@ import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
@@ -31,7 +32,35 @@ public class Submission {
     @Autowired
     private MailAuthentication authentication;
 
-    public void submitWithDSN(Mime4jMessage message) {
+    public void submit(Mime4jMessage message) {
+        Assert.notNull(message, "message is null");
+        if (message.hasDispositionNotifications()) {
+            submitWithDSN(message);
+            return;
+        }
+
+        MimeMessage target = messageMapper.toMimeMessage(message);
+        submit(target);
+    }
+
+    public void submit(MimeMessage message) {
+        JavaMailSenderImpl mailHelper = new JavaMailSenderImpl();
+        Session session = mailContext.getSession();
+        mailHelper.setSession(session);
+
+        try {
+            // always set current authenticated user as sender for security
+            // reasons
+            InternetAddress internetAddress = new InternetAddress(authentication.getEmailAddress());
+            message.setFrom(internetAddress);
+
+            mailHelper.send(message);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    private void submitWithDSN(Mime4jMessage message) {
         JavaMailSenderImpl mailHelper = new JavaMailSenderImpl();
         Session session = mailContext.getSession();
         Properties properties = session.getProperties();
@@ -55,35 +84,6 @@ public class Submission {
         } finally {
             properties.remove(DSN0);
             properties.remove(DSN1);
-        }
-    }
-
-    public void submit(Mime4jMessage message) {
-        JavaMailSenderImpl mailHelper = new JavaMailSenderImpl();
-        Session session = mailContext.getSession();
-        mailHelper.setSession(session);
-
-        // always set current authenticated user as sender for security reasons
-        message.setSender(authentication.getEmailAddress());
-        MimeMessage target = messageMapper.toMimeMessage(message);
-
-        mailHelper.send(target);
-    }
-
-    public void submit(MimeMessage message) {
-        JavaMailSenderImpl mailHelper = new JavaMailSenderImpl();
-        Session session = mailContext.getSession();
-        mailHelper.setSession(session);
-
-        try {
-            // always set current authenticated user as sender for security
-            // reasons
-            InternetAddress internetAddress = new InternetAddress(authentication.getEmailAddress());
-            message.setFrom(internetAddress);
-
-            mailHelper.send(message);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
         }
     }
 }

@@ -37,11 +37,7 @@ class SubmissionServiceImpl implements SubmissionService {
             mime4jMessage = mailService.findById(mm);
         }
 
-        if (mime4jMessage.hasDispositionNotifications()) {
-            submission.submitWithDSN(mime4jMessage);
-        } else {
-            submission.submit(mime4jMessage);
-        }
+        submission.submit(mime4jMessage);
 
         mailService.moveMessageToFolder(mime4jMessage.getId(), folderRepository.getSent().getId());
 
