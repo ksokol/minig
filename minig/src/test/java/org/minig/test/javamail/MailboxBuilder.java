@@ -95,8 +95,15 @@ public class MailboxBuilder {
     }
 
     public static void buildDefault(String mailbox) {
-        new MailboxBuilder(mailbox).mailbox("INBOX").subscribed().exists().build();
-        new MailboxBuilder(mailbox).mailbox("INBOX.Drafts").subscribed().exists().build();
-        new MailboxBuilder(mailbox).mailbox("INBOX.Sent").subscribed().exists().build();
+        //TODO fix me
+        if(MailboxHolder.get(mailbox, "INBOX") == null) {
+            new MailboxBuilder(mailbox).mailbox("INBOX").subscribed().exists().build();
+        }
+        if(MailboxHolder.get(mailbox, "INBOX.Drafts") == null) {
+            new MailboxBuilder(mailbox).mailbox("INBOX.Drafts").subscribed().exists().build();
+        }
+        if(MailboxHolder.get(mailbox, "INBOX.Sent") == null) {
+            new MailboxBuilder(mailbox).mailbox("INBOX.Sent").subscribed().exists().build();
+        }
     }
 }

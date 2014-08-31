@@ -1,22 +1,17 @@
 package org.minig.test.javamail;
 
-import javax.mail.Address;
-import javax.mail.Folder;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.URLName;
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 
 /**
  * {@link Store} backed by {@link Mailbox}.
  * 
  * @author Kohsuke Kawaguchi
- * @author dev@sokol-web.de
+ * @author Kamill Sokol
  */
 public class MockStore extends Store {
 
-    private Address address;
+    private InternetAddress address;
 
     public MockStore(Session session, URLName urlname) {
         super(session, urlname);
@@ -30,6 +25,11 @@ public class MockStore extends Store {
         address = new InternetAddress(user + '@' + host);
 
         Mailbox mailbox = MailboxHolder.get(address, "INBOX");
+
+        if(mailbox == null) {
+            MailboxBuilder.buildDefault(address.getAddress());
+            mailbox = MailboxHolder.get(address, "INBOX");
+        }
 
         if (mailbox.error) {
             throw new MessagingException("Simulated error connecting to " + address);

@@ -2,8 +2,6 @@ package org.minig.server.service.impl;
 
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.mail.Authenticator;
 import javax.mail.Folder;
@@ -13,6 +11,8 @@ import javax.mail.Session;
 import javax.mail.Store;
 
 import org.minig.MailAuthentication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 @Profile("prod")
 public class SimpleMailContextImpl implements MailContext, DisposableBean {
 
-    private static final Logger LOGGER = Logger.getLogger(SimpleMailContextImpl.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(SimpleMailContextImpl.class.getName());
 
     @Autowired
     private MailAuthentication authentication;
@@ -110,7 +110,7 @@ public class SimpleMailContextImpl implements MailContext, DisposableBean {
     @Override
     public Folder getInbox() {
         Folder inbox = getFolder(authentication.getInboxFolder());
-        Folder defaultFolder = null;
+        Folder defaultFolder;
 
         try {
             if (inbox != null && !inbox.exists()) {
@@ -159,22 +159,16 @@ public class SimpleMailContextImpl implements MailContext, DisposableBean {
 
     @Override
     public void destroy() throws Exception {
-        Folder folderToBeClosed = null;
-
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.finest("trackFetchedFolder: " + trackFetchedFolder.size());
-        }
+        Folder folderToBeClosed;
+        log.debug("trackFetchedFolder: {}", trackFetchedFolder.size());
 
         while ((folderToBeClosed = trackFetchedFolder.pollFirst()) != null) {
-            if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.finest("closing: " + folderToBeClosed);
-            }
-
+            log.debug("closing: {}", folderToBeClosed);
             if (folderToBeClosed.isOpen()) {
                 try {
                     folderToBeClosed.close(true);
                 } catch (Exception e) {
-                    LOGGER.severe(e.getMessage());
+                    log.error("can not close folder. reason " + e.getCause());
                 }
             }
         }

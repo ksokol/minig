@@ -31,6 +31,9 @@ import org.apache.james.mime4j.stream.RawField;
 import org.minig.server.service.CompositeId;
 import org.springframework.util.StringUtils;
 
+/**
+ * @author Kamill Sokol
+ */
 public class Mime4jMessage {
 
     private static final Charset UTF_8 = Charset.forName("UTF-8");
@@ -451,7 +454,7 @@ public class Mime4jMessage {
     }
 
     public void setAskForDispositionNotification(Boolean askForDispositionNotification) {
-        this.askForDispositionNotification = askForDispositionNotification == null ? false : true;
+        this.askForDispositionNotification = askForDispositionNotification == null ? false : askForDispositionNotification;
         updateXPriority();
     }
 
@@ -464,7 +467,7 @@ public class Mime4jMessage {
     }
 
     public void setReceipt(Boolean receipt) {
-        this.receipt = receipt == null ? false : true;
+        this.receipt = receipt == null ? false : receipt;
         updateXPriority();
     }
 

@@ -11,6 +11,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailMessage;
@@ -24,8 +25,12 @@ import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.NotFoundException;
 import org.minig.server.service.ServiceTestConfig;
 import org.minig.server.service.SmtpAndImapMockServer;
+import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
+import org.minig.test.javamail.MailboxHolder;
+import org.minig.test.javamail.MailboxRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -49,6 +54,9 @@ public class MailServiceImplTest {
 
     @Autowired
     private SmtpAndImapMockServer mockServer;
+
+  //  @Rule
+  //  public MailboxRule mailboxRule;
 
     @Before
     public void setUp() throws Exception {
@@ -262,11 +270,6 @@ public class MailServiceImplTest {
         assertEquals(1, uut.firstPageMessagesByFolder("INBOX.test").getFullLength());
     }
 
-    // @Test(expected = IllegalArgumentException.class)
-    // public void testCreateMessageWithInvalidArguments() {
-    // uut.createMessage(null);
-    // }
-
     // @Test
     // public void testCreateMessage() {
     // MailMessage mm = new MailMessage();
@@ -467,6 +470,26 @@ public class MailServiceImplTest {
         assertThat(updateDraftMessage.getHighPriority(), is(true));
         assertThat(updateDraftMessage.getReceipt(), is(true));
         assertThat(updateDraftMessage.getDate(), notNullValue());
+    }
+
+    @Test
+    public void testUpdateDraftMessage2() throws MessagingException {
+        MimeMessage m = new MimeMessageBuilder().setFolder("INBOX.Drafts").build(TestConstants.MULTIPART_WITH_PLAIN_AND_ATTACHMENT);
+        mockServer.prepareMailBox("INBOX.Drafts", m);
+
+        Mailbox messages = MailboxHolder.get(TestConstants.MOCK_USER, "INBOX.Drafts");
+
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.convertMimeMessage(messages.getUnread().get(0));
+
+        assertThat(mime4jMessage.isDSN(), is(false));
+        assertThat(mime4jMessage.isReturnReceipt(), is(false));
+
+        MailMessage message = uut.findMessage(mime4jMessage.getId());
+
+        MailMessage mailMessage = uut.updateDraftMessage(message);
+
+        assertThat(mailMessage.getAskForDispositionNotification(), is(false));
+        assertThat(mailMessage.getReceipt(), is(false));
     }
 
     @Test
