@@ -42,10 +42,8 @@
                                                                             </td>
                                                                             <td class="recipientsCol">
                                                                                 <div class="gwt-HTML recipients">
-                                                                                    <sender-panel></sender-panel>
                                                                                     <span class="bold noWrap recipientLabel1">{{mail.sender | displayName}}</span>
                                                                                     &nbsp;to&nbsp;
-                                                                                    <recipient-panel></recipient-panel>
                                                                                     <span class="noWrap recipientLabel2">{{mail.to | displayName}}</span>
                                                                                 </div>
                                                                             </td>
@@ -75,13 +73,13 @@
                                                                                     <tr>
                                                                                         <td class="keys">From</td>
                                                                                         <td>
-                                                                                            <sender-panel></sender-panel>
+                                                                                            {{mail.sender | displayName}}
                                                                                         </td>
                                                                                     </tr>
                                                                                     <tr>
                                                                                         <td class="keys">To</td>
                                                                                         <td>
-                                                                                            <recipient-panel></recipient-panel>
+                                                                                            {{mail.to | displayName}}
                                                                                         </td>
                                                                                     </tr>
                                                                                     <tr>
@@ -116,7 +114,7 @@
                                                                                                 <tbody>
                                                                                                 <tr>
                                                                                                     <td align="left" style="vertical-align: top;">
-                                                                                                        <div class="gwt-Label"><recipient-panel></recipient-panel> would like to be notified of this mail delivery :</div>
+                                                                                                        <div class="gwt-Label">{{mail.to | displayName}} would like to be notified of this mail delivery :</div>
                                                                                                     </td>
                                                                                                     <td align="left" style="vertical-align: top;">
                                                                                                         <a class="gwt-Anchor" ng-click="acceptDisposition()">Accept</a>
