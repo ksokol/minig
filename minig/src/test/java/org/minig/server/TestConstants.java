@@ -15,7 +15,8 @@ public class TestConstants {
     public static final String MULTIPART_WITH_PLAIN_AND_HTML = "src/test/resources/mime/testBody.mail";
     public static final String MULTIPART_WITH_PLAIN_AND_ATTACHMENT = "src/test/resources/mime/multipart_plain_attachment.mail";
     public static final String MULTIPART_WITH_HTML_AND_ATTACHMENT = "src/test/resources/mime/multipart_html_attachment.mail";
-    public static final String PLAIN_DSN_HEADER = "src/test/resources/mime/plain_dsn_header.mail";
+    public static final String PLAIN_DSN_HEADER_1 = "src/test/resources/mime/plain_dsn_header_1.mail";
+    public static final String PLAIN_DSN_HEADER_2 = "src/test/resources/mime/plain_dsn_header_2.mail";
     public static final String SPRING_TEMPLATE = "src/test/resources/mime/spring_template.mail";
     public static final String MULTIPART_ATTACHMENT_BINARY = "src/test/resources/mime/multipart_attachment_binary.mail";
 	public static final String MULTIPART_ATTACHMENT_PLAINTEXT = "src/test/resources/mime/multipart_attachment_plaintext.mail";

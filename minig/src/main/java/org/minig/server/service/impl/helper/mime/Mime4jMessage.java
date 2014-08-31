@@ -374,21 +374,29 @@ public class Mime4jMessage {
         }
     }
 
-    public boolean isDispositionNotification() {
+    public boolean hasDispositionNotifications() {
+        return isDSN() || isReturnReceipt();
+    }
+
+    public boolean isDSN() {
+        return getDraftInfo().contains("DSN=1");
+    }
+
+    public boolean isReturnReceipt() {
+        return getDraftInfo().contains("receipt=1");
+    }
+
+    private String getDraftInfo() {
         Header header = message.getHeader();
-
-        // reuse Mozilla's header field
-        Field field = header.getField("X-Mozilla-Draft-Info");
-
-        if (field != null) {
-            String body = field.getBody();
-            // TODO
-            if (body != null && body.contains("DSN=1")) {
-                return true;
-            }
+        Field field = header.getField(X_DRAFT_INFO);
+        if (field == null) {
+            return "";
         }
-
-        return false;
+        String body = field.getBody();
+        if (body == null) {
+            return "";
+        }
+        return body;
     }
 
     public void setSender(String sender) {

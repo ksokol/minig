@@ -1,15 +1,5 @@
 package org.minig.server.service.submission;
 
-import java.io.IOException;
-import java.util.Properties;
-
-import javax.mail.BodyPart;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-
 import org.minig.MailAuthentication;
 import org.minig.server.service.impl.MailContext;
 import org.minig.server.service.impl.helper.MessageMapper;
@@ -18,6 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Component;
 
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.util.Properties;
+
+/**
+ * @author Kamill Sokol
+ */
 @Component
 public class Submission {
 
@@ -38,8 +36,13 @@ public class Submission {
         Session session = mailContext.getSession();
         Properties properties = session.getProperties();
 
-        properties.put(DSN0, "SUCCESS,FAILURE,DELAY ORCPT=rfc822;" + authentication.getEmailAddress());
-        properties.put(DSN1, "FULL");
+        if(message.isDSN()) {
+            properties.put(DSN0, "SUCCESS,FAILURE,DELAY ORCPT=rfc822;" + authentication.getEmailAddress());
+        }
+
+        if(message.isReturnReceipt()) {
+            properties.put(DSN1, "FULL");
+        }
 
         mailHelper.setSession(session);
 

@@ -177,12 +177,23 @@ public class Mime4jMessageTest {
     }
 
     @Test
-    public void testDSN() throws Exception {
+    public void testNoDSN() throws Exception {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.MULTIPART_WITH_ATTACHMENT);
-        assertFalse(mime4jMessage.isDispositionNotification());
+        assertThat(mime4jMessage.hasDispositionNotifications(), is(false));
+    }
 
-        mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.PLAIN_DSN_HEADER);
-        assertTrue(mime4jMessage.isDispositionNotification());
+    @Test
+    public void testDSN() throws Exception {
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.PLAIN_DSN_HEADER_1);
+        assertThat(mime4jMessage.hasDispositionNotifications(), is(true));
+        assertThat(mime4jMessage.isDSN(), is(true));
+    }
+
+    @Test
+    public void testDSNReceipt() throws Exception {
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.PLAIN_DSN_HEADER_2);
+        assertThat(mime4jMessage.hasDispositionNotifications(), is(true));
+        assertThat(mime4jMessage.isReturnReceipt(), is(true));
     }
 
     @Test
