@@ -43,21 +43,21 @@
                                                 <img ng-show="showIcon(mail)"
                                                      ng-src="resources/images/{{whichIcon(mail)}}.png">
                                             </td>
-                                            <td class="convRecip" ng-class="!mail.read ? 'bold' : ''" ng-click="open(mail)">
+                                            <td class="convRecip" ng-class="{'bold': !mail.read, 'deleted': mail.deleted}" ng-click="open(mail)">
                                                 <div class="gwt-Label" style="white-space: nowrap;"
                                                      title="{{mail.sender.email}}">{{mail.sender | displayName}}
                                                 </div>
                                             </td>
-                                            <td class="conversationAndPreviewCol" ng-click="open(mail)">
+                                            <td class="conversationAndPreviewCol" ng-class="{'bold': !mail.read, 'deleted': mail.deleted}" ng-click="open(mail)">
                                                 <div class="gwt-HTML" style="white-space: nowrap;">
-                                                    <span ng-class="!mail.read ? 'conversationUnreadLabel' : ''">{{mail.subject}}</span>
+                                                    <span>{{mail.subject}}</span>
                                                 </div>
                                             </td>
                                             <td class="convAttach">
                                                 <img ng-show="mail.attachments.length > 0"
                                                      src="resources/images/paperclip.gif">
                                             </td>
-                                            <td class="convDate" ng-class="!mail.read ? 'bold' : ''">
+                                            <td class="convDate" ng-class="{'bold': !mail.read, 'deleted': mail.deleted}">
                                                 <div class="gwt-Label" style="white-space: nowrap;"
                                                      title="{{mail.date | date:'yyyy-MM-dd HH:mm:ss'}}">
                                                     {{mail.date | timeago}}
