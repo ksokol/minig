@@ -9,6 +9,8 @@ import java.nio.charset.Charset;
  */
 public class TestConstants {
 
+    public static final String MOCK_USER = "testuser@localhost";
+
     public static final MediaType APPLICATION_JSON_UTF8 = new MediaType("application","json", Charset.forName("UTF-8"));
 
     public static final String MULTIPART_WITH_ATTACHMENT = "src/test/resources/mime/testAttachmentId.mail";
@@ -17,6 +19,7 @@ public class TestConstants {
     public static final String MULTIPART_WITH_HTML_AND_ATTACHMENT = "src/test/resources/mime/multipart_html_attachment.mail";
     public static final String PLAIN_DSN_HEADER_1 = "src/test/resources/mime/plain_dsn_header_1.mail";
     public static final String PLAIN_DSN_HEADER_2 = "src/test/resources/mime/plain_dsn_header_2.mail";
+    public static final String PLAIN_DSN_HEADER_3 = "src/test/resources/mime/plain_dsn_header_3.mail";
     public static final String SPRING_TEMPLATE = "src/test/resources/mime/spring_template.mail";
     public static final String MULTIPART_ATTACHMENT_BINARY = "src/test/resources/mime/multipart_attachment_binary.mail";
 	public static final String MULTIPART_ATTACHMENT_PLAINTEXT = "src/test/resources/mime/multipart_attachment_plaintext.mail";

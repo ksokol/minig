@@ -2,7 +2,7 @@ Message-ID: <51EEBA71.8090301@localhost>
 Date: Tue, 23 Jul 2013 19:16:33 +0200
 From: Test <testuser@localhost>
 To: Test <recipient@localhost>
-X-Mozilla-Draft-Info: receipt=0; DSN=1
+X-Mozilla-Draft-Info: receipt=1; DSN=1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit

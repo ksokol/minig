@@ -3,6 +3,7 @@ package org.minig.server.service.submission;
 import java.text.MessageFormat;
 
 import javax.mail.Message.RecipientType;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.minig.MailAuthentication;
@@ -12,6 +13,7 @@ import org.minig.server.service.impl.MailContext;
 import org.minig.server.service.impl.helper.MessageMapper;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 import com.sun.mail.dsn.DeliveryStatus;
@@ -37,10 +39,10 @@ class DispositionServiceImpl implements DispositionService {
     private MailContext mailContext;
 
     @Autowired
-    private Submission submission;
+    private MailAuthentication mailAuthentication;
 
     @Autowired
-    private MailAuthentication mailAuthentication;
+    private JavaMailSenderFactory javaMailSenderFactory;
 
     @Override
     public void sendDisposition(CompositeId id) {
@@ -60,11 +62,22 @@ class DispositionServiceImpl implements DispositionService {
             msg.setSubject("Return Receipt (displayed) - " + mimeMessage.getSubject());
             msg.setRecipient(RecipientType.TO, mimeMessage.getFrom()[0]);
 
-            submission.submit(msg);
+            submit(msg);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-
     }
 
+    private void submit(MimeMessage message) {
+        JavaMailSender mailHelper = javaMailSenderFactory.newInstance(mailContext.getSession());
+
+        try {
+            // always set current authenticated user as sender for security reasons
+            InternetAddress internetAddress = new InternetAddress(mailAuthentication.getEmailAddress());
+            message.setFrom(internetAddress);
+            mailHelper.send(message);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
 }

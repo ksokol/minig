@@ -3,6 +3,7 @@ package org.minig.server.service;
 import java.util.Properties;
 
 import org.minig.MailAuthentication;
+import org.minig.server.TestConstants;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,12 +20,12 @@ public class MockMailAuthentication implements MailAuthentication {
 
     @Override
     public String getEmailAddress() {
-        return "testuser@localhost";
+        return TestConstants.MOCK_USER;
     }
 
     @Override
     public String getAddress() {
-        return "testuser@localhost";
+        return TestConstants.MOCK_USER;
     }
 
     @Override

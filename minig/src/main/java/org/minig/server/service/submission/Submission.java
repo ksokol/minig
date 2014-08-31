@@ -5,10 +5,11 @@ import org.minig.server.service.impl.MailContext;
 import org.minig.server.service.impl.helper.MessageMapper;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -32,58 +33,47 @@ public class Submission {
     @Autowired
     private MailAuthentication authentication;
 
+    @Autowired
+    private JavaMailSenderFactory javaMailSenderFactory;
+
     public void submit(Mime4jMessage message) {
         Assert.notNull(message, "message is null");
-        if (message.hasDispositionNotifications()) {
-            submitWithDSN(message);
-            return;
-        }
-
-        MimeMessage target = messageMapper.toMimeMessage(message);
-        submit(target);
-    }
-
-    public void submit(MimeMessage message) {
-        JavaMailSenderImpl mailHelper = new JavaMailSenderImpl();
-        Session session = mailContext.getSession();
-        mailHelper.setSession(session);
 
         try {
-            // always set current authenticated user as sender for security
-            // reasons
-            InternetAddress internetAddress = new InternetAddress(authentication.getEmailAddress());
-            message.setFrom(internetAddress);
-
-            mailHelper.send(message);
-        } catch (Exception e) {
+            submitInternal(message);
+        } catch (MessagingException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
 
-    private void submitWithDSN(Mime4jMessage message) {
-        JavaMailSenderImpl mailHelper = new JavaMailSenderImpl();
+    private void submitInternal(Mime4jMessage message) throws MessagingException {
+        JavaMailSender mailSender = javaMailSenderFactory.newInstance(mailContext.getSession());
+        MimeMessage target = messageMapper.toMimeMessage(message);
         Session session = mailContext.getSession();
         Properties properties = session.getProperties();
 
-        if(message.isDSN()) {
-            properties.put(DSN0, "SUCCESS,FAILURE,DELAY ORCPT=rfc822;" + authentication.getEmailAddress());
-        }
+        InternetAddress internetAddress = new InternetAddress(authentication.getEmailAddress());
+        target.setFrom(internetAddress);
 
-        if(message.isReturnReceipt()) {
+        if (message.isDSN()) {
+            properties.put(DSN0, "SUCCESS,FAILURE,DELAY ORCPT=rfc822;" + authentication.getEmailAddress());
             properties.put(DSN1, "FULL");
         }
 
-        mailHelper.setSession(session);
-
-        // always set current authenticated user as sender for security reasons
-        message.setSender(authentication.getEmailAddress());
-        MimeMessage target = messageMapper.toMimeMessage(message);
+        if(message.isReturnReceipt()) {
+            target.setHeader("Disposition-Notification-To", authentication.getEmailAddress());
+        }
 
         try {
-            mailHelper.send(target);
+            clean(target);
+            mailSender.send(target);
         } finally {
             properties.remove(DSN0);
             properties.remove(DSN1);
         }
+    }
+
+    private void clean(MimeMessage message) throws MessagingException {
+        message.removeHeader("X-Mozilla-Draft-Info");
     }
 }
