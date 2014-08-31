@@ -4,6 +4,7 @@ import org.junit.rules.ExternalResource;
 import org.minig.server.TestConstants;
 
 import javax.mail.Message;
+import javax.mail.internet.MimeMessage;
 import java.util.Iterator;
 
 /**
@@ -28,5 +29,17 @@ public class MailboxRule extends ExternalResource {
             return inbox.next();
         }
         throw new IllegalArgumentException("empty INBOX");
+    }
+
+    public void appendInbox(MimeMessage message) {
+        append("INBOX", message);
+    }
+
+    public void append(String mailbox, MimeMessage message) {
+        new MailboxBuilder(TestConstants.MOCK_USER)
+                .mailbox(mailbox)
+                .subscribed(true)
+                .exists().build()
+                .add(message);
     }
 }

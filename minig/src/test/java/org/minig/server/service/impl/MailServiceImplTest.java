@@ -55,22 +55,15 @@ public class MailServiceImplTest {
     @Autowired
     private SmtpAndImapMockServer mockServer;
 
-  //  @Rule
-  //  public MailboxRule mailboxRule;
-
-    @Before
-    public void setUp() throws Exception {
-        mockServer.reset();
-        assertEquals(0, uut.firstPageMessagesByFolder("INBOX").getFullLength());
-    }
+    @Rule
+    public MailboxRule mailboxRule = new MailboxRule();
 
     @Test
-    public void testFolderCountFindMessagesByFolder() throws MessagingException, InterruptedException {
-        mockServer.prepareMailBox("INBOX.test", new MimeMessageBuilder().build());
-
-        MailMessageList findMessagesByFolder = uut.firstPageMessagesByFolder("INBOX.test");
-
-        assertEquals(1, findMessagesByFolder.getFullLength());
+    public void testFolderCountFindMessagesByFolder() {
+        String folder = "INBOX.test";
+        mailboxRule.append(folder, new MimeMessageBuilder().build());
+        MailMessageList findMessagesByFolder = uut.firstPageMessagesByFolder(folder);
+        assertThat(findMessagesByFolder.getFullLength(), is(1));
     }
 
     @Test
@@ -95,7 +88,7 @@ public class MailServiceImplTest {
             count++;
         }
 
-        assertEquals(3, count);
+        assertThat(count, is(3));
     }
 
     @Test
@@ -120,7 +113,7 @@ public class MailServiceImplTest {
             count++;
         }
 
-        assertEquals(3, count);
+        assertThat(count, is(3));
     }
 
     @Test(expected = NotFoundException.class)
@@ -136,7 +129,7 @@ public class MailServiceImplTest {
         CompositeId id = new CompositeId("INBOX", m.getMessageID());
         MailMessage result = uut.findMessage(id);
 
-        assertEquals("test subject", result.getSubject());
+        assertThat(result.getSubject(), is("test subject"));
     }
 
     @Test
