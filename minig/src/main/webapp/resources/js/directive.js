@@ -226,7 +226,7 @@ app.directive('backLink', ['$location', 'routeService', function($location, rout
     };
 }]);
 
-app.directive("mainActions", function($rootScope, routeService, MailResource) {
+app.directive("mainActions", function($rootScope, routeService, mailService) {
 
     var _folderIntentDone = function _folderIntentDone(folderAction) {
         $rootScope.$broadcast('folder-intent-done', folderAction);
@@ -249,15 +249,15 @@ app.directive("mainActions", function($rootScope, routeService, MailResource) {
                 var params = {folder: folder, mails: $scope.getSelectedMails()};
 
                 switch($scope.folderIntent)    {
-                    case "copy": MailResource.copy(params).$promise.then(_folderIntentDone("copy")); break;
-                    case "move": MailResource.move(params).$promise.then(_folderIntentDone("move")); break;
+                    case "copy": mailService.copy(params).then(_folderIntentDone("copy")); break;
+                    case "move": mailService.move(params).then(_folderIntentDone("move")); break;
                 }
             });
         }
     }
 });
 
-app.directive("selectOptions", function($rootScope, routeService, MailResource) {
+app.directive("selectOptions", function($rootScope, routeService) {
 
     return {
         restrict: "A",

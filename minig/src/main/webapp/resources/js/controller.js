@@ -1,8 +1,8 @@
 
-app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
+app.controller('FolderListCtrl', function($scope, $rootScope, folderService) {
     $scope.folders = [];
 
-    FolderResource.findAll().then(function (folders) {
+    folderService.findAll().then(function (folders) {
         $scope.folders = folders;
     });
 
@@ -27,12 +27,12 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
     };
 
     $scope.refresh = function() {
-        FolderResource.findAll().then(function(folders) {
+        folderService.findAll().then(function(folders) {
             $scope.folders = folders;
         });
     };
 })
-.controller('MailOverviewCtrl', function($scope, $rootScope, $routeParams, MailResource, i18nService, draftService, routeService, INITIAL_MAILBOX) {
+.controller('MailOverviewCtrl', function($scope, $rootScope, $routeParams, mailService, i18nService, draftService, routeService, INITIAL_MAILBOX) {
 
 	$scope.currentFolder = ($routeParams.id) ? $routeParams.id : INITIAL_MAILBOX;
 	$scope.currentPage = 1;
@@ -56,7 +56,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         });
 
         if(tmp.length > 0) {
-           MailResource.updateFlags(tmp).$promise
+           mailService.updateFlags(tmp).$promise
            .catch(function() {
                 $scope.updateOverview();
            });
@@ -116,10 +116,10 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
     });
 
 	$scope.updateOverview = function() {
-		MailResource.findByFolder({
+		mailService.findByFolder({
 			folder: $scope.currentFolder,
 			page: $scope.currentPage
-		}).$promise
+		})
 		.then(function(data) {
 			$scope.data = data;
 		});
@@ -146,7 +146,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 	$scope.deleteMails = function() {
 		var selectedMails = $scope.getSelectedMails();
 
-		MailResource.deleteMails(selectedMails).$promise
+		mailService.deleteMails(selectedMails).$promise
 		.then(function() {
 			$rootScope.$broadcast('notification', i18nService.resolve("Message(s) deleted"));
 			$scope.updateOverview();
@@ -157,7 +157,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 		var mail = this.mail;		
 		mail.starred = !mail.starred;
 		
-		MailResource.updateFlags(this.mail).$promise
+		mailService.updateFlags(this.mail).$promise
 		.catch(function() {
 			mail.starred = !mail.starred;
 		});
@@ -173,11 +173,11 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 
     $scope.updateOverview();
 })
-.controller('FolderSettingsCtrl', function($scope, $rootScope, $location, FolderResource, INITIAL_MAILBOX) {
+.controller('FolderSettingsCtrl', function($scope, $rootScope, $location, folderService, INITIAL_MAILBOX) {
     $scope.currentFolder;
 
     $scope.refresh = function() {
-        FolderResource.findAll().then(function(folders) {
+        folderService.findAll().then(function(folders) {
             $scope.folders = folders;
 
             if($scope.currentFolder !== undefined) {
@@ -198,7 +198,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 
     $scope.createFolder = function() {
         if($scope.folderName !== "" && $scope.folderName !== undefined) {
-            FolderResource.create({'id': $scope.currentFolder.id, 'folder' : $scope.folderName}).then(function(result) {
+            folderService.create({'id': $scope.currentFolder.id, 'folder' : $scope.folderName}).then(function(result) {
                 $rootScope.$broadcast('folder-created', folder);
                 $scope.refresh();
             });
@@ -210,7 +210,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
     $scope.deleteFolder = function(folder) {
         //TODO replace me
         if (confirm('Move folder "' + folder.name + '" to trash?')) {
-            FolderResource.delete(folder.id).then(function() {
+            folderService.delete(folder.id).then(function() {
                 $rootScope.$broadcast('folder-deleted', folder);
                 $scope.refresh();
             });
@@ -219,7 +219,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 
     $scope.toggleSubscription = function(folder) {
         folder.subscribed = !folder.subscribed;
-        FolderResource.save(folder).then(function() {
+        folderService.save(folder).then(function() {
             $rootScope.$broadcast('folder-updated', folder);
         });
     };
@@ -231,11 +231,11 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
     $scope.refresh();
 
 })
-.controller('MessageCtrl', function($scope, $rootScope, $routeParams, routeService, MailResource, i18nService, draftService, composerService) {
+.controller('MessageCtrl', function($scope, $rootScope, $routeParams, routeService, mailService, i18nService, draftService, composerService) {
     $scope.mail;
 
     function _updateFlags(mail) {
-        MailResource.updateFlags([mail]).$promise
+        mailService.updateFlags([mail]).$promise
         .catch(function() {
             $rootScope.$broadcast("error", i18nService.resolve("something wnet wrong"));
         });
@@ -276,7 +276,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
             return;
         }
 
-        MailResource.delete($scope.mail.id)
+        mailService.delete($scope.mail.id)
         .then(function() {
             $rootScope.$broadcast('notification', i18nService.resolve("Message deleted"));
             routeService.navigateToPrevious();
@@ -306,14 +306,14 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
     $scope.clickStar = function() {
         $scope.mail.starred = !$scope.mail.starred;
 
-        MailResource.updateFlags($scope.mail).$promise
+        mailService.updateFlags($scope.mail).$promise
         .catch(function() {
             $scope.mail.starred = !$scope.mail.starred;
         });
     };
 
     $scope.refresh = function() {
-        MailResource.load($routeParams.id).then(function(mail) {
+        mailService.load($routeParams.id).then(function(mail) {
             $scope.mail = mail;
         })
         .catch(function(e) {
@@ -339,7 +339,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
 
     $scope.refresh();
 })
-.controller('ComposerCtrl', function($scope, $rootScope, $routeParams, MailResource, draftService, composerService, routeService, i18nService, submissionService) {
+.controller('ComposerCtrl', function($scope, $rootScope, $routeParams, mailService, draftService, composerService, routeService, i18nService, submissionService) {
     $scope.mail = {
         to : [],
         cc: [],
@@ -350,7 +350,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
         if(!$routeParams.id) {
             return;
         }
-        MailResource.load($routeParams.id).then(function(mail) {
+        mailService.load($routeParams.id).then(function(mail) {
             if(draftService.isDraft(mail)) {
                 $scope.mail = mail;
                 $scope.showCc = $scope.mail.cc.length > 0;
@@ -388,7 +388,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, FolderResource) {
             return;
         }
 
-        MailResource.delete($scope.mail.id)
+        mailService.delete($scope.mail.id)
         .then(function() {
             $rootScope.$broadcast('notification', i18nService.resolve("Message deleted"));
             routeService.navigateToPrevious();

@@ -1,5 +1,5 @@
 
-app.factory('FolderResource', function($q, $resource, folderCache, API_HOME) {
+app.factory('folderService', function($q, $resource, folderCache, API_HOME) {
 
 	var folderResourceGet =  $resource(API_HOME + 'folder/:id', {}, {_findAll : {method: 'GET', isArray: true, transformResponse: _transFindAll}});
     var folderResourcePost =  $resource(API_HOME + 'folder/:id', {'id':'@id'}, {_create : {method: 'POST'}});
@@ -65,7 +65,7 @@ app.factory('FolderResource', function($q, $resource, folderCache, API_HOME) {
 
 });
 
-app.factory('MailResource', ['$q', '$resource','mailCache', 'API_HOME','DEFAULT_PAGE_SIZE', function($q, $resource, mailCache, API_HOME, DEFAULT_PAGE_SIZE) {
+app.factory('mailService', ['$q', '$resource','mailCache','deferService', 'API_HOME','DEFAULT_PAGE_SIZE', function($q, $resource, mailCache, deferService, API_HOME, DEFAULT_PAGE_SIZE) {
 	var defaults = {page: 1, page_length: DEFAULT_PAGE_SIZE};
 	
 	var messageDelete = $resource(API_HOME+'message/delete', {}, {deleteMails: {method: 'PUT', isArray:true, transformRequest: _transMessageDelete }});
@@ -112,7 +112,7 @@ app.factory('MailResource', ['$q', '$resource','mailCache', 'API_HOME','DEFAULT_
         return angular.toJson({folder: folder, messageIdList: ids});
 	}
 
-    messageLoad.load = function(id) {
+    var _load = function(id) {
         var deferred = $q.defer();
         var cached = mailCache.get(id);
 
@@ -130,7 +130,7 @@ app.factory('MailResource', ['$q', '$resource','mailCache', 'API_HOME','DEFAULT_
         return deferred.promise;
     };
 
-    messageDeleteSingle.delete = function(id) {
+    var _delete = function(id) {
         var deferred = $q.defer();
         messageDeleteSingle._delete({ 'id' : encodeURIComponent(id)}).$promise.then(function(result) {
             mailCache.evict(id);
@@ -138,15 +138,20 @@ app.factory('MailResource', ['$q', '$resource','mailCache', 'API_HOME','DEFAULT_
         });
         return deferred.promise;
     };
-	
+
 	return {
-		findByFolder: messageByFolder.findByFolder,
 		deleteMails: messageDelete.deleteMails,
 		updateFlags: messageUpdateFlag.updateFlags,
-		move: messageMove.moveMessage,
-		copy: messageCopy.copyMessage,
-        load: messageLoad.load,
-        delete: messageDeleteSingle.delete
+        load: _load,
+        delete: _delete,
+        move: function(params) {
+            return deferService.deferred(messageMove.moveMessage, params)
+        },
+        copy: function(params) {
+            return deferService.deferred(messageCopy.copyMessage, params)
+        },
+        findByFolder: function(params) {
+            return deferService.deferred(messageByFolder.findByFolder, params);
+        },
 	};
-	
 }]);

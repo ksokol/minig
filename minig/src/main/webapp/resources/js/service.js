@@ -597,3 +597,22 @@ app.service('userService', function() {
         }
     }
 });
+
+app.service('deferService', ['$q', function($q) {
+
+    var _deferred = function(fn, params) {
+        var deferred = $q.defer();
+        fn(params).$promise
+        .then(function(result) {
+            deferred.resolve(result);
+        })
+        .catch(function(error) {
+            deferred.reject(error);
+        });
+        return deferred.promise;
+    };
+
+    return {
+        deferred: _deferred
+    }
+}]);
