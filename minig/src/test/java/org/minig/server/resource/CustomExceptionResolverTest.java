@@ -1,6 +1,6 @@
 package org.minig.server.resource;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
- * @author dev@sokol-web.de <Kamill Sokol>
+ * @author Kamill Sokol
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

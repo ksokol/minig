@@ -1,8 +1,8 @@
 package org.minig.server.resource.config;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.JsonSerializer;
-import org.codehaus.jackson.map.SerializerProvider;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import org.minig.server.MailAttachment;
 import org.minig.server.service.CompositeAttachmentId;
 

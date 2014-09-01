@@ -6,7 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
+/**
+ * @author Kamill Sokol
+ */
 @Component
 public class CustomExceptionResolver implements HandlerExceptionResolver {
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomExceptionResolver.class);
+    private static final Logger log = LoggerFactory.getLogger(CustomExceptionResolver.class);
 
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object object, Exception exception) {
@@ -39,7 +42,7 @@ public class CustomExceptionResolver implements HandlerExceptionResolver {
 
         if (exception != null) {
             msg = exception.getMessage();
-            logger.error(exception.getMessage(), exception);
+            log.error(exception.getMessage(), exception);
         }
 
         try {
