@@ -74,13 +74,42 @@ app.config(function($httpProvider, $routeProvider) {
 
 angular.module('minigTextAngular', ['textAngular'])
 .config(['$provide', function($provide) {
-    $provide.decorator('taOptions', ['$delegate', function(taOptions){
-        taOptions.toolbar = [
-            ['bold', 'italics', 'underline', 'ul', 'ol'],
-            ['justifyLeft','justifyCenter','justifyRight'],
-            []
-        ];
+    $provide.decorator('taOptions', ['taRegisterTool', '$delegate', function(taRegisterTool, taOptions) {
 
+        taRegisterTool('strikeThrough', {
+            iconclass: "fa fa-strikeThrough",
+            action: function() {
+                this.$editor().wrapSelection('strikeThrough',null);
+            }
+            ,activeState: function() {
+                return document.queryCommandState('strikeThrough');
+            }
+        });
+
+        taRegisterTool('indent', {
+            iconclass: 'fa fa-indent',
+            action: function(){
+                return this.$editor().wrapSelection("indent", null);
+            },
+            activeState: function(){
+                return this.$editor().queryFormatBlockState('blockquote');
+            }
+        });
+        taRegisterTool('outdent', {
+            iconclass: 'fa fa-outdent',
+            action: function(){
+                return this.$editor().wrapSelection("outdent", null);
+            },
+            activeState: function(){
+                return false;
+            }
+        });
+
+        taOptions.toolbar = [
+            ['bold', 'italics', 'underline'],
+            ['justifyLeft','justifyCenter','justifyRight'],
+            [/* 'strikeThrough' */ 'indent','outdent', 'ul', 'ol']
+        ];
         return taOptions;
     }]);
 
