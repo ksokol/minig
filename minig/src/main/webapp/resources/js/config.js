@@ -52,20 +52,20 @@ app.config(function($httpProvider, $routeProvider) {
         redirectTo : '/box'
     })
     .when('/box', {
-        templateUrl: "box.jsp",
+        templateUrl: "box.html",
         controller: 'MailOverviewCtrl'
     })
     .when('/folder', {
-        templateUrl: "folder.jsp",
+        templateUrl: "folder.html",
         controller: 'FolderSettingsCtrl'
     })
     .when('/composer', {
-        templateUrl: "composer.jsp",
+        templateUrl: "composer.html",
         controller: 'ComposerCtrl',
         reloadOnSearch: false
     })
     .when('/message', {
-        templateUrl: "message.jsp",
+        templateUrl: "message.html",
         controller: 'MessageCtrl'
     })
     .otherwise({redirectTo: '/box'});

@@ -88,7 +88,7 @@ describe('MailOverviewCtrl', function() {
         $httpBackend = _$httpBackend_;
 
         _$httpBackend_.whenGET(API_HOME+'message?folder=INBOX&page=1&page_length=20').respond(_fixtureMaillist_);
-        _$httpBackend_.whenGET('box.jsp').respond("box.jsp");
+        _$httpBackend_.whenGET('box.html').respond("box.html");
 
         scope = $rootScope.$new();
 

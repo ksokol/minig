@@ -234,7 +234,7 @@ app.directive("mainActions", function($rootScope, routeService, mailService) {
 
     return {
         restrict: "E",
-        templateUrl: 'main_actions.jsp',
+        templateUrl: 'main_actions.html',
         link: function($scope, element, attrs) {
 
             $scope.moveToFolder = function() {
@@ -374,7 +374,7 @@ app.directive("attachmentPanel", function() {
         scope: {
             mail: "="
         },
-        templateUrl:'attachment.jsp',
+        templateUrl:'attachment.html',
         controller :  [ "$scope", "routeService","attachmentService", function ($scope, routeService, attachmentService) {
             $scope.showDelete = routeService.currentRoute("composer");
 
@@ -473,7 +473,7 @@ app.directive("attachmentUpload", function() {
             mail: "=",
             after: "&"
         },
-        templateUrl: 'attachment-upload.jsp',
+        templateUrl: 'attachment-upload.html',
         controller: [ "$scope", "attachmentService", function ($scope, attachmentService) {
             // http://stackoverflow.com/questions/17922557/angularjs-how-to-check-for-changes-in-file-input-fields
             $scope.blur = function(element) {
