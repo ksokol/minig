@@ -208,9 +208,10 @@ app.service('routeService', function($rootScope, $route, $location, $log, localS
         localStorageService.set('currentRoute', {'path' : next.originalPath, 'params': next.params });
     });
 
-    var _navigate = function(route) {
+    var _navigate = function(route, reload) {
         $log.info("navigate to ", route);
         $location.url(route);
+        reload && $route.reload();
     };
 
     var navigateToPrevious =function() {
@@ -247,8 +248,10 @@ app.service('routeService', function($rootScope, $route, $location, $log, localS
     };
 
     var navigateTo = function(route) {
+        var reload = route.reload === true;
+
         if(!route.params || Object.keys(route.params).length == 0) {
-            return _navigate("/"+route.path);
+            return _navigate("/"+route.path, reload);
         }
 
         var url = "/"+route.path+"?";
@@ -256,7 +259,7 @@ app.service('routeService', function($rootScope, $route, $location, $log, localS
             url = url + k + "=" + encodeURIComponent(route.params[k]) + "&";
         }
 
-        _navigate(url);
+        _navigate(url, reload);
     };
 
     return {

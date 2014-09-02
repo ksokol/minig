@@ -22,7 +22,7 @@
 						</tr>
 						<tr>
 							<td align="left" style="vertical-align: top;">
-								<a class="gwt-Anchor folderLink currentDefaultLinkSelected" href="#box">Inbox</a>
+								<a class="gwt-Anchor folderLink currentDefaultLinkSelected" ng-click="selectFolder(INITIAL_MAILBOX)">Inbox</a>
 							</td>
 						</tr>
 					</tbody>
@@ -86,7 +86,7 @@
 																<tbody>																
 																	<tr ng-repeat="folder in folders | filter:query | subscribed">
 																		<td>
-																			<a class="gwt-Anchor noWrap" href="#/box?id={{folder.id}}" title="{{folder.id}}">{{folder | prettyFolderName}}</a>
+																			<a class="gwt-Anchor noWrap" ng-click="selectFolder(folder.id)" title="{{folder.id}}">{{folder | prettyFolderName}}</a>
 																		</td>
 																	</tr>
 																	<tr>

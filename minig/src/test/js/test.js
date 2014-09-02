@@ -18,6 +18,7 @@ describe('FolderListCtrl', function() {
         fixtureFolderlist = _fixtureFolderlist_;
 
         _$httpBackend_.whenGET(API_HOME+'folder').respond(_fixtureFolderlist_);
+        _$httpBackend_.whenGET('box.html').respond("box.html");
 
         scope = $rootScope.$new();
 
