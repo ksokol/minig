@@ -2733,7 +2733,7 @@ textarea {
 
 #taTextElement {
     clear: left;
-    height: 500px;
+    min-height: 500px;
 }
 
 .btn-toolbar {
