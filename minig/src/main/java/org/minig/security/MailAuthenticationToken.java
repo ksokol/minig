@@ -1,18 +1,18 @@
 package org.minig.security;
 
-import java.util.Collection;
-import java.util.Properties;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Collection;
+
+/**
+ * @author Kamill Sokol
+ */
 public class MailAuthenticationToken extends UsernamePasswordAuthenticationToken {
 
-	private static final long serialVersionUID = -6332698097449169633L;
+	private static final long serialVersionUID = 1L;
 
 	private String domain;
-
-	private Properties connectionProperties;
 
 	public MailAuthenticationToken() {
 		super("anonymous", null);
@@ -25,18 +25,6 @@ public class MailAuthenticationToken extends UsernamePasswordAuthenticationToken
 
 	public String getDomain() {
 		return domain;
-	}
-
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
-
-	public Properties getConnectionProperties() {
-		return connectionProperties;
-	}
-
-	public void setConnectionProperties(Properties connectionProperties) {
-		this.connectionProperties = connectionProperties;
 	}
 
 }

@@ -1,6 +1,7 @@
 package org.minig.server.service.impl;
 
 import java.util.Deque;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import javax.mail.Authenticator;
@@ -28,7 +29,7 @@ import org.springframework.stereotype.Component;
 @Profile("prod")
 public class SimpleMailContextImpl implements MailContext, DisposableBean {
 
-    private static final Logger log = LoggerFactory.getLogger(SimpleMailContextImpl.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(SimpleMailContextImpl.class);
 
     @Autowired
     private MailAuthentication authentication;
@@ -188,7 +189,9 @@ public class SimpleMailContextImpl implements MailContext, DisposableBean {
         if (this.session == null) {
             synchronized (this) {
                 if (this.session == null) {
-                    this.session = Session.getInstance(this.authentication.getConnectionProperties(), new Authenticator() {
+                    Properties javaMailProperties = new JavaMailPropertyBuilder(this.authentication.getDomain()).build();
+
+                    this.session = Session.getInstance(javaMailProperties, new Authenticator() {
                         protected PasswordAuthentication getPasswordAuthentication() {
                             return new PasswordAuthentication(authentication.getUserMail(), authentication.getPassword());
                         }

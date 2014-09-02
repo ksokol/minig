@@ -1,11 +1,13 @@
 package org.minig.security;
 
-import java.io.Serializable;
-import java.util.Properties;
-
 import org.minig.MailAuthentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.io.Serializable;
+
+/**
+ * @author Kamill Sokol
+ */
 class SecurityContextMailAuthentication implements MailAuthentication, Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -45,37 +47,32 @@ class SecurityContextMailAuthentication implements MailAuthentication, Serializa
 
     @Override
     public String getInboxFolder() {
-        // TODO Auto-generated method stub
+        // TODO
         return "INBOX";
     }
 
     @Override
     public String getTrashFolder() {
-        // TODO Auto-generated method stub
+        // TODO
         return "INBOX/Trash";
     }
 
     @Override
     public String getDraftsFolder() {
-        // TODO Auto-generated method stub
+        // TODO
         return "INBOX/Drafts";
     }
 
     @Override
     public String getSentFolder() {
-        // TODO Auto-generated method stub
+        // TODO
         return "INBOX/Sent";
     }
 
     @Override
     public char getFolderSeparator() {
-        // TODO Auto-generated method stub
+        // TODO
         return '/';
-    }
-
-    @Override
-    public Properties getConnectionProperties() {
-        return getMailAuthenticationToken().getConnectionProperties();
     }
 
 }

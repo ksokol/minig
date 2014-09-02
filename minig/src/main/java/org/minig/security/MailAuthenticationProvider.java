@@ -8,6 +8,7 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
 
+import org.minig.server.service.impl.JavaMailPropertyBuilder;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+/**
+ * @author Kamill Sokol
+ */
 public class MailAuthenticationProvider implements AuthenticationProvider {
 
     @Override
@@ -40,8 +44,6 @@ public class MailAuthenticationProvider implements AuthenticationProvider {
 
             List<SimpleGrantedAuthority> ga = Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
             authenticated = new MailAuthenticationToken(authentication.getName(), authentication.getCredentials(), ga, domain);
-
-            authenticated.setConnectionProperties(javaMailProperties);
         } catch (Exception e) {
             throw new UsernameNotFoundException(e.getMessage());
         } finally {

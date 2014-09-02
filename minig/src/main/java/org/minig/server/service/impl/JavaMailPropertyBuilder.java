@@ -1,4 +1,4 @@
-package org.minig.security;
+package org.minig.server.service.impl;
 
 import com.sun.mail.util.MailSSLSocketFactory;
 import org.springframework.util.Assert;
@@ -7,7 +7,7 @@ import java.security.GeneralSecurityException;
 import java.util.Properties;
 
 /**
- * @author dev@sokol-web.de <Kamill Sokol>
+ * @author Kamill Sokol
  */
 public class JavaMailPropertyBuilder {
 
