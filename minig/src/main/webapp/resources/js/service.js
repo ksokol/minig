@@ -121,7 +121,7 @@ app.service('folderCache', function() {
 
     function update(data) {
         var copy = angular.copy(cache);
-        for(i=0;i<=copy.length;i++) {
+        for(i=0;i<copy.length;i++) {
             if(copy[i].id === data.id) {
                 copy[i] = data;
                 cache = copy;
@@ -138,6 +138,7 @@ app.service('mailCache', function($log, MAIL_CACHE_SIZE) {
         var copy = angular.copy(cache);
         for(i=0;i<copy.length;i++) {
             if(copy[i].id === id) {
+                $log.info("evict ", id);
                 copy.splice(i, 1);
                 cache = copy;
                 return;
@@ -612,7 +613,14 @@ app.service('deferService', ['$q', function($q) {
         return deferred.promise;
     };
 
+    var _resolved = function(params) {
+        var deferred = $q.defer();
+        deferred.resolve(params);
+        return deferred.promise;
+    };
+
     return {
-        deferred: _deferred
+        deferred: _deferred,
+        resolved: _resolved
     }
 }]);

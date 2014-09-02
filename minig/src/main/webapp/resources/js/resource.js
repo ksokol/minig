@@ -1,5 +1,5 @@
-
-app.factory('folderService', function($q, $resource, folderCache, API_HOME) {
+//TODO replace $resource with $http
+app.factory('folderService', function($q, $resource, deferService, folderCache, API_HOME) {
 
 	var folderResourceGet =  $resource(API_HOME + 'folder/:id', {}, {_findAll : {method: 'GET', isArray: true, transformResponse: _transFindAll}});
     var folderResourcePost =  $resource(API_HOME + 'folder/:id', {'id':'@id'}, {_create : {method: 'POST'}});
@@ -14,46 +14,41 @@ app.factory('folderService', function($q, $resource, folderCache, API_HOME) {
 	}
 
 	folderResourceGet.findAll = function() {
-        var deferred = $q.defer();
         if(!folderCache.isEmpty()) {
-            deferred.resolve(folderCache.snapshot());
-        } else {
-            folderResourceGet._findAll().$promise.then(function(folders) {
-                folderCache.fill(folders);
-                deferred.resolve(folderCache.snapshot());
-            });
+            return deferService.resolved(folderCache.snapshot());
         }
-        return deferred.promise;
+        var deferred = deferService.deferred(folderResourceGet._findAll);
+        deferred.then(function(folders) {
+            folderCache.fill(folders);
+
+        });
+        return deferred;
 	};
 
     folderResourcePost.create = function(data) {
-        var deferred = $q.defer();
-        folderResourcePost._create({'id': encodeURIComponent(data.id), 'folder' : data.folder}).$promise.then(function(result) {
+        var deferred = deferService.deferred(folderResourcePost._create, {'id': encodeURIComponent(data.id), 'folder' : data.folder});
+        deferred.then(function(result) {
             folderCache.add(result);
-            deferred.resolve(result);
         });
-        return deferred.promise;
+        return deferred;
     };
 
     folderResourceDelete.delete = function(id) {
-        var deferred = $q.defer();
-        folderResourceDelete._delete({'id': encodeURIComponent(id)}).$promise.then(function(result) {
+        var deferred = deferService.deferred(folderResourceDelete._delete, {'id': encodeURIComponent(id)});
+        deferred.then(function() {
             folderCache.clear();
-            deferred.resolve();
         });
-        return deferred.promise;
+        return deferred;
     };
 
     folderResourcePut.save = function(data) {
-        var deferred = $q.defer();
         var copy = angular.copy(data);
         copy.id = encodeURIComponent(copy.id);
-
-        folderResourcePut._put(copy).$promise.then(function(result) {
-            folderCache.update(data);
-            deferred.resolve();
+        var deferred = deferService.deferred(folderResourcePut._put, copy);
+        deferred.then(function(result) {
+            folderCache.update(result);
         });
-        return deferred.promise;
+        return deferred;
     };
 
     return {
@@ -65,7 +60,8 @@ app.factory('folderService', function($q, $resource, folderCache, API_HOME) {
 
 });
 
-app.factory('mailService', ['$q', '$resource','mailCache','deferService', 'API_HOME','DEFAULT_PAGE_SIZE', function($q, $resource, mailCache, deferService, API_HOME, DEFAULT_PAGE_SIZE) {
+//TODO replace $resource with $http
+app.factory('mailService', ['$resource','mailCache','deferService', 'API_HOME','DEFAULT_PAGE_SIZE', function($resource, mailCache, deferService, API_HOME, DEFAULT_PAGE_SIZE) {
 	var defaults = {page: 1, page_length: DEFAULT_PAGE_SIZE};
 	
 	var messageDelete = $resource(API_HOME+'message/delete', {}, {deleteMails: {method: 'PUT', isArray:true, transformRequest: _transMessageDelete }});
@@ -113,45 +109,43 @@ app.factory('mailService', ['$q', '$resource','mailCache','deferService', 'API_H
 	}
 
     var _load = function(id) {
-        var deferred = $q.defer();
         var cached = mailCache.get(id);
-
         if(cached) {
-            deferred.resolve(cached);
-        } else {
-            messageLoad._load({ 'id' : encodeURIComponent(id)}).$promise.then(function(result) {
-                mailCache.add(result);
-                deferred.resolve(result);
-            })
-            .catch(function(error) {
-                deferred.reject(error);
-            });
+            return deferService.resolved(cached);
         }
-        return deferred.promise;
+
+        var deferred = deferService.deferred(messageLoad._load, { 'id' : encodeURIComponent(id)});
+        deferred.then(function(result) {
+            mailCache.add(result);
+        });
+        return deferred;
     };
 
     var _delete = function(id) {
-        var deferred = $q.defer();
-        messageDeleteSingle._delete({ 'id' : encodeURIComponent(id)}).$promise.then(function(result) {
+        var deferred = deferService.deferred(messageDeleteSingle._delete, { 'id' : encodeURIComponent(id)});
+        deferred.then(function() {
             mailCache.evict(id);
-            deferred.resolve(result);
         });
-        return deferred.promise;
+        return deferred;
     };
 
 	return {
-		deleteMails: messageDelete.deleteMails,
-		updateFlags: messageUpdateFlag.updateFlags,
         load: _load,
         delete: _delete,
+        deleteMails: function(params) {
+            return deferService.deferred(messageDelete.deleteMails, params);
+        },
         move: function(params) {
-            return deferService.deferred(messageMove.moveMessage, params)
+            return deferService.deferred(messageMove.moveMessage, params);
         },
         copy: function(params) {
-            return deferService.deferred(messageCopy.copyMessage, params)
+            return deferService.deferred(messageCopy.copyMessage, params);
         },
         findByFolder: function(params) {
             return deferService.deferred(messageByFolder.findByFolder, params);
         },
+        updateFlags: function(params) {
+            return deferService.deferred(messageUpdateFlag.updateFlags, params);
+        }
 	};
 }]);

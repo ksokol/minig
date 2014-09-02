@@ -56,7 +56,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService) {
         });
 
         if(tmp.length > 0) {
-           mailService.updateFlags(tmp).$promise
+           mailService.updateFlags(tmp)
            .catch(function() {
                 $scope.updateOverview();
            });
@@ -146,7 +146,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService) {
 	$scope.deleteMails = function() {
 		var selectedMails = $scope.getSelectedMails();
 
-		mailService.deleteMails(selectedMails).$promise
+		mailService.deleteMails(selectedMails)
 		.then(function() {
 			$rootScope.$broadcast('notification', i18nService.resolve("Message(s) deleted"));
 			$scope.updateOverview();
@@ -157,7 +157,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService) {
 		var mail = this.mail;		
 		mail.starred = !mail.starred;
 		
-		mailService.updateFlags(this.mail).$promise
+		mailService.updateFlags(this.mail)
 		.catch(function() {
 			mail.starred = !mail.starred;
 		});
@@ -199,7 +199,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService) {
     $scope.createFolder = function() {
         if($scope.folderName !== "" && $scope.folderName !== undefined) {
             folderService.create({'id': $scope.currentFolder.id, 'folder' : $scope.folderName}).then(function(result) {
-                $rootScope.$broadcast('folder-created', folder);
+                $rootScope.$broadcast('folder-created', result);
                 $scope.refresh();
             });
         } else {
@@ -235,7 +235,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService) {
     $scope.mail;
 
     function _updateFlags(mail) {
-        mailService.updateFlags([mail]).$promise
+        mailService.updateFlags([mail])
         .catch(function() {
             $rootScope.$broadcast("error", i18nService.resolve("something wnet wrong"));
         });
@@ -306,7 +306,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService) {
     $scope.clickStar = function() {
         $scope.mail.starred = !$scope.mail.starred;
 
-        mailService.updateFlags($scope.mail).$promise
+        mailService.updateFlags($scope.mail)
         .catch(function() {
             $scope.mail.starred = !$scope.mail.starred;
         });
@@ -373,8 +373,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService) {
     $scope.save = function() {
         draftService.save($scope.mail)
         .then(function(mail) {
-            $scope.mail.id = mail.id;
-            $scope.mail.attachmentMetadata = mail.attachmentMetadata;
+            $scope.mail = mail;
             $rootScope.$broadcast('notification', i18nService.resolve("Draft saved"));
         });
     };
