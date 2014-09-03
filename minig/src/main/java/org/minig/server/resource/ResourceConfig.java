@@ -1,33 +1,36 @@
 package org.minig.server.resource;
 
-import java.util.List;
-
-import org.codehaus.jackson.Version;
-
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.module.SimpleModule;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import org.minig.server.resource.argumentresolver.CompositeIdHandlerMethodArgumentResolver;
 import org.minig.server.resource.argumentresolver.StringIdHandlerMethodArgumentResolver;
 import org.minig.server.resource.config.CompositeAttachmentIdSerializer;
 import org.minig.server.service.CompositeAttachmentId;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.*;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import java.util.List;
+
+/**
+ * @author Kamill Sokol
+ */
 @Configuration
 @ComponentScan(basePackages = "org.minig.server.resource")
-@EnableWebMvc
+//@EnableWebMvc
+@Import(CustomDelegatingWebMvcConfiguration.class)
 @Profile({ "test", "prod" })
 public class ResourceConfig extends WebMvcConfigurerAdapter {
 
@@ -49,20 +52,24 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
 		return multipartResolver;
 	}
 
-	@Override
-	public void configureMessageConverters( List<HttpMessageConverter<?>> converters ) {
-		converters.add(new StringHttpMessageConverter());
-		converters.add(converter());
-	}
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(configuredMappingJacksonHttpMessageConverter());
+        converters.add(new StringHttpMessageConverter());
+        converters.add(new FormHttpMessageConverter());
+    }
 
-	private MappingJacksonHttpMessageConverter converter() {
-		MappingJacksonHttpMessageConverter mappingJacksonHttpMessageConverter = new MappingJacksonHttpMessageConverter();
-		mappingJacksonHttpMessageConverter.setObjectMapper(objectMapper());
-		return mappingJacksonHttpMessageConverter;
-	}
+    private MappingJackson2HttpMessageConverter configuredMappingJacksonHttpMessageConverter() {
+        MappingJackson2HttpMessageConverter mappingJacksonHttpMessageConverter = new MappingJackson2HttpMessageConverter();
+        mappingJacksonHttpMessageConverter.setObjectMapper(objectMapper());
+        return mappingJacksonHttpMessageConverter;
+    }
 
-	private ObjectMapper objectMapper() {
-		ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
+        objectMapper.setDateFormat(new ISO8601DateFormat());
 
 		SimpleModule testModule = new SimpleModule("MinigModule", new Version(1, 0, 0, null));
 		testModule.addSerializer(CompositeAttachmentId.class, new CompositeAttachmentIdSerializer());

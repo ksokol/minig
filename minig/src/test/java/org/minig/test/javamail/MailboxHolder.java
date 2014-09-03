@@ -1,5 +1,8 @@
 package org.minig.test.javamail;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.mail.Address;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -9,9 +12,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author dev@sokol-web.de <Kamill Sokol>
+ * @author Kamill Sokol
  */
 public class MailboxHolder {
+
+    private static final Logger log = LoggerFactory.getLogger(MailboxHolder.class);
 
     private static final Set<Mailbox> mailboxes = new HashSet<>();
 
@@ -29,11 +34,11 @@ public class MailboxHolder {
 
     public static Mailbox get(Address a, String mailboxPath) {
         for (Mailbox mb : mailboxes) {
+            log.debug("{} <-> {} : {} -- {} <-> {} : {}", mb.address, a, mb.address.equals(a), mb.path, mailboxPath ,mb.path.equals(mailboxPath));
             if (mb.address.equals(a) && mb.path.equals(mailboxPath)) {
                 return mb;
             }
         }
-
         return null;
     }
 

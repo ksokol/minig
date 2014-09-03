@@ -66,8 +66,7 @@ public class BodyConverter {
                 if (s != null) return s;
             }
         }
-
-        return "";
+        return null;
     }
 
     /**

@@ -9,6 +9,7 @@ import org.apache.james.mime4j.stream.Field;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,23 +23,24 @@ final class Mime4jAttachmentDataExtractor {
 		if (!message.isMultipart()) {
 			return Collections.emptyList();
 		}
-
-		List<BodyPart> rawAttachments = getAttachments((Multipart) message.getBody());
-		List<Mime4jAttachmentData> attachments = new ArrayList<>(rawAttachments.size());
-		for (BodyPart bodyPart : rawAttachments) {
-			attachments.add(toMime4jAttachment(bodyPart));
-		}
-
-		return attachments;
+		return extractFromMultipart((Multipart) message.getBody());
 	}
+
+    private static List<Mime4jAttachmentData> extractFromMultipart(Multipart multipart) {
+        List<BodyPart> rawAttachments = getAttachments(multipart);
+        List<Mime4jAttachmentData> attachments = new ArrayList<>(rawAttachments.size());
+        for (BodyPart bodyPart : rawAttachments) {
+            attachments.addAll(toMime4jAttachment(bodyPart));
+        }
+        return attachments;
+    }
 
 	private static List<BodyPart> getAttachments(Multipart multipart) {
 		List<BodyPart> attachments = new ArrayList<>();
 
 		for (Entity e : multipart.getBodyParts()) {
 			BodyPart part = (BodyPart) e;
-
-			if ("attachment".equalsIgnoreCase(part.getDispositionType())) {
+            if ("attachment".equalsIgnoreCase(part.getDispositionType())) {
 				attachments.add(part);
 			}
 
@@ -46,15 +48,21 @@ final class Mime4jAttachmentDataExtractor {
 				List<BodyPart> getAttachments = getAttachments((Multipart) part.getBody());
 				attachments.addAll(getAttachments);
 			}
+            if("message/rfc822".equals(part.getMimeType())) {
+                attachments.add(part);
+            }
 		}
 
 		return attachments;
 	}
 
-	private static Mime4jAttachmentData toMime4jAttachment(BodyPart bodyPart) {
+	private static List<Mime4jAttachmentData> toMime4jAttachment(BodyPart bodyPart) {
 		if(bodyPart.getBody() instanceof SingleBody) {
-			return extractFromSingleBody(bodyPart);
+			return Arrays.asList(extractFromSingleBody(bodyPart));
 		}
+        if(bodyPart.getBody() instanceof MessageImpl) {
+            return extractFromMessage((MessageImpl) bodyPart.getBody());
+        }
 		throw new IllegalArgumentException("unknown bodyPart " + bodyPart.getClass());
 	}
 
@@ -82,4 +90,30 @@ final class Mime4jAttachmentDataExtractor {
 
 		return target;
 	}
+
+    private static List<Mime4jAttachmentData> extractFromMessage(Message message) {
+        if("text/plain".equals(message.getMimeType())) {
+            return Arrays.asList(extractFromSingleBody(message));
+        }
+        if (!message.isMultipart()) {
+            return Collections.emptyList();
+        }
+        return extractFromMultipart((Multipart) message.getBody());
+    }
+
+    private static Mime4jAttachmentData extractFromSingleBody(Message message) {
+        SingleBody source = (SingleBody) message.getBody();
+        Mime4jAttachmentData target = new Mime4jAttachmentData();
+
+        target.setMimeType(message.getMimeType());
+        target.setFilename(String.format("%s.eml",message.getSubject()));
+
+        try(InputStream in = source.getInputStream()) {
+            target.setSize(in.available());
+            target.setData(source.getInputStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+        return target;
+    }
 }

@@ -1,15 +1,22 @@
 package org.minig.server.service.impl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
+import org.minig.server.MailMessageBody;
 import org.minig.server.MailMessageList;
 import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeId;
@@ -18,13 +25,23 @@ import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.NotFoundException;
 import org.minig.server.service.ServiceTestConfig;
 import org.minig.server.service.SmtpAndImapMockServer;
+import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
+import org.minig.test.javamail.Mailbox;
+import org.minig.test.javamail.MailboxBuilder;
+import org.minig.test.javamail.MailboxHolder;
+import org.minig.test.javamail.MailboxRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -38,19 +55,15 @@ public class MailServiceImplTest {
     @Autowired
     private SmtpAndImapMockServer mockServer;
 
-    @Before
-    public void setUp() throws Exception {
-        mockServer.reset();
-        assertEquals(0, uut.firstPageMessagesByFolder("INBOX").getFullLength());
-    }
+    @Rule
+    public MailboxRule mailboxRule = new MailboxRule();
 
     @Test
-    public void testFolderCountFindMessagesByFolder() throws MessagingException, InterruptedException {
-        mockServer.prepareMailBox("INBOX.test", new MimeMessageBuilder().build());
-
-        MailMessageList findMessagesByFolder = uut.firstPageMessagesByFolder("INBOX.test");
-
-        assertEquals(1, findMessagesByFolder.getFullLength());
+    public void testFolderCountFindMessagesByFolder() {
+        String folder = "INBOX.test";
+        mailboxRule.append(folder, new MimeMessageBuilder().build());
+        MailMessageList findMessagesByFolder = uut.firstPageMessagesByFolder(folder);
+        assertThat(findMessagesByFolder.getFullLength(), is(1));
     }
 
     @Test
@@ -75,7 +88,7 @@ public class MailServiceImplTest {
             count++;
         }
 
-        assertEquals(3, count);
+        assertThat(count, is(3));
     }
 
     @Test
@@ -100,7 +113,7 @@ public class MailServiceImplTest {
             count++;
         }
 
-        assertEquals(3, count);
+        assertThat(count, is(3));
     }
 
     @Test(expected = NotFoundException.class)
@@ -116,7 +129,7 @@ public class MailServiceImplTest {
         CompositeId id = new CompositeId("INBOX", m.getMessageID());
         MailMessage result = uut.findMessage(id);
 
-        assertEquals("test subject", result.getSubject());
+        assertThat(result.getSubject(), is("test subject"));
     }
 
     @Test
@@ -250,11 +263,6 @@ public class MailServiceImplTest {
         assertEquals(1, uut.firstPageMessagesByFolder("INBOX.test").getFullLength());
     }
 
-    // @Test(expected = IllegalArgumentException.class)
-    // public void testCreateMessageWithInvalidArguments() {
-    // uut.createMessage(null);
-    // }
-
     // @Test
     // public void testCreateMessage() {
     // MailMessage mm = new MailMessage();
@@ -365,14 +373,27 @@ public class MailServiceImplTest {
         MailMessage m = new MailMessage();
         m.setSubject("draft message");
 
-        uut.createDraftMessage(m);
+        MailMessageBody body = new MailMessageBody();
+        body.setPlain("plain body");
+        m.setBody(body);
+
+        MailMessageAddress recipient = new MailMessageAddress();
+        recipient.setDisplayName("sender@localhost");
+        recipient.setEmail("sender@localhost");
+        m.setTo(Arrays.asList(recipient));
+
+        MailMessage draftMessage = uut.createDraftMessage(m);
 
         mockServer.verifyMessageCount("INBOX.Drafts", 1);
-        assertEquals("draft message", uut.firstPageMessagesByFolder("INBOX.Drafts").getMailList().get(0).getSubject());
+        assertThat(draftMessage.getSubject(), is("draft message"));
+        assertThat(draftMessage.getTo(), hasSize(1));
+        assertThat(draftMessage.getTo().get(0).getEmail(), is("sender@localhost"));
+        assertThat(draftMessage.getTo().get(0).getDisplayName(), is("sender@localhost"));
+        assertThat(draftMessage.getBody().getPlain(), is("plain body"));
     }
 
     @Test
-    public void testUpdateDraftMessage() throws MessagingException {
+    public void testAttachmentsOnUpdateDraftMessage() throws MessagingException {
         String replacedBody = "replaced plain " + new Date().toString();
 
         MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_ATTACHMENT);
@@ -385,18 +406,109 @@ public class MailServiceImplTest {
         mm.setSubject("save draft");
         mm.getBody().setPlain(replacedBody);
         mm.getBody().setHtml(replacedBody);
-        mm.setTo(Arrays.asList(new MailMessageAddress("test@example.com")));
 
         MailMessage updateDraftMessage = uut.updateDraftMessage(mm);
-        MailMessage findMessage = uut.findMessage(updateDraftMessage);
 
         mockServer.verifyMessageCount("INBOX.Drafts", 1);
 
-        assertFalse(id.getId().equals(findMessage.getId()));
-        assertEquals(2, findMessage.getAttachments().size());
-        assertEquals(replacedBody, findMessage.getBody().getPlain());
-        assertEquals(replacedBody, findMessage.getBody().getHtml());
-        assertEquals("save draft", findMessage.getSubject());
-        assertEquals("1.png", findMessage.getAttachments().get(0).getFileName());
+        assertFalse(id.getId().equals(updateDraftMessage.getId()));
+        assertEquals(2, updateDraftMessage.getAttachments().size());
+        assertEquals(replacedBody, updateDraftMessage.getBody().getPlain());
+        assertEquals(replacedBody, updateDraftMessage.getBody().getHtml());
+        assertEquals("save draft", updateDraftMessage.getSubject());
+        assertEquals("1.png", updateDraftMessage.getAttachments().get(0).getFileName());
+    }
+
+    @Test
+    public void testUpdateDraftMessage() throws MessagingException {
+        String recipient = "sender@localhost";
+        MimeMessage m = new MimeMessageBuilder().setFolder("INBOX.Drafts").setRecipientTo((List) null).build();
+        mockServer.prepareMailBox("INBOX.Drafts", m);
+
+        CompositeId id = new CompositeId("INBOX.Drafts", m.getMessageID());
+
+        MailMessage mm = new MailMessage();
+        mm.setCompositeId(id);
+        mm.setAskForDispositionNotification(true);
+        mm.setHighPriority(true);
+        mm.setReceipt(true);
+        mm.setDate(new Date());
+
+        MailMessageAddress recipientAddress = new MailMessageAddress();
+        recipientAddress.setDisplayName(recipient);
+        recipientAddress.setEmail(recipient);
+        List<MailMessageAddress> addresses = Arrays.asList(recipientAddress);
+
+        mm.setTo(addresses);
+        mm.setCc(addresses);
+        mm.setBcc(addresses);
+
+        MailMessage updateDraftMessage = uut.updateDraftMessage(mm);
+
+        mockServer.verifyMessageCount("INBOX.Drafts", 1);
+
+        assertThat(updateDraftMessage.getTo(), hasSize(1));
+        assertThat(updateDraftMessage.getTo().get(0).getEmail(), is(recipient));
+        assertThat(updateDraftMessage.getTo().get(0).getDisplayName(), is(recipient));
+
+        assertThat(updateDraftMessage.getCc(), hasSize(1));
+        assertThat(updateDraftMessage.getCc().get(0).getEmail(), is(recipient));
+        assertThat(updateDraftMessage.getCc().get(0).getDisplayName(), is(recipient));
+
+        assertThat(updateDraftMessage.getBcc(), hasSize(1));
+        assertThat(updateDraftMessage.getBcc().get(0).getEmail(), is(recipient));
+        assertThat(updateDraftMessage.getBcc().get(0).getDisplayName(), is(recipient));
+
+        assertThat(updateDraftMessage.getAskForDispositionNotification(), is(true));
+        assertThat(updateDraftMessage.getHighPriority(), is(true));
+        assertThat(updateDraftMessage.getReceipt(), is(true));
+        assertThat(updateDraftMessage.getDate(), notNullValue());
+    }
+
+    @Test
+    public void testUpdateDraftMessage2() throws MessagingException {
+        MimeMessage m = new MimeMessageBuilder().setFolder("INBOX.Drafts").build(TestConstants.MULTIPART_WITH_PLAIN_AND_ATTACHMENT);
+        mockServer.prepareMailBox("INBOX.Drafts", m);
+
+        Mailbox messages = MailboxHolder.get(TestConstants.MOCK_USER, "INBOX.Drafts");
+
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.convertMimeMessage(messages.getUnread().get(0));
+
+        assertThat(mime4jMessage.isDSN(), is(false));
+        assertThat(mime4jMessage.isReturnReceipt(), is(false));
+
+        MailMessage message = uut.findMessage(mime4jMessage.getId());
+
+        MailMessage mailMessage = uut.updateDraftMessage(message);
+
+        assertThat(mailMessage.getAskForDispositionNotification(), is(false));
+        assertThat(mailMessage.getReceipt(), is(false));
+    }
+
+    @Test
+    public void testCreateDraftWithForwardAndAttachments() throws MessagingException {
+        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_ATTACHMENT);
+
+        new MailboxBuilder("testuser@localhost").mailbox("INBOX").exists(true).subscribed().build().add(m);
+        new MailboxBuilder("testuser@localhost").mailbox("INBOX.Drafts").exists(true).subscribed().build();
+
+        MailMessage mm = new MailMessage();
+        mm.setForwardedMessageId(m.getMessageID());
+
+        MailMessage updateDraftMessage = uut.createDraftMessage(mm);
+
+        assertThat(updateDraftMessage.getAttachmentMetadata(), hasSize(2));
+    }
+
+    @Test
+    public void testCreateDraftWithInvalidForwardAndAttachments() throws MessagingException {
+        new MailboxBuilder("testuser@localhost").mailbox("INBOX.Drafts").exists(true).subscribed().build();
+
+        MailMessage mm = new MailMessage();
+        mm.setForwardedMessageId("42");
+
+        MailMessage updateDraftMessage = uut.createDraftMessage(mm);
+
+        assertThat(updateDraftMessage.getAttachmentMetadata(), hasSize(0));
     }
 }

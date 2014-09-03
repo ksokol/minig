@@ -6,15 +6,14 @@
 	
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	
-	
-		<!-- TODO -->
-		<link type="text/css" href="assets/minig.css" rel="stylesheet">
+	    <link rel="icon" type="image/gif" href="resources/images/favicon.ico">
+		<link type="text/css" href="resources/css/minig.css" rel="stylesheet">
 	
 		<title>MiniG</title>
 	</head>
 	<body id="page_body">	
 		<div id="webmail_root">
-			<form action="j_spring_security_check?${pageContext.request.queryString}" method="post">
+			<form action="j_spring_security_check" method="post">
 			<table cellspacing="4" cellpadding="0" style="width: 100%; height: 100%;">
 				<tbody>
 					<tr>
@@ -23,7 +22,7 @@
 								<tbody>
 									<tr>
 										<td align="center" style="vertical-align: top;" colspan="1">
-											<img src="minig/images/logo_minig_big.png" class="gwt-Image"></td>
+											<img src="resources/images/logo_minig_big.png" class="gwt-Image"></td>
 									</tr>
 									<tr>
 										<td width="" align="center" height=""

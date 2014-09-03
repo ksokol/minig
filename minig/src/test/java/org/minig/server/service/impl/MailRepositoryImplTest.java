@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.james.mime4j.message.MessageImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,15 +17,26 @@ import org.minig.server.service.CompositeId;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.ServiceTestConfig;
 import org.minig.server.service.SmtpAndImapMockServer;
+import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
+import org.minig.test.javamail.Mailbox;
+import org.minig.test.javamail.MailboxBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * @author Kamill Sokol
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { ServiceTestConfig.class })
 @ActiveProfiles("test")
@@ -173,19 +185,6 @@ public class MailRepositoryImplTest {
     }
 
     @Test
-    public void testSaveInFolder() {
-        MailMessageList findByFolder = uut.findByFolder("INBOX", 1, 1);
-        assertEquals(0, findByFolder.getFullLength());
-
-        MailMessage mm = new MailMessage();
-        MailMessage saved = uut.saveInFolder(mm, "INBOX");
-
-        findByFolder = uut.findByFolder("INBOX", 1, 1);
-        assertEquals(1, findByFolder.getFullLength());
-        assertTrue(saved.getId().startsWith("INBOX|"));
-    }
-
-    @Test
     public void testCopyMessage() throws MessagingException {
         MimeMessage m = new MimeMessageBuilder().build();
 
@@ -197,6 +196,25 @@ public class MailRepositoryImplTest {
 
         mockServer.verifyMessageCount("INBOX", 1);
         mockServer.verifyMessageCount("INBOX.copy", 1);
+    }
+
+    @Test
+    public void testFindByMessageId() throws Exception {
+        new MailboxBuilder("testuser@localhost").mailbox("INBOX").subscribed().exists().build();
+        new MailboxBuilder("testuser@localhost").mailbox("INBOX.child1a").subscribed().exists().build();
+        Mailbox child1b = new MailboxBuilder("testuser@localhost").mailbox("INBOX.child2b").subscribed().exists().build();
+        new MailboxBuilder("testuser@localhost").mailbox("INBOX.child2b.child1a").subscribed().exists().build();
+        Mailbox child2bChild1b = new MailboxBuilder("testuser@localhost").mailbox("INBOX.child2b.child1b").subscribed().exists().build();
+
+        MimeMessage message = new MimeMessageBuilder().build(TestConstants.PLAIN);
+        String messageID = message.getMessageID();
+
+        child1b.add(message);
+        child2bChild1b.add(message);
+
+        CompositeId byMessageId = uut.findByMessageId(messageID);
+
+        assertThat(byMessageId.getId(), is(new CompositeId("INBOX.child2b.child1b", message.getMessageID()).getId()));
     }
 
 }

@@ -2,6 +2,7 @@ package org.minig.server.service;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class MimeMessageBuilder {
     private List<String> attachmentIdList = new ArrayList<String>();
     private boolean forwarded;
     private boolean mdnSent;
+    private String inReplyTo = "inReplyTo";
 
     public MimeMessageBuilder() {
         try {
@@ -99,6 +101,7 @@ public class MimeMessageBuilder {
             when(m.getSentDate()).thenReturn(date);
             when(m.getHeader("User-Agent")).thenReturn(new String[] { mailer });
             when(m.getHeader("Message-ID")).thenReturn(new String[] { messageId });
+            when(m.getHeader("In-Reply-To")).thenReturn(new String[] { inReplyTo });
 
             if (highPriority) {
                 when(m.getHeader("X-Priority")).thenReturn(new String[] { "1 " });
@@ -283,6 +286,16 @@ public class MimeMessageBuilder {
         return this;
     }
 
+    public MimeMessageBuilder setRecipientTo(List<InternetAddress> recipients) {
+        if(recipients == null) {
+            recipientToList = Collections.emptyList();
+        } else {
+            recipientToList = recipients;
+        }
+
+        return this;
+    }
+
     public MimeMessageBuilder setRecipientCc(String recipient) {
         try {
             recipientCcList.add(new InternetAddress(recipient));
@@ -402,6 +415,11 @@ public class MimeMessageBuilder {
 
     public MimeMessageBuilder setAskForDispositionNotification(boolean askForDispositionNotification) {
         this.askForDispositionNotification = askForDispositionNotification;
+        return this;
+    }
+
+    public MimeMessageBuilder setInReplyTo(String inReplyTo) {
+        this.inReplyTo = inReplyTo;
         return this;
     }
 

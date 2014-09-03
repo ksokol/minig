@@ -1,9 +1,8 @@
 package org.minig.server.service.impl;
 
 import java.util.Deque;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.mail.Authenticator;
 import javax.mail.Folder;
@@ -13,6 +12,8 @@ import javax.mail.Session;
 import javax.mail.Store;
 
 import org.minig.MailAuthentication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -20,12 +21,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author Kamill Sokol
+ */
 @Component
 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Profile("prod")
 public class SimpleMailContextImpl implements MailContext, DisposableBean {
 
-    private static final Logger LOGGER = Logger.getLogger(SimpleMailContextImpl.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(SimpleMailContextImpl.class);
 
     @Autowired
     private MailAuthentication authentication;
@@ -107,7 +111,7 @@ public class SimpleMailContextImpl implements MailContext, DisposableBean {
     @Override
     public Folder getInbox() {
         Folder inbox = getFolder(authentication.getInboxFolder());
-        Folder defaultFolder = null;
+        Folder defaultFolder;
 
         try {
             if (inbox != null && !inbox.exists()) {
@@ -138,23 +142,34 @@ public class SimpleMailContextImpl implements MailContext, DisposableBean {
     }
 
     @Override
-    public void destroy() throws Exception {
-        Folder folderToBeClosed = null;
-
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.finest("trackFetchedFolder: " + trackFetchedFolder.size());
+    public boolean isSystemFolder(Folder folder) {
+        if(folder == null || folder.getFullName() == null) {
+            return false;
         }
+        if(authentication.getTrashFolder().equals(folder.getFullName())) {
+            return false;
+        }
+        if(authentication.getSentFolder().equals(folder.getFullName())) {
+            return false;
+        }
+        if(authentication.getDraftsFolder().equals(folder.getFullName())) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        Folder folderToBeClosed;
+        log.debug("trackFetchedFolder: {}", trackFetchedFolder.size());
 
         while ((folderToBeClosed = trackFetchedFolder.pollFirst()) != null) {
-            if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.finest("closing: " + folderToBeClosed);
-            }
-
+            log.debug("closing: {}", folderToBeClosed);
             if (folderToBeClosed.isOpen()) {
                 try {
                     folderToBeClosed.close(true);
                 } catch (Exception e) {
-                    LOGGER.severe(e.getMessage());
+                    log.error("can not close folder. reason " + e.getCause());
                 }
             }
         }
@@ -174,7 +189,9 @@ public class SimpleMailContextImpl implements MailContext, DisposableBean {
         if (this.session == null) {
             synchronized (this) {
                 if (this.session == null) {
-                    this.session = Session.getInstance(this.authentication.getConnectionProperties(), new Authenticator() {
+                    Properties javaMailProperties = new JavaMailPropertyBuilder(this.authentication.getDomain()).build();
+
+                    this.session = Session.getInstance(javaMailProperties, new Authenticator() {
                         protected PasswordAuthentication getPasswordAuthentication() {
                             return new PasswordAuthentication(authentication.getUserMail(), authentication.getPassword());
                         }

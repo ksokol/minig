@@ -1,17 +1,5 @@
 package org.minig.server.service.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.mail.FetchProfile;
-import javax.mail.Flags;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import javax.mail.search.MessageIDTerm;
-
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
 import org.minig.server.service.CompositeId;
@@ -20,12 +8,30 @@ import org.minig.server.service.NotFoundException;
 import org.minig.server.service.RepositoryException;
 import org.minig.server.service.impl.helper.MessageMapper;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import javax.mail.FetchProfile;
+import javax.mail.Flags;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import javax.mail.search.MessageIDTerm;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * @author Kamill Sokol
+ */
 @Component
 class MailRepositoryImpl implements MailRepository {
+
+    private static final Logger log = LoggerFactory.getLogger(MailRepositoryImpl.class);
 
     @Autowired
     private MailContext mailContext;
@@ -85,26 +91,18 @@ class MailRepositoryImpl implements MailRepository {
     @Override
     public MailMessage read(CompositeId id) {
         Assert.notNull(id);
-        int count = 0;
 
         try {
             Folder storeFolder = mailContext.getFolder(id.getFolder(), true);
 
             if (storeFolder.exists()) {
                 Message[] search = storeFolder.search(new MessageIDTerm(id.getMessageId()));
-                count = search.length;
-
-                if (search.length == 1 && search[0] != null) {
+                if (search.length > 0) {
                     return mapper.convertFull(search[0]);
                 }
             }
         } catch (Exception e) {
             throw new RepositoryException(e.getMessage(), e);
-        }
-
-        if (count > 1) {
-            // TODO
-            throw new RuntimeException("more than one message found");
         }
 
         return null;
@@ -127,6 +125,11 @@ class MailRepositoryImpl implements MailRepository {
         }
 
         throw new NotFoundException();
+    }
+
+    @Override
+    public CompositeId findByMessageId(String messageId) {
+        return findByMessageIdAndFolder(new MessageIDTerm(messageId), mailContext.getInbox());
     }
 
     @Override
@@ -229,56 +232,26 @@ class MailRepositoryImpl implements MailRepository {
     }
 
     @Override
-    public MailMessage saveInFolder(MailMessage source, String folder) {
-        Assert.notNull(source, "message is null");
-        // Assert.notNull(source.getId(), "message.id is null");
-        Assert.hasText(folder);
-
-        try {
-            Message target = mapper.toMessage(source);
-            Folder storeFolder = mailContext.getFolder(folder, true);
-            storeFolder.appendMessages(new Message[] { target });
-
-            Message[] search = storeFolder.search(new MessageIDTerm(target.getHeader("Message-ID")[0]));
-
-            if (search != null && search.length == 1 && search[0] != null) {
-                MailMessage convertShort = mapper.convertShort(search[0]);
-                return convertShort;
-            }
-        } catch (Exception e) {
-            throw new RepositoryException(e.getMessage(), e);
-        }
-
-        throw new RepositoryException("error during save");
+    public void delete(String folder, String messageId) {
+        delete(new CompositeId(folder, messageId));
     }
 
     @Override
     public String save(Mime4jMessage message, String folder) {
-        // Assert.notNull(source, "message is null");
-        // Assert.notNull(source.getId(), "message.id is null");
-        // Assert.hasText(folder);
+        Assert.notNull(message, "message is null");
+        Assert.hasText(folder, "folder is null");
 
         try {
             MimeMessage target = mapper.toMimeMessage(message);
             target.saveChanges();
             Folder storeFolder = mailContext.openFolder(folder);
             storeFolder.appendMessages(new Message[] { target });
-
-            // Message[] search = storeFolder.search(new
-            // MessageIDTerm(target.getHeader("Message-ID")[0]));
-            //
-            // if (search != null && search.length == 1 && search[0] != null) {
-            // MailMessage convertShort = mapper.convertShort(search[0]);
-            // return convertShort;
-            // }
             storeFolder.close(false);
 
             return target.getHeader("Message-ID")[0];
         } catch (Exception e) {
             throw new RepositoryException(e.getMessage(), e);
         }
-
-        // throw new RepositoryException("error during save");
     }
 
     @Override
@@ -319,4 +292,95 @@ class MailRepositoryImpl implements MailRepository {
         }
     }
 
+    @Override
+    public void setAnsweredFlag(CompositeId id, boolean answered) {
+        if(id == null) {
+            return;
+        }
+
+        try {
+            log.debug("setting flagAsAnswered to {} on message {}", answered, id);
+            Folder folder = mailContext.openFolder(id.getFolder());
+            Message[] messages = folder.search(new MessageIDTerm(id.getMessageId()));
+
+            for (Message m : messages) {
+                m.setFlag(Flags.Flag.ANSWERED, answered);
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void setForwardedFlag(CompositeId id, boolean answered) {
+        if(id == null) {
+            return;
+        }
+
+        try {
+            log.debug("setting flagAsForwarded to {} on message {}", answered, id);
+            Folder folder = mailContext.openFolder(id.getFolder());
+            Message[] messages = folder.search(new MessageIDTerm(id.getMessageId()));
+
+            for (Message m : messages) {
+                Flags forwardedFlag = new Flags("$Forwarded");
+                m.setFlags(forwardedFlag, true);
+            }
+        } catch (Exception e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public String save(Mime4jMessage message) {
+        Assert.notNull(message, "message is null");
+        return save(message, message.getId().getFolder());
+    }
+
+    private CompositeId findByMessageIdAndFolder(MessageIDTerm searchTerm, Folder folder) {
+        CompositeId compositeId = null;
+        try {
+            if(!folder.exists()) {
+                log.debug("{} folder does not exist", folder.getFullName());
+                return compositeId;
+            }
+
+            if(!mailContext.isSystemFolder(folder)) {
+                log.debug("{} folder is system folder", folder.getFullName());
+                return compositeId;
+            }
+
+            Folder[] list = folder.list();
+            for (Folder childFolder : list) {
+                compositeId = findByMessageIdAndFolder(searchTerm, childFolder);
+
+                if(compositeId != null) {
+                    log.debug("found {} in folder {}", searchTerm.getPattern(), folder.getFullName());
+                    return compositeId;
+                }
+            }
+
+            if(folder.getType() == Folder.HOLDS_FOLDERS) {
+                log.debug("{} can not contain messages. type {}", folder.getFullName(), folder.getType());
+                return compositeId;
+            }
+
+            if(!folder.isOpen()) {
+                folder.open(Folder.READ_ONLY);
+            }
+
+            Message[] search = folder.search(searchTerm);
+
+            for (Message message : search) {
+                compositeId = new CompositeId(folder.getFullName(), message.getHeader("Message-ID")[0]);
+            }
+
+            if(search.length == 0) {
+                folder.close(false);
+            }
+        } catch (MessagingException e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+        return compositeId;
+    }
 }

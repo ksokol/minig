@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
-@RequestMapping(value = "1", produces = "application/json; charset=UTF-8")
+@RequestMapping(value = "1")
 class MailResource {
 
     @Autowired
@@ -43,7 +43,7 @@ class MailResource {
     }
 
     @ResponseStatus(value = HttpStatus.OK)
-    @RequestMapping(value = "message/flag/**", consumes = "application/json", method = RequestMethod.PUT)
+    @RequestMapping(value = "message/flag/**", method = RequestMethod.PUT)
     @ResponseBody
     public void updateMessage(@Id CompositeId id, @RequestBody MailMessage message) {
         message.setCompositeId(id);
@@ -51,43 +51,35 @@ class MailResource {
     }
 
     @ResponseStatus(value = HttpStatus.OK)
-    @RequestMapping(value = "message/flag", consumes = "application/json", method = RequestMethod.PUT)
+    @RequestMapping(value = "message/flag", method = RequestMethod.PUT)
     @ResponseBody
     public void updateMessages(@RequestBody MailMessageList messageList) {
         mailService.updateMessagesFlags(messageList);
     }
 
     @ResponseStatus(value = HttpStatus.OK)
-    @RequestMapping(value = "message/copy", consumes = "application/json", method = RequestMethod.PUT)
+    @RequestMapping(value = "message/copy", method = RequestMethod.PUT)
     @ResponseBody
     public void copyMessagesToFolder(@RequestBody MessageCopyOrMoveRequest request) {
         mailService.copyMessagesToFolder(request.getMessageIdList(), request.getFolder());
     }
 
     @ResponseStatus(value = HttpStatus.OK)
-    @RequestMapping(value = "message/move", consumes = "application/json", method = RequestMethod.PUT)
+    @RequestMapping(value = "message/move", method = RequestMethod.PUT)
     @ResponseBody
     public void moveMessagesToFolder(@RequestBody MessageCopyOrMoveRequest request) {
         mailService.moveMessagesToFolder(request.getMessageIdList(), request.getFolder());
     }
 
     @ResponseStatus(value = HttpStatus.OK)
-    @RequestMapping(value = "message/delete", consumes = "application/json", method = RequestMethod.PUT)
+    @RequestMapping(value = "message/delete", method = RequestMethod.PUT)
     @ResponseBody
     public void deleteMessagesToFolder(@RequestBody DeleteMessageRequest request) {
         mailService.deleteMessages(request.getMessageIdList());
     }
 
-    // @ResponseStatus(value = HttpStatus.CREATED)
-    // @RequestMapping(value = "message", consumes = "application/json", method
-    // = RequestMethod.POST)
-    // @ResponseBody
-    // public void createMessage(@RequestBody MailMessage message) {
-    // mailService.createMessage(message);
-    // }
-
     @ResponseStatus(value = HttpStatus.CREATED)
-    @RequestMapping(value = "message/draft", consumes = "application/json", method = RequestMethod.POST)
+    @RequestMapping(value = "message/draft", method = RequestMethod.POST)
     @ResponseBody
     public MailMessage createDraftMessage(@RequestBody MailMessage message) {
         CompositeId createDraftMessage = mailService.createDraftMessage(message);

@@ -40,11 +40,11 @@ public class FolderResource {
         folderService.createFolderInInbox(request.getFolder());
     }
 
-    @ResponseStatus(value = HttpStatus.CREATED)
+    @ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "folder/**", method = RequestMethod.POST)
     @ResponseBody
-    public void createFolderInParent(@Id String id, @RequestBody CreateFolderRequest request) {
-        folderService.createFolderInParent(id, request.getFolder());
+    public MailFolder createFolderInParent(@Id String id, @RequestBody CreateFolderRequest request) {
+        return folderService.createFolderInParent(id, request.getFolder());
     }
 
     @ResponseStatus(value = HttpStatus.OK)

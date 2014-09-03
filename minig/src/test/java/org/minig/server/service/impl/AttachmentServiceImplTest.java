@@ -48,7 +48,7 @@ public class AttachmentServiceImplTest {
 
     @Test
     public void testFindAttachments_hasAttachments() throws MessagingException {
-        MimeMessage m = new MimeMessageBuilder().setFolder("INBOX").build("src/test/resources/testAttachmentId.mail");
+        MimeMessage m = new MimeMessageBuilder().setFolder("INBOX").build(TestConstants.MULTIPART_WITH_ATTACHMENT);
 
         CompositeId id = new CompositeId();
         id.setFolder("INBOX");
@@ -63,7 +63,7 @@ public class AttachmentServiceImplTest {
 
     @Test
     public void testFindAttachments_hasNoAttachments() throws MessagingException {
-        MimeMessage m = new MimeMessageBuilder().build("src/test/resources/testBody.mail");
+        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
 
         CompositeId id = new CompositeId();
         id.setFolder("INBOX");
@@ -94,7 +94,7 @@ public class AttachmentServiceImplTest {
 
     @Test
     public void testFindAttachment() throws MessagingException {
-        MimeMessage m = new MimeMessageBuilder().build("src/test/resources/testAttachmentId.mail");
+        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_ATTACHMENT);
         CompositeAttachmentId id = new CompositeAttachmentId("INBOX", m.getMessageID(), "1.png");
 
         mockServer.prepareMailBox("INBOX", m);
@@ -106,7 +106,7 @@ public class AttachmentServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void testReadAttachment_hasNoAttachment() throws Exception {
-        MimeMessage m = new MimeMessageBuilder().build("src/test/resources/testBody.mail");
+        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
         CompositeAttachmentId id = new CompositeAttachmentId("INBOX", m.getMessageID(), "1.png");
 
         mockServer.prepareMailBox("INBOX", m);
@@ -116,7 +116,7 @@ public class AttachmentServiceImplTest {
 
     @Test
     public void testReadAttachment_hasAttachment() throws Exception {
-        MimeMessage m = new MimeMessageBuilder().build("src/test/resources/testAttachmentId.mail");
+        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_ATTACHMENT);
         CompositeAttachmentId id = new CompositeAttachmentId("INBOX", m.getMessageID(), "1.png");
 
         mockServer.prepareMailBox("INBOX", m);
@@ -126,7 +126,7 @@ public class AttachmentServiceImplTest {
         uut.readAttachment(id, byteArrayOutputStream);
 
         byte[] byteArray = byteArrayOutputStream.toByteArray();
-        byte[] expected = IOUtils.toByteArray(new FileInputStream("src/test/resources/1.png"));
+        byte[] expected = IOUtils.toByteArray(new FileInputStream(TestConstants.ATTACHMENT_IMAGE_1_PNG));
 
         assertTrue(Arrays.equals(expected, byteArray));
     }

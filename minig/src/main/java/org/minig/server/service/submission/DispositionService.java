@@ -4,6 +4,6 @@ import org.minig.server.service.CompositeId;
 
 public interface DispositionService {
 
-    void senDispsoition(CompositeId id);
+    void sendDisposition(CompositeId id);
 
 }

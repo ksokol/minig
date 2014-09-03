@@ -1,19 +1,3 @@
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: GPL 2.0
- *
- * The contents of this file are subject to the GNU General Public
- * License Version 2 or later (the "GPL").
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Initial Developer of the Original Code is
- *   MiniG.org project members
- *
- * ***** END LICENSE BLOCK ***** */
-
 package org.minig.server;
 
 import java.util.Date;
@@ -22,27 +6,33 @@ import java.util.List;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
 
+/**
+ * @author Kamill Sokol
+ */
 public class MailMessage extends CompositeId {
 
-    private String subject;// ok
-    private MailMessageBody body = new MailMessageBody(); // ok
-    private List<CompositeAttachmentId> attachments; // ok
-    private MailMessageAddress sender;// ok
-    private List<MailMessageAddress> to;// ok
-    private List<MailMessageAddress> cc;// ok
-    private List<MailMessageAddress> bcc;// ok
+    private String subject;
+    private MailMessageBody body = new MailMessageBody();
+    private List<CompositeAttachmentId> attachments;
+    private MailMessageAddress sender;
+    private List<MailMessageAddress> to;
+    private List<MailMessageAddress> cc;
+    private List<MailMessageAddress> bcc;
     private List<MailMessageAddress> dispositionNotification;
-    private Date date;// ok
-    private String mailer;// ok
-    private Boolean forwarded; // ok
-    private Boolean read;// ok
-    private Boolean starred;// ok
-    private Boolean answered;// ok
-    private Boolean highPriority;// ok
+    private Date date;
+    private String mailer;
+    private Boolean forwarded;
+    private Boolean read;
+    private Boolean starred;
+    private Boolean answered;
+    private Boolean highPriority;
     private Boolean askForDispositionNotification;
     private Boolean receipt;
     private Boolean mdnSent;
     private Boolean deleted;
+    private List<MailAttachment> attachmentMetadata;
+    private String inReplyTo;
+    private String forwardedMessageId;
 
     public String getSubject() {
         return subject;
@@ -202,4 +192,27 @@ public class MailMessage extends CompositeId {
         this.deleted = deleted;
     }
 
+    public List<MailAttachment> getAttachmentMetadata() {
+        return attachmentMetadata;
+    }
+
+    public void setAttachmentMetadata(List<MailAttachment> attachmentMetadata) {
+        this.attachmentMetadata = attachmentMetadata;
+    }
+
+    public String getInReplyTo() {
+        return inReplyTo;
+    }
+
+    public void setInReplyTo(String inReplyTo) {
+        this.inReplyTo = inReplyTo;
+    }
+
+    public String getForwardedMessageId() {
+        return forwardedMessageId;
+    }
+
+    public void setForwardedMessageId(String forwardedMessageId) {
+        this.forwardedMessageId = forwardedMessageId;
+    }
 }

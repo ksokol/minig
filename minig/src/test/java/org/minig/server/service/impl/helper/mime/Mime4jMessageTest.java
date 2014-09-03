@@ -1,16 +1,24 @@
 package org.minig.server.service.impl.helper.mime;
 
-import java.util.Date;
-
-import javax.activation.FileDataSource;
-
-import org.junit.*;
+import org.apache.james.mime4j.dom.address.Address;
+import org.apache.james.mime4j.dom.address.AddressList;
+import org.apache.james.mime4j.dom.address.Mailbox;
+import org.junit.Test;
 import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeId;
 
-import static org.hamcrest.CoreMatchers.is;
+import javax.activation.FileDataSource;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Scanner;
+
+import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Kamill Sokol
@@ -68,7 +76,7 @@ public class Mime4jMessageTest {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.HTML);
         assertThat(mime4jMessage.getAttachments(), hasSize(0));
 
-        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_PNG));
+        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_1_PNG));
 		assertThat(mime4jMessage.getAttachments(), hasSize(1));
     }
 
@@ -76,15 +84,15 @@ public class Mime4jMessageTest {
     public void testSetMultipart6() throws Exception {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.MULTIPART_WITH_PLAIN_AND_ATTACHMENT);
 
-        assertEquals("plain text\r\n", mime4jMessage.getPlain());
-        assertEquals("", mime4jMessage.getHtml());
+        assertThat(mime4jMessage.getPlain(), is(equalToIgnoringWhiteSpace("plain text")));
+        assertThat(mime4jMessage.getHtml(), is(""));
 
         String replacedBody = "replaced plain " + new Date().toString();
         mime4jMessage.setPlain(replacedBody);
         mime4jMessage.setHtml(replacedBody);
 
-        assertEquals(replacedBody, mime4jMessage.getPlain());
-        assertEquals(replacedBody, mime4jMessage.getHtml());
+        assertThat(mime4jMessage.getPlain(), is(replacedBody));
+        assertThat(mime4jMessage.getHtml(), is(replacedBody));
     }
 
     @Test
@@ -106,8 +114,8 @@ public class Mime4jMessageTest {
     public void testSetMultipart8() throws Exception {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.MULTIPART_WITH_ATTACHMENT);
 
-        assertEquals("\r\n", mime4jMessage.getPlain());
-        assertEquals("", mime4jMessage.getHtml());
+        assertEquals("", mime4jMessage.getPlain().trim());
+        assertEquals("", mime4jMessage.getHtml().trim());
 
         String replacedBody = "replaced plain " + new Date().toString();
         mime4jMessage.setPlain(replacedBody);
@@ -137,7 +145,7 @@ public class Mime4jMessageTest {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.PLAIN);
         assertThat(mime4jMessage.getAttachments(), hasSize(0));
 
-        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_PNG));
+        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_1_PNG));
         assertThat(mime4jMessage.getAttachments(), hasSize(1));
     }
 
@@ -146,7 +154,7 @@ public class Mime4jMessageTest {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
         assertThat(mime4jMessage.getAttachments(), hasSize(0));
 
-        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_PNG));
+        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_1_PNG));
         assertThat(mime4jMessage.getAttachments(), hasSize(1));
     }
 
@@ -155,7 +163,7 @@ public class Mime4jMessageTest {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.MULTIPART_WITH_ATTACHMENT);
 		assertThat(mime4jMessage.getAttachments(), hasSize(2));
 
-        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_PNG));
+        mime4jMessage.addAttachment(new FileDataSource(TestConstants.ATTACHMENT_IMAGE_1_PNG));
 		assertThat(mime4jMessage.getAttachments(), hasSize(3));
     }
 
@@ -169,23 +177,36 @@ public class Mime4jMessageTest {
     }
 
     @Test
-    public void testDSN() throws Exception {
+    public void testNoDSN() throws Exception {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.MULTIPART_WITH_ATTACHMENT);
-        assertFalse(mime4jMessage.isDispositionNotification());
+        assertThat(mime4jMessage.hasDispositionNotifications(), is(false));
+    }
 
-        mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.PLAIN_DSN_HEADER);
-        assertTrue(mime4jMessage.isDispositionNotification());
+    @Test
+    public void testDSN() throws Exception {
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.PLAIN_DSN_HEADER_1);
+        assertThat(mime4jMessage.hasDispositionNotifications(), is(true));
+        assertThat(mime4jMessage.isDSN(), is(true));
+    }
+
+    @Test
+    public void testDSNReceipt() throws Exception {
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.PLAIN_DSN_HEADER_2);
+        assertThat(mime4jMessage.hasDispositionNotifications(), is(true));
+        assertThat(mime4jMessage.isReturnReceipt(), is(true));
     }
 
     @Test
     public void testAddTo() throws Exception {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.MULTIPART_WITH_ATTACHMENT);
 
-        mime4jMessage.addTo("test1@localhost");
-        mime4jMessage.addTo("test1@localhost");
-        mime4jMessage.addTo("test2@localhost");
+        mime4jMessage.addTo("testuser1@localhost");
+        ArrayList<Address> addresses = new ArrayList<>(3);
+        addresses.add(new Mailbox("testuser", "localhost"));
+        addresses.add(new Mailbox("testuser1", "localhost"));
+        AddressList addressList = new AddressList(addresses, false);
 
-        System.out.println(mime4jMessage.getMessage().getTo());
+        assertThat(mime4jMessage.getMessage().getTo(), is(addressList));
     }
 
 	@Test
@@ -197,4 +218,17 @@ public class Mime4jMessageTest {
 		Mime4jAttachment attachment = mime4jMessage.getAttachments().get(0);
 		assertThat(attachment.getId().getId(), is("folder|messageId|umlaut ä.png"));
 	}
+
+    @Test
+    public void testMime4jNestedMessage() throws Exception {
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.NESTED_MESSAGE);
+
+        assertThat(mime4jMessage.getAttachments(), hasSize(1));
+
+        Mime4jAttachment attachment = mime4jMessage.getAttachment("Disposition Notification Test.eml");
+        String text = new Scanner(attachment.getData()).useDelimiter("\\A").next();
+
+        assertThat(attachment.getMimeType(), is("text/plain"));
+        assertThat(text, equalToIgnoringWhiteSpace("Body nested"));
+    }
 }

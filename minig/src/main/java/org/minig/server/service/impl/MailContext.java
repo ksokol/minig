@@ -4,6 +4,9 @@ import javax.mail.Folder;
 import javax.mail.Session;
 import javax.mail.Store;
 
+/**
+ * @author Kamill Sokol
+ */
 public interface MailContext {
 
     Session getSession();
@@ -27,5 +30,7 @@ public interface MailContext {
     Folder getDraft();
 
     Folder getSent();
+
+    boolean isSystemFolder(Folder folder);
 
 }

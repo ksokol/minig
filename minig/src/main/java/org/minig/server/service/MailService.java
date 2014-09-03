@@ -6,6 +6,9 @@ import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 
+/**
+ * @author Kamill Sokol
+ */
 public interface MailService {
 
 	MailMessageList firstPageMessagesByFolder(String folder);
@@ -39,5 +42,9 @@ public interface MailService {
 	MailMessage createDraftMessage(MailMessage message);
 
 	MailMessage updateDraftMessage(MailMessage message);
+
+    void flagAsAnswered(String messageId);
+
+    void flagAsForwarded(String messageId);
 
 }

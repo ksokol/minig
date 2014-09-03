@@ -1,10 +1,12 @@
 package org.minig.server.service;
 
-import java.util.Properties;
-
 import org.minig.MailAuthentication;
+import org.minig.server.TestConstants;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author Kamill Sokol
+ */
 @Component
 public class MockMailAuthentication implements MailAuthentication {
 
@@ -19,12 +21,12 @@ public class MockMailAuthentication implements MailAuthentication {
 
     @Override
     public String getEmailAddress() {
-        return "testuser@localhost";
+        return TestConstants.MOCK_USER;
     }
 
     @Override
     public String getAddress() {
-        return "testuser@localhost";
+        return TestConstants.MOCK_USER;
     }
 
     @Override
@@ -65,18 +67,6 @@ public class MockMailAuthentication implements MailAuthentication {
     @Override
     public char getFolderSeparator() {
         return separator;
-    }
-
-    @Override
-    public Properties getConnectionProperties() {
-        Properties javaMailProperties = new Properties();
-
-        javaMailProperties.setProperty("mail.store.protocol", "imap");
-        javaMailProperties.put("mail.smtp.auth", "true");
-        javaMailProperties.put("mail.imap.port", "143");
-        javaMailProperties.put("mail.smtp.host", domain);
-
-        return javaMailProperties;
     }
 
 }

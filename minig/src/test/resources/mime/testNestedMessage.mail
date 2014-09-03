@@ -1,0 +1,39 @@
+Date: Thu, 28 Aug 2014 07:02:49 +0200 (CEST)
+From: testuser@localhost
+To: Drp15 <drp15@sokol-web.de>
+Message-ID: <1377057716@localhost>
+Subject: Return Receipt (displayed) - return12
+MIME-Version: 1.0
+Content-Type: multipart/report; 
+	boundary="----=_Part_23_1449297892.1409202168923"; 
+	report-type=delivery-status
+
+------=_Part_23_1449297892.1409202168923
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+This is a Return Receipt for the mail that you sent to testuser@localhost.
+
+Note: This Return Receipt only acknowledges that the message was displayed on the recipients computer. There is no guarantee that the recipient has read or understood the message contents.
+------=_Part_23_1449297892.1409202168923
+Content-Type: message/delivery-status
+Content-Transfer-Encoding: 7bit
+
+
+
+------=_Part_23_1449297892.1409202168923
+Content-Type: message/rfc822
+
+Message-ID: <53FEB7F0.3030501@localhost>
+Disposition-Notification-To: testuser@localhost
+Date: Thu, 28 Aug 2014 07:02:40 +0200
+From: testuser@localhost
+MIME-Version: 1.0
+To: testuser@localhost
+Subject: Disposition Notification Test
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Body nested
+
+------=_Part_23_1449297892.1409202168923--

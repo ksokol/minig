@@ -1,16 +1,17 @@
 package org.minig.servlet;
 
 import org.apache.commons.io.FileCleaner;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 /**
- * @author Kamill Sokol dev@sokol-web.de
+ * @author Kamill Sokol
  */
 public class FileCleaningTrackerServletContextListener implements ServletContextListener {
-    private static final Logger log = Logger.getLogger(FileCleaningTrackerServletContextListener.class);
+    private static final Logger log = LoggerFactory.getLogger(FileCleaningTrackerServletContextListener.class);
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {}

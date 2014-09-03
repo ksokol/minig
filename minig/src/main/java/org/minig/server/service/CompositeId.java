@@ -1,7 +1,8 @@
 package org.minig.server.service;
 
-
-//@JsonIgnoreProperties(ignoreUnknown = true)
+/**
+ * @author Kamill Sokol
+ */
 public class CompositeId {
 
 	public static final String SEPARATOR = "|";
@@ -70,4 +71,9 @@ public class CompositeId {
 			id = folder + SEPARATOR + messageId;
 		}
 	}
+
+    @Override
+    public String toString() {
+        return new StringBuilder(folder).append(SEPARATOR).append(messageId).toString();
+    }
 }

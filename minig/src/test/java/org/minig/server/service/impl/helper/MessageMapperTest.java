@@ -1,21 +1,42 @@
 package org.minig.server.service.impl.helper;
 
+import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
+import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
 import org.minig.server.MailMessage;
+import org.minig.server.MailMessageBody;
+import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.MimeMessageBuilder;
+import org.minig.server.service.impl.MailContext;
+import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 
 public class MessageMapperTest {
 
     private static MessageMapper uut = new MessageMapper();
+    private static MailContext mailContextMock = mock(MailContext.class);
+
+    @Before
+    public void before() {
+        uut.setMailContext(mailContextMock);
+        reset(mailContextMock);
+    }
 
     @Test
     public void testId() {
@@ -57,7 +78,7 @@ public class MessageMapperTest {
         MimeMessageBuilder builder = new MimeMessageBuilder();
         MimeMessage m = builder.setRecipientTo("recipient2@localhost").setRecipientCc("recipient11@localhost")
                 .setRecipientBcc("recipient21@localhost").setRecipientDispositionNotification("recipient101@localhost")
-                .setHighPriority(true).setReceipt(true).setAskForDispositionNotification(true).mock();
+                .setHighPriority(true).setReceipt(true).setAskForDispositionNotification(true).setInReplyTo("inReplyTo").mock();
 
         MailMessage c = uut.convertFull(m);
 
@@ -77,6 +98,7 @@ public class MessageMapperTest {
         assertEquals(builder.isAskForDispositionNotification(), c.getAskForDispositionNotification());
         assertEquals(builder.isReceipt(), c.getReceipt());
         assertEquals(builder.isDeleted(), c.getDeleted());
+        assertThat(c.getInReplyTo(), is("inReplyTo"));
 
         assertNotNull(c.getAttachments());
     }
@@ -84,7 +106,7 @@ public class MessageMapperTest {
     @Test
     public void testAttachmentIds() throws MessagingException {
         MimeMessageBuilder builder = new MimeMessageBuilder();
-        MimeMessage m = builder.build("src/test/resources/testAttachmentId.mail");
+        MimeMessage m = builder.build(TestConstants.MULTIPART_WITH_ATTACHMENT);
 
         CompositeAttachmentId id1 = new CompositeAttachmentId(m.getFolder().getFullName(), m.getMessageID(), "1.png");
         CompositeAttachmentId id2 = new CompositeAttachmentId(m.getFolder().getFullName(), m.getMessageID(), "2.png");
@@ -98,17 +120,17 @@ public class MessageMapperTest {
     @Test
     public void testBody() {
         MimeMessageBuilder builder = new MimeMessageBuilder();
-        MimeMessage m = builder.build("src/test/resources/testBody.mail");
+        MimeMessage m = builder.build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
 
         MailMessage c = uut.convertFull(m);
 
         String plain = c.getBody().getPlain();
         String html = c.getBody().getHtml();
 
-        assertEquals(1489, plain.length());
+        assertThat(plain.length(), greaterThanOrEqualTo(1449)); //ignore line endings
         assertTrue(plain.contains("From: 2013-04-25 09:35:54, To: 2013-04-25 09:44:54, Downtime: 0h 09m 00s"));
 
-        assertEquals(25350, html.length());
+        assertThat(html.length(), greaterThanOrEqualTo(25257));
         assertTrue(html.contains("<td><br><h3>178.254.55.49</h3></td></tr>"));
     }
 
@@ -156,12 +178,58 @@ public class MessageMapperTest {
 
     @Test
     public void testToMimeMessage_userFlags() throws MessagingException {
-        MimeMessage m = new MimeMessageBuilder().setRecipientDispositionNotification("test@localhost").setForwarded(true).setMDNSent(true)
-                .mock();
+        MimeMessage m = new MimeMessageBuilder().setRecipientDispositionNotification("test@localhost").setForwarded(true).setMDNSent(true).mock();
 
         MailMessage mm = uut.convertShort(m);
 
         assertTrue(mm.getForwarded());
         assertTrue(mm.getDispositionNotification() == null);
+    }
+
+    @Test
+    public void testToMime4jMessage() {
+        MailMessage mailMessage = new MailMessage();
+        MailMessageBody mailMessageBody = new MailMessageBody();
+        mailMessageBody.setPlain("plain");
+        mailMessage.setBody(mailMessageBody);
+        mailMessage.setInReplyTo("inReplyTo");
+        mailMessage.setForwardedMessageId("forwardId");
+
+        Mime4jMessage mime4jMessage = uut.toMime4jMessage(mailMessage);
+        assertThat(mime4jMessage.getPlain(), is("plain"));
+        assertThat(mime4jMessage.getInReplyTo(), is("inReplyTo"));
+        assertThat(mime4jMessage.getMessage().getHeader().getField("References").getBody(), is("inReplyTo"));
+        assertThat(mime4jMessage.getForwardedMessageId(), is("forwardId"));
+
+    }
+
+    @Test
+    public void testToMime4jMessageNPEcheck() {
+        MailMessage mailMessage = new MailMessage();
+
+        Mime4jMessage mime4jMessage = uut.toMime4jMessage(mailMessage);
+        assertThat(mime4jMessage.getPlain(), is(""));
+        assertThat(mime4jMessage.getInReplyTo(), nullValue());
+        assertThat(mime4jMessage.getForwardedMessageId(), nullValue());
+    }
+
+    @Test
+    public void testToMimeMessage() throws Exception {
+        when(mailContextMock.getSession()).thenReturn(null);
+
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.PLAIN);
+        mime4jMessage.setPlain("plain");
+        mime4jMessage.setHtml("html");
+
+        MimeMessage mimeMessage = uut.toMimeMessage(mime4jMessage);
+
+        assertThat(mimeMessage.getContent(), instanceOf(MimeMultipart.class));
+
+        MimeMultipart multiPart = (MimeMultipart) mimeMessage.getContent();
+        BodyPart plainPart = multiPart.getBodyPart(0);
+        BodyPart htmlPart = multiPart.getBodyPart(1);
+
+        assertThat(htmlPart.getContent(), Matchers.<Object>is("plain"));
+        assertThat(plainPart.getContent(), Matchers.<Object>is("html"));
     }
 }

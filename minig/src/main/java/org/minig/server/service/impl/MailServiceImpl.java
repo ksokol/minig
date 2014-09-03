@@ -1,29 +1,37 @@
 package org.minig.server.service.impl;
 
-import java.util.List;
-import java.util.logging.Logger;
-
 import org.minig.MailAuthentication;
+import org.minig.server.MailAttachmentList;
 import org.minig.server.MailFolder;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
 import org.minig.server.MailMessageList;
+import org.minig.server.service.AttachmentRepository;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.FolderRepository;
 import org.minig.server.service.MailRepository;
 import org.minig.server.service.MailService;
 import org.minig.server.service.NotFoundException;
 import org.minig.server.service.impl.helper.MessageMapper;
+import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
+/**
+ * @author Kamill Sokol
+ */
 @Service
 public class MailServiceImpl implements MailService {
 
-    private static final Logger logger = Logger.getLogger("MailService");
+    private static final Logger log = LoggerFactory.getLogger(MailServiceImpl.class);
 
     @Autowired
     private MailRepository mailRepository;
@@ -33,6 +41,9 @@ public class MailServiceImpl implements MailService {
 
     @Autowired
     private MailAuthentication authentication;
+
+    @Autowired
+    private AttachmentRepository attachmentRepository;
 
     // TODO
     @Autowired
@@ -64,9 +75,10 @@ public class MailServiceImpl implements MailService {
 
         if (message == null) {
             throw new NotFoundException();
-        } else {
-            return message;
         }
+        MailAttachmentList mailAttachmentList = attachmentRepository.readMetadata(id);
+        message.setAttachmentMetadata(mailAttachmentList.getAttachmentMetadata());
+        return message;
     }
 
     @Override
@@ -150,7 +162,7 @@ public class MailServiceImpl implements MailService {
             try {
                 updateMessageFlags(m);
             } catch (Exception e) {
-                logger.info(e.getMessage());
+                log.info(e.getMessage());
             }
         }
     }
@@ -191,16 +203,27 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public MailMessage createDraftMessage(MailMessage message) {
-        message.setSender(new MailMessageAddress(authentication.getAddress()));
+        String folderId = folderRepository.getDraft().getId();
 
         Mime4jMessage mime4jMessage = mapper.toMime4jMessage(message);
+        mime4jMessage.setFrom(authentication.getEmailAddress());
 
-        String messageId = mailRepository.save(mime4jMessage, folderRepository.getDraft().getId());
+        if(StringUtils.hasText(message.getForwardedMessageId())) {
+            CompositeId compositeId = mailRepository.findByMessageId(message.getForwardedMessageId());
 
-        // return mailRepository.saveInFolder(message,
-        // folderRepository.getDraft().getId());
+            if (compositeId != null) {
+                List<Mime4jAttachment> attachments = attachmentRepository.read(compositeId);
 
-        MailMessage readPojo = mailRepository.readPojo(folderRepository.getDraft().getId(), messageId);
+                for (Mime4jAttachment attachment : attachments) {
+                    mime4jMessage.addAttachment(new Mime4jAttachmentDataSource(attachment));
+                }
+            }
+        }
+
+        String saved = mailRepository.save(mime4jMessage, folderId);
+        CompositeId compositeId = new CompositeId(folderId, saved);
+
+        MailMessage readPojo = findMessage(compositeId);
         readPojo.setRead(Boolean.TRUE);
         mailRepository.updateFlags(readPojo);
 
@@ -209,28 +232,73 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public MailMessage updateDraftMessage(MailMessage message) {
+        //TODO maybe saving message and appending attachments from old message is a better approach?
         Mime4jMessage mimeMessage = mailRepository.read(message.getFolder(), message.getMessageId());
 
-        // TEST
+        mimeMessage.clearRecipients();
+        mimeMessage.clearCc();
+        mimeMessage.clearBcc();
+
+        if(message.getTo() != null) {
+            for (MailMessageAddress mailMessageAddress : message.getTo()) {
+                mimeMessage.addRecipient(mailMessageAddress.getEmail());
+            }
+        }
+
+        if(message.getCc() != null) {
+            for (MailMessageAddress mailMessageAddress : message.getCc()) {
+                mimeMessage.addCc(mailMessageAddress.getEmail());
+            }
+        }
+
+        if(message.getBcc() != null) {
+            for (MailMessageAddress mailMessageAddress : message.getBcc()) {
+                mimeMessage.addBcc(mailMessageAddress.getEmail());
+            }
+        }
+
         mimeMessage.getMessage().setSubject(message.getSubject());
         mimeMessage.setHtml(message.getBody().getHtml());
         mimeMessage.setPlain(message.getBody().getPlain());
 
-        mimeMessage.clearTo();
-
-        for (MailMessageAddress mailMessageAddress : message.getTo()) {
-            mimeMessage.addTo(mailMessageAddress.getEmail());
-        }
+        mimeMessage.setAskForDispositionNotification(message.getAskForDispositionNotification());
+        mimeMessage.setHighPriority(message.getHighPriority());
+        mimeMessage.setReceipt(message.getReceipt());
+        mimeMessage.setDate(message.getDate());
 
         //TODO what about other flags?
-        String save = mailRepository.save(mimeMessage, message.getFolder());
-
+        String saved = mailRepository.save(mimeMessage, message.getFolder());
         mailRepository.delete(message);
+        return mailRepository.readPojo(message.getFolder(), saved);
+    }
 
-        MailMessage readPojo = mailRepository.readPojo(message.getFolder(), save);
-        readPojo.setRead(Boolean.TRUE);
-        mailRepository.updateFlags(readPojo);
+    @Override
+    public void flagAsAnswered(String messageId) {
+        if(!StringUtils.hasText(messageId)) {
+            return;
+        }
 
-        return readPojo;
+        CompositeId messages = mailRepository.findByMessageId(messageId);
+        log.debug("found {} message for messageId {}", messages, messageId);
+
+         mailRepository.setAnsweredFlag(messages, true);
+    }
+
+    @Override
+    public void flagAsForwarded(String messageId) {
+        if(!StringUtils.hasText(messageId)) {
+            return;
+        }
+
+        CompositeId compositeId = mailRepository.findByMessageId(messageId);
+
+        if(compositeId == null) {
+            log.debug("could not find message for messageId {}", messageId);
+            return;
+        }
+
+        log.debug("found {} for messageId {}", compositeId.getId(), messageId);
+
+        mailRepository.setForwardedFlag(compositeId, true);
     }
 }

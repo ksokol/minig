@@ -81,15 +81,5 @@
 	    <servlet-name>login</servlet-name>
 	    <url-pattern>/login</url-pattern>
 	</servlet-mapping>
-	
-	<servlet>
-	    <servlet-name>mybox</servlet-name>
-	    <jsp-file>/index.jsp</jsp-file>
-	</servlet>
-	
-	<servlet-mapping>
-	    <servlet-name>mybox</servlet-name>
-	    <url-pattern>/mybox</url-pattern>
-	</servlet-mapping>
 
 </web-app>

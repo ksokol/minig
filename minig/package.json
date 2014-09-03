@@ -1,0 +1,11 @@
+{
+    "dependencies": {
+        "karma": "0.12.17",
+        "karma-jasmine": "~0.1.5",
+        "karma-phantomjs-launcher": "~0.1.1",
+        "karma-junit-reporter": "~0.2.2",
+        "karma-ng-json2js-preprocessor": "~0.1.1",
+        "karma-ng-scenario": "~0.1.0",
+        "karma-ng-html2js-preprocessor": "~0.1.0"
+    }
+}

@@ -3,7 +3,13 @@ package org.minig.server.service.impl.helper.mime;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.activation.DataSource;
 
@@ -23,19 +29,37 @@ import org.apache.james.mime4j.message.MultipartImpl;
 import org.apache.james.mime4j.stream.Field;
 import org.apache.james.mime4j.stream.RawField;
 import org.minig.server.service.CompositeId;
+import org.springframework.util.StringUtils;
 
+/**
+ * @author Kamill Sokol
+ */
 public class Mime4jMessage {
 
     private static final Charset UTF_8 = Charset.forName("UTF-8");
 
     private static final Map<String, String> CHARSET_UTF_8 = new HashMap<String, String>() {{
         put("charset", "UTF-8");
-    }};
+    }
+
+        private static final long serialVersionUID = 1439034073160479080L;
+    };
+
+    private static final String X_DRAFT_INFO = "X-Mozilla-Draft-Info";
+    private static final String MDN_SENT = "$MDNSent";
+    private static final String X_PRIORITY = "X-PRIORITY";
+    private static final String IN_REPLY_TO = "In-Reply-To";
+    private static final String REFERENCES = "References";
+    private static final String FORWARDED_MESSAGE_ID = "X-Forwarded-Message-Id";
 
     private CompositeId id;
     private MessageImpl message;
+    private boolean receipt;
+    private boolean askForDispositionNotification;
 
-    private Set<Address> to = new HashSet<Address>();
+    private Set<Address> to = new HashSet<>();
+    private Set<Address> cc = new HashSet<>();
+    private Set<Address> bcc = new HashSet<>();
 
     public Mime4jMessage(MessageImpl message) {
         this.message = message;
@@ -164,7 +188,7 @@ public class Mime4jMessage {
             htmlBody = new BasicBodyFactory().textBody(html, UTF_8);
 
             if (textBody == null) {
-                Map<String, String> m = new HashMap<String, String>();
+                Map<String, String> m = new HashMap<>();
                 m.put("charset", "UTF-8");
                 message.setBody(htmlBody, "text/html", m);
             } else {
@@ -262,7 +286,6 @@ public class Mime4jMessage {
     }
 
     public void setDate(Date date) {
-        // TODO timezone
         message.setDate(date);
     }
 
@@ -290,41 +313,19 @@ public class Mime4jMessage {
         bcc.add(mb);
     }
 
-    //
-    // public void addTo(String email, String name) {
-    // AddressList to = message.getTo();
-    //
-    // if (to == null) {
-    // to = new AddressList(new ArrayList<Address>(), true);
-    // message.setTo(to);
-    // }
-    //
-    // Mailbox mb = new Mailbox(name, email);
-    // to.add(mb);
-    // }
-
     public void addTo(String email) {
         AddressList to = message.getTo();
-
         List<Address> boxes = new ArrayList<Address>();
 
         if (to != null) {
             boxes.addAll(to.subList(0, to.size()));
         }
 
-        // if (to == null) {
-        // to = new AddressList(new ArrayList<Address>(), true);
-        // message.setTo(to);
-        // }
-
         String[] split = email.split("@");
         Mailbox mb = new Mailbox(split[0], split[1]);
 
         boxes.add(mb);
-
         message.setTo(boxes);
-
-        // to.add(mb);
     }
 
     public void clearTo() {
@@ -332,9 +333,32 @@ public class Mime4jMessage {
     }
 
     public void setHeader(String key, String value) {
+        if(StringUtils.isEmpty(key) || StringUtils.isEmpty(value)) {
+            return;
+        }
         RawField f = new RawField(key, value);
-        Header messageHheader = message.getHeader();
-        messageHheader.addField(f);
+        Header messageHeader = message.getHeader();
+        messageHeader.setField(f);
+    }
+
+    private List<BodyPart> getAttachments(Multipart multipart) {
+        List<BodyPart> attachments = new ArrayList<BodyPart>();
+
+        for (Entity e : multipart.getBodyParts()) {
+            BodyPart part = (BodyPart) e;
+
+            //TODO what about inline attachments?
+            if ("attachment".equalsIgnoreCase(part.getDispositionType())) {
+                attachments.add(part);
+            }
+
+            if (part.isMultipart()) {
+                List<BodyPart> getAttachments = getAttachments((Multipart) part.getBody());
+                attachments.addAll(getAttachments);
+            }
+        }
+
+        return attachments;
     }
 
     private void deleteAttachment(Multipart multipart, String filename) {
@@ -353,21 +377,29 @@ public class Mime4jMessage {
         }
     }
 
-    public boolean isDispositionNotification() {
+    public boolean hasDispositionNotifications() {
+        return isDSN() || isReturnReceipt();
+    }
+
+    public boolean isDSN() {
+        return getDraftInfo().contains("DSN=1");
+    }
+
+    public boolean isReturnReceipt() {
+        return getDraftInfo().contains("receipt=1");
+    }
+
+    private String getDraftInfo() {
         Header header = message.getHeader();
-
-        // reuse Mozilla's header field
-        Field field = header.getField("X-Mozilla-Draft-Info");
-
-        if (field != null) {
-            String body = field.getBody();
-            // TODO
-            if (body != null && body.contains("DSN=1")) {
-                return true;
-            }
+        Field field = header.getField(X_DRAFT_INFO);
+        if (field == null) {
+            return "";
         }
-
-        return false;
+        String body = field.getBody();
+        if (body == null) {
+            return "";
+        }
+        return body;
     }
 
     public void setSender(String sender) {
@@ -383,7 +415,22 @@ public class Mime4jMessage {
         return sender.getAddress();
     }
 
-    public void setRecipient(String recipient) {
+    public void clearRecipients() {
+        to.clear();
+        message.setTo(to);
+    }
+
+    public void clearCc() {
+        cc.clear();
+        message.setCc(cc);
+    }
+
+    public void clearBcc() {
+        bcc.clear();
+        message.setBcc(bcc);
+    }
+
+    public void addRecipient(String recipient) {
         String[] split = recipient.split("@");
         Mailbox mb = new Mailbox(split[0], split[1]);
 
@@ -392,37 +439,70 @@ public class Mime4jMessage {
         message.setTo(to);
     }
 
+    public void addCc(String recipient) {
+        String[] split = recipient.split("@");
+        Mailbox mb = new Mailbox(split[0], split[1]);
+        cc.add(mb);
+        message.setCc(cc);
+    }
+
+    public void addBcc(String recipient) {
+        String[] split = recipient.split("@");
+        Mailbox mb = new Mailbox(split[0], split[1]);
+        bcc.add(mb);
+        message.setBcc(bcc);
+    }
+
+    public void setAskForDispositionNotification(Boolean askForDispositionNotification) {
+        this.askForDispositionNotification = askForDispositionNotification == null ? false : askForDispositionNotification;
+        updateXPriority();
+    }
+
+    public void setHighPriority(Boolean highPriority) {
+        if(highPriority != null && highPriority) {
+            setHeader(X_PRIORITY, "1");
+            return;
+        }
+        message.getHeader().removeFields(X_PRIORITY);
+    }
+
+    public void setReceipt(Boolean receipt) {
+        this.receipt = receipt == null ? false : receipt;
+        updateXPriority();
+    }
+
     public String getSubject() {
         return message.getSubject();
+    }
+
+    public void setInReplyTo(String inReplyTo) {
+        setHeader(IN_REPLY_TO, inReplyTo);
+        setHeader(REFERENCES, inReplyTo);
+    }
+
+    public String getInReplyTo() {
+        Field field = getMessage().getHeader().getField(IN_REPLY_TO);
+        if(field == null) {
+            return null;
+        }
+        return field.getBody();
+    }
+
+    public String getForwardedMessageId() {
+        Field field = getMessage().getHeader().getField(FORWARDED_MESSAGE_ID);
+        if(field == null) {
+            return null;
+        }
+        return field.getBody();
+    }
+
+    public void setForwardedMessageId(String forwardedMessageId) {
+        setHeader(FORWARDED_MESSAGE_ID, forwardedMessageId);
     }
 
     private String parseBodyParts(Multipart multipart, String mimeType) {
         TextBody bodyPart = getBodyPart(multipart, mimeType);
         return getReadablePart(bodyPart);
-        //
-        // try {
-        //
-        // getBodyPart(multipart, mimeType);
-        //
-        // List<Entity> bodyParts = multipart.getBodyParts();
-        //
-        // for (Entity e : bodyParts) {
-        // BodyPart part = (BodyPart) e;
-        //
-        // if (part.isMimeType(mimeType)) {
-        // return getReadablePart(part.getBody());
-        //
-        // }
-        //
-        // if (part.isMultipart()) {
-        // return parseBodyParts((Multipart) part.getBody(), mimeType);
-        // }
-        // }
-        //
-        // return "";
-        // } catch (Exception e) {
-        // throw new RuntimeException(e.getMessage(), e);
-        // }
     }
 
     private IndexOfResult getIndexOf(List<Entity> bodyParts, String mimeType) {
@@ -447,6 +527,29 @@ public class Mime4jMessage {
         }
 
         return null;
+    }
+
+    private void updateXPriority() {
+        String value = null;
+
+        if(this.receipt) {
+            value = "receipt=1";
+        }
+
+        if(this.askForDispositionNotification) {
+            if(value == null) {
+                value += "DSN=1";
+            } else {
+                value += "; DSN=1";
+            }
+        }
+
+        Header header = message.getHeader();
+        if(value == null) {
+            header.removeFields(X_DRAFT_INFO);
+        }
+
+        setHeader(X_DRAFT_INFO, value);
     }
 
     // TODO

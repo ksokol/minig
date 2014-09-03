@@ -1,20 +1,20 @@
 package org.minig;
 
-import java.util.Properties;
-
+/**
+ * @author Kamill Sokol
+ */
 public interface MailAuthentication {
 
     String getEmailAddress();
 
     /**
-     * use getEmailAddress instead
-     * @return
+     * use {@link MailAuthentication#getEmailAddress()} instead
      */
     @Deprecated
     String getAddress();
 
     /**
-     * use getEmailAddress instead
+     * use {@link MailAuthentication#getEmailAddress()} instead
      * @return
      */
     @Deprecated
@@ -34,5 +34,4 @@ public interface MailAuthentication {
 
     char getFolderSeparator();
 
-    Properties getConnectionProperties();
 }

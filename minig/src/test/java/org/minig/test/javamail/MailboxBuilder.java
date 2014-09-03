@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author dev@sokol-web.de <Kamill Sokol>
+ * @author Kamill Sokol
  */
 public class MailboxBuilder {
 
@@ -91,6 +91,19 @@ public class MailboxBuilder {
             return mailbox;
         } catch (AddressException e) {
             throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public static void buildDefault(String mailbox) {
+        //TODO fix me
+        if(MailboxHolder.get(mailbox, "INBOX") == null) {
+            new MailboxBuilder(mailbox).mailbox("INBOX").subscribed().exists().build();
+        }
+        if(MailboxHolder.get(mailbox, "INBOX.Drafts") == null) {
+            new MailboxBuilder(mailbox).mailbox("INBOX.Drafts").subscribed().exists().build();
+        }
+        if(MailboxHolder.get(mailbox, "INBOX.Sent") == null) {
+            new MailboxBuilder(mailbox).mailbox("INBOX.Sent").subscribed().exists().build();
         }
     }
 }

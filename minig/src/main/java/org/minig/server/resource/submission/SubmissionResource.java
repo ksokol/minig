@@ -2,7 +2,6 @@ package org.minig.server.resource.submission;
 
 import org.minig.server.MailMessage;
 import org.minig.server.resource.Id;
-import org.minig.server.resource.submission.request.SubmissionRequest;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.submission.DispositionService;
 import org.minig.server.service.submission.SubmissionService;
@@ -14,8 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+/**
+ * @author Kamill Sokol
+ */
 @Controller
-@RequestMapping(value = "1/submission", produces = "application/json; charset=UTF-8")
+@RequestMapping(value = "1/submission")
 public class SubmissionResource {
 
     @Autowired
@@ -26,22 +28,13 @@ public class SubmissionResource {
 
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public void send(@RequestBody SubmissionRequest request) {
-        // TODO
-        String replyTo = request.getReplyTo();
-        CompositeId id = new CompositeId(replyTo);
-        mailSendService.sendMessage(request.getClientMessage(), id);
-    }
-
-    @ResponseStatus(value = HttpStatus.CREATED)
-    @RequestMapping(value = "forward/**", method = RequestMethod.POST)
-    public void forward(@Id CompositeId forwardedMessageId, @RequestBody MailMessage mailMessage) {
-        mailSendService.forwardMessage(mailMessage, forwardedMessageId);
+    public void send(@RequestBody MailMessage mailMessage) {
+        mailSendService.sendMessage(mailMessage);
     }
 
     @ResponseStatus(value = HttpStatus.CREATED)
     @RequestMapping(value = "disposition/**", method = RequestMethod.POST)
     public void send(@Id CompositeId id) {
-        dispositionService.senDispsoition(id);
+        dispositionService.sendDisposition(id);
     }
 }
