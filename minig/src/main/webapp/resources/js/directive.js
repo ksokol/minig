@@ -1,18 +1,23 @@
 
 app.directive("loadingIndicator", function() {
+
     return {
-        restrict : "A",
-        link : function(scope, element, attrs) {
-            scope.$on("loading-started", function(e) {
-                element.css({"display" : ""});
+        restrict : "E",
+        link : function(scope, element) {
+            scope.$on("loading-started", function() {
+                element.append('<div class="spinner"></div>');
             });
 
-            scope.$on("loading-complete", function(e) {
-                element.css({"display" : "none"});
+            scope.$on("loading-complete", function() {
+                //TODO
+                $('.spinner:last').remove();
+                //element.remove(".spinner:last");
             });
 
-            scope.$on("error", function(e) {
-                element.css({"display" : "none"});
+            scope.$on("error", function() {
+                //TODO
+                $('.spinner:last').remove();
+                //element.remove(".spinner:last");
             });
         }
     };

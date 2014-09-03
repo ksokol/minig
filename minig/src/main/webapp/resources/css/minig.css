@@ -2758,3 +2758,11 @@ textarea {
 .ta-toolbar {
     padding: 3px;
 }
+
+.spinner {
+    background: url("../images/spinner_moz.gif") ;
+    margin: -7px 0px 0px -16px;
+    height: 16px;
+    position: absolute;
+    width: 16px;
+}
