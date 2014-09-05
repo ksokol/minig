@@ -84,7 +84,6 @@ public class AttachmentResourceTest {
         ma.setMime("mime");
 		ma.setMessageId("messageId");
 		ma.setFolder("folder");
-        ma.setSize(100);
         l.add(ma);
 
         when(attachmentServiceMock.findAttachments(Matchers.<CompositeId> anyObject())).thenReturn(new MailAttachmentList(l));
@@ -93,8 +92,7 @@ public class AttachmentResourceTest {
 				.andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("attachmentMetadata[0].fileName").value("filename"))
                 .andExpect(jsonPath("attachmentMetadata[0].id").value("folder|messageId|filename"))
-                .andExpect(jsonPath("attachmentMetadata[0].mime").value("mime"))
-                .andExpect(jsonPath("attachmentMetadata[0].size").value(100));
+                .andExpect(jsonPath("attachmentMetadata[0].mime").value("mime"));
 
         verify(attachmentServiceMock).findAttachments(
                 argThat(org.hamcrest.Matchers.<CompositeId> hasProperty("messageId", IsEqual.<String> equalTo("1"))));
@@ -139,7 +137,6 @@ public class AttachmentResourceTest {
         mailAttachment.setMessageId(compositeId.getMessageId());
         mailAttachment.setFolder(compositeId.getFolder());
         mailAttachment.setMime("text/html");
-        mailAttachment.setSize(42);
 
         MailAttachmentList mailAttachmentList = new MailAttachmentList();
         mailAttachmentList.setAttachmentMetadata(Arrays.asList(mailAttachment));
@@ -147,7 +144,7 @@ public class AttachmentResourceTest {
         when(attachmentServiceMock.findAttachments(compositeId)).thenReturn(mailAttachmentList);
 
         mockMvc.perform(fileUpload(PREFIX + "/attachment/INBOX/test|id").file("data.txt", "data".getBytes()))
-                .andExpect(content().string("{\"id\":{\"id\":\"INBOX/test|id|data.txt\",\"messageId\":\"id\",\"folder\":\"INBOX/test\",\"fileName\":\"data.txt\"},\"attachmentMetadata\":[{\"id\":\"INBOX/test|id|file.html\",\"messageId\":\"id\",\"folder\":\"INBOX/test\",\"fileName\":\"file.html\",\"mime\":\"text/html\",\"size\":42}]}"));
+                .andExpect(content().string("{\"id\":{\"id\":\"INBOX/test|id|data.txt\",\"messageId\":\"id\",\"folder\":\"INBOX/test\",\"fileName\":\"data.txt\"},\"attachmentMetadata\":[{\"id\":\"INBOX/test|id|file.html\",\"messageId\":\"id\",\"folder\":\"INBOX/test\",\"fileName\":\"file.html\",\"mime\":\"text/html\"}]}"));
 
         verify(attachmentServiceMock).addAttachment(
                 argThat(org.hamcrest.Matchers.<CompositeId> hasProperty("messageId", IsEqual.<String> equalTo("id"))),

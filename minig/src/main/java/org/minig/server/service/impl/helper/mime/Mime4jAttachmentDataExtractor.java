@@ -82,7 +82,6 @@ final class Mime4jAttachmentDataExtractor {
 		}
 
 		try(InputStream in = source.getInputStream()) {
-			target.setSize(in.available());
 			target.setData(source.getInputStream());
 		} catch (IOException e) {
 			throw new RuntimeException(e.getMessage(), e);
@@ -109,7 +108,6 @@ final class Mime4jAttachmentDataExtractor {
         target.setFilename(String.format("%s.eml",message.getSubject()));
 
         try(InputStream in = source.getInputStream()) {
-            target.setSize(in.available());
             target.setData(source.getInputStream());
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);

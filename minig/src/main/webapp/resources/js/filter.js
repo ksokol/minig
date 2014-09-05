@@ -100,18 +100,3 @@ app.filter('prettyFolderName', function() {
         return pretty + folder.name;
 	}
 });
-
-app.filter('prettyPrintSize', function() {
-
-    return function(size) {
-        if (size < 1024) {
-            return Math.round(size) + " B";
-        }
-        size = size / 1024;
-        if (size < 1024) {
-            return Math.round(size) + " KB";
-        }
-        size = size / 1024;
-        return Math.round(size) + " MB";
-    }
-});

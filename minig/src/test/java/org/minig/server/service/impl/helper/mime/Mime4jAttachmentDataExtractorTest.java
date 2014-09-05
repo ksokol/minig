@@ -25,7 +25,6 @@ public class Mime4jAttachmentDataExtractorTest {
 
 		Mime4jAttachmentData attachment = attachments.get(0);
 
-		assertThat(attachment.getSize(), is(150L));
 		assertThat(attachment.getMimeType(), is("image/png"));
 		assertThat(attachment.getFilename(), is("umlaut ä.png"));
 	}
@@ -39,7 +38,6 @@ public class Mime4jAttachmentDataExtractorTest {
 
 		Mime4jAttachmentData attachment = attachments.get(0);
 
-		assertThat(attachment.getSize(), is(greaterThan(0L)));
 		assertThat(attachment.getMimeType(), is("text/plain"));
 		assertThat(attachment.getFilename(), is("lyrics.txt"));
 	}
@@ -53,7 +51,6 @@ public class Mime4jAttachmentDataExtractorTest {
 
 		Mime4jAttachmentData attachment = attachments.get(0);
 
-		assertThat(attachment.getSize(), is(150L));
 		assertThat(attachment.getMimeType(), is("image/png"));
 		assertThat(attachment.getFilename(), is("umlaut ä.png"));
 	}
@@ -67,7 +64,6 @@ public class Mime4jAttachmentDataExtractorTest {
 
 		Mime4jAttachmentData attachment = attachments.get(0);
 
-		assertThat(attachment.getSize(), is(150L));
 		assertThat(attachment.getMimeType(), is("image/png"));
 		assertThat(attachment.getFilename(), is("umlaut ä veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery long.png"));
 	}

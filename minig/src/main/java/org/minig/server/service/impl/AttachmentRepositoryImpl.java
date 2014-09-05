@@ -55,7 +55,6 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
 			MailAttachment metaData = new MailAttachment();
 			metaData.setCompositeId(attachment.getId());
 			metaData.setFileName(attachment.getId().getFileName());
-			metaData.setSize(attachment.getSize());
 			metaData.setMime(attachment.getMimeType());
 			metaDataList.add(metaData);
 		}
@@ -83,7 +82,6 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
 		metaData = new MailAttachment();
 		metaData.setCompositeAttachmentId(id);
 		metaData.setFileName(p.getId().getFileName());
-		metaData.setSize(p.getSize());
 		metaData.setMime(p.getMimeType());
         return metaData;
     }

@@ -24,10 +24,6 @@ public final class Mime4jAttachment {
 		return id;
 	}
 
-	public long getSize() {
-		return metadata.getSize();
-	}
-
 	public String getMimeType() {
 		return metadata.getMimeType();
 	}

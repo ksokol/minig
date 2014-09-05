@@ -34,7 +34,6 @@ public class CompositeAttachmentIdSerializer extends JsonSerializer<CompositeAtt
 		if(source instanceof MailAttachment) {
 			MailAttachment ma = (MailAttachment) source;
 			jgen.writeObjectField("mime", ma.getMime());
-			jgen.writeObjectField("size", ma.getSize());
 		}
 
 		jgen.writeEndObject();

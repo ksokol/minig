@@ -113,7 +113,6 @@ public class AttachmentRepositoryImplTest {
 
         assertThat(expected.getId(), is(mailAttachment1.getId()));
         assertThat(mailAttachment1.getMime(), is(equalToIgnoringWhiteSpace("image/png")));
-        assertThat(mailAttachment1.getSize(), greaterThan(0L));
 
         assertThat(mailAttachment2.getFileName(), is("2.png"));
 
@@ -121,7 +120,6 @@ public class AttachmentRepositoryImplTest {
 
         assertThat(expected.getId(), is(mailAttachment2.getId()));
         assertThat(mailAttachment2.getMime(), is(equalToIgnoringWhiteSpace("image/png")));
-        assertThat(mailAttachment2.getSize(), greaterThan(0L));
     }
 
     @Test
@@ -149,7 +147,6 @@ public class AttachmentRepositoryImplTest {
         assertEquals("1.png", read.getFileName());
         assertEquals(id.getId(), read.getId());
         assertThat(read.getMime(), is(equalToIgnoringWhiteSpace("image/png")));
-        assertThat(read.getSize(), greaterThan(0L));
     }
 
 	@Test
@@ -161,7 +158,6 @@ public class AttachmentRepositoryImplTest {
 		MailAttachment ma = uut.read(id);
 
 		assertThat(ma.getFileName(), is("umlaut ä.png"));
-		assertThat(ma.getSize(), is(greaterThan(0L)));
 	}
 
     @Test
