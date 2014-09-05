@@ -1,5 +1,5 @@
 
-app.controller('FolderListCtrl', function($scope, $rootScope, folderService, routeService) {
+app.controller('FolderListCtrl', function($scope, $rootScope, folderService, routeService, INITIAL_MAILBOX) {
     $scope.folders = [];
 
     folderService.findAll().then(function (folders) {
@@ -33,7 +33,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService, rou
     };
 
     $scope.selectFolder = function(folder) {
-        routeService.navigateTo({path: 'box', id: folder, reload: true});
+        routeService.navigateTo({path: 'box', params: {id: folder || INITIAL_MAILBOX}, reload: true});
     };
 
 })
