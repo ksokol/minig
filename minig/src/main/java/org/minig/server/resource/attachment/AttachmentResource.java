@@ -64,7 +64,7 @@ public class AttachmentResource {
         MailAttachment attachment = attachmentService.findAttachment(id);
 
         response.setContentType(attachment.getMime());
-        response.setHeader("Content-Disposition", "attachment; filename=" + attachment.getFileName());
+        response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", attachment.getFileName()));
         attachmentService.readAttachment(id, response.getOutputStream());
     }
 

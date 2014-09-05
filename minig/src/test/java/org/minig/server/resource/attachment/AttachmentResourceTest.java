@@ -123,7 +123,7 @@ public class AttachmentResourceTest {
         }).when(attachmentServiceMock).readAttachment(Matchers.<CompositeAttachmentId> anyObject(), Matchers.<OutputStream> anyObject());
 
         mockMvc.perform(get(PREFIX + "/attachment/INBOX/test|<id@localhost>|1.png").param("download", "true")).andExpect(status().isOk())
-                .andExpect(content().bytes(expected)).andExpect(header().string("Content-Disposition", "attachment; filename=filename"))
+                .andExpect(content().bytes(expected)).andExpect(header().string("Content-Disposition", "attachment; filename=\"filename\""))
                 .andExpect(header().string("Content-Type", "mime"));
     }
 
