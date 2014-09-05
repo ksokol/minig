@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.minig.server.MailAttachment;
 import org.minig.server.service.CompositeAttachmentId;
+import org.minig.util.PercentEscaper;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 /**
@@ -18,17 +20,15 @@ public class CompositeAttachmentIdSerializer extends JsonSerializer<CompositeAtt
 
 	@Override
 	public void serialize(CompositeAttachmentId source, JsonGenerator jgen, SerializerProvider serializerProvider) throws IOException {
-		String encode = URLEncoder.encode(source.getFileName(), "UTF-8");
-
 		CompositeAttachmentId target = new CompositeAttachmentId();
 		target.setFolder(source.getFolder());
-		target.setMessageId(source.getMessageId());
-		target.setFileName(encode);
+		target.setMessageId(escape(source.getMessageId()));
+		target.setFileName(escape(source.getFileName()));
 
 		jgen.writeStartObject();
 		jgen.writeObjectField("id", target.getId());
-		jgen.writeObjectField("messageId", source.getMessageId());
-		jgen.writeObjectField("folder", source.getFolder());
+		jgen.writeObjectField("messageId", target.getMessageId());
+		jgen.writeObjectField("folder", target.getFolder());
 		jgen.writeObjectField("fileName", source.getFileName());
 
 		if(source instanceof MailAttachment) {
@@ -39,4 +39,12 @@ public class CompositeAttachmentIdSerializer extends JsonSerializer<CompositeAtt
 
 		jgen.writeEndObject();
 	}
+
+    //http://tools.ietf.org/html/rfc3986#section-2.2
+    private String escape(String s) throws UnsupportedEncodingException {
+        PercentEscaper percentEscaper = new PercentEscaper("-_.*", true);
+        return URLEncoder.encode(percentEscaper.escape(s), "UTF-8");
+    }
+
+
 }

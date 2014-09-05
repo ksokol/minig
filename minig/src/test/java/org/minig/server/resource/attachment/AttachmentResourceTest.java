@@ -170,6 +170,6 @@ public class AttachmentResourceTest {
 		mockMvc.perform(get(PREFIX + "/attachment/INBOX/test|1"))
 				.andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
 				.andExpect(jsonPath("attachmentMetadata[0].fileName").value("umlaut ä.png"))
-				.andExpect(jsonPath("attachmentMetadata[0].id").value("folder|messageId|umlaut+%C3%A4.png"));
+				.andExpect(jsonPath("attachmentMetadata[0].id").value("folder|messageId|umlaut%2B%25C3%25A4.png"));
 	}
 }
