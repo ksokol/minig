@@ -308,9 +308,10 @@ app.directive("conversationDisplay", function() {
 app.directive("messageText", function() {
 
     var formatPlain = function (text) {
-        var split = text.split("\r\n");
+        var decoded = he.decode(text)
+        var split = decoded.split("\r\n");
         if(split.length === 1) {
-            return text.split("\n");
+            return decoded.split("\n");
         }
         return split;
     };
