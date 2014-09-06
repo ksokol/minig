@@ -479,23 +479,35 @@ app.directive("attachmentUpload", function() {
             after: "&"
         },
         templateUrl: 'attachment-upload.html',
-        controller: [ "$scope", "attachmentService", function ($scope, attachmentService) {
+        controller: [ "$scope", "attachmentService", "draftService", function ($scope, attachmentService, draftService) {
             // http://stackoverflow.com/questions/17922557/angularjs-how-to-check-for-changes-in-file-input-fields
             $scope.blur = function(element) {
-                var file = element.files[0];
-                var formData = new FormData();
-                formData.append(file.name, file);
-                attachmentService.save({messageId: $scope.mail.id, data: formData})
-                .then(function(result) {
-                    $scope.mail.attachments = result.attachments;
-                    $scope.mail.id = result.id.id;
-                    $scope.mail.messageId = result.id.messageId;
+                var upload = function() {
+                    var file = element.files[0];
+                    var formData = new FormData();
+                    formData.append(file.name, file);
+                    attachmentService.save({messageId: $scope.mail.id, data: formData})
+                    .then(function(result) {
+                        $scope.mail.attachments = result.attachments;
+                        $scope.mail.id = result.id.id;
+                        $scope.mail.messageId = result.id.messageId;
 
-                    delete element.files;
-                    delete $scope.file;
-                    element.value = null;
-                    $scope.showUploadButton = false;
-                });
+                        delete element.files;
+                        delete $scope.file;
+                        element.value = null;
+                        $scope.showUploadButton = false;
+                    });
+                };
+
+                if(!$scope.mail.id) {
+                    draftService.save($scope.mail)
+                    .then(function(mail) {
+                        $scope.mail = mail;
+                        upload();
+                    });
+                } else {
+                    upload();
+                }
             }
         }]
     }

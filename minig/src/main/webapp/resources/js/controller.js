@@ -81,7 +81,6 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService, rou
 	};
 
     $scope.$on('folder-intent-done', function(e) {
-        console.log("intent-done")
         $scope.updateOverview();
     });
 
