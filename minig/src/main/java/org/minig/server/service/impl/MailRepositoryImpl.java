@@ -2,6 +2,7 @@ package org.minig.server.service.impl;
 
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
+import org.minig.server.repository.mail.MailFetchProfile;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.MailRepository;
 import org.minig.server.service.NotFoundException;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import javax.mail.FetchProfile;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -64,17 +64,7 @@ class MailRepositoryImpl implements MailRepository {
             }
 
             Message[] messages = storeFolder.getMessages(start, end);
-
-            FetchProfile fp = new FetchProfile();
-            fp.add(FetchProfile.Item.ENVELOPE);
-            fp.add(FetchProfile.Item.FLAGS);
-            fp.add(FetchProfile.Item.CONTENT_INFO);
-            fp.add("X-Mozilla-Draft-Info");
-            fp.add("$MDNSent");
-            fp.add("$Forwarded");
-            fp.add("X-PRIORITY");
-
-            storeFolder.fetch(messages, fp);
+            storeFolder.fetch(messages, MailFetchProfile.overview());
 
             for (Message m : messages) {
                 MailMessage message = mapper.convertShort(m);
@@ -92,15 +82,20 @@ class MailRepositoryImpl implements MailRepository {
     public MailMessage read(CompositeId id) {
         Assert.notNull(id);
 
-        try {
-            Folder storeFolder = mailContext.getFolder(id.getFolder(), true);
+        Folder storeFolder = mailContext.openFolder(id.getFolder());
 
-            if (storeFolder.exists()) {
-                Message[] search = storeFolder.search(new MessageIDTerm(id.getMessageId()));
-                if (search.length > 0) {
-                    return mapper.convertFull(search[0]);
-                }
+        try {
+            if (!storeFolder.exists()) {
+                return null;
             }
+
+            Message[] search = storeFolder.search(new MessageIDTerm(id.getMessageId()));
+            storeFolder.fetch(search, MailFetchProfile.details());
+
+            if (search.length > 0) {
+                return mapper.convertFull(search[0]);
+            }
+
         } catch (Exception e) {
             throw new RepositoryException(e.getMessage(), e);
         }

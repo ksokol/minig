@@ -61,7 +61,11 @@ final class Mime4jAttachmentDataExtractor {
 			return Arrays.asList(extractFromSingleBody(bodyPart));
 		}
         if(bodyPart.getBody() instanceof MessageImpl) {
-            return extractFromMessage((MessageImpl) bodyPart.getBody());
+            Mime4jAttachmentData mime4jAttachmentData = extractFromMessage((MessageImpl) bodyPart.getBody());
+            if(mime4jAttachmentData.getFilename() == null) {
+                mime4jAttachmentData.setFilename(getFileName(bodyPart));
+            }
+            return Arrays.asList(mime4jAttachmentData);
         }
 		throw new IllegalArgumentException("unknown bodyPart " + bodyPart.getClass());
 	}
@@ -71,18 +75,10 @@ final class Mime4jAttachmentDataExtractor {
 		Mime4jAttachmentData target = new Mime4jAttachmentData();
 
 		target.setMimeType(bodyPart.getMimeType());
-
-		if(bodyPart.getFilename() != null) {
-			target.setFilename(DecoderUtil.decodeEncodedWords(bodyPart.getFilename(), null));
-		} else {
-			//TODO remove me after https://issues.apache.org/jira/browse/MIME4J-109 has been implemented
-			Field field = bodyPart.getHeader().getField("Content-Disposition");
-			String parse = new RFC2231Decoder().parse(field.getBody());
-			target.setFilename(parse);
-		}
+        target.setFilename(getFileName(bodyPart));
 
 		try(InputStream in = source.getInputStream()) {
-			target.setData(source.getInputStream());
+			target.setData(in);
 		} catch (IOException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
@@ -90,14 +86,11 @@ final class Mime4jAttachmentDataExtractor {
 		return target;
 	}
 
-    private static List<Mime4jAttachmentData> extractFromMessage(Message message) {
+    private static Mime4jAttachmentData extractFromMessage(Message message) {
         if("text/plain".equals(message.getMimeType())) {
-            return Arrays.asList(extractFromSingleBody(message));
+            return extractFromSingleBody(message);
         }
-        if (!message.isMultipart()) {
-            return Collections.emptyList();
-        }
-        return extractFromMultipart((Multipart) message.getBody());
+        return null;
     }
 
     private static Mime4jAttachmentData extractFromSingleBody(Message message) {
@@ -105,7 +98,10 @@ final class Mime4jAttachmentDataExtractor {
         Mime4jAttachmentData target = new Mime4jAttachmentData();
 
         target.setMimeType(message.getMimeType());
-        target.setFilename(String.format("%s.eml",message.getSubject()));
+
+        if(message.getSubject() != null) {
+            target.setFilename(String.format("%s.eml", message.getSubject()));
+        }
 
         try(InputStream in = source.getInputStream()) {
             target.setData(source.getInputStream());
@@ -113,5 +109,15 @@ final class Mime4jAttachmentDataExtractor {
             throw new RuntimeException(e.getMessage(), e);
         }
         return target;
+    }
+
+    private static String getFileName(BodyPart bodyPart) {
+        if(bodyPart.getFilename() != null) {
+            return DecoderUtil.decodeEncodedWords(bodyPart.getFilename(), null);
+        } else {
+            //TODO remove me after https://issues.apache.org/jira/browse/MIME4J-109 has been implemented
+            Field field = bodyPart.getHeader().getField("Content-Disposition");
+            return new RFC2231Decoder().parse(field.getBody());
+        }
     }
 }

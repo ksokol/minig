@@ -165,6 +165,7 @@ public class IntegrationTest {
 
         mockMvc.perform(get(PREFIX + "/message/" + idAfterAttachmentWasRemoved))
                 .andExpect(jsonPath("$.attachments..fileName").value(contains("2.png")))
+                .andExpect(jsonPath("$.attachments").value(hasSize(1)))
                 .andExpect(jsonPath("$.read").value(true));
 
         assertThat(mailWithAttachment.getMessageID(), not(equalTo(idAfterAttachmentWasRemoved)));

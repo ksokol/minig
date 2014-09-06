@@ -1,7 +1,6 @@
 package org.minig.server.service.impl;
 
 import org.minig.MailAuthentication;
-import org.minig.server.MailAttachmentList;
 import org.minig.server.MailFolder;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
@@ -20,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -76,8 +74,7 @@ public class MailServiceImpl implements MailService {
         if (message == null) {
             throw new NotFoundException();
         }
-        MailAttachmentList mailAttachmentList = attachmentRepository.readMetadata(id);
-        message.setAttachmentMetadata(mailAttachmentList.getAttachmentMetadata());
+
         return message;
     }
 

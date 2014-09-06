@@ -12,6 +12,7 @@ import javax.mail.Session;
 import javax.mail.Store;
 
 import org.minig.MailAuthentication;
+import org.minig.server.service.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -100,7 +101,7 @@ public class SimpleMailContextImpl implements MailContext, DisposableBean {
             throw new RuntimeException(e.getMessage(), e);
         }
 
-        throw new RuntimeException("folder does not exist");
+        throw new NotFoundException();
     }
 
     @Override

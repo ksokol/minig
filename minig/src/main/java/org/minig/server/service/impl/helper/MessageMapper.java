@@ -1,25 +1,5 @@
 package org.minig.server.service.impl.helper;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.mail.Address;
-import javax.mail.Flags;
-import javax.mail.Message;
-import javax.mail.Message.RecipientType;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Part;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
 import org.apache.james.mime4j.dom.MessageBuilder;
 import org.apache.james.mime4j.dom.MessageWriter;
 import org.apache.james.mime4j.message.MessageImpl;
@@ -32,12 +12,34 @@ import org.minig.server.service.impl.MailContext;
 import org.minig.server.service.impl.helper.BodyConverter.BodyType;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import javax.mail.Address;
+import javax.mail.Flags;
+import javax.mail.Message;
+import javax.mail.Message.RecipientType;
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.springframework.core.convert.TypeDescriptor.collection;
+import static org.springframework.core.convert.TypeDescriptor.forObject;
+import static org.springframework.core.convert.TypeDescriptor.valueOf;
+
 /**
- * @author ksokol@communicode.de
+ * @author Kamill Sokol
  */
 @Component
 public class MessageMapper {
@@ -48,15 +50,15 @@ public class MessageMapper {
     private static final Pattern DSN = Pattern.compile(".*DSN=(1);?.*");
     private static final String MDN_SENT = "$MDNSent";
     private static final String FORWARDED = "$Forwarded";
-    private static final String MESSAGE_ID = "Message-ID";
     private static final String IN_REPLY_TO = "In-Reply-To";
     private static final String FORWARDED_MESSAGE_ID = "X-Forwarded-Message-Id";
 
     // TODO
     private MessageServiceFactoryImpl messageServiceFactory = new MessageServiceFactoryImpl();
 
-    @Autowired
     private MailContext mailContext;
+
+    private ConversionService conversionService;
 
     public MailMessage convertShort(Message msg) {
         if (msg == null) {
@@ -337,20 +339,8 @@ public class MessageMapper {
     }
 
     private void setAttachmentId(MailMessage cm, Message msg) throws MessagingException, IOException {
-        List<String> attachmentIdList = getAttachmentIds(msg);
-        List<CompositeAttachmentId> idList = new ArrayList<CompositeAttachmentId>();
-
-        for (String attachmentId : attachmentIdList) {
-            CompositeAttachmentId id = new CompositeAttachmentId();
-
-            id.setMessageId(msg.getHeader(MESSAGE_ID)[0]);
-            id.setFolder(msg.getFolder().getFullName());
-            id.setFileName(attachmentId);
-
-            idList.add(id);
-        }
-
-        cm.setAttachments(idList);
+        List<CompositeAttachmentId> convert = (List<CompositeAttachmentId>) conversionService.convert(msg, forObject(msg), collection(List.class, valueOf(CompositeAttachmentId.class)));
+        cm.setAttachments(convert);
     }
 
     private void setForwarded(MailMessage cm, Message msg) throws MessagingException {
@@ -577,41 +567,13 @@ public class MessageMapper {
         return target;
     }
 
-    /**
-     * http://www.oracle.com/technetwork/java/javamail/faq/index.html#hasattach
-     */
-    private List<String> getAttachmentIds(Part p) throws MessagingException, IOException {
-        List<String> l = new ArrayList<String>();
-
-        String disp = p.getDisposition();
-        if (disp == null || disp.equalsIgnoreCase(Part.ATTACHMENT)) {
-            String fileName = p.getFileName();
-
-            if (fileName != null) {
-                l.add(fileName);
-
-                return l;
-            }
-        }
-
-        if (p.isMimeType("multipart/*")) {
-            Multipart mp = (Multipart) p.getContent();
-            for (int i = 0; i < mp.getCount(); i++) {
-
-                List<String> s = getAttachmentIds(mp.getBodyPart(i));
-
-                l.addAll(s);
-            }
-        }
-
-        return l;
-    }
-
-    public MailContext getMailContext() {
-        return mailContext;
-    }
-
+    @Autowired
     public void setMailContext(MailContext mailContext) {
         this.mailContext = mailContext;
+    }
+
+    @Autowired
+    public void setConversionService(ConversionService conversionService) {
+        this.conversionService = conversionService;
     }
 }

@@ -82,7 +82,7 @@ public class AttachmentResource {
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", newMailId);
-        map.put("attachmentMetadata", attachments.getAttachmentMetadata());
+        map.put("attachments", attachments.getAttachmentMetadata());
         return map;
     }
 
@@ -95,7 +95,7 @@ public class AttachmentResource {
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", newMailId);
-        map.put("attachmentMetadata", attachments.getAttachmentMetadata());
+        map.put("attachments", attachments.getAttachmentMetadata());
         return map;
     }
 }

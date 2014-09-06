@@ -1,36 +1,63 @@
 package org.minig.server.service.impl.helper;
 
-import javax.mail.BodyPart;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageBody;
 import org.minig.server.TestConstants;
+import org.minig.server.converter.MessageToCompositeAttachmentIdConverter;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.impl.MailContext;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
+import org.springframework.context.support.ConversionServiceFactoryBean;
+import org.springframework.core.convert.converter.Converter;
+
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
+/**
+ * @author Kamill Sokol
+ */
 public class MessageMapperTest {
 
     private static MessageMapper uut = new MessageMapper();
     private static MailContext mailContextMock = mock(MailContext.class);
+
+    @BeforeClass
+    public static void beforeClass() {
+        ConversionServiceFactoryBean conversionServiceFactoryBean = new ConversionServiceFactoryBean();
+
+        Set<Converter> converters = new HashSet<>();
+        converters.add(new MessageToCompositeAttachmentIdConverter());
+
+        conversionServiceFactoryBean.setConverters(converters);
+        conversionServiceFactoryBean.afterPropertiesSet();
+
+        uut.setConversionService(conversionServiceFactoryBean.getObject());
+    }
 
     @Before
     public void before() {
@@ -200,7 +227,6 @@ public class MessageMapperTest {
         assertThat(mime4jMessage.getInReplyTo(), is("inReplyTo"));
         assertThat(mime4jMessage.getMessage().getHeader().getField("References").getBody(), is("inReplyTo"));
         assertThat(mime4jMessage.getForwardedMessageId(), is("forwardId"));
-
     }
 
     @Test
@@ -231,5 +257,33 @@ public class MessageMapperTest {
 
         assertThat(htmlPart.getContent(), Matchers.<Object>is("plain"));
         assertThat(plainPart.getContent(), Matchers.<Object>is("html"));
+    }
+
+    @Test
+    public void testMime4jAttachment() throws Exception {
+        MimeMessage mime = new MimeMessageBuilder().build(TestConstants.MULTIPART_ATTACHMENT_BINARY);
+        List<CompositeAttachmentId> attachments = uut.convertFull(mime).getAttachments();
+
+        assertThat(attachments, hasSize(1));
+        assertThat(attachments.get(0).getId(), is("folder|<6080306@localhost>|umlaut ä.png"));
+    }
+
+    @Test
+    public void testMime4jNestedMessage() throws Exception {
+        MimeMessage mime = new MimeMessageBuilder().build(TestConstants.NESTED_MESSAGE);
+        List<CompositeAttachmentId> attachments = uut.convertFull(mime).getAttachments();
+
+        assertThat(attachments, hasSize(1));
+        assertThat(attachments.get(0).getFileName(), is("Disposition Notification Test.eml"));
+    }
+
+    @Test
+    public void testReadAttachment_hasAttachment2() throws Exception {
+        String fileName = "umlaut ä veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery long.png";
+        MimeMessage mime = new MimeMessageBuilder().build(TestConstants.MULTIPART_RFC_2231_2);
+        List<CompositeAttachmentId> attachments = uut.convertFull(mime).getAttachments();
+
+        assertThat(attachments, hasSize(1));
+        assertThat(attachments.get(0).getFileName(), is(fileName));
     }
 }
