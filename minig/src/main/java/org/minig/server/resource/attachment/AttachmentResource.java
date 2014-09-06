@@ -64,7 +64,7 @@ public class AttachmentResource {
         MailAttachment attachment = attachmentService.findAttachment(id);
 
         response.setContentType(attachment.getMime());
-        response.setHeader("Content-Disposition", "attachment; filename=" + attachment.getFileName());
+        response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", attachment.getFileName()));
         attachmentService.readAttachment(id, response.getOutputStream());
     }
 
@@ -82,7 +82,7 @@ public class AttachmentResource {
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", newMailId);
-        map.put("attachmentMetadata", attachments.getAttachmentMetadata());
+        map.put("attachments", attachments.getAttachmentMetadata());
         return map;
     }
 
@@ -95,7 +95,7 @@ public class AttachmentResource {
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", newMailId);
-        map.put("attachmentMetadata", attachments.getAttachmentMetadata());
+        map.put("attachments", attachments.getAttachmentMetadata());
         return map;
     }
 }

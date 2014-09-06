@@ -30,7 +30,6 @@ public class MailMessage extends CompositeId {
     private Boolean receipt;
     private Boolean mdnSent;
     private Boolean deleted;
-    private List<MailAttachment> attachmentMetadata;
     private String inReplyTo;
     private String forwardedMessageId;
 
@@ -190,14 +189,6 @@ public class MailMessage extends CompositeId {
 
     public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
-    }
-
-    public List<MailAttachment> getAttachmentMetadata() {
-        return attachmentMetadata;
-    }
-
-    public void setAttachmentMetadata(List<MailAttachment> attachmentMetadata) {
-        this.attachmentMetadata = attachmentMetadata;
     }
 
     public String getInReplyTo() {

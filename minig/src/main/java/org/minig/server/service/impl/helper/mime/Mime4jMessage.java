@@ -341,26 +341,6 @@ public class Mime4jMessage {
         messageHeader.setField(f);
     }
 
-    private List<BodyPart> getAttachments(Multipart multipart) {
-        List<BodyPart> attachments = new ArrayList<BodyPart>();
-
-        for (Entity e : multipart.getBodyParts()) {
-            BodyPart part = (BodyPart) e;
-
-            //TODO what about inline attachments?
-            if ("attachment".equalsIgnoreCase(part.getDispositionType())) {
-                attachments.add(part);
-            }
-
-            if (part.isMultipart()) {
-                List<BodyPart> getAttachments = getAttachments((Multipart) part.getBody());
-                attachments.addAll(getAttachments);
-            }
-        }
-
-        return attachments;
-    }
-
     private void deleteAttachment(Multipart multipart, String filename) {
         List<Entity> e = multipart.getBodyParts();
 

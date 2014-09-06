@@ -1,5 +1,7 @@
 package org.minig.server.service.impl.helper;
 
+import org.apache.james.mime4j.codec.DecoderUtil;
+
 import java.io.IOException;
 
 import javax.mail.Message;
@@ -123,7 +125,8 @@ public class BodyConverter {
             String fileName = p.getFileName();
 
             if (fileName != null) {
-                if (fileName.equals(fileNameIn)) {
+                String decodedFileName = DecoderUtil.decodeEncodedWords(fileName, null);
+                if (decodedFileName.equals(fileNameIn)) {
                     return p;
                 }
             }

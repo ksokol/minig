@@ -1,10 +1,17 @@
 package org.minig.server.service;
 
+import org.minig.server.converter.MessageToCompositeAttachmentIdConverter;
+import org.minig.server.converter.PartToMailAttachmentConverter;
 import org.minig.server.service.submission.JavaMailSenderFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.support.ConversionServiceFactoryBean;
+import org.springframework.core.convert.converter.Converter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Kamill Sokol
@@ -19,4 +26,13 @@ public class ServiceConfig {
         return new JavaMailSenderFactory();
     }
 
+    @Bean
+    public ConversionServiceFactoryBean conversionService() {
+        ConversionServiceFactoryBean conversionServiceFactoryBean = new ConversionServiceFactoryBean();
+        Set<Converter> converters = new HashSet<>();
+        converters.add(new MessageToCompositeAttachmentIdConverter());
+        converters.add(new PartToMailAttachmentConverter());
+        conversionServiceFactoryBean.setConverters(converters);
+        return conversionServiceFactoryBean;
+    }
 }

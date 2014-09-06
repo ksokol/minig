@@ -209,7 +209,7 @@ app.service('routeService', function($rootScope, $route, $location, $log, localS
     });
 
     var _navigate = function(route, reload) {
-        $log.info("navigate to ", route);
+        $log.info("navigate to ", route, "reload: ", reload);
         $location.url(route);
         reload && $route.reload();
     };

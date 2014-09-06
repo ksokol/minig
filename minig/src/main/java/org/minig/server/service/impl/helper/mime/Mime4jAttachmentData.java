@@ -7,7 +7,6 @@ import java.io.InputStream;
  */
 final class Mime4jAttachmentData {
 	private String filename;
-	private long size;
 	private String mimeType;
 	private InputStream data;
 
@@ -17,14 +16,6 @@ final class Mime4jAttachmentData {
 
 	public void setFilename(String filename) {
 		this.filename = filename;
-	}
-
-	public long getSize() {
-		return size;
-	}
-
-	public void setSize(long size) {
-		this.size = size;
 	}
 
 	public String getMimeType() {

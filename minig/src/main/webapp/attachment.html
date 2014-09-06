@@ -1,6 +1,6 @@
 <table cellspacing="0" cellpadding="0">
     <tbody>
-        <tr ng-repeat="attachment in mail.attachmentMetadata track by $index">
+        <tr ng-repeat="attachment in mail.attachments track by $index">
             <td align="left" style="vertical-align: top;">
                 <table>
                     <colgroup>
@@ -18,9 +18,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="gwt-Label">{{attachment.size | prettyPrintSize}}</div>
-                            </td>
                             <td>
                                 <a class="gwt-Anchor" ng-href="api/1/attachment/{{attachment.id}}?download=true" target="_blank">Download</a>
                             </td>

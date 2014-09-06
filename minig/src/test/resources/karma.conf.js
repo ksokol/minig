@@ -37,7 +37,8 @@ var preprocessors = config.preprocessors;
         'src/main/webapp/*.html',
         'src/test/resources/json/*.json' ,
         'src/main/webapp/resources/js/*.js',
-        'src/test/js/test.js'
+        'src/test/js/test.js',
+        'src/test/js/testDirectives.js'
     ],
 
     ngJson2JsPreprocessor: {

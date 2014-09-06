@@ -497,7 +497,7 @@ public class MailServiceImplTest {
 
         MailMessage updateDraftMessage = uut.createDraftMessage(mm);
 
-        assertThat(updateDraftMessage.getAttachmentMetadata(), hasSize(2));
+        assertThat(updateDraftMessage.getAttachments(), hasSize(2));
     }
 
     @Test
@@ -509,6 +509,6 @@ public class MailServiceImplTest {
 
         MailMessage updateDraftMessage = uut.createDraftMessage(mm);
 
-        assertThat(updateDraftMessage.getAttachmentMetadata(), hasSize(0));
+        assertThat(updateDraftMessage.getAttachments(), hasSize(0));
     }
 }

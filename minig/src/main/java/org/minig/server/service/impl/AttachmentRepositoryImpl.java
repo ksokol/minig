@@ -8,6 +8,7 @@ import java.util.*;
 import javax.activation.DataSource;
 import javax.mail.Folder;
 import javax.mail.Message;
+import javax.mail.Part;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.MessageIDTerm;
 
@@ -21,10 +22,12 @@ import org.apache.james.mime4j.util.MimeUtil;
 import org.minig.server.MailAttachment;
 import org.minig.server.MailAttachmentList;
 import org.minig.server.service.*;
+import org.minig.server.service.impl.helper.BodyConverter;
 import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.minig.server.service.impl.helper.mime.Mime4jMessageFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -32,11 +35,13 @@ import org.springframework.util.Assert;
 public class AttachmentRepositoryImpl implements AttachmentRepository {
 
     private final MailContext mailContext;
+    private final ConversionService conversionService;
 
 	@Autowired
-	public AttachmentRepositoryImpl(MailContext mailContext) {
+	public AttachmentRepositoryImpl(MailContext mailContext, ConversionService conversionService) {
 		this.mailContext = mailContext;
-	}
+        this.conversionService = conversionService;
+    }
 
 	@Override
     public MailAttachmentList readMetadata(CompositeId id) {
@@ -55,7 +60,6 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
 			MailAttachment metaData = new MailAttachment();
 			metaData.setCompositeId(attachment.getId());
 			metaData.setFileName(attachment.getId().getFileName());
-			metaData.setSize(attachment.getSize());
 			metaData.setMime(attachment.getMimeType());
 			metaDataList.add(metaData);
 		}
@@ -66,44 +70,43 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
     @Override
     public MailAttachment read(CompositeAttachmentId id) {
         Assert.notNull(id);
-		MailAttachment metaData = null;
-		Mime4jMessage mime4jMessage = readInternal(id);
 
-		if(mime4jMessage == null) {
-			return metaData;
-		}
-
-		Mime4jAttachment p = mime4jMessage.getAttachment(id.getFileName());
-
-		if (p == null) {
-			return metaData;
-		}
-
-		// TODO
-		metaData = new MailAttachment();
-		metaData.setCompositeAttachmentId(id);
-		metaData.setFileName(p.getId().getFileName());
-		metaData.setSize(p.getSize());
-		metaData.setMime(p.getMimeType());
-        return metaData;
+        try {
+            Folder folder = mailContext.openFolder(id.getFolder());
+            Message[] search = folder.search(new MessageIDTerm(id.getMessageId()));
+            if (search.length == 0) {
+                return null;
+            }
+            Part p = (Part) BodyConverter.get(search[0], BodyConverter.BodyType.ATTACHMENT, id.getFileName());
+            return conversionService.convert(p, MailAttachment.class);
+        } catch (Exception e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
     }
 
     @Override
     public InputStream readAttachmentPayload(CompositeAttachmentId id) {
-		Assert.notNull(id);
-		Mime4jMessage mime4jMessage = readInternal(id);
+        Assert.notNull(id);
 
-		if(mime4jMessage == null) {
-			throw new NotFoundException();
-		}
+        try {
+            Folder folder = mailContext.getFolder(id.getFolder());
+            Message[] search = folder.search(new MessageIDTerm(id.getMessageId()));
 
-		Mime4jAttachment attachment = mime4jMessage.getAttachment(id.getFileName());
+            if (search != null && search[0] != null) {
+                Message mm = search[0];
 
-		if(attachment != null) {
-			return attachment.getData();
-		}
+                Part p = (Part) BodyConverter.get(mm, BodyConverter.BodyType.ATTACHMENT, id.getFileName());
 
-		throw new NotFoundException();
+                if (p != null) {
+                    return p.getInputStream();
+                }
+            }
+
+        } catch (Exception e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
+
+        throw new NotFoundException();
     }
 
     @Override
