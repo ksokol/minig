@@ -1,6 +1,7 @@
 package org.minig.server.service;
 
 import org.minig.server.converter.MessageToCompositeAttachmentIdConverter;
+import org.minig.server.converter.PartToMailAttachmentConverter;
 import org.minig.server.service.submission.JavaMailSenderFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -30,6 +31,7 @@ public class ServiceConfig {
         ConversionServiceFactoryBean conversionServiceFactoryBean = new ConversionServiceFactoryBean();
         Set<Converter> converters = new HashSet<>();
         converters.add(new MessageToCompositeAttachmentIdConverter());
+        converters.add(new PartToMailAttachmentConverter());
         conversionServiceFactoryBean.setConverters(converters);
         return conversionServiceFactoryBean;
     }
