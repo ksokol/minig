@@ -48,12 +48,10 @@ app.config(function($httpProvider, $routeProvider) {
     });
 
     $routeProvider
-    .when('', {
-        redirectTo : '/box'
-    })
     .when('/box', {
         templateUrl: "box.html",
-        controller: 'MailOverviewCtrl'
+        controller: 'MailOverviewCtrl',
+        reloadOnSearch: false
     })
     .when('/folder', {
         templateUrl: "folder.html",

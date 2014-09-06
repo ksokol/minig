@@ -33,14 +33,14 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService, rou
     };
 
     $scope.selectFolder = function(folder) {
-        routeService.navigateTo({path: 'box', params: {id: folder || INITIAL_MAILBOX}, reload: true});
+        routeService.navigateTo({path: 'box', params: {folder: folder || INITIAL_MAILBOX, page : 1}});
     };
 
 })
 .controller('MailOverviewCtrl', function($scope, $rootScope, $routeParams, mailService, i18nService, draftService, routeService, INITIAL_MAILBOX) {
 
-	$scope.currentFolder = ($routeParams.id) ? $routeParams.id : INITIAL_MAILBOX;
-	$scope.currentPage = 1;
+	$scope.currentFolder = ($routeParams.folder) ? $routeParams.folder : INITIAL_MAILBOX;
+	$scope.currentPage = $routeParams.page ? $routeParams.page : 1;
 	$scope.selected = [];
 	$scope.folderIntent;
 	$scope.data;
@@ -81,6 +81,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService, rou
 	};
 
     $scope.$on('folder-intent-done', function(e) {
+        console.log("intent-done")
         $scope.updateOverview();
     });
 
@@ -127,6 +128,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService, rou
 		})
 		.then(function(data) {
 			$scope.data = data;
+            routeService.navigateTo({path:"box", params: {folder: $scope.currentFolder, page: $scope.currentPage}});
 		});
 	};
 
