@@ -1,5 +1,5 @@
 
-app.controller('FolderListCtrl', function($scope, $rootScope, folderService, routeService, INITIAL_MAILBOX) {
+app.controller('FolderListCtrl', function($scope, $rootScope, folderService, INITIAL_MAILBOX) {
     $scope.folders = [];
 
     folderService.findAll().then(function (folders) {
@@ -33,14 +33,14 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService, rou
     };
 
     $scope.selectFolder = function(folder) {
-        routeService.navigateTo({path: 'box', params: {folder: folder || INITIAL_MAILBOX, page : 1}});
+        $rootScope.$broadcast("overview-update", {folder: folder || INITIAL_MAILBOX, page: 1});
     };
 
 })
 .controller('MailOverviewCtrl', function($scope, $rootScope, $routeParams, mailService, i18nService, draftService, routeService, INITIAL_MAILBOX) {
 
-	$scope.currentFolder = ($routeParams.folder) ? $routeParams.folder : INITIAL_MAILBOX;
-	$scope.currentPage = $routeParams.page ? $routeParams.page : 1;
+	$scope.currentFolder = $routeParams.folder || INITIAL_MAILBOX;
+	$scope.currentPage = $routeParams.page || 1;
 	$scope.selected = [];
 	$scope.folderIntent;
 	$scope.data;
@@ -80,7 +80,13 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService, rou
 		return selected;
 	};
 
-    $scope.$on('folder-intent-done', function(e) {
+    $scope.$on('folder-intent-done', function() {
+        $scope.updateOverview();
+    });
+
+    $scope.$on('overview-update', function(e, params) {
+        $scope.currentFolder = params.folder || $scope.currentFolder;
+        $scope.currentPage = params.page || $scope.currentPage;
         $scope.updateOverview();
     });
 
