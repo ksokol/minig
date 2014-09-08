@@ -1,4 +1,4 @@
-package org.minig.server.resource;
+package org.minig.server.resource.exception.advice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @WebAppConfiguration
 @ContextConfiguration(classes = RessourceTestConfig.class)
 @ActiveProfiles("test")
-public class CustomExceptionResolverTest {
+public class ExceptionAdviceTest {
 
     private static final String PREFIX = "/1";
 
@@ -63,12 +63,18 @@ public class CustomExceptionResolverTest {
 
         Map<String, Object> map = new HashMap<>();
         map.put("status", 500);
+        map.put("message", "Internal Server Error");
 
         String content = new ObjectMapper().writeValueAsString(map);
 
         mockMvc.perform(get(PREFIX + "/folder"))
                 .andExpect(status().is(500))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
                 .andExpect(content().string(content));
+    }
+
+    @Test
+    public void testMissingServletRequestParameterException() throws Exception {
+        mockMvc.perform(get(PREFIX + "/attachment")).andExpect(status().isNotFound());
     }
 }

@@ -70,11 +70,6 @@ public class AttachmentResourceTest {
     }
 
     @Test
-    public void testReadAttachment_noAttachmentIdGiven() throws Exception {
-        mockMvc.perform(get(PREFIX + "/attachment")).andExpect(status().isNotFound());
-    }
-
-    @Test
     public void testReadAttachment_hasAttachment() throws Exception {
         List<MailAttachment> l = new ArrayList<MailAttachment>();
         MailAttachment ma = new MailAttachment();
