@@ -20,6 +20,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import java.util.List;
@@ -29,8 +30,7 @@ import java.util.List;
  */
 @Configuration
 @ComponentScan(basePackages = "org.minig.server.resource")
-//@EnableWebMvc
-@Import(CustomDelegatingWebMvcConfiguration.class)
+@EnableWebMvc
 @Profile({ "test", "prod" })
 public class ResourceConfig extends WebMvcConfigurerAdapter {
 
