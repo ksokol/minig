@@ -1,6 +1,3 @@
-<%@ page pageEncoding="UTF-8" %>
-<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
-
 <!DOCTYPE html>
 <html ng-app="minigApp">
 <head>
@@ -9,9 +6,9 @@
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
-    <link rel="icon" type="image/gif" href="resources/images/favicon.ico">
+    <link rel="icon" type="image/gif" href="images/favicon.ico">
 
-    <link rel="stylesheet" href="resources/css/minig.css" type="text/css"/>
+    <link rel="stylesheet" href="css/minig.css" type="text/css"/>
 
     <title>MiniG</title>
     <script src="webjars/jquery/2.0.3/jquery.min.js"></script>
@@ -19,17 +16,17 @@
     <script src="webjars/angularjs/1.2.23/angular-resource.min.js"></script>
     <script src="webjars/angularjs/1.2.23/angular-route.min.js"></script>
     <script src="webjars/angularjs/1.2.23/angular-sanitize.min.js"></script>
-    <script src="resources/js/angular-local-storage.min.js"></script>
+    <script src="js/angular-local-storage.min.js"></script>
     <script src="webjars/textAngular/1.2.0/textAngular.min.js"></script>
     <script src="webjars/momentjs/2.7.0/min/moment-with-langs.min.js"></script>
-    <script src="resources/js/he.js"></script>
-    <script src="resources/js/md-3.0.2.min.js"></script>
-    <script src="resources/js/config.js"></script>
-    <script src="resources/js/service.js"></script>
-    <script src="resources/js/filter.js"></script>
-    <script src="resources/js/directive.js"></script>
-    <script src="resources/js/resource.js"></script>
-    <script src="resources/js/controller.js"></script>
+    <script src="js/he.js"></script>
+    <script src="js/md-3.0.2.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/service.js"></script>
+    <script src="js/filter.js"></script>
+    <script src="js/directive.js"></script>
+    <script src="js/resource.js"></script>
+    <script src="js/controller.js"></script>
 </head>
 <body id="page_body">
 <table cellspacing="0" cellpadding="0">
@@ -44,19 +41,13 @@
                             <tbody>
                             <tr>
                                 <td align="left" style="vertical-align: middle;">
-                                    <!-- img loading-indicator id="spinner" src="resources/images/spinner_moz.gif" class="gwt-Image" style="display: none;" -->
-                                    <loading-indicator>
-
-                                        <div class="test"></div>
-                                    </loading-indicator>
+                                    <loading-indicator></loading-indicator>
                                 </td>
                                 <td align="left" style="vertical-align: top;">
-                                    <div id="username" class="gwt-Label userNameLabel">
-                                        <security:authentication property="name"/>
-                                    </div>
+                                    <div id="username" class="gwt-Label userNameLabel"></div>
                                 </td>
                                 <td align="left" style="vertical-align: top;">
-                                    <a class="gwt-Anchor logoutLabel" href="j_spring_security_logout">Sign out</a>
+                                    <a class="gwt-Anchor logoutLabel" href="logout">Sign out</a>
                                 </td>
                             </tr>
                             </tbody>
@@ -91,7 +82,7 @@
                 </tr>
                 <tr>
                     <td align="left" width="16%" height="" style="vertical-align: top;" rowspan="1">
-                        <jsp:include page="aside.html"></jsp:include>
+                        <#include "aside.ftl">
                     </td>
                     <td align="left" width="" height="" style="vertical-align: top; width: 100%;">
                         <div ng-view></div>

@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * @author Kamill Sokol
  */
-class SecurityContextMailAuthentication implements MailAuthentication, Serializable {
+public class SecurityContextMailAuthentication implements MailAuthentication, Serializable {
 
     private static final long serialVersionUID = 1L;
 

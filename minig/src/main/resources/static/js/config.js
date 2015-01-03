@@ -112,3 +112,20 @@ angular.module('minigTextAngular', ['textAngular'])
     }]);
 
 }]);
+
+app.factory('userService', function($http, API_HOME) {
+    var currentEmail;
+
+    $http.get(API_HOME + "me")
+    .success(function(result) {
+        currentEmail = result.username;
+
+    });
+
+    return {
+        getCurrentEmail: function() {
+            return currentEmail;
+        }
+    };
+
+});

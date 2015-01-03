@@ -589,19 +589,6 @@ app.service('attachmentService',['$q', '$http', 'API_HOME', function($q, $http, 
 
 }]);
 
-app.service('userService', function() {
-    var currentEmail;
-
-    return {
-        setCurrentEmail: function(email) {
-            currentEmail = email;
-        },
-        getCurrentEmail: function() {
-            return currentEmail;
-        }
-    }
-});
-
 app.service('deferService', ['$q', function($q) {
 
     var _deferred = function(fn, params) {

@@ -35,13 +35,13 @@
                                                         </span>
                                             </td>
                                             <td class="convStar" ng-click="clickStar()">
-                                                <img ng-show="mail.starred" src="resources/images/starred.gif">
+                                                <img ng-show="mail.starred" src="images/starred.gif">
                                                 <img ng-hide="mail.starred"
-                                                     src="resources/images/unstarred.gif">
+                                                     src="images/unstarred.gif">
                                             </td>
                                             <td class="convStar">
                                                 <img ng-show="showIcon(mail)"
-                                                     ng-src="resources/images/{{whichIcon(mail)}}.png">
+                                                     ng-src="images/{{whichIcon(mail)}}.png">
                                             </td>
                                             <td class="convRecip" ng-class="{'bold': !mail.read, 'deleted': mail.deleted}" ng-click="open(mail)">
                                                 <div class="gwt-Label" style="white-space: nowrap;"
@@ -55,7 +55,7 @@
                                             </td>
                                             <td class="convAttach">
                                                 <img ng-show="mail.attachments.length > 0"
-                                                     src="resources/images/paperclip.gif">
+                                                     src="images/paperclip.gif">
                                             </td>
                                             <td class="convDate" ng-class="{'bold': !mail.read, 'deleted': mail.deleted}">
                                                 <div class="gwt-Label" style="white-space: nowrap;"

@@ -1,6 +1,6 @@
 package org.minig;
 
-import org.minig.server.resource.ResourceConfig;
+import org.minig.config.ResourceConfig;
 import org.minig.server.service.AttachmentService;
 import org.minig.server.service.FolderService;
 import org.minig.server.service.MailService;

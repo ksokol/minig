@@ -1,4 +1,4 @@
-package org.minig.server.service;
+package org.minig.config;
 
 import org.minig.server.converter.MessageToCompositeAttachmentIdConverter;
 import org.minig.server.converter.PartToMailAttachmentConverter;
