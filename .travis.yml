@@ -10,8 +10,11 @@ env:
      # PW
      - secure: "AkgvM/UFXYYT13ss2P+/3e8exrHvgFEdG+ugumewd8U2oIVGudRXCe29UPgHg4S1Gs613ER0bncMCGD+qEC4MtEq7NpF/Hdntr2qsObg4iMFCpw7nCNn3A9hTRVWXBC9k2osRoR8pFEaAH0zbDPOoqfoT/GpHDSoLwUzAP6xWxw="
 
+before_install:
+ - sudo apt-get install rpm sshpass
 script: mvn -f minig/pom.xml test
 after_success: 
  - echo "current branch $TRAVIS_BRANCH on jdk version $TRAVIS_JDK_VERSION"
  - if [[ $TRAVIS_JDK_VERSION == "openjdk7" ]]; then mvn -f minig/pom.xml cobertura:cobertura coveralls:cobertura; fi
- - if [[ $TRAVIS_BRANCH == "develop" && $TRAVIS_JDK_VERSION == "openjdk7" && $TRAVIS_PULL_REQUEST == "false" ]]; then mvn -f minig/pom.xml package -DskipTests; echo "deploying artefact"; curl --upload-file minig/target/minig.war -u travis:$PW --cacert cacert-root.crt "https://$DEPLOY_HOST/manager/text/deploy?update=true&path=/minig" > /dev/null 2>&1; echo "deploy result $?"; fi
+ - if [[ $TRAVIS_BRANCH == "master" && $TRAVIS_JDK_VERSION == "openjdk7" && $TRAVIS_PULL_REQUEST == "false" ]]; then mvn -f minig/pom.xml package -DskipTests; echo "deploying artefact"; sshpass -p "$PW" scp -o StrictHostKeyChecking=no -P2323 minig/target/rpm/myreader/RPMS/noarch/*.rpm travis@$DEPLOY_HOST:/var/www/html/rpm/minig/; echo "deploy result $?"; fi
+
