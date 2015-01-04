@@ -34,9 +34,9 @@ var preprocessors = config.preprocessors;
         'target/dependency/META-INF/resources/webjars/angularjs/**/angular-sanitize.js',
         'target/dependency/META-INF/resources/webjars/angularjs/**/angular-mocks.js',
         'target/dependency/META-INF/resources/webjars/textAngular/**/textAngular.js',
-        'src/main/webapp/*.html',
+        'src/main/resources/static/*.html',
         'src/test/resources/json/*.json' ,
-        'src/main/webapp/resources/js/*.js',
+        'src/main/resources/static/js/*.js',
         'src/test/js/test.js',
         'src/test/js/testDirectives.js'
     ],
@@ -48,7 +48,7 @@ var preprocessors = config.preprocessors;
     },
 
     ngHtml2JsPreprocessor: {
-      stripPrefix: 'src/main/webapp/',
+      stripPrefix: 'src/main/resources/',
       prependPrefix: 'html/',
       moduleName: 'htmlTemplates'
     },

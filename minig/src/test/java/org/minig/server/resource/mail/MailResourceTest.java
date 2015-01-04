@@ -33,6 +33,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -70,7 +71,7 @@ public class MailResourceTest {
 
     @Test
     public void testFindMessagesByFolder_invalidArguments() throws Exception {
-        mockMvc.perform(get(PREFIX + "/message")).andExpect(status().isBadRequest());
+        mockMvc.perform(get(PREFIX + "/message")).andDo(print()).andExpect(status().isBadRequest());
     }
 
     @Test

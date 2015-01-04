@@ -418,7 +418,7 @@ app.directive("recipientInput", function() {
                  '                     <div class="gwt-Label">{{recipient | displayName}}</div>' +
                  '                 </td>' +
                  '                 <td align="left" style="vertical-align: middle;">' +
-                 '                     <img src="resources/images/x.gif" class="deleteRecip" title="Remove" ng-click="remove(recipient)">' +
+                 '                     <img src="images/x.gif" class="deleteRecip" title="Remove" ng-click="remove(recipient)">' +
                  '                  </td>' +
                  '               </tr>' +
                  '            </tbody>' +
@@ -560,12 +560,20 @@ app.directive("bodyEditor", function(localStorageService, textAngularManager, ht
     }
 });
 
-app.directive('userNameLabel', ['userService', function(userService) {
+app.directive('userNameLabel', ['userService','$timeout', function(userService, $timeout) {
 
     return {
         restrict: "C",
         link: function(scope, element) {
-            userService.setCurrentEmail(element.text().trim());
+            var setUsernameFn = function() {
+                var username = userService.getCurrentEmail();
+                if(username) {
+                    element.text(username);
+                    return;
+                }
+                $timeout(setUsernameFn, 100);
+            };
+            setUsernameFn();
         }
     }
 

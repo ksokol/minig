@@ -10,7 +10,7 @@
 									<tbody>
 										<tr>
 											<td class="image">
-												<img src="resources/images/envelope.png" class="gwt-Image">
+												<img src="images/envelope.png" class="gwt-Image">
 											</td>
 											<td>
 												<a class="gwt-Anchor noWrap bold" href="#/composer">Mail composer</a>
@@ -67,7 +67,7 @@
 																		<input type="text" tabindex="-1" role="presentation"
 																			style="opacity: 0; height: 1px; width: 1px; 
 																			z-index: -1; overflow: hidden; position: absolute;">
-																		<img src="resources/images/x.gif" class="gwt-Image" ng-click="reset()">
+																		<img src="images/x.gif" class="gwt-Image" ng-click="reset()">
 																	</div>
 																</td>
 															</tr>

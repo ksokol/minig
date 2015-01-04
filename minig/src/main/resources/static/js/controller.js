@@ -1,5 +1,4 @@
-
-app.controller('FolderListCtrl', function($scope, $rootScope, folderService, INITIAL_MAILBOX) {
+app.controller('FolderListCtrl', function($scope, $rootScope, folderService, routeService, INITIAL_MAILBOX) {
     $scope.folders = [];
 
     folderService.findAll().then(function (folders) {
@@ -33,7 +32,7 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService, INI
     };
 
     $scope.selectFolder = function(folder) {
-        $rootScope.$broadcast("overview-update", {folder: folder || INITIAL_MAILBOX, page: 1});
+        routeService.navigateTo({path: 'box', params: {folder: folder || INITIAL_MAILBOX, page : 1}, reload: true});
     };
 
 })
@@ -81,12 +80,6 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService, INI
 	};
 
     $scope.$on('folder-intent-done', function() {
-        $scope.updateOverview();
-    });
-
-    $scope.$on('overview-update', function(e, params) {
-        $scope.currentFolder = params.folder || $scope.currentFolder;
-        $scope.currentPage = params.page || $scope.currentPage;
         $scope.updateOverview();
     });
 

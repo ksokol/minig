@@ -1,25 +1,24 @@
 package org.minig.server.converter;
 
-import org.apache.james.mime4j.codec.DecoderUtil;
-import org.minig.server.service.CompositeAttachmentId;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.stereotype.Component;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Part;
-import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Part;
+import javax.mail.internet.MimeMessage;
+
+import org.apache.james.mime4j.codec.DecoderUtil;
+import org.minig.server.service.CompositeAttachmentId;
+import org.springframework.core.convert.converter.Converter;
+
 /**
  * @author Kamill Sokol
  */
-@Component
 public class MessageToCompositeAttachmentIdConverter implements Converter<Message, List<CompositeAttachmentId>> {
 
     @Override

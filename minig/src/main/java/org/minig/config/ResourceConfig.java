@@ -1,4 +1,4 @@
-package org.minig.server.resource;
+package org.minig.config;
 
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.DeserializationFeature;
