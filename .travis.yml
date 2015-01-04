@@ -8,7 +8,7 @@ env:
      # DEPLOY_HOST
      - secure: "GPHmlGfx+/x5Ul+FQe7vYum1/bll8Lo2y0+Jil3c2Lzt9sOVhrAv/v54mo6G+w8tphnluIXyCrFaoQIXwg3y9mIzMPrU/L2w+VVeaLnG/FvXd0CFDM0AXoY6wyY2e5RVPI2X9otVXM/9Tspp4TPUOYz8idSm84g3wtJS3UqNcCQ="
      # PW
-     - secure: "AkgvM/UFXYYT13ss2P+/3e8exrHvgFEdG+ugumewd8U2oIVGudRXCe29UPgHg4S1Gs613ER0bncMCGD+qEC4MtEq7NpF/Hdntr2qsObg4iMFCpw7nCNn3A9hTRVWXBC9k2osRoR8pFEaAH0zbDPOoqfoT/GpHDSoLwUzAP6xWxw="
+     - secure: "KALQ653rwdIGSDtsP1CpD7LmEtuhT0n8Am5pnoTM9UfW/34Lnq06deQv0NWwQqqan+rp6zJcuwk9aFY8ftnRkwtoEAN33ipQMIyqGKEaq2zPl834Lw4R8IdSiyjFMrtKjVwkqzz62m4Lmr1I1oMpQ54QU6pgCInjM8LGTUOSJeY="
 
 before_install:
  - sudo apt-get install rpm sshpass
@@ -16,5 +16,5 @@ script: mvn -f minig/pom.xml test
 after_success: 
  - echo "current branch $TRAVIS_BRANCH on jdk version $TRAVIS_JDK_VERSION"
  - if [[ $TRAVIS_JDK_VERSION == "openjdk7" ]]; then mvn -f minig/pom.xml cobertura:cobertura coveralls:cobertura; fi
- - if [[ $TRAVIS_BRANCH == "master" && $TRAVIS_JDK_VERSION == "openjdk7" && $TRAVIS_PULL_REQUEST == "false" ]]; then mvn -f minig/pom.xml package -DskipTests; echo "deploying artefact"; sshpass -p "$PW" scp -o StrictHostKeyChecking=no -P2323 minig/target/rpm/myreader/RPMS/noarch/*.rpm travis@$DEPLOY_HOST:/var/www/html/rpm/minig/; echo "deploy result $?"; fi
+ - if [[ $TRAVIS_BRANCH == "master" && $TRAVIS_JDK_VERSION == "openjdk7" && $TRAVIS_PULL_REQUEST == "false" ]]; then mvn -f minig/pom.xml package -DskipTests; echo "deploying artefact"; sshpass -p "$PW" scp -o StrictHostKeyChecking=no -P2323 minig/target/rpm/miniG/RPMS/noarch/*.rpm travis@$DEPLOY_HOST:/var/www/html/rpm/minig/; echo "deploy result $?"; fi
 
