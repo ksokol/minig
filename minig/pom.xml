@@ -22,7 +22,6 @@
 				<version>2.5</version>
 				<configuration>
 					<finalName>minig</finalName>
-
 				</configuration>
 			</plugin>
 			<plugin>
