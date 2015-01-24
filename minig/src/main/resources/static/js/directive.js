@@ -23,7 +23,7 @@ app.directive("loadingIndicator", function() {
     };
 });
 
-app.directive("notification", function(i18nService) {
+app.directive("notification", ['i18nService', function(i18nService) {
 	var id = null;
 
     return {
@@ -65,9 +65,9 @@ app.directive("notification", function(i18nService) {
             });
         }
     };
-});
+}]);
 
-app.directive("inlineFolderSelect", function($http, $document, $window, $compile, $rootScope, i18nService) {
+app.directive("inlineFolderSelect", ['$http', '$document', '$window', '$compile', '$rootScope', 'i18nService', function($http, $document, $window, $compile, $rootScope, i18nService) {
 	var body = angular.element($document[0].body);
 	var cached;
 
@@ -118,9 +118,9 @@ app.directive("inlineFolderSelect", function($http, $document, $window, $compile
 			});
 		}
 	}
-});
+}]);
 
-app.directive("moreActions", function($window, $rootScope) {
+app.directive("moreActions", ['$window', '$rootScope', function($window, $rootScope) {
 
     return {
         restrict : "A",
@@ -154,9 +154,9 @@ app.directive("moreActions", function($window, $rootScope) {
 			});
 		}
     };
-});
+}]);
 
-app.directive("pagination", function(DEFAULT_PAGE_SIZE, pagerFactory) {
+app.directive("pagination", ['DEFAULT_PAGE_SIZE', 'pagerFactory', function(DEFAULT_PAGE_SIZE, pagerFactory) {
 
     return {
         restrict: "E",
@@ -213,7 +213,7 @@ app.directive("pagination", function(DEFAULT_PAGE_SIZE, pagerFactory) {
             });
         }
     }
-});
+}]);
 
 app.directive('backLink', ['$location', 'routeService', function($location, routeService) {
     return {
@@ -231,7 +231,7 @@ app.directive('backLink', ['$location', 'routeService', function($location, rout
     };
 }]);
 
-app.directive("mainActions", function($rootScope, routeService, mailService) {
+app.directive("mainActions", ['$rootScope', 'routeService', 'mailService', function($rootScope, routeService, mailService) {
 
     var _folderIntentDone = function _folderIntentDone(folderAction) {
         $rootScope.$broadcast('folder-intent-done', folderAction);
@@ -260,9 +260,9 @@ app.directive("mainActions", function($rootScope, routeService, mailService) {
             });
         }
     }
-});
+}]);
 
-app.directive("selectOptions", function($rootScope, routeService) {
+app.directive("selectOptions", ['$rootScope', 'routeService', function($rootScope, routeService) {
 
     return {
         restrict: "A",
@@ -289,7 +289,7 @@ app.directive("selectOptions", function($rootScope, routeService) {
 
         }
     }
-});
+}]);
 
 app.directive("conversationDisplay", function() {
 
@@ -338,7 +338,7 @@ app.directive("messageText", function() {
     }
 });
 
-app.directive("dispositionNotificationPanel", function($rootScope, submissionService, i18nService) {
+app.directive("dispositionNotificationPanel", ['$rootScope', 'submissionService', 'i18nService', function($rootScope, submissionService, i18nService) {
 
     return {
         restrict: "C",
@@ -369,7 +369,7 @@ app.directive("dispositionNotificationPanel", function($rootScope, submissionSer
         }]
     }
 
-});
+}]);
 
 
 app.directive("attachmentPanel", function() {
@@ -515,7 +515,7 @@ app.directive("attachmentUpload", function() {
 
 });
 
-app.directive("bodyEditor", function(localStorageService, textAngularManager, htmlConversion) {
+app.directive("bodyEditor", ['localStorageService', 'textAngularManager', 'htmlConversion', function(localStorageService, textAngularManager, htmlConversion) {
 
     var prepareToolbar = function(scope, element) {
         var toolbar = element.find('.btn-toolbar');
@@ -558,7 +558,7 @@ app.directive("bodyEditor", function(localStorageService, textAngularManager, ht
             });
         }
     }
-});
+}]);
 
 app.directive('userNameLabel', ['userService','$timeout', function(userService, $timeout) {
 

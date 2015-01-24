@@ -4,9 +4,9 @@ var app = angular.module("minigApp", ['ngResource', 'ngRoute', 'LocalStorageModu
 .constant('MAIL_CACHE_SIZE', 5)
 .constant('INITIAL_MAILBOX', 'INBOX'); //TODO: INBOX shouldn't be hardcoded
 
-app.config(function($httpProvider, $routeProvider) {
+app.config(['$httpProvider', '$routeProvider', function($httpProvider, $routeProvider) {
 	
-    $httpProvider.interceptors.push(function($q, $window, $rootScope, i18nService) {
+    $httpProvider.interceptors.push(['$q', '$window', '$rootScope', 'i18nService', function($q, $window, $rootScope, i18nService) {
         return {
             'responseError': function(rejection) {
             	if(rejection.status === 401) {
@@ -23,18 +23,18 @@ app.config(function($httpProvider, $routeProvider) {
         		return $q.reject(rejection);
             }
         };
-    });
+    }]);
     
-    $httpProvider.interceptors.push(function($q) {
+    $httpProvider.interceptors.push(['$q', function($q) {
         return {
             'request': function(config) {            	
             	config.headers["X-Requested-With"] = "XMLHttpRequest";
                 return config || $q.when(config);
             }
         };
-    });
+    }]);
     
-    $httpProvider.interceptors.push(function($q, $rootScope) {
+    $httpProvider.interceptors.push(['$q', '$rootScope', function($q, $rootScope) {
         return {
             'request': function(config) {
                 $rootScope.$broadcast('loading-started');
@@ -45,7 +45,7 @@ app.config(function($httpProvider, $routeProvider) {
                 return response || $q.when(response);
             }
         };
-    });
+    }]);
 
     $routeProvider
     .when('/box', {
@@ -68,7 +68,7 @@ app.config(function($httpProvider, $routeProvider) {
     })
     .otherwise({redirectTo: '/box'});
 
-});
+}]);
 
 angular.module('minigTextAngular', ['textAngular'])
 .config(['$provide', function($provide) {
@@ -113,7 +113,7 @@ angular.module('minigTextAngular', ['textAngular'])
 
 }]);
 
-app.factory('userService', function($http, API_HOME) {
+app.factory('userService', ['$http', 'API_HOME', function($http, API_HOME) {
     var currentEmail;
 
     $http.get(API_HOME + "me")
@@ -128,4 +128,4 @@ app.factory('userService', function($http, API_HOME) {
         }
     };
 
-});
+}]);
