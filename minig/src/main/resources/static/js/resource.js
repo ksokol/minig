@@ -1,5 +1,5 @@
 //TODO replace $resource with $http
-app.factory('folderService', function($q, $resource, deferService, folderCache, API_HOME) {
+app.factory('folderService', ['$q', '$resource', 'deferService', 'folderCache', 'API_HOME', function($q, $resource, deferService, folderCache, API_HOME) {
 
 	var folderResourceGet =  $resource(API_HOME + 'folder/:id', {}, {_findAll : {method: 'GET', isArray: true, transformResponse: _transFindAll}});
     var folderResourcePost =  $resource(API_HOME + 'folder/:id', {'id':'@id'}, {_create : {method: 'POST'}});
@@ -58,7 +58,7 @@ app.factory('folderService', function($q, $resource, deferService, folderCache, 
         save : folderResourcePut.save
     }
 
-});
+}]);
 
 //TODO replace $resource with $http
 app.factory('mailService', ['$resource','mailCache','deferService', 'API_HOME','DEFAULT_PAGE_SIZE', function($resource, mailCache, deferService, API_HOME, DEFAULT_PAGE_SIZE) {

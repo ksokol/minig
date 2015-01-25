@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>miniG</groupId>
 	<artifactId>miniG</artifactId>
-    <version>3.0.3</version>
+    <version>3.0.4</version>
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -311,6 +311,11 @@
             <artifactId>textAngular</artifactId>
             <version>1.2.0</version>
         </dependency>
+		<dependency>
+			<groupId>net.jawr.extensions</groupId>
+			<artifactId>jawr-spring-extension</artifactId>
+			<version>3.6</version>
+		</dependency>
 	</dependencies>
 </project>
 

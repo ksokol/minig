@@ -11,6 +11,7 @@ env:
      - secure: "KALQ653rwdIGSDtsP1CpD7LmEtuhT0n8Am5pnoTM9UfW/34Lnq06deQv0NWwQqqan+rp6zJcuwk9aFY8ftnRkwtoEAN33ipQMIyqGKEaq2zPl834Lw4R8IdSiyjFMrtKjVwkqzz62m4Lmr1I1oMpQ54QU6pgCInjM8LGTUOSJeY="
 
 before_install:
+ - sudo apt-get update
  - sudo apt-get install rpm sshpass
 script: mvn -f minig/pom.xml test
 after_success: 

@@ -1,5 +1,5 @@
 
-app.filter('timeago', function(timeService) {
+app.filter('timeago', ['timeService', function(timeService) {
 	
 	return function(date) {
 		if(date) {
@@ -12,9 +12,9 @@ app.filter('timeago', function(timeService) {
 			return "";
 		}
 	}
-});
+}]);
 
-app.filter('dateformat', function(timeService) {
+app.filter('dateformat', ['timeService', function(timeService) {
 
     return function(date) {
         if(date) {
@@ -27,14 +27,14 @@ app.filter('dateformat', function(timeService) {
             return "";
         }
     }
-});
+}]);
 
-app.filter('i18n', function(i18nService) {
+app.filter('i18n', ['i18nService', function(i18nService) {
 	
 	return function(text) {
 		return i18nService.resolve(text);
 	}
-});
+}]);
 
 app.filter('subscribed', function() {
 	
@@ -51,7 +51,7 @@ app.filter('subscribed', function() {
 	}
 });
 
-app.filter('displayName', function(i18nService) {
+app.filter('displayName', ['i18nService', function(i18nService) {
 
     var formatEmail = function(email) {
         if(email && email.displayName) {
@@ -85,7 +85,7 @@ app.filter('displayName', function(i18nService) {
 
         return formatted.substr(0, formatted.length -2);
 	}
-});
+}]);
 
 app.filter('prettyFolderName', function() {
 

@@ -131,7 +131,7 @@ app.service('folderCache', function() {
     }
 });
 
-app.service('mailCache', function($log, MAIL_CACHE_SIZE) {
+app.service('mailCache', ['$log', 'MAIL_CACHE_SIZE', function($log, MAIL_CACHE_SIZE) {
     var cache = [];
 
     var _remove = function(id) {
@@ -193,9 +193,9 @@ app.service('mailCache', function($log, MAIL_CACHE_SIZE) {
     };
 
 
-});
+}]);
 
-app.service('routeService', function($rootScope, $route, $location, $log, localStorageService) {
+app.service('routeService', ['$rootScope', '$route', '$location', '$log', 'localStorageService', function($rootScope, $route, $location, $log, localStorageService) {
 
     $rootScope.$on('$routeChangeError', function(event, next, current) {
         $log.error(event)
@@ -268,7 +268,7 @@ app.service('routeService', function($rootScope, $route, $location, $log, localS
         currentRoute : currentRoute,
         navigateTo : navigateTo
     };
-});
+}]);
 
 app.service('submissionService',['$q', '$http', 'API_HOME', function($q, $http, API_HOME) {
 

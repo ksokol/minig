@@ -1,4 +1,4 @@
-app.controller('FolderListCtrl', function($scope, $rootScope, folderService, routeService, INITIAL_MAILBOX) {
+app.controller('FolderListCtrl', ['$scope', '$rootScope', 'folderService', 'routeService', 'INITIAL_MAILBOX', function($scope, $rootScope, folderService, routeService, INITIAL_MAILBOX) {
     $scope.folders = [];
 
     folderService.findAll().then(function (folders) {
@@ -35,8 +35,8 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService, rou
         routeService.navigateTo({path: 'box', params: {folder: folder || INITIAL_MAILBOX, page : 1}, reload: true});
     };
 
-})
-.controller('MailOverviewCtrl', function($scope, $rootScope, $routeParams, mailService, i18nService, draftService, routeService, INITIAL_MAILBOX) {
+}])
+.controller('MailOverviewCtrl', ['$scope', '$rootScope', '$routeParams', 'mailService', 'i18nService', 'draftService', 'routeService', 'INITIAL_MAILBOX', function($scope, $rootScope, $routeParams, mailService, i18nService, draftService, routeService, INITIAL_MAILBOX) {
 
 	$scope.currentFolder = $routeParams.folder || INITIAL_MAILBOX;
 	$scope.currentPage = $routeParams.page || 1;
@@ -177,8 +177,8 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService, rou
     };
 
     $scope.updateOverview();
-})
-.controller('FolderSettingsCtrl', function($scope, $rootScope, $location, folderService, INITIAL_MAILBOX) {
+}])
+.controller('FolderSettingsCtrl', ['$scope', '$rootScope', '$location', 'folderService', 'INITIAL_MAILBOX', function($scope, $rootScope, $location, folderService, INITIAL_MAILBOX) {
     $scope.currentFolder;
 
     $scope.refresh = function() {
@@ -235,8 +235,8 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService, rou
 
     $scope.refresh();
 
-})
-.controller('MessageCtrl', function($scope, $rootScope, $routeParams, routeService, mailService, i18nService, draftService, composerService) {
+}])
+.controller('MessageCtrl', ['$scope', '$rootScope', '$routeParams', 'routeService', 'mailService', 'i18nService', 'draftService', 'composerService', function($scope, $rootScope, $routeParams, routeService, mailService, i18nService, draftService, composerService) {
     $scope.mail;
 
     function _updateFlags(mail) {
@@ -343,8 +343,8 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService, rou
     };
 
     $scope.refresh();
-})
-.controller('ComposerCtrl', function($scope, $rootScope, $routeParams, mailService, draftService, composerService, routeService, i18nService, submissionService) {
+}])
+.controller('ComposerCtrl', ['$scope', '$rootScope', '$routeParams', 'mailService', 'draftService', 'composerService', 'routeService', 'i18nService', 'submissionService', function($scope, $rootScope, $routeParams, mailService, draftService, composerService, routeService, i18nService, submissionService) {
     $scope.mail = {
         to : [],
         cc: [],
@@ -409,4 +409,4 @@ app.controller('FolderListCtrl', function($scope, $rootScope, folderService, rou
     });
 
     $scope.refresh();
-});
+}]);
