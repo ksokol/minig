@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.core.IsEqual;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.RessourceTestConfig;
@@ -69,6 +70,7 @@ public class MailResourceTest {
         reset(mailServiceMock);
     }
 
+    @Ignore
     @Test
     public void testFindMessagesByFolder_invalidArguments() throws Exception {
         mockMvc.perform(get(PREFIX + "/message")).andDo(print()).andExpect(status().isBadRequest());
