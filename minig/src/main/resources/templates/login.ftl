@@ -1,13 +1,14 @@
+<#assign jwr=JspTaglibs["/META-INF/jawr.tld"] />
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 	<head>
 		<!-- Force rendering with google chrome for IE users -->
 		<meta content="chrome=1" http-equiv="X-UA-Compatible">
-	
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	
 	    <link rel="icon" type="image/gif" href="images/favicon.ico">
-		<link type="text/css" href="css/minig.css" rel="stylesheet">
+	    <@jwr.style src="/bundles/styles.css" />
 	
 		<title>MiniG</title>
 	</head>

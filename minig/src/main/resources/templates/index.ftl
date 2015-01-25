@@ -1,32 +1,18 @@
+<#assign jwr=JspTaglibs["/META-INF/jawr.tld"] />
+
 <!DOCTYPE html>
 <html ng-app="minigApp">
 <head>
     <!-- Force rendering with google chrome for IE users -->
     <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
-
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
     <link rel="icon" type="image/gif" href="images/favicon.ico">
-
-    <link rel="stylesheet" href="css/minig.css" type="text/css"/>
-
     <title>MiniG</title>
-    <script src="webjars/jquery/2.0.3/jquery.min.js"></script>
-    <script src="webjars/angularjs/1.2.23/angular.min.js"></script>
-    <script src="webjars/angularjs/1.2.23/angular-resource.min.js"></script>
-    <script src="webjars/angularjs/1.2.23/angular-route.min.js"></script>
-    <script src="webjars/angularjs/1.2.23/angular-sanitize.min.js"></script>
-    <script src="js/angular-local-storage.min.js"></script>
-    <script src="webjars/textAngular/1.2.0/textAngular.min.js"></script>
-    <script src="webjars/momentjs/2.7.0/min/moment-with-langs.min.js"></script>
-    <script src="js/he.js"></script>
-    <script src="js/md-3.0.2.min.js"></script>
-    <script src="js/config.js"></script>
-    <script src="js/service.js"></script>
-    <script src="js/filter.js"></script>
-    <script src="js/directive.js"></script>
-    <script src="js/resource.js"></script>
-    <script src="js/controller.js"></script>
+
+    <@jwr.style src="/bundles/styles.css" />
+    <@jwr.script src="/bundles/javascript.js" />
+
 </head>
 <body id="page_body">
 <table cellspacing="0" cellpadding="0">

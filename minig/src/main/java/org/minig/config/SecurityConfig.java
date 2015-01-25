@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity webSecurity) throws Exception  {
         webSecurity
                 .ignoring()
-                .antMatchers("/login", "/images/**", "/css/**", "/js/**");
+                .antMatchers("/login", "/images/**", "/css/**", "/js/**", "/static/**");
     }
 
     @Order(1)

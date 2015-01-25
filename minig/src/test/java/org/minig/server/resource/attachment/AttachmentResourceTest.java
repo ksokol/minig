@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.reset;
@@ -38,6 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -139,8 +141,16 @@ public class AttachmentResourceTest {
         when(attachmentServiceMock.findAttachments(compositeId)).thenReturn(mailAttachmentList);
 
         mockMvc.perform(fileUpload(PREFIX + "/attachment/INBOX/test|id").file("data.txt", "data".getBytes()))
-                .andExpect(content().string("{\"id\":{\"id\":\"INBOX/test|id|data.txt\",\"messageId\":\"id\",\"folder\":\"INBOX/test\",\"fileName\":\"data.txt\"},\"attachments\":[{\"id\":\"INBOX/test|id|file.html\",\"messageId\":\"id\",\"folder\":\"INBOX/test\",\"fileName\":\"file.html\",\"mime\":\"text/html\"}]}"));
-
+                .andDo(print())
+                .andExpect(jsonPath("$.id.id").value("INBOX/test|id|data.txt"))
+                .andExpect(jsonPath("$.id.messageId").value("id"))
+                .andExpect(jsonPath("$.id.folder").value("INBOX/test"))
+                .andExpect(jsonPath("$.id.fileName").value("data.txt"))
+                .andExpect(jsonPath("$.attachments[0].id").value("INBOX/test|id|file.html"))
+                .andExpect(jsonPath("$.attachments[0].messageId").value("id"))
+                .andExpect(jsonPath("$.attachments[0].folder").value("INBOX/test"))
+                .andExpect(jsonPath("$.attachments[0].fileName").value("file.html"))
+                .andExpect(jsonPath("$.attachments[0].mime").value("text/html"));
         verify(attachmentServiceMock).addAttachment(
                 argThat(org.hamcrest.Matchers.<CompositeId> hasProperty("messageId", IsEqual.<String> equalTo("id"))),
                 Matchers.<DataSource> anyObject());
