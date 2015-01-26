@@ -8,6 +8,8 @@ import java.util.Properties;
 
 import javax.servlet.ServletContext;
 
+import net.jawr.web.servlet.JawrSpringController;
+
 import org.minig.config.jawr.config.CssConfigPropertiesSource;
 import org.minig.config.jawr.config.JavascriptConfigPropertiesSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,18 +44,18 @@ public class JawrConfig {
     }
 
     @Bean
-    public CustomJawrSpringController jawrCssController() {
-        CustomJawrSpringController jawrSpringController = new CustomJawrSpringController();
-        jawrSpringController.setControllerMapping("css");
+    public JawrSpringController jawrCssController() {
+        JawrSpringController jawrSpringController = new JawrSpringController();
+        jawrSpringController.setControllerMapping("/css");
         jawrSpringController.setConfigPropertiesSourceClass(CssConfigPropertiesSource.class.getCanonicalName());
         jawrSpringController.setType("css");
         return jawrSpringController;
     }
 
     @Bean
-    public CustomJawrSpringController jawrJavascriptController() {
-        CustomJawrSpringController jawrSpringController = new CustomJawrSpringController();
-        jawrSpringController.setControllerMapping("js");
+    public JawrSpringController jawrJavascriptController() {
+        JawrSpringController jawrSpringController = new JawrSpringController();
+        jawrSpringController.setControllerMapping("/js");
         jawrSpringController.setConfigPropertiesSourceClass(JavascriptConfigPropertiesSource.class.getCanonicalName());
         jawrSpringController.setType("js");
         return jawrSpringController;
