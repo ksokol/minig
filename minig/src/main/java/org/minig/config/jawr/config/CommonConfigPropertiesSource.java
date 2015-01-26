@@ -24,10 +24,7 @@ public class CommonConfigPropertiesSource implements ConfigPropertiesSource {
         this.mapping = String.format("jawr.%s.bundle.%s.mappings", type.getType(), id);
 
         properties = new Properties();
-        properties.put("jawr.debug.on",false);
-        properties.put("jawr.gzip.on",true);
-        properties.put("jawr.gzip.ie6.on",false);
-        properties.put("jawr.charset.name",StandardCharsets.UTF_8.name());
+        properties.put("jawr.factory.use.orphans.mapper", "false");
 
         id("/bundles/" + id + "." + type.getType());
     }
