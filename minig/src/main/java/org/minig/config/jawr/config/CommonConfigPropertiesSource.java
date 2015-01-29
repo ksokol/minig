@@ -1,6 +1,5 @@
 package org.minig.config.jawr.config;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import net.jawr.web.resource.bundle.factory.util.ConfigPropertiesSource;
@@ -24,7 +23,10 @@ public class CommonConfigPropertiesSource implements ConfigPropertiesSource {
         this.mapping = String.format("jawr.%s.bundle.%s.mappings", type.getType(), id);
 
         properties = new Properties();
+        properties.put("jawr.debug.on", "false");
         properties.put("jawr.factory.use.orphans.mapper", "false");
+        properties.put("jawr.css.postprocessor.base64ImageEncoder.encode.sprite", "true");
+        properties.put("jawr.css.bundle." + id + ".filepostprocessors", "base64ImageEncoder");
 
         id("/bundles/" + id + "." + type.getType());
     }

@@ -316,6 +316,11 @@
 			<artifactId>jawr-spring-extension</artifactId>
 			<version>3.6</version>
 		</dependency>
+		<dependency>
+			<groupId>com.carrotsearch</groupId>
+			<artifactId>smartsprites</artifactId>
+			<version>0.2.10</version>
+		</dependency>
 	</dependencies>
 </project>
 

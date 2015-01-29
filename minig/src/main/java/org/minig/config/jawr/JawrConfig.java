@@ -37,6 +37,7 @@ public class JawrConfig {
 
         p.setProperty("/css/**", "jawrCssController");
         p.setProperty("/js/**", "jawrJavascriptController");
+        p.setProperty("/binary/**", "jawrBinaryController");
 
         simpleUrlHandlerMapping.setMappings(p);
 
@@ -58,6 +59,15 @@ public class JawrConfig {
         jawrSpringController.setControllerMapping("/js");
         jawrSpringController.setConfigPropertiesSourceClass(JavascriptConfigPropertiesSource.class.getCanonicalName());
         jawrSpringController.setType("js");
+        return jawrSpringController;
+    }
+
+    @Bean
+    public JawrSpringController jawrBinaryController() {
+        JawrSpringController jawrSpringController = new JawrSpringController();
+        jawrSpringController.setControllerMapping("/binary");
+        jawrSpringController.setConfigPropertiesSourceClass(CssConfigPropertiesSource.class.getCanonicalName());
+        jawrSpringController.setType("binary");
         return jawrSpringController;
     }
 
