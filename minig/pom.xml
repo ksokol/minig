@@ -3,11 +3,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>miniG</groupId>
 	<artifactId>miniG</artifactId>
-    <version>3.0.4</version>
+    <version>${app.version}</version>
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <javamail.version>1.5.2</javamail.version>
 	</properties>
 	<parent>
@@ -17,6 +16,24 @@
 	</parent>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0-alpha-2</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>project.properties</file>
+							</files>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.5</version>
@@ -122,96 +139,11 @@
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>2.0.1</version>
             </plugin>
-            <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
-            </plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<finalName>minig</finalName>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>rpm-maven-plugin</artifactId>
-				<version>2.1.1</version>
-				<executions>
-					<execution>
-						<id>generate-rpm</id>
-						<goals>
-							<goal>rpm</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<group>Application/Internet</group>
-					<release>${maven.build.timestamp}</release>
-					<requires>
-						<require>java-1.7.0-openjdk</require>
-					</requires>
-					<defineStatements>
-						<defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
-					</defineStatements>
-					<mappings>
-						<mapping>
-							<directory>/opt/minig</directory>
-							<filemode>740</filemode>
-							<username>minig</username>
-							<groupname>minig</groupname>
-							<sources>
-								<source>
-									<location>target/minig.jar</location>
-								</source>
-							</sources>
-						</mapping>
-						<mapping>
-							<directory>/opt/minig</directory>
-							<filemode>741</filemode>
-							<username>minig</username>
-							<groupname>minig</groupname>
-							<sources>
-								<source>
-									<location>src/main/scripts/minig.sh</location>
-								</source>
-							</sources>
-						</mapping>
-						<mapping>
-							<directory>/opt/minig/config</directory>
-							<filemode>740</filemode>
-							<username>minig</username>
-							<groupname>minig</groupname>
-						</mapping>
-						<mapping>
-							<directory>/opt/minig/logs</directory>
-							<filemode>740</filemode>
-							<username>minig</username>
-							<groupname>minig</groupname>
-						</mapping>
-						<mapping>
-							<directory>/etc/init.d</directory>
-							<filemode>750</filemode>
-							<username>root</username>
-							<groupname>root</groupname>
-							<sources>
-								<softlinkSource>
-									<location>/opt/minig/minig.sh</location>
-									<destination>minig</destination>
-								</softlinkSource>
-							</sources>
-						</mapping>
-					</mappings>
-					<preinstallScriptlet>
-						<script>id -u minig &amp;>/dev/null || useradd minig -d /opt/minig</script>
-					</preinstallScriptlet>
-					<postinstallScriptlet>
-						<script>chkconfig --add minig --level 2345; chown minig:minig /opt/minig; service minig status &amp;>/dev/null;if [ $? -eq 0 ]; then service minig restart; fi</script>
-					</postinstallScriptlet>
-					<preremoveScriptlet>
-						<script>service minig status &amp;>/dev/null;if [ $? -eq 0 ]; then service minig stop; fi</script>
-					</preremoveScriptlet>
 				</configuration>
 			</plugin>
         </plugins>
