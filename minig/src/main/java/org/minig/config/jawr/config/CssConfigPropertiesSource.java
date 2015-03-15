@@ -1,5 +1,7 @@
 package org.minig.config.jawr.config;
 
+import org.minig.jawr.CommonConfigPropertiesSource;
+
 /**
  * @author Kamill Sokol
  */
