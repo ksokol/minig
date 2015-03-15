@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity webSecurity) throws Exception  {
         webSecurity
                 .ignoring()
-                .antMatchers("/login", "/images/**", "/css/**", "/js/**", "/static/**");
+                .antMatchers("/images/**", "/css/**", "/js/**", "/static/**");
     }
 
     @Order(1)
@@ -78,7 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().anyRequest().hasAnyRole("USER")
                     .and()
                 .formLogin()
-                .loginPage("/login")
+                .loginPage("/login").permitAll()
                     .loginProcessingUrl("/check")
                     .defaultSuccessUrl("/", true)
                 .failureUrl("/login?login=failed")
