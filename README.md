@@ -15,5 +15,5 @@ Installation
 **Build and package**
 
 - run `mvn package`
-- You will find a fat jar (Spring Boot application) under `target` and a rpm under `target/rpm/minig/RPMS/noarch/`
-- run `java -jar minig.jar` or install rpm
+- You will find a fat jar (Spring Boot application) under `target`
+- run `java -jar minig.jar`
