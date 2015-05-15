@@ -1,10 +1,9 @@
 package org.minig;
 
 import java.io.File;
-
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.minig.config.MvcConfig;
 import org.minig.config.ResourceConfig;
 import org.minig.config.SecurityConfig;
@@ -12,8 +11,8 @@ import org.minig.config.ServiceConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
+import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -26,11 +25,16 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Import({SecurityConfig.class, ServiceConfig.class})
 @EnableAutoConfiguration(exclude = FreeMarkerAutoConfiguration.class)
 @Configuration
-public class Starter implements ServletContextInitializer {
+public class Starter {
 
-    @Override
-    public void onStartup(final ServletContext servletContext) throws ServletException {
-        servletContext.setAttribute(ServletContext.TEMPDIR, new File("tmp"));
+    @Bean
+    public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory() {
+        return new JettyEmbeddedServletContainerFactory() {
+            @Override
+            protected void postProcessWebAppContext(final WebAppContext webAppContext) {
+                webAppContext.setAttribute(ServletContext.TEMPDIR, new File("tmp")); //create tmp in current working directory
+            }
+        };
     }
 
     @Bean
