@@ -7,7 +7,7 @@ jdk:
 sudo: false
 
 before_install:
-script: mvn --update-snapshots -f minig/pom.xml test
+script: mvn -f minig/pom.xml test
 after_success: 
  - echo "current branch $TRAVIS_BRANCH on jdk version $TRAVIS_JDK_VERSION"
  - if [[ $TRAVIS_JDK_VERSION == "openjdk7" ]]; then mvn -f minig/pom.xml cobertura:cobertura coveralls:cobertura; fi
