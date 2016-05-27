@@ -8,7 +8,7 @@ Installation
 
 **Prerequisite**
 
-- OpenJDK 7
+- Oracle Java 8
 - Apache Maven 3.x or newer
 - IMAP Server
 
