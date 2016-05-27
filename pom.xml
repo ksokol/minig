@@ -81,6 +81,18 @@
 				<artifactId>coveralls-maven-plugin</artifactId>
 				<version>2.0.1</version>
 			</plugin>
+			<plugin>
+				<groupId>org.codefx.maven.plugin</groupId>
+				<artifactId>jdeps-maven-plugin</artifactId>
+				<version>0.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jdkinternals</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
