@@ -1,12 +1,12 @@
-minig/target/
-minig/.project
-minig/.settings/
-minig/.classpath
+server/target/
+server/.project
+server/.settings/
+server/.classpath
 
 mock-javamail/target/
 mock-javamail/.project
 mock-javamail/.settings/
 mock-javamail/.classpath
 
-minig/node/
-minig/node_modules/
+server/node/
+server/node_modules/
