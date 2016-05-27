@@ -31,55 +31,6 @@
     </pluginRepositories>
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.5</version>
-				<configuration>
-					<finalName>minig</finalName>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.5.4</version>
-            </plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-                    <check>
-                        <branchRate>85</branchRate>
-                        <lineRate>85</lineRate>
-                        <haltOnFailure>true</haltOnFailure>
-                        <totalBranchRate>85</totalBranchRate>
-                        <totalLineRate>75</totalLineRate>
-                        <packageLineRate>85</packageLineRate>
-                        <packageBranchRate>85</packageBranchRate>
-                    </check>
-					<formats>
-						<format>html</format>
-						<format>xml</format>
-					</formats>
-				</configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>clean</goal>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-			</plugin>
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
