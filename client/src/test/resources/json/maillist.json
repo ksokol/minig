@@ -1,0 +1,652 @@
+{
+    "fullLength": 45,
+    "page": 1,
+    "mailList": [
+        {
+            "id": "INBOX|<1378645082.522c745a04e9f@swift.generated>",
+            "messageId": "<1378645082.522c745a04e9f@swift.generated>",
+            "folder": "INBOX",
+            "subject": "Pingdom Monthly Report 2013-08-01 to 2013-08-31",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "no-reply@pingdom.com",
+                "displayName": "Pingdom",
+                "display": "Pingdom"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1378645082000,
+            "mailer": null,
+            "forwarded": true,
+            "read": false,
+            "starred": false,
+            "answered": false,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<522C8F45.7070107@localhost>",
+            "messageId": "<522C8F45.7070107@localhost>",
+            "folder": "INBOX",
+            "subject": "Fwd: Ihre Amazon.de Bestellung von \"TomTom Start 60 M Europe...\" wurde versandt!",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "dev@localhost",
+                "displayName": "dev",
+                "display": "dev"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1378651973000,
+            "mailer": null,
+            "forwarded": false,
+            "read": true,
+            "starred": false,
+            "answered": false,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<5222FC54.1040109@localhost>",
+            "messageId": "<5222FC54.1040109@localhost>",
+            "folder": "INBOX",
+            "subject": "Fwd: Successful Mail Delivery Report",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [
+                {
+                    "id": "INBOX|<5222FC54.1040109@localhost>|Attached Message Part",
+                    "messageId": "<5222FC54.1040109@localhost>",
+                    "folder": "INBOX",
+                    "fileName": "Attached Message Part"
+                },
+                {
+                    "id": "INBOX|<5222FC54.1040109@localhost>|Attached Message Part",
+                    "messageId": "<5222FC54.1040109@localhost>",
+                    "folder": "INBOX",
+                    "fileName": "Attached Message Part"
+                }
+            ],
+            "sender": {
+                "email": "drp15@localhost",
+                "displayName": "Test",
+                "display": "Test"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1378024532000,
+            "mailer": null,
+            "forwarded": false,
+            "read": true,
+            "starred": false,
+            "answered": false,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<5222FC00.9090709@localhost>",
+            "messageId": "<5222FC00.9090709@localhost>",
+            "folder": "INBOX",
+            "subject": "Fwd: dsn2",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "drp15@localhost",
+                "displayName": "Test",
+                "display": "Test"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1378024448000,
+            "mailer": null,
+            "forwarded": false,
+            "read": true,
+            "starred": false,
+            "answered": false,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<521A1951.2020001@localhost>",
+            "messageId": "<521A1951.2020001@localhost>",
+            "folder": "INBOX",
+            "subject": "return 3",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "dev@localhost",
+                "displayName": "dev",
+                "display": "dev"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1377442129000,
+            "mailer": null,
+            "forwarded": false,
+            "read": true,
+            "starred": false,
+            "answered": true,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": true,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<521A1111.1040102@localhost>",
+            "messageId": "<521A1111.1040102@localhost>",
+            "folder": "INBOX",
+            "subject": "hp",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "dev@localhost",
+                "displayName": "dev",
+                "display": "dev"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1377440017000,
+            "mailer": null,
+            "forwarded": true,
+            "read": true,
+            "starred": false,
+            "answered": true,
+            "highPriority": true,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<20130825135914.952BE23A94@localhost>",
+            "messageId": "<20130825135914.952BE23A94@localhost>",
+            "folder": "INBOX",
+            "subject": "Successful Mail Delivery Report",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "MAILER-DAEMON@localhost",
+                "displayName": "Mail Delivery System",
+                "display": "Mail Delivery System"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1377439154000,
+            "mailer": null,
+            "forwarded": true,
+            "read": true,
+            "starred": false,
+            "answered": true,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<5219E54D.1010500@localhost>",
+            "messageId": "<5219E54D.1010500@localhost>",
+            "folder": "INBOX",
+            "subject": "return",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "dev@localhost",
+                "displayName": "dev",
+                "display": "dev"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1377428813000,
+            "mailer": null,
+            "forwarded": true,
+            "read": false,
+            "starred": false,
+            "answered": false,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": true,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<20130825110513.09556239D6@localhost>",
+            "messageId": "<20130825110513.09556239D6@localhost>",
+            "folder": "INBOX",
+            "subject": "Successful Mail Delivery Report",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "MAILER-DAEMON@localhost",
+                "displayName": "Mail Delivery System",
+                "display": "Mail Delivery System"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1377428713000,
+            "mailer": null,
+            "forwarded": true,
+            "read": true,
+            "starred": false,
+            "answered": false,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<20130825104057.CD078239D1@localhost>",
+            "messageId": "<20130825104057.CD078239D1@localhost>",
+            "folder": "INBOX",
+            "subject": "Successful Mail Delivery Report",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "MAILER-DAEMON@localhost",
+                "displayName": "Mail Delivery System",
+                "display": "Mail Delivery System"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1377427257000,
+            "mailer": null,
+            "forwarded": false,
+            "read": true,
+            "starred": true,
+            "answered": false,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<5219C609.1080802@localhost>",
+            "messageId": "<5219C609.1080802@localhost>",
+            "folder": "INBOX",
+            "subject": "dsn3",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "dev@localhost",
+                "displayName": "dev",
+                "display": "dev"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1377420809000,
+            "mailer": null,
+            "forwarded": true,
+            "read": true,
+            "starred": true,
+            "answered": true,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<5219C3AC.5070607@localhost>",
+            "messageId": "<5219C3AC.5070607@localhost>",
+            "folder": "INBOX",
+            "subject": "dsn",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "dev@localhost",
+                "displayName": "dev",
+                "display": "dev"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1377420204000,
+            "mailer": null,
+            "forwarded": false,
+            "read": true,
+            "starred": false,
+            "answered": true,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<urn.correios.msg.2013072603240495ae5f6999db4cb584f4bef330e2380b@1374809044973.rte-svc-eu-1abig-i-0c852b46.eu-west-1.amazon.com>",
+            "messageId": "<urn.correios.msg.2013072603240495ae5f6999db4cb584f4bef330e2380b@1374809044973.rte-svc-eu-1abig-i-0c852b46.eu-west-1.amazon.com>",
+            "folder": "INBOX",
+            "subject": "dev: Gratis MP3­‐Versionen Ihrer gekauften CDs\t\n \n",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "store-news@amazon.de",
+                "displayName": "Amazon.de",
+                "display": "Amazon.de"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1374809044000,
+            "mailer": null,
+            "forwarded": true,
+            "read": true,
+            "starred": true,
+            "answered": false,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<20130606063815.D23DE4029858@perl-4.localhost>",
+            "messageId": "<20130606063815.D23DE4029858@perl-4.localhost>",
+            "folder": "INBOX",
+            "subject": "duplicate 1",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "mailrobot@x.com",
+                "displayName": "x ",
+                "display": "x "
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1370500695000,
+            "mailer": null,
+            "forwarded": true,
+            "read": true,
+            "starred": false,
+            "answered": false,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<51BDA5AE.90106@localhost>",
+            "messageId": "<51BDA5AE.90106@localhost>",
+            "folder": "INBOX",
+            "subject": "2 attachments",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [
+                {
+                    "id": "INBOX|<51BDA5AE.90106@localhost>|1.png",
+                    "messageId": "<51BDA5AE.90106@localhost>",
+                    "folder": "INBOX",
+                    "fileName": "1.png"
+                },
+                {
+                    "id": "INBOX|<51BDA5AE.90106@localhost>|2.png",
+                    "messageId": "<51BDA5AE.90106@localhost>",
+                    "folder": "INBOX",
+                    "fileName": "2.png"
+                }
+            ],
+            "sender": {
+                "email": "dev@localhost",
+                "displayName": "dev",
+                "display": "dev"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1371383214000,
+            "mailer": null,
+            "forwarded": true,
+            "read": true,
+            "starred": true,
+            "answered": true,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<20130606063815.D23DE4029858@perl-4.localhost>",
+            "messageId": "<20130606063815.D23DE4029858@perl-4.localhost>",
+            "folder": "INBOX",
+            "subject": "x: Neue Nachricht \"test\"",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "mailrobot@x.com",
+                "displayName": "x ",
+                "display": "x "
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1370500695000,
+            "mailer": null,
+            "forwarded": false,
+            "read": true,
+            "starred": false,
+            "answered": false,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<20130606220623.29BF916004E7@mlocalhost>",
+            "messageId": "<20130606220623.29BF916004E7@mlocalhost>",
+            "folder": "INBOX",
+            "subject": "CHECK",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "dsl@check24.de",
+                "displayName": "CHECK",
+                "display": "CHECK"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1370556383000,
+            "mailer": null,
+            "forwarded": false,
+            "read": true,
+            "starred": true,
+            "answered": false,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<20130507101700.71234400A307@perl-4.localhost>",
+            "messageId": "<20130507101700.71234400A307@perl-4.localhost>",
+            "folder": "INBOX",
+            "subject": "x",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "mailrobot@x.com",
+                "displayName": "x ",
+                "display": "x "
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1367921820000,
+            "mailer": null,
+            "forwarded": false,
+            "read": true,
+            "starred": false,
+            "answered": false,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<5176B917.8020706@localhost>",
+            "messageId": "<5176B917.8020706@localhost>",
+            "folder": "INBOX",
+            "subject": "Return Receipt (displayed) - disposition",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "drp15@localhost",
+                "displayName": "test",
+                "display": "test"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1366735127000,
+            "mailer": null,
+            "forwarded": false,
+            "read": true,
+            "starred": false,
+            "answered": false,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        },
+        {
+            "id": "INBOX|<51862C9B.50902@localhost>",
+            "messageId": "<51862C9B.50902@localhost>",
+            "folder": "INBOX",
+            "subject": "Re: test",
+            "body": {
+                "html": "",
+                "plain": ""
+            },
+            "attachments": [],
+            "sender": {
+                "email": "k@localhost",
+                "displayName": "k",
+                "display": "k"
+            },
+            "to": null,
+            "cc": null,
+            "bcc": null,
+            "dispositionNotification": null,
+            "date": 1367747739000,
+            "mailer": null,
+            "forwarded": true,
+            "read": true,
+            "starred": false,
+            "answered": false,
+            "highPriority": false,
+            "askForDispositionNotification": false,
+            "receipt": false,
+            "mdnSent": false,
+            "deleted": false
+        }
+    ]
+}

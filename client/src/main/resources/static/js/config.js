@@ -5,7 +5,7 @@ var app = angular.module("minigApp", ['ngResource', 'ngRoute', 'LocalStorageModu
 .constant('INITIAL_MAILBOX', 'INBOX'); //TODO: INBOX shouldn't be hardcoded
 
 app.config(['$httpProvider', '$routeProvider', function($httpProvider, $routeProvider) {
-	
+
     $httpProvider.interceptors.push(['$q', '$window', '$rootScope', 'i18nService', function($q, $window, $rootScope, i18nService) {
         return {
             'responseError': function(rejection) {
@@ -24,16 +24,16 @@ app.config(['$httpProvider', '$routeProvider', function($httpProvider, $routePro
             }
         };
     }]);
-    
+
     $httpProvider.interceptors.push(['$q', function($q) {
         return {
-            'request': function(config) {            	
+            'request': function(config) {
             	config.headers["X-Requested-With"] = "XMLHttpRequest";
                 return config || $q.when(config);
             }
         };
     }]);
-    
+
     $httpProvider.interceptors.push(['$q', '$rootScope', function($q, $rootScope) {
         return {
             'request': function(config) {
