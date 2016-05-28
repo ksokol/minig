@@ -39,8 +39,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -51,7 +51,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.6</version>
+				<version>2.7</version>
 				<configuration>
 					<check>
 						<branchRate>85</branchRate>
@@ -66,6 +66,7 @@
 						<format>html</format>
 						<format>xml</format>
 					</formats>
+					<aggregate>true</aggregate>
 				</configuration>
 				<executions>
 					<execution>
