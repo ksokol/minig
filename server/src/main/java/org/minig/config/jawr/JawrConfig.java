@@ -1,15 +1,9 @@
 package org.minig.config.jawr;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Properties;
-
-import javax.servlet.ServletContext;
-
+import freemarker.cache.ClassTemplateLoader;
+import freemarker.ext.jsp.TaglibFactory;
+import freemarker.template.TemplateException;
 import net.jawr.web.servlet.JawrSpringController;
-
 import org.minig.config.jawr.config.CssConfigPropertiesSource;
 import org.minig.config.jawr.config.JavascriptConfigPropertiesSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +13,12 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
-import freemarker.cache.ClassTemplateLoader;
-import freemarker.ext.jsp.TaglibFactory;
-import freemarker.template.TemplateException;
+import javax.servlet.ServletContext;
+import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Properties;
 
 /**
  * @author Stephane Nicoll
@@ -37,7 +34,6 @@ public class JawrConfig {
 
         p.setProperty("/css/**", "jawrCssController");
         p.setProperty("/js/**", "jawrJavascriptController");
-        p.setProperty("/binary/**", "jawrBinaryController");
 
         simpleUrlHandlerMapping.setMappings(p);
 
@@ -59,15 +55,6 @@ public class JawrConfig {
         jawrSpringController.setControllerMapping("/js");
         jawrSpringController.setConfigPropertiesSourceClass(JavascriptConfigPropertiesSource.class.getCanonicalName());
         jawrSpringController.setType("js");
-        return jawrSpringController;
-    }
-
-    @Bean
-    public JawrSpringController jawrBinaryController() {
-        JawrSpringController jawrSpringController = new JawrSpringController();
-        jawrSpringController.setControllerMapping("/binary");
-        jawrSpringController.setConfigPropertiesSourceClass(CssConfigPropertiesSource.class.getCanonicalName());
-        jawrSpringController.setType("binary");
         return jawrSpringController;
     }
 

@@ -1,11 +1,29 @@
 {
-    "dependencies": {
-        "karma": "0.12.17",
-        "karma-jasmine": "~0.1.5",
-        "karma-phantomjs-launcher": "~0.1.1",
-        "karma-junit-reporter": "~0.2.2",
-        "karma-ng-json2js-preprocessor": "~0.1.1",
-        "karma-ng-scenario": "~0.1.0",
-        "karma-ng-html2js-preprocessor": "~0.1.0"
-    }
+  "dependencies": {
+    "jquery": "2.2.4",
+    "moment": "2.13.0",
+    "angular": "1.3.20",
+    "angular-resource": "1.3.20",
+    "angular-route": "1.3.20",
+    "angular-sanitize": "1.3.20",
+    "textangular": "1.3.6"
+  },
+  "devDependencies": {
+    "karma": "0.12.17",
+    "karma-jasmine": "~0.1.5",
+    "karma-phantomjs-launcher": "~0.1.1",
+    "karma-junit-reporter": "~0.2.2",
+    "karma-ng-json2js-preprocessor": "~0.1.1",
+    "karma-ng-scenario": "~0.1.0",
+    "karma-ng-html2js-preprocessor": "~0.1.0",
+    "angular-mocks": "1.3.20",
+    "gulp": "3.8.7",
+    "gulp-uglify": "0.3.1",
+    "gulp-concat": "2.6.0",
+    "gulp-minify-css": "0.3.7",
+    "gulp-debug": "*",
+    "del": "2.0.1",
+    "gulp-sequence": "0.4.1",
+    "vinyl-paths": "2.0.0"
+  }
 }

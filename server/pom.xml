@@ -121,11 +121,6 @@
 			<artifactId>jawr-spring-extension</artifactId>
 			<version>3.7</version>
 		</dependency>
-		<dependency>
-			<groupId>com.carrotsearch</groupId>
-			<artifactId>smartsprites</artifactId>
-			<version>0.2.10</version>
-		</dependency>
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>javax.servlet.jsp-api</artifactId>
