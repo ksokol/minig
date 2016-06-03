@@ -23,7 +23,7 @@ public class CommonConfigPropertiesSource implements ConfigPropertiesSource {
         this.mapping = String.format("jawr.%s.bundle.%s.mappings", type.getType(), id);
 
         properties = new Properties();
-        properties.put("jawr.debug.on", "false");
+        properties.put("jawr.debug.on", "true");
         properties.put("jawr.factory.use.orphans.mapper", "false");
         properties.put(JawrConfig.JAWR_BROWSER_RESOLVER, Jawr311BrowserResolver.class.getName());
         id("/bundles/" + id + "." + type.getType());

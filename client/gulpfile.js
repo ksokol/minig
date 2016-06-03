@@ -52,7 +52,7 @@ gulp.task('process-js', function() {
 
         .pipe(debug({title: 'found javascript file'}))
         .pipe(concat(paths.compress.js))
-       // .pipe(uglify())
+        .pipe(uglify())
         .pipe(gulp.dest(paths.dest.app))
         .pipe(debug({title: 'processed javascript file'}))
 });
