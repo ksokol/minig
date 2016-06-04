@@ -161,7 +161,7 @@ app.directive("pagination", ['DEFAULT_PAGE_SIZE', 'pagerFactory', function(DEFAU
     return {
         restrict: "E",
         templateUrl: "pagination.html",
-        controller: function($scope) {
+        controller: ['$scope', function($scope) {
             $scope.pager = {
                 pages: 1,
                 currentPage: 1,
@@ -211,7 +211,7 @@ app.directive("pagination", ['DEFAULT_PAGE_SIZE', 'pagerFactory', function(DEFAU
                 }
                 $scope.pager = pagerFactory.newInstance(data.page, data.pageLength, data.fullLength);
             });
-        }
+        }]
     }
 }]);
 
