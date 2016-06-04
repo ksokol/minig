@@ -2,7 +2,15 @@ language: java
 jdk:
   - oraclejdk8
 
-before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y  build-essential
+sudo: false
+
+env:
+  - CXX=g++-4.8
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
+
 script: mvn cobertura:cobertura coveralls:cobertura
