@@ -28,12 +28,16 @@ var preprocessors = config.preprocessors;
     // list of files / patterns to load in the browser
     files: [
         //TODO replace by a function which adds files automatically
+        'node_modules/html-md/dist/md.min.js',
+        'node_modules/he/he.js',
         'node_modules/angular/angular.js',
         'node_modules/angular-mocks/angular-mocks.js',
         'node_modules/angular-resource/angular-resource.js',
         'node_modules/angular-route/angular-route.js',
         'node_modules/angular-sanitize/angular-sanitize.js',
+        'node_modules/angular-local-storage/src/angular-local-storage.js',
         'node_modules/textangular/dist/textAngular-rangy.min.js',
+        'node_modules/textangular/dist/textAngular-sanitize.min.js',
         'node_modules/textangular/dist/textAngular.min.js',
         'src/main/resources/static/*.html',
         'src/test/resources/json/*.json' ,

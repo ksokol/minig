@@ -10,13 +10,17 @@ var uglify = require('gulp-uglify'),
 
 var paths = {
     scripts: [
+        "node_modules/moment/moment.js",
+        'node_modules/html-md/dist/md.min.js',
+        'node_modules/he/he.js',
         "node_modules/jquery/dist/jquery.js",
         "node_modules/angular/angular.js",
         'node_modules/angular-resource/angular-resource.js',
         'node_modules/angular-route/angular-route.js',
         'node_modules/angular-sanitize/angular-sanitize.js',
-        "node_modules/moment/min/moment.min.js",
+        'node_modules/angular-local-storage/src/angular-local-storage.js',
         'node_modules/textangular/dist/textAngular-rangy.min.js',
+        'node_modules/textangular/dist/textAngular-sanitize.min.js',
         'node_modules/textangular/dist/textAngular.min.js',
         "src/main/resources/static/js/*.js"
     ],
