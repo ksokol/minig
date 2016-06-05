@@ -116,11 +116,6 @@
 			<artifactId>apache-mime4j-dom</artifactId>
 			<version>0.7.2</version>
 		</dependency>
-		<dependency>
-			<groupId>net.jawr.extensions</groupId>
-			<artifactId>jawr-spring-extension</artifactId>
-			<version>3.7</version>
-		</dependency>
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>javax.servlet.jsp-api</artifactId>

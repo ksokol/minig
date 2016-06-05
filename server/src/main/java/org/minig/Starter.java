@@ -23,19 +23,9 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Kamill Sokol
  */
 @Import({SecurityConfig.class, ServiceConfig.class})
-@EnableAutoConfiguration(exclude = FreeMarkerAutoConfiguration.class)
+@EnableAutoConfiguration
 @Configuration
 public class Starter {
-
-    @Bean
-    public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory() {
-        return new JettyEmbeddedServletContainerFactory() {
-            @Override
-            protected void postProcessWebAppContext(final WebAppContext webAppContext) {
-                webAppContext.setAttribute(ServletContext.TEMPDIR, new File("tmp")); //create tmp in current working directory
-            }
-        };
-    }
 
     @Bean
     public ServletRegistrationBean api() {
