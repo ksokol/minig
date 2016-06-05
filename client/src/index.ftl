@@ -9,7 +9,7 @@
     <title>MiniG</title>
 
     <!-- build:css -->
-    <link rel="stylesheet" type="text/css" media="screen" href="../static/css/minig.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="css/minig.css" />
     <!-- endbuild -->
 
     <!-- build:js -->
@@ -25,12 +25,12 @@
     <script type="text/javascript" src="node_modules/textangular/dist/textAngular-rangy.min.js"></script>
     <script type="text/javascript" src="node_modules/textangular/dist/textAngular-sanitize.min.js"></script>
     <script type="text/javascript" src="node_modules/textangular/dist/textAngular.min.js"></script>
-    <script type="text/javascript" src="../static/js/config.js"></script>
-    <script type="text/javascript" src="../static/js/controller.js"></script>
-    <script type="text/javascript" src="../static/js/directive.js"></script>
-    <script type="text/javascript" src="../static/js/filter.js"></script>
-    <script type="text/javascript" src="../static/js/resource.js"></script>
-    <script type="text/javascript" src="../static/js/service.js"></script>
+    <script type="text/javascript" src="js/config.js"></script>
+    <script type="text/javascript" src="js/controller.js"></script>
+    <script type="text/javascript" src="js/directive.js"></script>
+    <script type="text/javascript" src="js/filter.js"></script>
+    <script type="text/javascript" src="js/resource.js"></script>
+    <script type="text/javascript" src="js/service.js"></script>
     <!-- endbuild -->
 
 </head>

@@ -7,7 +7,7 @@
 	
 	    <link rel="icon" type="image/gif" href="images/favicon.ico">
         <!-- build:css -->
-        <link rel="stylesheet" type="text/css" media="screen" href="../static/css/minig.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="css/minig.css" />
         <!-- endbuild -->
 	
 		<title>MiniG</title>

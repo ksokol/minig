@@ -18,11 +18,15 @@ var uglify = require('gulp-uglify'),
     path = require('path');
 
 var paths = {
-    index: 'src/main/resources/templates/index.ftl',
-    login: 'src/main/resources/templates/login.ftl',
+    index: 'src/index.ftl',
+    login: 'src/login.ftl',
+    img: 'src/images',
+    ngTemplates: 'src/templates',
     dest: {
         root: 'target/classes/templates',
-        app: 'target/classes/static/app'
+        app: 'target/classes/static/app',
+        images: 'target/classes/static/images',
+        static: 'target/classes/static'
     },
     compress: {
         css: 'main.css',
@@ -43,13 +47,25 @@ function memorizeCompressedFilename() {
 }
 
 function replaceNodeModulesPath(attributeName) {
-    var back = '..' + path.sep + '..' + path.sep + '..' + path.sep + '..' + path.sep;
+    var back = '..' + path.sep;
 
     return function(node) {
         var filenameWithPath = node.attr(attributeName);
         return filenameWithPath.match(/^node_.+/) ? back + filenameWithPath : filenameWithPath;
     }
 }
+
+gulp.task('copy-angular-templates', function() {
+    return gulp.src([paths.ngTemplates + '/*'])
+        .pipe(gulp.dest(paths.dest.static))
+        .pipe(debug({title: 'copying asset'}));
+});
+
+gulp.task('copy-assets', function() {
+    return gulp.src([paths.img + '/*'])
+        .pipe(gulp.dest(paths.dest.images))
+        .pipe(debug({title: 'copying asset'}));
+});
 
 gulp.task('process-login-file', function() {
     return gulp.src(paths.login)
@@ -100,11 +116,4 @@ gulp.task('process-css', function() {
         .pipe(memorizeCompressedFilename())
 });
 
-gulp.task('clean', function () {
-    return gulp.src(paths.dest.root)
-        .pipe(debug({title: 'cleaning folder'}))
-        .pipe(vinylPaths(del))
-        .pipe(gulp.dest('.'));
-});
-
-gulp.task('build', gulpSequence('clean', 'process-css', 'process-js', 'process-login-file', 'process-index-file'));
+gulp.task('build', gulpSequence('process-css', 'process-js', 'process-login-file', 'process-index-file', 'copy-assets', 'copy-angular-templates'));

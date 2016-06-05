@@ -7,7 +7,7 @@ var preprocessors = config.preprocessors;
 
   config.set({
     // base path, that will be used to resolve files and exclude
-    basePath: '../../../',
+    basePath: '../',
 
     // frameworks to use
     frameworks: ['jasmine'],
@@ -39,21 +39,21 @@ var preprocessors = config.preprocessors;
         'node_modules/textangular/dist/textAngular-rangy.min.js',
         'node_modules/textangular/dist/textAngular-sanitize.min.js',
         'node_modules/textangular/dist/textAngular.min.js',
-        'src/main/resources/static/*.html',
-        'src/test/resources/json/*.json' ,
-        'src/main/resources/static/js/*.js',
-        'src/test/js/test.js',
-        'src/test/js/testDirectives.js'
+        'src/templates/*.html',
+        'test/json/*.json' ,
+        'src/js/*.js',
+        'test/js/test.js',
+        'test/js/testDirectives.js'
     ],
 
     ngJson2JsPreprocessor: {
       // strip this from the file path
-      stripPrefix: 'src/test/resources/json/',
+      stripPrefix: 'test/json/',
       prependPrefix : 'fixture/'
     },
 
     ngHtml2JsPreprocessor: {
-      stripPrefix: 'src/main/resources/',
+      stripPrefix: 'src/templates/',
       prependPrefix: 'html/',
       moduleName: 'htmlTemplates'
     },
