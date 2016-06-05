@@ -1,5 +1,3 @@
-<#assign jwr=JspTaglibs["/META-INF/jawr.tld"] />
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 	<head>
@@ -8,7 +6,9 @@
 		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 	
 	    <link rel="icon" type="image/gif" href="images/favicon.ico">
-	    <@jwr.style src="/bundles/styles.css" />
+        <!-- build:css -->
+        <link rel="stylesheet" type="text/css" media="screen" href="../static/css/minig.css" />
+        <!-- endbuild -->
 	
 		<title>MiniG</title>
 	</head>

@@ -1,5 +1,3 @@
-<#assign jwr=JspTaglibs["/META-INF/jawr.tld"] />
-
 <!DOCTYPE html>
 <html ng-app="minigApp">
 <head>
@@ -10,8 +8,30 @@
     <link rel="icon" type="image/gif" href="images/favicon.ico">
     <title>MiniG</title>
 
-    <@jwr.style src="/bundles/styles.css" />
-    <@jwr.script src="/bundles/javascript.js" />
+    <!-- build:css -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../static/css/minig.css" />
+    <!-- endbuild -->
+
+    <!-- build:js -->
+    <script type="text/javascript" src="node_modules/moment/moment.js"></script>
+    <script type="text/javascript" src="node_modules/html-md/dist/md.min.js"></script>
+    <script type="text/javascript" src="node_modules/he/he.js"></script>
+    <script type="text/javascript" src="node_modules/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="node_modules/angular/angular.js"></script>
+    <script type="text/javascript" src="node_modules/angular-resource/angular-resource.js"></script>
+    <script type="text/javascript" src="node_modules/angular-route/angular-route.js"></script>
+    <script type="text/javascript" src="node_modules/angular-sanitize/angular-sanitize.js"></script>
+    <script type="text/javascript" src="node_modules/angular-local-storage/src/angular-local-storage.js"></script>
+    <script type="text/javascript" src="node_modules/textangular/dist/textAngular-rangy.min.js"></script>
+    <script type="text/javascript" src="node_modules/textangular/dist/textAngular-sanitize.min.js"></script>
+    <script type="text/javascript" src="node_modules/textangular/dist/textAngular.min.js"></script>
+    <script type="text/javascript" src="../static/js/config.js"></script>
+    <script type="text/javascript" src="../static/js/controller.js"></script>
+    <script type="text/javascript" src="../static/js/directive.js"></script>
+    <script type="text/javascript" src="../static/js/filter.js"></script>
+    <script type="text/javascript" src="../static/js/resource.js"></script>
+    <script type="text/javascript" src="../static/js/service.js"></script>
+    <!-- endbuild -->
 
 </head>
 <body id="page_body">
