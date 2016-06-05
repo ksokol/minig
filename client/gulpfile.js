@@ -18,12 +18,12 @@ var uglify = require('gulp-uglify'),
     path = require('path');
 
 var paths = {
-    index: 'src/index.ftl',
-    login: 'src/login.ftl',
+    index: 'src/index.html',
+    login: 'src/login.html',
     img: 'src/images',
     ngTemplates: 'src/templates',
     dest: {
-        root: 'target/classes/templates',
+        root: 'target/classes/static',
         app: 'target/classes/static/app',
         images: 'target/classes/static/images',
         static: 'target/classes/static'
