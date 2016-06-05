@@ -18,7 +18,7 @@ import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.NotFoundException;
-import org.minig.server.service.ServiceTestConfig;
+import config.ServiceTestConfig;
 import org.minig.server.service.SmtpAndImapMockServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;

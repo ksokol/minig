@@ -5,7 +5,7 @@ import org.hamcrest.core.IsEqual;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.minig.RessourceTestConfig;
+import config.RessourceTestConfig;
 import org.minig.server.MailAttachment;
 import org.minig.server.MailAttachmentList;
 import org.minig.server.TestConstants;

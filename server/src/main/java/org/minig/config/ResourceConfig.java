@@ -10,7 +10,10 @@ import org.minig.server.resource.argumentresolver.CompositeIdHandlerMethodArgume
 import org.minig.server.resource.argumentresolver.StringIdHandlerMethodArgumentResolver;
 import org.minig.server.resource.config.CompositeAttachmentIdSerializer;
 import org.minig.server.service.CompositeAttachmentId;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -20,7 +23,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import java.util.List;
@@ -30,7 +32,6 @@ import java.util.List;
  */
 @Configuration
 @ComponentScan(basePackages = "org.minig.server.resource")
-@EnableWebMvc
 @Profile({ "test", "prod" })
 public class ResourceConfig extends WebMvcConfigurerAdapter {
 

@@ -1,5 +1,6 @@
 package org.minig.server.service.impl;
 
+import config.ServiceTestConfig;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

@@ -1,23 +1,17 @@
 package org.minig;
 
 import org.minig.config.ResourceConfig;
-import org.minig.config.SecurityConfig;
-import org.minig.config.ServiceConfig;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * @author Kamill Sokol
  */
-@Import({SecurityConfig.class, ServiceConfig.class})
-@EnableAutoConfiguration
-@Configuration
+@SpringBootApplication
 public class Starter {
 
     @Bean

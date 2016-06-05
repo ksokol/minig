@@ -4,7 +4,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.TestConstants;
-import org.minig.server.service.ServiceTestConfig;
+import config.ServiceTestConfig;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
 import org.minig.test.javamail.MailboxRule;
