@@ -20,13 +20,14 @@ var uglify = require('gulp-uglify'),
 var paths = {
     index: 'src/main/resources/static/index.html',
     login: 'src/main/resources/static/login.html',
-    img: 'src/images',
-    ngTemplates: 'src/templates',
+    img: 'src/main/resources/static/images',
+    ngTemplates: 'src/main/resources/static/templates',
     dest: {
         root: 'target/classes/static',
         app: 'target/classes/static/app',
         images: 'target/classes/static/images',
-        static: 'target/classes/static'
+        static: 'target/classes/static',
+        templates: 'target/classes/static/templates',
     },
     compress: {
         css: 'main.css',
@@ -47,7 +48,7 @@ function memorizeCompressedFilename() {
 }
 
 function replaceNodeModulesPath(attributeName) {
-    var back = '..' + path.sep + '..' + path.sep + '..' + path.sep;
+    var back = '..' + path.sep + '..' + path.sep + '..' + path.sep + '..' + path.sep;
 
     return function(node) {
         var filenameWithPath = node.attr(attributeName);
@@ -57,7 +58,7 @@ function replaceNodeModulesPath(attributeName) {
 
 gulp.task('copy-angular-templates', function() {
     return gulp.src([paths.ngTemplates + '/*'])
-        .pipe(gulp.dest(paths.dest.static))
+        .pipe(gulp.dest(paths.dest.templates))
         .pipe(debug({title: 'copying asset'}));
 });
 
