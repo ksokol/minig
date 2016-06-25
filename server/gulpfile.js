@@ -74,7 +74,7 @@ gulp.task('process-login-file', function() {
         .pipe(htmlreplace({
             'css': "app/" + paths.compressed[paths.compress.css]
         }))
-       // .pipe(minifyHtml())
+        .pipe(minifyHtml())
         .pipe(gulp.dest(paths.dest.root))
         .pipe(debug({title: 'processed login html file'}));
 });
@@ -86,7 +86,7 @@ gulp.task('process-index-file', function() {
             'css': "app/" + paths.compressed[paths.compress.css],
             'js': "app/" + paths.compressed[paths.compress.js]
         }))
-       // .pipe(minifyHtml())
+        .pipe(minifyHtml())
         .pipe(gulp.dest(paths.dest.root))
         .pipe(debug({title: 'processed index html file'}));
 });
