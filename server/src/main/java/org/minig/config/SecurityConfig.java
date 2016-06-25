@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity webSecurity) throws Exception  {
         webSecurity
                 .ignoring()
-                .antMatchers("/images/**", "/app/**");
+                .antMatchers("/images/**", "/js/**", "/static/**", "/node_modules/**", "/css/**");
     }
 
     @Order(1)
@@ -78,12 +78,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().anyRequest().hasAnyRole("USER")
                     .and()
                 .formLogin()
-                .loginPage("/login.html").permitAll()
+                .loginPage("/login").permitAll()
                     .loginProcessingUrl("/check")
                     .defaultSuccessUrl("/", true)
-                .failureUrl("/login.html?login=failed")
+                .failureUrl("/login?login=failed")
                 .and()
-                    .logout().logoutSuccessUrl("/login.html")
+                    .logout().logoutSuccessUrl("/login")
                     .and()
                     .csrf().disable()
                     .authenticationProvider(authenticationProvider());

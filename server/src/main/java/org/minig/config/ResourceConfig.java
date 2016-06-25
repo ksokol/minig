@@ -32,7 +32,7 @@ import java.util.List;
  */
 @Configuration
 @ComponentScan(basePackages = "org.minig.server.resource")
-@Profile({ "test", "prod" })
+@Profile({ "dev", "test", "prod" })
 public class ResourceConfig extends WebMvcConfigurerAdapter {
 
 	@Override

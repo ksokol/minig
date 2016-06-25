@@ -1,0 +1,79 @@
+<div class="gwt-TabPanelBottom" role="tabpanel">
+    <div style="width: 100%; height: 100%; padding: 0px; margin: 0px;" aria-hidden="false">
+        <table cellspacing="0" cellpadding="0" style="width: 100%; height: 100%;" aria-hidden="false">
+            <tbody>
+            <tr>
+                <td align="left" style="vertical-align: top;">
+                    <table cellspacing="0" cellpadding="0" style="width: 100%;">
+                        <tbody>
+                        <tr>
+                            <td align="left" width="" height="" style="vertical-align: top;" colspan="1">
+                                <main-actions />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left" width="" height="" style="vertical-align: top;" colspan="1">
+                                <div class="dataGrid">
+                                    <table class="conversationTable">
+                                        <colgroup>
+                                            <col>
+                                            <col>
+                                            <col>
+                                            <col>
+                                            <col>
+                                            <col>
+                                            <col width="80px">
+                                        </colgroup>
+                                        <tbody>
+                                        <tr ng-repeat="mail in data.mailList">
+                                            <td class="convCb">
+                                                        <span class="gwt-CheckBox">
+                                                            <input type="checkbox" value="on"
+                                                                   id="gwt-uid-284" tabindex="0"
+                                                                   ng-model="mail.selected">
+                                                            <label for="gwt-uid-284"></label>
+                                                        </span>
+                                            </td>
+                                            <td class="convStar" ng-click="clickStar()">
+                                                <img ng-show="mail.starred" src="images/starred.gif">
+                                                <img ng-hide="mail.starred"
+                                                     src="images/unstarred.gif">
+                                            </td>
+                                            <td class="convStar">
+                                                <img ng-show="showIcon(mail)"
+                                                     ng-src="images/{{whichIcon(mail)}}.png">
+                                            </td>
+                                            <td class="convRecip" ng-class="{'bold': !mail.read, 'deleted': mail.deleted}" ng-click="open(mail)">
+                                                <div class="gwt-Label" style="white-space: nowrap;"
+                                                     title="{{mail.sender.email}}">{{mail.sender | displayName}}
+                                                </div>
+                                            </td>
+                                            <td class="conversationAndPreviewCol" ng-class="{'bold': !mail.read, 'deleted': mail.deleted}" ng-click="open(mail)">
+                                                <div class="gwt-HTML" style="white-space: nowrap;">
+                                                    <span>{{mail.subject}}</span>
+                                                </div>
+                                            </td>
+                                            <td class="convAttach">
+                                                <img ng-show="mail.attachments.length > 0"
+                                                     src="images/paperclip.gif">
+                                            </td>
+                                            <td class="convDate" ng-class="{'bold': !mail.read, 'deleted': mail.deleted}">
+                                                <div class="gwt-Label" style="white-space: nowrap;"
+                                                     title="{{mail.date | date:'yyyy-MM-dd HH:mm:ss'}}">
+                                                    {{mail.date | timeago}}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

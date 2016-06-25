@@ -16,7 +16,7 @@ import java.util.Set;
  * @author Kamill Sokol
  */
 @Configuration
-@Profile({ "prod" })
+@Profile({ "dev", "prod" })
 public class ServiceConfig {
 
     @Bean
