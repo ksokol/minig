@@ -33,8 +33,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
                 filePrefix += "/";
             }
 
-            registry.addResourceHandler("/node_modules/**", "/**")
-                    .addResourceLocations(filePrefix + userDir + "/node_modules/")
+            registry.addResourceHandler("/**")
                     .addResourceLocations(filePrefix + userDir + "/src/main/resources/static/");
         }
     }

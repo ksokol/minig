@@ -15,13 +15,15 @@ var uglify = require('gulp-uglify'),
     gutil = require('gulp-util'),
     addSrc = require('gulp-add-src'),
     karma = require('karma').server,
-    path = require('path');
+    path = require('path'),
+    bower = require('gulp-bower');
 
 var paths = {
     index: 'src/main/resources/static/index.html',
     login: 'src/main/resources/static/login.html',
     img: 'src/main/resources/static/images',
     ngTemplates: 'src/main/resources/static/templates',
+    bower: 'src/main/resources/static/bower_components/',
     dest: {
         root: 'target/classes/static',
         app: 'target/classes/static/app',
@@ -117,4 +119,8 @@ gulp.task('process-css', function() {
         .pipe(memorizeCompressedFilename())
 });
 
-gulp.task('build', gulpSequence('process-css', 'process-js', 'process-login-file', 'process-index-file', 'copy-assets', 'copy-angular-templates'));
+gulp.task('bower', function() {
+    return bower(paths.bower);
+});
+
+gulp.task('build', gulpSequence('bower', 'process-css', 'process-js', 'process-login-file', 'process-index-file', 'copy-assets', 'copy-angular-templates'));
