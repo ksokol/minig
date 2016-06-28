@@ -30,7 +30,6 @@
         </pluginRepository>
     </pluginRepositories>
 	<build>
-
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -82,12 +81,13 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>javascript tests</id>
+						<id>gulp test</id>
 						<goals>
-							<goal>karma</goal>
+							<goal>gulp</goal>
 						</goals>
+						<phase>test</phase>
 						<configuration>
-							<karmaConfPath>src/test/resources/karma.conf.js</karmaConfPath>
+							<arguments>test</arguments>
 						</configuration>
 					</execution>
 					<execution>
@@ -95,7 +95,6 @@
 						<goals>
 							<goal>gulp</goal>
 						</goals>
-						<phase>generate-resources</phase>
 						<configuration>
 							<arguments>build</arguments>
 						</configuration>

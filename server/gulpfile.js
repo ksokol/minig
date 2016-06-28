@@ -19,6 +19,7 @@ var uglify = require('gulp-uglify'),
     bower = require('gulp-bower');
 
 var paths = {
+    static: 'src/main/resources/static/',
     index: 'src/main/resources/static/index.html',
     login: 'src/main/resources/static/login.html',
     img: 'src/main/resources/static/images',
@@ -49,17 +50,15 @@ function memorizeCompressedFilename() {
     });
 }
 
-function replaceNodeModulesPath(attributeName) {
-    var back = '..' + path.sep + '..' + path.sep + '..' + path.sep + '..' + path.sep;
-
+function from(attributeName) {
     return function(node) {
-        var filenameWithPath = node.attr(attributeName);
-        return filenameWithPath.match(/^node_.+/) ? back + filenameWithPath : filenameWithPath;
+        return node.attr(attributeName);
     }
 }
 
 gulp.task('copy-angular-templates', function() {
     return gulp.src([paths.ngTemplates + '/*'])
+        .pipe(minifyHtml())
         .pipe(gulp.dest(paths.dest.templates))
         .pipe(debug({title: 'copying asset'}));
 });
@@ -96,7 +95,7 @@ gulp.task('process-index-file', function() {
 gulp.task('process-js', function() {
     return gulp.src(paths.index)
         .pipe(debug({title: 'looking for javascript files in'}))
-        .pipe(ghtmlSrc({presets: 'script', getFileName: replaceNodeModulesPath('src')}))
+        .pipe(ghtmlSrc({presets: 'script', getFileName: from('src')}))
         .pipe(debug({title: 'found javascript file'}))
         .pipe(concat(paths.compress.js))
         .pipe(uglify())
@@ -109,7 +108,7 @@ gulp.task('process-js', function() {
 gulp.task('process-css', function() {
     return gulp.src(paths.login)
         .pipe(debug({title: 'looking for css files in'}))
-        .pipe(ghtmlSrc({presets: 'css', getFileName: replaceNodeModulesPath('href')}))
+        .pipe(ghtmlSrc({presets: 'css', getFileName: from('href')}))
         .pipe(debug({title: 'found css file'}))
         .pipe(concat(paths.compress.css))
         .pipe(minifyCss())
@@ -119,8 +118,69 @@ gulp.task('process-css', function() {
         .pipe(memorizeCompressedFilename())
 });
 
+gulp.task('karma', function (done) {
+    gulp.src(paths.index)
+        .pipe(ghtmlSrc({presets: 'script', getFileName: from('src')}))
+        .pipe(addSrc.append(['node_modules/angular-mocks/angular-mocks.js', 'src/test/javascript/test.js', 'src/test/resources/json/**', paths.ngTemplates + '/**'], { base: '.' }))
+        .pipe(debug({title: 'javascript file(s) for testing'}))
+        .pipe(gutil.buffer(function(error, files) {
+            if(error) {
+                throw error;
+            }
+            var processedFiles = files.map(function(file) {
+                var relativeFile = file.relative;
+                if(relativeFile.match(/^(node|src)/)) {
+                    return relativeFile;
+                }  else {
+                    return paths.static + relativeFile;
+                }
+            });
+            karma.start({
+                basePath: '.',
+                preprocessors: {
+                    '**/*.json': 'json2js',
+                    '**/*.html': 'ng-html2js',
+                    'src/main/resources/static/js/**': 'coverage'
+                },
+                logLevel: 'INFO',
+                frameworks: ['jasmine'],
+                junitReporter: {
+                    outputFile: 'target/surefire-reports/TEST-phantomjsTest.xml',
+                    suite: ''
+                },
+                ngJson2JsPreprocessor: {
+                    // strip this from the file path
+                    stripPrefix: 'src/test/resources/json/',
+                    prependPrefix : 'fixture/'
+                },
+                ngHtml2JsPreprocessor: {
+                    stripPrefix: paths.static + 'templates/',
+                    prependPrefix: 'html/',
+                    moduleName: 'htmlTemplates'
+                },
+                coverageReporter: {
+                    dir : 'target/site/istanbul/'
+                },
+                files: processedFiles,
+                reporters: ['progress', 'junit', 'coverage'],
+                browsers: ['PhantomJS'],
+                autoWatch: false,
+                captureTimeout: 60000,
+                singleRun: true
+            }, function(errorCode) {
+                if (errorCode !== 0) {
+                    gutil.log("There are failing unit tests");
+                    done();
+                    return process.exit(errorCode);
+                }
+                done();
+            });
+        }));
+});
+
 gulp.task('bower', function() {
     return bower(paths.bower);
 });
 
+gulp.task('test', gulpSequence('bower', 'karma'));
 gulp.task('build', gulpSequence('bower', 'process-css', 'process-js', 'process-login-file', 'process-index-file', 'copy-assets', 'copy-angular-templates'));
