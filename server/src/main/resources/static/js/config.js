@@ -5,7 +5,7 @@ var app = angular.module("minigApp", ['ngResource', 'ngRoute', 'LocalStorageModu
 .constant('INITIAL_MAILBOX', 'INBOX'); //TODO: INBOX shouldn't be hardcoded
 
 app.config(['$httpProvider', '$routeProvider', function($httpProvider, $routeProvider) {
-	
+
     $httpProvider.interceptors.push(['$q', '$window', '$rootScope', 'i18nService', function($q, $window, $rootScope, i18nService) {
         return {
             'responseError': function(rejection) {
@@ -24,16 +24,16 @@ app.config(['$httpProvider', '$routeProvider', function($httpProvider, $routePro
             }
         };
     }]);
-    
+
     $httpProvider.interceptors.push(['$q', function($q) {
         return {
-            'request': function(config) {            	
+            'request': function(config) {
             	config.headers["X-Requested-With"] = "XMLHttpRequest";
                 return config || $q.when(config);
             }
         };
     }]);
-    
+
     $httpProvider.interceptors.push(['$q', '$rootScope', function($q, $rootScope) {
         return {
             'request': function(config) {
@@ -49,21 +49,21 @@ app.config(['$httpProvider', '$routeProvider', function($httpProvider, $routePro
 
     $routeProvider
     .when('/box', {
-        templateUrl: "box.html",
+        templateUrl: "templates/box.html",
         controller: 'MailOverviewCtrl',
         reloadOnSearch: false
     })
     .when('/folder', {
-        templateUrl: "folder.html",
+        templateUrl: "templates/folder.html",
         controller: 'FolderSettingsCtrl'
     })
     .when('/composer', {
-        templateUrl: "composer.html",
+        templateUrl: "templates/composer.html",
         controller: 'ComposerCtrl',
         reloadOnSearch: false
     })
     .when('/message', {
-        templateUrl: "message.html",
+        templateUrl: "templates/message.html",
         controller: 'MessageCtrl'
     })
     .otherwise({redirectTo: '/box'});
@@ -73,40 +73,10 @@ app.config(['$httpProvider', '$routeProvider', function($httpProvider, $routePro
 angular.module('minigTextAngular', ['textAngular'])
 .config(['$provide', function($provide) {
     $provide.decorator('taOptions', ['taRegisterTool', '$delegate', function(taRegisterTool, taOptions) {
-
-        taRegisterTool('strikeThrough', {
-            iconclass: "fa fa-strikeThrough",
-            action: function() {
-                this.$editor().wrapSelection('strikeThrough',null);
-            }
-            ,activeState: function() {
-                return document.queryCommandState('strikeThrough');
-            }
-        });
-
-        taRegisterTool('indent', {
-            iconclass: 'fa fa-indent',
-            action: function(){
-                return this.$editor().wrapSelection("indent", null);
-            },
-            activeState: function(){
-                return this.$editor().queryFormatBlockState('blockquote');
-            }
-        });
-        taRegisterTool('outdent', {
-            iconclass: 'fa fa-outdent',
-            action: function(){
-                return this.$editor().wrapSelection("outdent", null);
-            },
-            activeState: function(){
-                return false;
-            }
-        });
-
         taOptions.toolbar = [
             ['bold', 'italics', 'underline'],
             ['justifyLeft','justifyCenter','justifyRight'],
-            [/* 'strikeThrough' */ 'indent','outdent', 'ul', 'ol']
+            [ 'indent','outdent', 'ul', 'ol']
         ];
         return taOptions;
     }]);

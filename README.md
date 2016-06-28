@@ -15,5 +15,5 @@ Installation
 **Build and package**
 
 - run `mvn package`
-- You will find a fat jar (Spring Boot application) under `target`
+- You will find a fat jar (Spring Boot application) under `server/target`
 - run `java -jar minig.jar`

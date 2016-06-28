@@ -4,9 +4,4 @@ jdk:
 
 sudo: false
 
-before_install:
-script: mvn test
-after_success: 
- - echo "current branch $TRAVIS_BRANCH on jdk version $TRAVIS_JDK_VERSION"
- - if [[ $TRAVIS_JDK_VERSION == "oraclejdk8" ]]; then mvn cobertura:cobertura coveralls:cobertura; fi
-
+script: mvn cobertura:cobertura coveralls:cobertura

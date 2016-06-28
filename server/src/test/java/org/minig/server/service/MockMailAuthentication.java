@@ -2,11 +2,13 @@ package org.minig.server.service;
 
 import org.minig.MailAuthentication;
 import org.minig.server.TestConstants;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 /**
  * @author Kamill Sokol
  */
+@Primary
 @Component
 public class MockMailAuthentication implements MailAuthentication {
 

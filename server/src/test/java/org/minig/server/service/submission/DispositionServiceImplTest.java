@@ -6,8 +6,7 @@ import org.junit.runner.RunWith;
 import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.MimeMessageBuilder;
-import org.minig.server.service.ServiceTestConfig;
-import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
+import config.ServiceTestConfig;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
 import org.minig.test.javamail.Mailbox;
@@ -21,7 +20,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.Scanner;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;

@@ -71,7 +71,7 @@ app.directive("inlineFolderSelect", ['$http', '$document', '$window', '$compile'
 	var body = angular.element($document[0].body);
 	var cached;
 
-    $http.get("inline-folder-select.html")
+    $http.get("templates/inline-folder-select.html")
     .success(function(html) {
         cached = html;
     });
@@ -160,8 +160,8 @@ app.directive("pagination", ['DEFAULT_PAGE_SIZE', 'pagerFactory', function(DEFAU
 
     return {
         restrict: "E",
-        templateUrl: "pagination.html",
-        controller: function($scope) {
+        templateUrl: "templates/pagination.html",
+        controller: ['$scope', function($scope) {
             $scope.pager = {
                 pages: 1,
                 currentPage: 1,
@@ -211,7 +211,7 @@ app.directive("pagination", ['DEFAULT_PAGE_SIZE', 'pagerFactory', function(DEFAU
                 }
                 $scope.pager = pagerFactory.newInstance(data.page, data.pageLength, data.fullLength);
             });
-        }
+        }]
     }
 }]);
 
@@ -239,7 +239,7 @@ app.directive("mainActions", ['$rootScope', 'routeService', 'mailService', funct
 
     return {
         restrict: "E",
-        templateUrl: 'main_actions.html',
+        templateUrl: 'templates/main_actions.html   ',
         link: function($scope, element, attrs) {
 
             $scope.moveToFolder = function() {
@@ -380,7 +380,7 @@ app.directive("attachmentPanel", function() {
         scope: {
             mail: "="
         },
-        templateUrl:'attachment.html',
+        templateUrl:'templates/attachment.html',
         controller :  [ "$scope", "routeService","attachmentService", function ($scope, routeService, attachmentService) {
             $scope.showDelete = routeService.currentRoute("composer");
 
@@ -479,7 +479,7 @@ app.directive("attachmentUpload", function() {
             mail: "=",
             after: "&"
         },
-        templateUrl: 'attachment-upload.html',
+        templateUrl: 'templates/attachment-upload.html',
         controller: [ "$scope", "attachmentService", "draftService", function ($scope, attachmentService, draftService) {
             // http://stackoverflow.com/questions/17922557/angularjs-how-to-check-for-changes-in-file-input-fields
             $scope.blur = function(element) {

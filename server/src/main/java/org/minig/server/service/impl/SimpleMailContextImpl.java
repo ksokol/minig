@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-@Profile("prod")
+@Profile({"dev", "prod"})
 public class SimpleMailContextImpl implements MailContext, DisposableBean {
 
     private static final Logger log = LoggerFactory.getLogger(SimpleMailContextImpl.class);

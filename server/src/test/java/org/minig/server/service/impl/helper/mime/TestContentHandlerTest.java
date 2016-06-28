@@ -41,7 +41,7 @@ import org.junit.runner.RunWith;
 import org.minig.server.TestConstants;
 import org.minig.server.service.MailRepository;
 import org.minig.server.service.MimeMessageBuilder;
-import org.minig.server.service.ServiceTestConfig;
+import config.ServiceTestConfig;
 import org.minig.server.service.SmtpAndImapMockServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;

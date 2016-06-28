@@ -6,11 +6,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +21,7 @@ import org.minig.server.service.CompositeId;
 import org.minig.server.service.MailService;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.NotFoundException;
-import org.minig.server.service.ServiceTestConfig;
+import config.ServiceTestConfig;
 import org.minig.server.service.SmtpAndImapMockServer;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
