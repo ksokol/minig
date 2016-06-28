@@ -42,6 +42,11 @@ a {
     cursor: pointer;
 }
 
+.logo {
+	background: url("../images/logo_minig_big.png");
+	padding: 450px 450px 0px 0px;
+}
+
 .labelsList a {
     text-decoration: none;
 }

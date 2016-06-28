@@ -110,6 +110,7 @@ gulp.task('process-css', function() {
         .pipe(debug({title: 'looking for css files in'}))
         .pipe(ghtmlSrc({presets: 'css', getFileName: from('href')}))
         .pipe(debug({title: 'found css file'}))
+        .pipe(base64({debug:true, maxImageSize: 32768000000}))
         .pipe(concat(paths.compress.css))
         .pipe(minifyCss())
         .pipe(rev())
@@ -183,4 +184,4 @@ gulp.task('bower', function() {
 });
 
 gulp.task('test', gulpSequence('bower', 'karma'));
-gulp.task('build', gulpSequence('bower', 'process-css', 'process-js', 'process-login-file', 'process-index-file', 'copy-assets', 'copy-angular-templates'));
+gulp.task('build', gulpSequence('bower', 'process-css', 'process-js', 'process-login-file', 'process-index-file', 'copy-angular-templates'));
