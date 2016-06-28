@@ -5,7 +5,7 @@
 
 	<groupId>miniG</groupId>
 	<artifactId>miniG</artifactId>
-	<version>3.0.5</version>
+	<version>3.0.6</version>
 	<packaging>pom</packaging>
 
 	<name>miniG</name>
