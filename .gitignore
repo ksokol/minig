@@ -1,12 +1,3 @@
-server/target/
-server/.project
-server/.settings/
-server/.classpath
-
-mock-javamail/target/
-mock-javamail/.project
-mock-javamail/.settings/
-mock-javamail/.classpath
-
-server/node/
-server/node_modules/
+target/
+node/
+node_modules/
