@@ -135,13 +135,15 @@ app.controller('FolderListCtrl', ['$scope', '$rootScope', 'folderService', 'rout
 	};
 
 	$scope.whichIcon = function(mail) {
-		if(mail.answered && mail.forwarded) {
-			return "forwardedanswered";
-		} else if(mail.answered) {
-			return "answered";
-		} else {
-			return "forwarded"
-		}
+        if($scope.showIcon(mail)) {
+            if(mail.answered && mail.forwarded) {
+                return "forwardedanswered";
+            } else if(mail.answered) {
+                return "answered";
+            } else {
+                return "forwarded"
+            }
+        }
 	};
 
 	$scope.hasMailSelected = function() {

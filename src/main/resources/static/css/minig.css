@@ -2317,3 +2317,48 @@ textarea {
     position: absolute;
     width: 16px;
 }
+
+.starred {
+	background: url("../images/starred.gif") no-repeat;
+	padding: 1px 8px;
+}
+
+.unstarred {
+	background: url("../images/unstarred.gif") no-repeat;
+	padding: 1px 8px;
+}
+
+.forwarded {
+	background: url("../images/forwarded.png") no-repeat;
+	padding: 1px 8px;
+}
+
+.answered {
+	background: url("../images/answered.png") no-repeat;
+	padding: 1px 8px;
+}
+
+.forwardedanswered {
+	background: url("../images/forwardedanswered.png") no-repeat;
+	padding: 1px 8px;
+}
+
+.attachment {
+	background: url("../images/paperclip.gif") no-repeat;
+	padding: 1px 8px;
+}
+
+.mime {
+	background: url("../images/mime.gif") no-repeat;
+	padding: 5px 10px;
+}
+
+.close {
+	background: url("../images/x.gif") no-repeat;
+	padding: 1px 5px;
+}
+
+.envelope {
+	background: url("../images/envelope.png") no-repeat;
+	padding: 3px 10px;
+}
