@@ -16,7 +16,9 @@ var uglify = require('gulp-uglify'),
     addSrc = require('gulp-add-src'),
     karma = require('karma').server,
     path = require('path'),
-    bower = require('gulp-bower');
+    bower = require('gulp-bower'),
+    inject = require('gulp-inject'),
+    wiredep = require('wiredep').stream;
 
 var paths = {
     static: 'src/main/resources/static/',
@@ -183,5 +185,19 @@ gulp.task('bower', function() {
     return bower(paths.bower);
 });
 
-gulp.task('test', gulpSequence('bower', 'karma'));
-gulp.task('build', gulpSequence('bower', 'process-css', 'process-js', 'process-login-file', 'process-index-file', 'copy-angular-templates'));
+gulp.task('inject-js-index', function() {
+    var sources = gulp.src([paths.static + '/js/*.js'], {read: false});
+    return gulp.src(paths.index)
+        .pipe(inject(sources, {relative: true}))
+        .pipe(gulp.dest(paths.static));
+});
+
+gulp.task('wiredep-js-index', function() {
+    return gulp.src(paths.index)
+        .pipe(wiredep({directory : paths.bower}))
+        .pipe(gulp.dest(paths.static));
+});
+
+gulp.task('wire-js', gulpSequence('wiredep-js-index', 'inject-js-index'));
+gulp.task('test', gulpSequence('bower', 'wire-js', 'karma'));
+gulp.task('build', gulpSequence('bower', 'wire-js', 'process-css', 'process-js', 'process-login-file', 'process-index-file', 'copy-angular-templates'));

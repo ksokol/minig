@@ -28,6 +28,8 @@
     "gulp-add-src": "0.2.0",
     "gulp-html-src": "1.0.0",
     "phantomjs-prebuilt": "2.1.7",
-    "path": "0.12.7"
+    "path": "0.12.7",
+    "gulp-inject": "4.1.0",
+    "wiredep": "4.0.0"
   }
 }
