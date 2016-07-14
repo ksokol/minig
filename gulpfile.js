@@ -75,7 +75,8 @@ gulp.task('process-login-file', function() {
     return gulp.src(paths.login)
         .pipe(debug({title: 'processing login html file'}))
         .pipe(htmlreplace({
-            'css': "app/" + paths.compressed[paths.compress.css]
+            'css': "app/" + paths.compressed[paths.compress.css],
+            'js': "app/" + paths.compressed[paths.compress.js]
         }))
         .pipe(minifyHtml())
         .pipe(gulp.dest(paths.dest.root))
@@ -192,13 +193,26 @@ gulp.task('inject-js-index', function() {
         .pipe(gulp.dest(paths.static));
 });
 
+gulp.task('inject-js-login', function() {
+    var sources = gulp.src([paths.static + '/js/*.js'], {read: false});
+    return gulp.src(paths.login)
+        .pipe(inject(sources, {relative: true}))
+        .pipe(gulp.dest(paths.static));
+});
+
 gulp.task('wiredep-js-index', function() {
     return gulp.src(paths.index)
         .pipe(wiredep({directory : paths.bower}))
         .pipe(gulp.dest(paths.static));
 });
 
-gulp.task('wire-js', gulpSequence('bower', 'wiredep-js-index', 'inject-js-index'));
+gulp.task('wiredep-js-login', function() {
+    return gulp.src(paths.login)
+        .pipe(wiredep({directory : paths.bower}))
+        .pipe(gulp.dest(paths.static));
+});
+
+gulp.task('wire-js', gulpSequence('bower', 'wiredep-js-login', 'inject-js-login', 'wiredep-js-index', 'inject-js-index'));
 gulp.task('test', gulpSequence('wire-js', 'karma'));
 gulp.task('process-assets', gulpSequence('process-css', 'process-js', 'process-login-file', 'process-index-file', 'copy-angular-templates'));
 gulp.task('default', gulpSequence('wire-js', 'process-assets'));
