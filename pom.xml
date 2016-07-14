@@ -121,8 +121,19 @@
 						<goals>
 							<goal>npm</goal>
 						</goals>
+						<phase>validate</phase>
 						<configuration>
 							<arguments>install</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>gulp run</id>
+						<goals>
+							<goal>gulp</goal>
+						</goals>
+						<phase>validate</phase>
+						<configuration>
+							<arguments>mvn-validate</arguments>
 						</configuration>
 					</execution>
 					<execution>
@@ -132,7 +143,7 @@
 						</goals>
 						<phase>test</phase>
 						<configuration>
-							<arguments>test</arguments>
+							<arguments>mvn-test</arguments>
 						</configuration>
 					</execution>
 					<execution>
@@ -140,8 +151,9 @@
 						<goals>
 							<goal>gulp</goal>
 						</goals>
+						<phase>prepare-package</phase>
 						<configuration>
-							<arguments>build</arguments>
+							<arguments>mvn-prepare-package</arguments>
 						</configuration>
 					</execution>
 				</executions>

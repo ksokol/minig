@@ -198,6 +198,12 @@ gulp.task('wiredep-js-index', function() {
         .pipe(gulp.dest(paths.static));
 });
 
-gulp.task('wire-js', gulpSequence('wiredep-js-index', 'inject-js-index'));
-gulp.task('test', gulpSequence('bower', 'wire-js', 'karma'));
-gulp.task('build', gulpSequence('bower', 'wire-js', 'process-css', 'process-js', 'process-login-file', 'process-index-file', 'copy-angular-templates'));
+gulp.task('wire-js', gulpSequence('bower', 'wiredep-js-index', 'inject-js-index'));
+gulp.task('test', gulpSequence('wire-js', 'karma'));
+gulp.task('process-assets', gulpSequence('process-css', 'process-js', 'process-login-file', 'process-index-file', 'copy-angular-templates'));
+gulp.task('default', gulpSequence('wire-js', 'process-assets'));
+
+// used by Maven
+gulp.task('mvn-validate', gulpSequence('wire-js'));
+gulp.task('mvn-test', gulpSequence('karma'));
+gulp.task('mvn-prepare-package', gulpSequence('process-assets'));
