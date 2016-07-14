@@ -93,7 +93,7 @@
 				<configuration>
 					<finalName>minig</finalName>
 					<executable>true</executable>
-					<jvmArguments>-Dspring.profiles.active=dev</jvmArguments>
+					<addResources>true</addResources>
 				</configuration>
 			</plugin>
 			<plugin>
