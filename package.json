@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "lint": "eslint ."
+  },
   "devDependencies": {
     "bower": "1.7.9",
     "karma": "0.12.17",
@@ -16,6 +19,7 @@
     "gulp-minify-css": "0.3.7",
     "gulp-debug": "*",
     "gulp-bower": "0.0.13",
+    "gulp-eslint": "3.0.1",
     "del": "2.0.1",
     "gulp-sequence": "0.4.1",
     "vinyl-paths": "2.0.0",
@@ -30,6 +34,12 @@
     "phantomjs-prebuilt": "2.1.7",
     "path": "0.12.7",
     "gulp-inject": "4.1.0",
-    "wiredep": "4.0.0"
+    "wiredep": "4.0.0",
+    "eslint": "^3.13.0",
+    "eslint-plugin-compat": "^1.0.0-2"
+  },
+  "browserslist": {
+    "development": ["last 2 versions"],
+    "production": ["last 4 versions"]
   }
 }

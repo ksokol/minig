@@ -18,7 +18,8 @@ var uglify = require('gulp-uglify'),
     path = require('path'),
     bower = require('gulp-bower'),
     inject = require('gulp-inject'),
-    wiredep = require('wiredep').stream;
+    wiredep = require('wiredep').stream,
+    eslint = require('gulp-eslint');
 
 var paths = {
     static: 'src/main/resources/static/',
@@ -212,12 +213,19 @@ gulp.task('wiredep-js-login', function() {
         .pipe(gulp.dest(paths.static));
 });
 
+gulp.task('eslint', function() {
+    return gulp.src(['**/*.js'])
+        .pipe(eslint())
+        .pipe(eslint.format())
+        .pipe(eslint.failAfterError());
+});
+
 gulp.task('wire-js', gulpSequence('bower', 'wiredep-js-login', 'inject-js-login', 'wiredep-js-index', 'inject-js-index'));
 gulp.task('test', gulpSequence('wire-js', 'karma'));
 gulp.task('process-assets', gulpSequence('process-css', 'process-js', 'process-login-file', 'process-index-file', 'copy-angular-templates'));
 gulp.task('default', gulpSequence('wire-js', 'process-assets'));
 
 // used by Maven
-gulp.task('mvn-validate', gulpSequence('wire-js'));
+gulp.task('mvn-validate', gulpSequence('wire-js', 'eslint'));
 gulp.task('mvn-test', gulpSequence('karma'));
 gulp.task('mvn-prepare-package', gulpSequence('process-assets'));

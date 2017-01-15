@@ -1,0 +1,6 @@
+node/*
+src/main/resources/static/bower_components/*
+target/*
+karma-e2e.conf.js
+test-e2e.js
+gulpfile.js

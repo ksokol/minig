@@ -1,0 +1,16 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "jasmine": true
+  },
+  "plugins": ["compat"],
+  "rules": {
+    "compat/compat": 2,
+    "quotes": ["error", "single"]
+  },
+  "globals": {
+    "angular": 1
+  },
+  "extends": "eslint:recommended"
+}
