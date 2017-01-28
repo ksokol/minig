@@ -5,6 +5,7 @@
     "jasmine-core": "2.5.2",
     "karma-jasmine": "1.1.0",
     "karma-phantomjs-launcher": "1.0.0",
+    "phantomjs-prebuilt": "2.1.14",
     "karma-junit-reporter": "1.2.0",
     "karma-ng-json2js-preprocessor": "2.0.1",
     "karma-ng-scenario": "1.0.0",
