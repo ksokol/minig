@@ -5,7 +5,7 @@
 
 	<groupId>miniG</groupId>
 	<artifactId>miniG</artifactId>
-	<version>3.0.6</version>
+	<version>3.0.7</version>
 	<packaging>jar</packaging>
 
 	<name>miniG</name>
@@ -113,8 +113,8 @@
 						</goals>
 						<phase>validate</phase>
 						<configuration>
-							<nodeVersion>v4.4.5</nodeVersion>
-							<npmVersion>3.9.5</npmVersion>
+							<nodeVersion>v6.9.1</nodeVersion>
+							<npmVersion>3.10.8</npmVersion>
 						</configuration>
 					</execution>
 					<execution>

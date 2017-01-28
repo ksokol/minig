@@ -10,11 +10,10 @@ var uglify = require('gulp-uglify'),
     rev = require('gulp-rev'),
     through = require('through2'),
     gulpSequence = require('gulp-sequence'),
-    vinylPaths = require('vinyl-paths'),
     base64 = require('gulp-base64'),
     gutil = require('gulp-util'),
     addSrc = require('gulp-add-src'),
-    karma = require('karma').server,
+    Server = require('karma').Server,
     path = require('path'),
     bower = require('gulp-bower'),
     inject = require('gulp-inject'),
@@ -139,10 +138,11 @@ gulp.task('karma', function (done) {
                     return paths.static + relativeFile;
                 }
             });
-            karma.start({
+
+            new Server({
                 basePath: '.',
                 preprocessors: {
-                    '**/*.json': 'json2js',
+                    '**/*.json': 'ng-json2js',
                     '**/*.html': 'ng-html2js',
                     'src/main/resources/static/js/**': 'coverage'
                 },
@@ -178,7 +178,7 @@ gulp.task('karma', function (done) {
                     return process.exit(errorCode);
                 }
                 done();
-            });
+            }).start();
         }));
 });
 

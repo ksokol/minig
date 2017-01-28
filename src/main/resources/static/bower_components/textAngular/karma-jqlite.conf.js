@@ -12,13 +12,14 @@ module.exports = function (config) {
 		],
 		
 		files: [
+            'node_modules/phantomjs-polyfill/bind-polyfill.js',
 			'bower_components/rangy/rangy-core.js',
 			'bower_components/rangy/rangy-selectionsaverestore.js',
 			'bower_components/angular/angular.min.js',
 			'bower_components/angular-mocks/angular-mocks.js',
-			'src/textAngular-sanitize.js',
-			'src/textAngularSetup.js',
-			'src/textAngular.js',
+			'dist/textAngular-sanitize.js',
+			'dist/textAngularSetup.js',
+			'dist/textAngular.js',
 			'test/helpers.js',
 			'bower_components/jquery/jquery.min.js',
 			'test/**/*.spec.js'
@@ -30,8 +31,8 @@ module.exports = function (config) {
 		],
 
 		preprocessors: {
-			'src/textAngular.js': ['coverage'],
-			'src/textAngularSetup.js': ['coverage']
+			'dist/textAngular.js': ['coverage'],
+			'dist/textAngularSetup.js': ['coverage']
 		},
 
 		// test results reporter to use

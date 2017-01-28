@@ -1,8 +1,13 @@
-
 beforeEach(function(){
-    this.addMatchers({
-        toBeJsonEqual: function(expected){
-            return angular.toJson(this.actual) === angular.toJson(expected);
+    jasmine.addMatchers({
+        toBeJsonEqual: function() {
+            return {
+                compare: function(actual, expected) {
+                    return {
+                        pass: angular.toJson(actual) === angular.toJson(expected)
+                    };
+                }
+            };
         }
     });
 });

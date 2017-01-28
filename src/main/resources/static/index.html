@@ -27,9 +27,9 @@
     <script src="bower_components/rangy/rangy-selectionsaverestore.js"></script>
     <script src="bower_components/rangy/rangy-serializer.js"></script>
     <script src="bower_components/rangy/rangy-textrange.js"></script>
-    <script src="bower_components/textAngular/src/textAngular.js"></script>
-    <script src="bower_components/textAngular/src/textAngular-sanitize.js"></script>
-    <script src="bower_components/textAngular/src/textAngularSetup.js"></script>
+    <script src="bower_components/textAngular/dist/textAngular.js"></script>
+    <script src="bower_components/textAngular/dist/textAngular-sanitize.js"></script>
+    <script src="bower_components/textAngular/dist/textAngularSetup.js"></script>
     <script src="bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
     <script src="bower_components/html-md/dist/md.min.js"></script>
     <script src="bower_components/he/he.js"></script>
@@ -131,7 +131,7 @@
                                                             <img class="envelope" class="gwt-Image">
                                                         </td>
                                                         <td>
-                                                            <a class="gwt-Anchor noWrap bold" href="#/composer">Mail composer</a>
+                                                            <a class="gwt-Anchor noWrap bold" ng-click="composer()">Mail composer</a>
                                                         </td>
                                                     </tr>
                                                     </tbody>
@@ -224,7 +224,7 @@
                                                                     <tbody>
                                                                     <tr>
                                                                         <td align="right" style="vertical-align: top;">
-                                                                            <a class="gwt-Anchor" href="#/folder">Edit folders</a>
+                                                                            <a class="gwt-Anchor" href="#!/folder">Edit folders</a>
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>

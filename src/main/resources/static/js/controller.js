@@ -35,6 +35,9 @@ app.controller('FolderListCtrl', ['$scope', '$rootScope', 'folderService', 'rout
         routeService.navigateTo({path: 'box', params: {folder: folder || INITIAL_MAILBOX, page : 1}, reload: true});
     };
 
+    $scope.composer = function() {
+        routeService.navigateTo({path: 'composer', reload: true});
+    };
 }])
 .controller('MailOverviewCtrl', ['$scope', '$rootScope', '$routeParams', 'mailService', 'i18nService', 'draftService', 'routeService', 'INITIAL_MAILBOX', function($scope, $rootScope, $routeParams, mailService, i18nService, draftService, routeService, INITIAL_MAILBOX) {
 

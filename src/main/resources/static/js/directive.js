@@ -72,8 +72,8 @@ app.directive("inlineFolderSelect", ['$http', '$document', '$window', '$compile'
 	var cached;
 
     $http.get("templates/inline-folder-select.html")
-    .success(function(html) {
-        cached = html;
+    .then(function(response) {
+        cached = response.data;
     });
 
     var build = function($scope, parent, attrs) {

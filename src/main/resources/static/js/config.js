@@ -87,9 +87,8 @@ app.factory('userService', ['$http', 'API_HOME', function($http, API_HOME) {
     var currentEmail;
 
     $http.get(API_HOME + "me")
-    .success(function(result) {
-        currentEmail = result.username;
-
+    .then(function(result) {
+        currentEmail = result.data.username;
     });
 
     return {
