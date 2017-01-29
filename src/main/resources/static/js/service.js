@@ -283,10 +283,9 @@ app.service('submissionService',['$q', '$http', 'API_HOME', function($q, $http, 
         mail.date = new Date();
 
         $http({method: 'POST', url: API_HOME +'/submission/disposition/'+mail.id})
-        .success(function() {
+        .then(function() {
             deferred.resolve();
-        })
-        .error(function(data) {
+        }, function(data) {
             deferred.reject(data);
         });
 
@@ -302,10 +301,9 @@ app.service('submissionService',['$q', '$http', 'API_HOME', function($q, $http, 
         }
 
         $http({method: 'POST', url: API_HOME +'submission', data: mail})
-            .success(function() {
+            .then(function() {
                 deferred.resolve();
-            })
-            .error(function(data) {
+            }, function(data) {
                 deferred.reject(data);
             });
 
@@ -514,11 +512,10 @@ app.service('draftService',['$q', '$http', 'mailCache', 'API_HOME', function($q,
         mail.date = new Date();
 
         $http({method: method, url: API_HOME +'message/draft'+id, data: mail})
-            .success(function(result) {
-                mailCache.add(result);
-                deferred.resolve(result);
-            })
-            .error(function(data) {
+            .then(function(result) {
+                mailCache.add(result.data);
+                deferred.resolve(result.data);
+            }, function(data) {
                 deferred.reject(data);
             });
 
@@ -555,10 +552,9 @@ app.service('attachmentService',['$q', '$http', 'API_HOME', function($q, $http, 
                 return data;
             }
         })
-        .success(function(result) {
-            deferred.resolve(result);
-        })
-        .error(function(data) {
+        .then(function(result) {
+            deferred.resolve(result.data);
+        }, function(data) {
             deferred.reject(data);
         });
 
@@ -572,10 +568,9 @@ app.service('attachmentService',['$q', '$http', 'API_HOME', function($q, $http, 
             method: "DELETE",
             url: API_HOME +'attachment/'+id
         })
-        .success(function(result) {
-            deferred.resolve(result);
-        })
-        .error(function(data) {
+        .then(function(result) {
+            deferred.resolve(result.data);
+        }, function(data) {
             deferred.reject(data);
         });
 

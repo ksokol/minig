@@ -1050,6 +1050,7 @@ html>body .gwt-DecoratedTabBar .gwt-TabBarItem-selected .tabTopRight {
 .deleteButton {
 	background: url("../images/buttonDel_bg.png") no-repeat top left;
 	padding-left: 25px;
+	padding-bottom: 4px;
 }
 
 .dropDownArrowButton {
@@ -1060,7 +1061,7 @@ html>body .gwt-DecoratedTabBar .gwt-TabBarItem-selected .tabTopRight {
 /* Heading */
 .logoutLabel {
 	background: url("../images/head_logOut.png") no-repeat 0px 2px;
-	padding: 0px 0px 0px 18px;
+	padding: 0px 0px 10px 18px;
 }
 
 .userNameLabel {
@@ -1115,7 +1116,7 @@ html>body .gwt-DecoratedTabBar .gwt-TabBarItem-selected .tabTopRight {
 }
 
 .convCb {
-	width: 1.5em;
+	width: 1.8em;
 }
 
 .convStar {
@@ -2320,32 +2321,32 @@ textarea {
 
 .starred {
 	background: url("../images/starred.gif") no-repeat;
-	padding: 1px 8px;
+	padding: 0px 10px 15px;
 }
 
 .unstarred {
 	background: url("../images/unstarred.gif") no-repeat;
-	padding: 1px 8px;
+	padding: 0px 10px 15px;
 }
 
 .forwarded {
 	background: url("../images/forwarded.png") no-repeat;
-	padding: 1px 8px;
+	padding: 0px 10px 15px;
 }
 
 .answered {
 	background: url("../images/answered.png") no-repeat;
-	padding: 1px 8px;
+	padding: 0px 10px 15px;
 }
 
 .forwardedanswered {
 	background: url("../images/forwardedanswered.png") no-repeat;
-	padding: 1px 8px;
+	padding: 0px 10px 15px;
 }
 
 .attachment {
 	background: url("../images/paperclip.gif") no-repeat;
-	padding: 1px 8px;
+	padding: 0px 10px 15px;
 }
 
 .mime {
@@ -2355,10 +2356,18 @@ textarea {
 
 .close {
 	background: url("../images/x.gif") no-repeat;
-	padding: 1px 5px;
+	padding: 1px 5px 10px;
 }
 
 .envelope {
 	background: url("../images/envelope.png") no-repeat;
-	padding: 3px 10px;
+	padding: 3px 10px 15px;
+}
+
+*:focus {
+	outline: none;
+}
+
+text-angular .popover {
+	display: none;
 }
