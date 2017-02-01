@@ -21,8 +21,14 @@ package org.minig.server.service.impl.helper.mime;
 import org.apache.james.mime4j.field.contentdisposition.parser.ContentDispositionParser;
 
 import javax.mail.internet.MimeUtility;
-import java.io.*;
-import java.util.*;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Encoder for <a href="http://tools.ietf.org/html/rfc2231">RFC2231</a> encoded parameters
@@ -45,24 +51,10 @@ import java.util.*;
  *
  *    TODO remove me after https://issues.apache.org/jira/browse/MIME4J-109 has been implemented
  */
-class RFC2231Decoder {
+final class RFC2231Decoder {
 
-	private static final byte[] decodingTable = new byte[128];
-	private static final byte[] encodingTable =
-			{
-					(byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7',
-					(byte)'8', (byte)'9', (byte)'A', (byte)'B', (byte)'C', (byte)'D', (byte)'E', (byte)'F'
-			};
-
-	static {
-		for (int i = 0; i < encodingTable.length; i++) {
-			decodingTable[encodingTable[i]] = (byte)i;
-		}
-	}
-
-	private Set<String> multisegmentNames = new HashSet<>();
-	private String dispositionType = "";
-	private Map<String, String> parameters = new HashMap<String, String>();
+	private final Set<String> multisegmentNames = new HashSet<>();
+	private final Map<String, String> parameters = new HashMap<>();
 
 	/**
 	 * A map containing the segments for all not-yet-processed multi-segment
@@ -73,34 +65,26 @@ class RFC2231Decoder {
 	 * encoded segments. The segments are decoded in order in the
 	 * combineMultisegmentNames method.
 	 */
-	private Map<String, Object> segmentList = new HashMap<>();
+	private final Map<String, Object> segmentList = new HashMap<>();
 
 	public String parse(String contentDisposition) {
-		String body = contentDisposition;
-		ContentDispositionParser parser = new ContentDispositionParser(new StringReader(body));
+		ContentDispositionParser parser = new ContentDispositionParser(new StringReader(contentDisposition));
 		try {
 			parser.parseAll();
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage(), e);
+		} catch (Exception exception) {
+			throw new IllegalArgumentException(String.format("could not parse content disposition '%s'", contentDisposition), exception);
 		}
 
-		final String dispositionType = parser.getDispositionType();
+		List<String> paramNames = parser.getParamNames();
+		List<String> paramValues = parser.getParamValues();
 
-		if (dispositionType != null) {
-			this.dispositionType = dispositionType.toLowerCase(Locale.US);
-			List<String> paramNames = parser.getParamNames();
-			List<String> paramValues = parser.getParamValues();
-
-			if (paramNames != null && paramValues != null) {
-				final int len = Math.min(paramNames.size(), paramValues.size());
-				for (int i = 0; i < len; i++) {
-					String paramName = paramNames.get(i).toLowerCase(Locale.US);
-					String paramValue = paramValues.get(i);
-					putParameter(paramName, paramValue);
-				}
-				combineMultisegmentParameters();
-			}
+		final int len = Math.min(paramNames.size(), paramValues.size());
+		for (int i = 0; i < len; i++) {
+			String paramName = paramNames.get(i).toLowerCase(Locale.US);
+			String paramValue = paramValues.get(i);
+			putParameter(paramName, paramValue);
 		}
+		combineMultisegmentParameters();
 
 		return parameters.get("filename");
 	}
@@ -108,32 +92,28 @@ class RFC2231Decoder {
 	/**
 	 * Decode RFC2231 parameter value with charset
 	 */
-	private static RFC2231Value decodeRFC2231Value(String value) {
+	private static RFC2231Value decodeRFC2231Value(String rawValue) {
+		String value = rawValue;
 		String charset;
 
 		RFC2231Value v = new RFC2231Value();
 		v.encodedValue = value;
 		v.value = value; // in case we fail to decode it
 
-		try {
-			int charsetDelimiter = value.indexOf('\'');
-			if (charsetDelimiter <= 0) {
-				return v; // not encoded correctly? return as is.
-			}
-
-			charset = value.substring(0, charsetDelimiter);
-			int langDelimiter = value.indexOf('\'', charsetDelimiter + 1);
-			if (langDelimiter < 0) {
-				return v; // not encoded correctly? return as is.
-			}
-
-			value = value.substring(langDelimiter + 1);
-			v.charset = charset;
-			v.value = decodeRFC2231Bytes(value, charset);
-		} catch (Exception e) {
-			// should not happen because of isDecodingSupported check above
-			throw new RuntimeException(e.getMessage(), e);
+		int charsetDelimiter = value.indexOf('\'');
+		if (charsetDelimiter <= 0) {
+			return v; // not encoded correctly? return as is.
 		}
+
+		charset = value.substring(0, charsetDelimiter);
+		int langDelimiter = value.indexOf('\'', charsetDelimiter + 1);
+		if (langDelimiter < 0) {
+			return v; // not encoded correctly? return as is.
+		}
+
+		value = value.substring(langDelimiter + 1);
+		v.charset = charset;
+		v.value = decodeRFC2231Bytes(value, charset);
 		return v;
 	}
 
@@ -141,37 +121,37 @@ class RFC2231Decoder {
 	 * Decode RFC2231 parameter value without charset
 	 */
 	private static String decodeRFC2231Value(String value, String charset) {
-		try {
-			value = decodeRFC2231Bytes(value, charset);
-		} catch (Exception e) {
-			// should not happen because of isDecodingSupported check above
-			throw new RuntimeException(e.getMessage(), e);
-		}
-		return value;
+		return decodeRFC2231Bytes(value, charset);
 	}
 
 	/**
 	 * Decode the encoded bytes in RFC2231 value using the specified charset.
 	 */
-	private static String decodeRFC2231Bytes(String value, final String charset) throws UnsupportedEncodingException {
+	private static String decodeRFC2231Bytes(String value, final String charset) {
 		/*
 		 * Decode the ASCII characters in value into an array of bytes, and then
 		 * convert the bytes to a String using the specified charset. We'll
 		 * never need more bytes than encoded characters, so use that to size
 		 * the array.
 		 */
-		byte[] b = new byte[value.length()];
-		int i, bi;
-		for (i = 0, bi = 0; i < value.length(); i++) {
-			char c = value.charAt(i);
+		byte[] bytes = new byte[value.length()];
+		int idx;
+		int bytesIdx;
+
+		for (idx = 0, bytesIdx = 0; idx < value.length(); idx++) {
+			char c = value.charAt(idx);
 			if (c == '%') {
-				String hex = value.substring(i + 1, i + 3);
+				String hex = value.substring(idx + 1, idx + 3);
 				c = (char) Integer.parseInt(hex, 16);
-				i += 2;
+				idx += 2;
 			}
-			b[bi++] = (byte) c;
+			bytes[bytesIdx++] = (byte) c;
 		}
-		return new String(b, 0, bi, MimeUtility.javaCharset(charset));
+		try {
+			return new String(bytes, 0, bytesIdx, MimeUtility.javaCharset(charset));
+		} catch (UnsupportedEncodingException exception) {
+			throw new IllegalArgumentException(String.format(" unsupported encoding: '%s'", exception.getMessage()), exception);
+		}
 	}
 
 	/**
@@ -184,32 +164,33 @@ class RFC2231Decoder {
 	 * parameter.
 	 */
 	private void putParameter(String name, String value) {
-		int star = name.indexOf('*');
+		String key = name;
+		int star = key.indexOf('*');
 		if (star < 0) {
 			// single parameter, unencoded value
-			parameters.put(name, value);
-		} else if (star == name.length() - 1) {
+			parameters.put(key, value);
+		} else if (star == key.length() - 1) {
 			// single parameter, encoded value
-			name = name.substring(0, star);
+			key = key.substring(0, star);
 			RFC2231Value v = decodeRFC2231Value(value);
-			parameters.put(name, v.value);
+			parameters.put(key, v.value);
 		} else {
 			// multiple segments
-			String paramName = name.substring(0, star);
+			String paramName = key.substring(0, star);
 			multisegmentNames.add(paramName);
 			parameters.put(paramName, "");
 
-			if (name.endsWith("*")) {
+			if (key.endsWith("*")) {
 				// encoded value
 				RFC2231Value valObject = new RFC2231Value();
 				valObject.encodedValue = value;
 				valObject.value = value; // default; decoded later
 
-				String segmentName = name.substring(0, name.length() - 1);
+				String segmentName = key.substring(0, key.length() - 1);
 				segmentList.put(segmentName, valObject);
 			} else {
 				// plain value
-				segmentList.put(name, value);
+				segmentList.put(key, value);
 			}
 		}
 	}
@@ -231,7 +212,6 @@ class RFC2231Decoder {
 			int segment;
 			for (segment = 0;; segment++) {
 				segmentName = name + "*" + segment;
-				segmentValue = null;
 				Object v = segmentList.get(segmentName);
 
 				if (v == null) // out of segments
@@ -239,7 +219,6 @@ class RFC2231Decoder {
 
 				if (v instanceof RFC2231Value) {
 					String encodedValue = ((RFC2231Value) v).encodedValue;
-					segmentValue = encodedValue; // in case of exception
 
 					if (segment == 0) {
 						// the first segment specifies charset for all other encoded segments
@@ -247,11 +226,6 @@ class RFC2231Decoder {
 						charset = vnew.charset;
 						segmentValue = vnew.value;
 					} else {
-						if (charset == null) {
-							// should never happen
-							multisegmentNames.remove(name);
-							break;
-						}
 						segmentValue = decodeRFC2231Value(encodedValue, charset);
 					}
 				} else {
@@ -259,20 +233,10 @@ class RFC2231Decoder {
 				}
 
 				paramValue.append(segmentValue);
-				//segmentList.remove(segmentName);
 			}
 
-			if (segment == 0) {
-				// didn't find any segments at all
-				parameters.remove(name);
-			} else {
-				parameters.put(name, paramValue.toString());
-			}
+			parameters.put(name, paramValue.toString());
 		}
-
-		// clear out the set of names and segments
-		multisegmentNames.clear();
-		segmentList.clear();
 	}
 
 	/**
