@@ -13,13 +13,13 @@ import static org.junit.Assert.assertThat;
 /**
  * @author Kamill Sokol
  */
-public class Mime4jAttachmentDataExtractorTest {
+public class Mime4JAttachmentExtractorTest {
 
 	@Test
 	public void testBinaryAttachment() throws Exception {
 		MessageImpl message = Mime4jTestHelper.freshMessageImpl(TestConstants.MULTIPART_ATTACHMENT_BINARY);
 
-		List<Mime4jAttachment> attachments = Mime4jAttachmentDataExtractor.extract(message);
+		List<Mime4jAttachment> attachments = Mime4jAttachmentExtractor.extract(message);
 		assertThat(attachments, hasSize(1));
 
 		Mime4jAttachment attachment = attachments.get(0);
@@ -32,7 +32,7 @@ public class Mime4jAttachmentDataExtractorTest {
 	public void testPlaintextAttachment() throws Exception {
 		MessageImpl message = Mime4jTestHelper.freshMessageImpl(TestConstants.MULTIPART_ATTACHMENT_PLAINTEXT);
 
-		List<Mime4jAttachment> attachments = Mime4jAttachmentDataExtractor.extract(message);
+		List<Mime4jAttachment> attachments = Mime4jAttachmentExtractor.extract(message);
 		assertThat(attachments, hasSize(1));
 
 		Mime4jAttachment attachment = attachments.get(0);
@@ -45,7 +45,7 @@ public class Mime4jAttachmentDataExtractorTest {
 	public void testRFC2231() throws Exception {
 		MessageImpl message = Mime4jTestHelper.freshMessageImpl(TestConstants.MULTIPART_RFC_2231);
 
-		List<Mime4jAttachment> attachments = Mime4jAttachmentDataExtractor.extract(message);
+		List<Mime4jAttachment> attachments = Mime4jAttachmentExtractor.extract(message);
 		assertThat(attachments, hasSize(1));
 
 		Mime4jAttachment attachment = attachments.get(0);
@@ -58,7 +58,7 @@ public class Mime4jAttachmentDataExtractorTest {
 	public void testRFC2231_2() throws Exception {
 		MessageImpl message = Mime4jTestHelper.freshMessageImpl(TestConstants.MULTIPART_RFC_2231_2);
 
-		List<Mime4jAttachment> attachments = Mime4jAttachmentDataExtractor.extract(message);
+		List<Mime4jAttachment> attachments = Mime4jAttachmentExtractor.extract(message);
 		assertThat(attachments, hasSize(1));
 
 		Mime4jAttachment attachment = attachments.get(0);

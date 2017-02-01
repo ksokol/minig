@@ -18,8 +18,8 @@ import java.util.List;
 /**
  * @author Kamill Sokol
  */
-final class Mime4jAttachmentDataExtractor {
-	private Mime4jAttachmentDataExtractor() {}
+final class Mime4jAttachmentExtractor {
+	private Mime4jAttachmentExtractor() {}
 
 	static List<Mime4jAttachment> extract(MessageImpl message) {
 		if (!message.isMultipart()) {

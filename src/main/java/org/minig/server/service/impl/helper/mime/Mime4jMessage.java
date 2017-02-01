@@ -220,7 +220,7 @@ public class Mime4jMessage {
 	}
 
 	public List<Mime4jAttachment> getAttachments() {
-		List<Mime4jAttachment> mime4jAttachments = Mime4jAttachmentDataExtractor.extract(message);
+		List<Mime4jAttachment> mime4jAttachments = Mime4jAttachmentExtractor.extract(message);
 		for (Mime4jAttachment mime4jAttachmentMetadata : mime4jAttachments) {
             mime4jAttachmentMetadata.setId(id);
 		}
