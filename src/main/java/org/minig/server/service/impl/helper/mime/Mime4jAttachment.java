@@ -10,22 +10,25 @@ import java.util.Objects;
  * @author Kamill Sokol
  */
 public final class Mime4jAttachment {
-    private final CompositeAttachmentId id;
+
+    private CompositeId id;
+    private final String filename;
     private final String mimeType;
     private final InputStream data;
 
-    public Mime4jAttachment(CompositeId compositeId, String filename, String mimeType, InputStream data) {
-        Objects.requireNonNull(compositeId);
+    public Mime4jAttachment(String filename, String mimeType, InputStream data) {
         Objects.requireNonNull(filename);
         Objects.requireNonNull(mimeType);
-        Objects.requireNonNull(data);
-        this.id = new CompositeAttachmentId(compositeId.getFolder(), compositeId.getMessageId(), filename);
+        this.filename = filename;
         this.mimeType = mimeType;
         this.data = data;
     }
 
     public CompositeAttachmentId getId() {
-        return id;
+        if(id == null) {
+            throw new IllegalStateException("id is null");
+        }
+        return new CompositeAttachmentId(id.getFolder(), id.getMessageId(), filename);
     }
 
     public String getMimeType() {
@@ -34,5 +37,9 @@ public final class Mime4jAttachment {
 
     public InputStream getData() {
         return data;
+    }
+
+    public void setId(CompositeId id) {
+        this.id = id;
     }
 }

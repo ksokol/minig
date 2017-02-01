@@ -224,12 +224,14 @@ public class Mime4jMessage {
 		List<Mime4jAttachmentData> metadata = Mime4jAttachmentDataExtractor.extract(message);
 		List<Mime4jAttachment> attachments = new ArrayList<>();
 		for (Mime4jAttachmentData mime4jAttachmentMetadata : metadata) {
-			attachments.add(new Mime4jAttachment(
-			        id,
+            Mime4jAttachment mime4jAttachment = new Mime4jAttachment(
                     mime4jAttachmentMetadata.getFilename(),
                     mime4jAttachmentMetadata.getMimeType(),
                     mime4jAttachmentMetadata.getData()
-            ));
+            );
+
+            mime4jAttachment.setId(id);
+            attachments.add(mime4jAttachment);
 		}
 		return attachments;
 	}
