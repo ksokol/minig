@@ -1,18 +1,5 @@
 package org.minig.server.service.impl.helper.mime;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.activation.DataSource;
-
 import org.apache.james.mime4j.dom.Body;
 import org.apache.james.mime4j.dom.Entity;
 import org.apache.james.mime4j.dom.Header;
@@ -30,6 +17,18 @@ import org.apache.james.mime4j.stream.Field;
 import org.apache.james.mime4j.stream.RawField;
 import org.minig.server.service.CompositeId;
 import org.springframework.util.StringUtils;
+
+import javax.activation.DataSource;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Kamill Sokol
@@ -221,19 +220,11 @@ public class Mime4jMessage {
 	}
 
 	public List<Mime4jAttachment> getAttachments() {
-		List<Mime4jAttachmentData> metadata = Mime4jAttachmentDataExtractor.extract(message);
-		List<Mime4jAttachment> attachments = new ArrayList<>();
-		for (Mime4jAttachmentData mime4jAttachmentMetadata : metadata) {
-            Mime4jAttachment mime4jAttachment = new Mime4jAttachment(
-                    mime4jAttachmentMetadata.getFilename(),
-                    mime4jAttachmentMetadata.getMimeType(),
-                    mime4jAttachmentMetadata.getData()
-            );
-
-            mime4jAttachment.setId(id);
-            attachments.add(mime4jAttachment);
+		List<Mime4jAttachment> mime4jAttachments = Mime4jAttachmentDataExtractor.extract(message);
+		for (Mime4jAttachment mime4jAttachmentMetadata : mime4jAttachments) {
+            mime4jAttachmentMetadata.setId(id);
 		}
-		return attachments;
+		return mime4jAttachments;
 	}
 
     public void addAttachment(DataSource dataSource) {

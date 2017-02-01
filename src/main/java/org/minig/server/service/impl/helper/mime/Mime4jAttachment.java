@@ -12,7 +12,7 @@ import java.util.Objects;
 public final class Mime4jAttachment {
 
     private CompositeId id;
-    private final String filename;
+    private String filename;
     private final String mimeType;
     private final InputStream data;
 
@@ -29,6 +29,15 @@ public final class Mime4jAttachment {
             throw new IllegalStateException("id is null");
         }
         return new CompositeAttachmentId(id.getFolder(), id.getMessageId(), filename);
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    @Deprecated
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
     public String getMimeType() {

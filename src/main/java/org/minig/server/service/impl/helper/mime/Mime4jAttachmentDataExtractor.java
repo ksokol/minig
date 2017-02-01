@@ -1,7 +1,10 @@
 package org.minig.server.service.impl.helper.mime;
 
 import org.apache.james.mime4j.codec.DecoderUtil;
-import org.apache.james.mime4j.dom.*;
+import org.apache.james.mime4j.dom.Entity;
+import org.apache.james.mime4j.dom.Message;
+import org.apache.james.mime4j.dom.Multipart;
+import org.apache.james.mime4j.dom.SingleBody;
 import org.apache.james.mime4j.message.BodyPart;
 import org.apache.james.mime4j.message.MessageImpl;
 import org.apache.james.mime4j.stream.Field;
@@ -9,7 +12,6 @@ import org.apache.james.mime4j.stream.Field;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,16 +21,16 @@ import java.util.List;
 final class Mime4jAttachmentDataExtractor {
 	private Mime4jAttachmentDataExtractor() {}
 
-	static List<Mime4jAttachmentData> extract(MessageImpl message) {
+	static List<Mime4jAttachment> extract(MessageImpl message) {
 		if (!message.isMultipart()) {
 			return Collections.emptyList();
 		}
 		return extractFromMultipart((Multipart) message.getBody());
 	}
 
-    private static List<Mime4jAttachmentData> extractFromMultipart(Multipart multipart) {
+    private static List<Mime4jAttachment> extractFromMultipart(Multipart multipart) {
         List<BodyPart> rawAttachments = getAttachments(multipart);
-        List<Mime4jAttachmentData> attachments = new ArrayList<>(rawAttachments.size());
+        List<Mime4jAttachment> attachments = new ArrayList<>(rawAttachments.size());
         for (BodyPart bodyPart : rawAttachments) {
             attachments.addAll(toMime4jAttachment(bodyPart));
         }
@@ -56,56 +58,55 @@ final class Mime4jAttachmentDataExtractor {
 		return attachments;
 	}
 
-	private static List<Mime4jAttachmentData> toMime4jAttachment(BodyPart bodyPart) {
+	private static List<Mime4jAttachment> toMime4jAttachment(BodyPart bodyPart) {
 		if(bodyPart.getBody() instanceof SingleBody) {
-			return Arrays.asList(extractFromSingleBody(bodyPart));
+			return Collections.singletonList(extractFromSingleBody(bodyPart));
 		}
         if(bodyPart.getBody() instanceof MessageImpl) {
-            Mime4jAttachmentData mime4jAttachmentData = extractFromMessage((MessageImpl) bodyPart.getBody());
+            Mime4jAttachment mime4jAttachmentData = extractFromMessage((MessageImpl) bodyPart.getBody());
             if(mime4jAttachmentData.getFilename() == null) {
                 mime4jAttachmentData.setFilename(getFileName(bodyPart));
             }
-            return Arrays.asList(mime4jAttachmentData);
+            return Collections.singletonList(mime4jAttachmentData);
         }
 		throw new IllegalArgumentException("unknown bodyPart " + bodyPart.getClass());
 	}
 
-	private static Mime4jAttachmentData extractFromSingleBody(BodyPart bodyPart) {
+	private static Mime4jAttachment extractFromSingleBody(BodyPart bodyPart) {
 		SingleBody source = (SingleBody) bodyPart.getBody();
-		Mime4jAttachmentData target = new Mime4jAttachmentData();
-
-		target.setMimeType(bodyPart.getMimeType());
-        target.setFilename(getFileName(bodyPart));
+        String mimeType = bodyPart.getMimeType();
+        String filename = getFileName(bodyPart);
+        InputStream data;
 
 		try(InputStream in = source.getInputStream()) {
-			target.setData(in);
+			data = in;
 		} catch (IOException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 
-		return target;
+        return new Mime4jAttachment(filename, mimeType, data);
 	}
 
-    private static Mime4jAttachmentData extractFromMessage(Message message) {
+    private static Mime4jAttachment extractFromMessage(Message message) {
         if("text/plain".equals(message.getMimeType())) {
             return extractFromSingleBody(message);
         }
         return null;
     }
 
-    private static Mime4jAttachmentData extractFromSingleBody(Message message) {
+    private static Mime4jAttachment extractFromSingleBody(Message message) {
         SingleBody source = (SingleBody) message.getBody();
-        Mime4jAttachmentData target = new Mime4jAttachmentData();
-
-        target.setMimeType(message.getMimeType());
-        target.setFilename(String.format("%s.eml", message.getSubject()));
+        String mimeType = message.getMimeType();
+        String filename = String.format("%s.eml", message.getSubject());
+        InputStream data;
 
         try(InputStream in = source.getInputStream()) {
-            target.setData(source.getInputStream());
+            data = in;
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
-        return target;
+
+        return new Mime4jAttachment(filename, mimeType, data);
     }
 
     private static String getFileName(BodyPart bodyPart) {
