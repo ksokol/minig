@@ -98,10 +98,7 @@ final class Mime4jAttachmentDataExtractor {
         Mime4jAttachmentData target = new Mime4jAttachmentData();
 
         target.setMimeType(message.getMimeType());
-
-        if(message.getSubject() != null) {
-            target.setFilename(String.format("%s.eml", message.getSubject()));
-        }
+        target.setFilename(String.format("%s.eml", message.getSubject()));
 
         try(InputStream in = source.getInputStream()) {
             target.setData(source.getInputStream());
