@@ -2,13 +2,13 @@ package org.minig.server.service.submission;
 
 import org.minig.MailAuthentication;
 import org.minig.server.service.impl.MailContext;
-import org.minig.server.service.impl.helper.MessageMapper;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
@@ -23,9 +23,6 @@ public class Submission {
 
     private static final String DSN0 = "mail.smtp.dsn.notify";
     private static final String DSN1 = "mail.smtp.dsn.ret";
-
-    @Autowired
-    private MessageMapper messageMapper;
 
     @Autowired
     private MailContext mailContext;
@@ -48,7 +45,7 @@ public class Submission {
 
     private void submitInternal(Mime4jMessage message) throws MessagingException {
         JavaMailSender mailSender = javaMailSenderFactory.newInstance(mailContext.getSession());
-        MimeMessage target = messageMapper.toMimeMessage(message);
+        MimeMessage target = message.toMessage();
         Session session = mailContext.getSession();
         Properties properties = session.getProperties();
 
@@ -73,7 +70,7 @@ public class Submission {
         }
     }
 
-    private void clean(MimeMessage message) throws MessagingException {
+    private void clean(Message message) throws MessagingException {
         message.removeHeader("X-Mozilla-Draft-Info");
     }
 }

@@ -20,6 +20,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<javamail.version>1.5.2</javamail.version>
+		<mime4j.version>0.8.0</mime4j.version>
 	</properties>
 
 	<build>
@@ -214,12 +215,12 @@
 		<dependency>
 			<groupId>org.apache.james</groupId>
 			<artifactId>apache-mime4j-core</artifactId>
-			<version>0.7.2</version>
+			<version>${mime4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.james</groupId>
 			<artifactId>apache-mime4j-dom</artifactId>
-			<version>0.7.2</version>
+			<version>${mime4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>

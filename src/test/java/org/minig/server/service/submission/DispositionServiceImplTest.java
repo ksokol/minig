@@ -8,7 +8,6 @@ import org.minig.server.service.CompositeId;
 import org.minig.server.service.MimeMessageBuilder;
 import config.ServiceTestConfig;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
-import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
 import org.minig.test.javamail.MailboxHolder;
@@ -58,7 +57,7 @@ public class DispositionServiceImplTest {
         assertThat(recipientInbox.getNewMessageCount(), is(1));
 
         Message message = recipientInbox.get(0);
-        Mime4jMessage mime4jMessage = Mime4jTestHelper.convertMimeMessage(message);
+        Mime4jMessage mime4jMessage = new Mime4jMessage(message);
 
         assertThat(mime4jMessage.getSubject(), is("Return Receipt (displayed) - Disposition Notification Test"));
         assertThat(mime4jMessage.getPlain(), is("This is a Return Receipt for the mail that you sent to testuser@localhost. \r\n\r\n" +

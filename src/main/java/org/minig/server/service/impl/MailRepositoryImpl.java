@@ -19,7 +19,6 @@ import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import javax.mail.search.MessageIDTerm;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -111,9 +110,7 @@ class MailRepositoryImpl implements MailRepository {
             Message[] search = storeFolder.search(new MessageIDTerm(messageId));
 
             if (search != null && search.length == 1 && search[0] != null) {
-                Mime4jMessage mime4jMessage = mapper.toMessageImpl(search[0]);
-                mime4jMessage.setId(new CompositeId(folder, messageId));
-                return mime4jMessage;
+                return new Mime4jMessage(search[0]);
             }
         } catch (Exception e) {
             throw new RepositoryException(e.getMessage(), e);
@@ -237,7 +234,7 @@ class MailRepositoryImpl implements MailRepository {
         Assert.hasText(folder, "folder is null");
 
         try {
-            MimeMessage target = mapper.toMimeMessage(message);
+            Message target = message.toMessage();
             target.saveChanges();
             Folder storeFolder = mailContext.openFolder(folder);
             storeFolder.appendMessages(new Message[] { target });
