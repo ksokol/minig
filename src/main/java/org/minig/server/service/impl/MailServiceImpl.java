@@ -254,7 +254,7 @@ public class MailServiceImpl implements MailService {
             }
         }
 
-        mimeMessage.getMessage().setSubject(message.getSubject());
+        mimeMessage.setSubject(message.getSubject());
         mimeMessage.setHtml(message.getBody().getHtml());
         mimeMessage.setPlain(message.getBody().getPlain());
 

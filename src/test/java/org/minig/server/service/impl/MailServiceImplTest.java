@@ -24,7 +24,6 @@ import org.minig.server.service.NotFoundException;
 import config.ServiceTestConfig;
 import org.minig.server.service.SmtpAndImapMockServer;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
-import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
 import org.minig.test.javamail.MailboxHolder;
@@ -470,7 +469,7 @@ public class MailServiceImplTest {
 
         Mailbox messages = MailboxHolder.get(TestConstants.MOCK_USER, "INBOX.Drafts");
 
-        Mime4jMessage mime4jMessage = Mime4jTestHelper.convertMimeMessage(messages.getUnread().get(0));
+        Mime4jMessage mime4jMessage = new Mime4jMessage(messages.getUnread().get(0));
 
         assertThat(mime4jMessage.isDSN(), is(false));
         assertThat(mime4jMessage.isReturnReceipt(), is(false));

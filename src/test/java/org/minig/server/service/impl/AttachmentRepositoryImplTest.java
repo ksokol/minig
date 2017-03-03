@@ -39,6 +39,7 @@ import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -223,7 +224,7 @@ public class AttachmentRepositoryImplTest {
         MailAttachmentList readMetadata2 = uut.readMetadata(appendAttachmentId);
         MailMessage read = mailRepository.read(id);
 
-        assertThat(read.getBody().getPlain(), nullValue());
+        assertThat(read.getBody().getPlain(), isEmptyString());
         assertThat(read.getBody().getHtml().length(), greaterThanOrEqualTo(173)); //ignore line endings
         assertThat(read.getBody().getHtml(), containsString("</body>"));
 
@@ -246,7 +247,7 @@ public class AttachmentRepositoryImplTest {
         assertThat(read.getBody().getPlain().length(), greaterThanOrEqualTo(70)); //ignore line endings
         assertTrue(read.getBody().getPlain().contains("row with text"));
 
-        assertTrue(read.getBody().getHtml() == null);
+        assertThat(read.getBody().getHtml(), isEmptyString());
 
         assertEquals(1, readMetadata2.getAttachmentMetadata().size());
         assertEquals("folder.gif", readMetadata2.getAttachmentMetadata().get(0).getFileName());

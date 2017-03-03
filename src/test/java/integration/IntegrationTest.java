@@ -10,7 +10,6 @@ import org.minig.Starter;
 import org.minig.server.TestConstants;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
-import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
 import org.minig.test.javamail.MailboxHolder;
@@ -132,7 +131,7 @@ public class IntegrationTest {
                 .andDo(print())
                 .andReturn();
 
-        Mime4jMessage mime4jMessage = Mime4jTestHelper.convertMimeMessage(draftBox.get(0));
+        Mime4jMessage mime4jMessage = new Mime4jMessage(draftBox.get(0));
 
         assertThat(draftBox, hasSize(1));
         assertThat(mime4jMessage.getSender(), is("testuser@localhost"));

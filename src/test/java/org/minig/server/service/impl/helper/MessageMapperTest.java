@@ -1,7 +1,5 @@
 package org.minig.server.service.impl.helper;
 
-import org.hamcrest.Matchers;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.minig.server.MailMessage;
@@ -10,33 +8,25 @@ import org.minig.server.TestConstants;
 import org.minig.server.converter.MessageToCompositeAttachmentIdConverter;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.MimeMessageBuilder;
-import org.minig.server.service.impl.MailContext;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
-import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
 import org.springframework.context.support.ConversionServiceFactoryBean;
 import org.springframework.core.convert.converter.Converter;
 
-import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Kamill Sokol
@@ -44,7 +34,6 @@ import static org.mockito.Mockito.when;
 public class MessageMapperTest {
 
     private static MessageMapper uut = new MessageMapper();
-    private static MailContext mailContextMock = mock(MailContext.class);
 
     @BeforeClass
     public static void beforeClass() {
@@ -57,12 +46,6 @@ public class MessageMapperTest {
         conversionServiceFactoryBean.afterPropertiesSet();
 
         uut.setConversionService(conversionServiceFactoryBean.getObject());
-    }
-
-    @Before
-    public void before() {
-        uut.setMailContext(mailContextMock);
-        reset(mailContextMock);
     }
 
     @Test
@@ -214,7 +197,7 @@ public class MessageMapperTest {
     }
 
     @Test
-    public void testToMime4jMessage() {
+    public void testToMime4jMessage() throws MessagingException {
         MailMessage mailMessage = new MailMessage();
         MailMessageBody mailMessageBody = new MailMessageBody();
         mailMessageBody.setPlain("plain");
@@ -225,7 +208,7 @@ public class MessageMapperTest {
         Mime4jMessage mime4jMessage = uut.toMime4jMessage(mailMessage);
         assertThat(mime4jMessage.getPlain(), is("plain"));
         assertThat(mime4jMessage.getInReplyTo(), is("inReplyTo"));
-        assertThat(mime4jMessage.getMessage().getHeader().getField("References").getBody(), is("inReplyTo"));
+        assertThat(mime4jMessage.toMessage().getHeader("References")[0], is("inReplyTo"));
         assertThat(mime4jMessage.getForwardedMessageId(), is("forwardId"));
     }
 
@@ -237,26 +220,6 @@ public class MessageMapperTest {
         assertThat(mime4jMessage.getPlain(), is(""));
         assertThat(mime4jMessage.getInReplyTo(), nullValue());
         assertThat(mime4jMessage.getForwardedMessageId(), nullValue());
-    }
-
-    @Test
-    public void testToMimeMessage() throws Exception {
-        when(mailContextMock.getSession()).thenReturn(null);
-
-        Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.PLAIN);
-        mime4jMessage.setPlain("plain");
-        mime4jMessage.setHtml("html");
-
-        MimeMessage mimeMessage = uut.toMimeMessage(mime4jMessage);
-
-        assertThat(mimeMessage.getContent(), instanceOf(MimeMultipart.class));
-
-        MimeMultipart multiPart = (MimeMultipart) mimeMessage.getContent();
-        BodyPart plainPart = multiPart.getBodyPart(0);
-        BodyPart htmlPart = multiPart.getBodyPart(1);
-
-        assertThat(htmlPart.getContent(), Matchers.<Object>is("plain"));
-        assertThat(plainPart.getContent(), Matchers.<Object>is("html"));
     }
 
     @Test

@@ -1,15 +1,9 @@
 package org.minig.server.service.impl.helper;
 
-import org.apache.james.mime4j.dom.MessageBuilder;
-import org.apache.james.mime4j.dom.MessageWriter;
-import org.apache.james.mime4j.message.MessageImpl;
-import org.apache.james.mime4j.message.MessageServiceFactoryImpl;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
 import org.minig.server.MailMessageBody;
 import org.minig.server.service.CompositeAttachmentId;
-import org.minig.server.service.impl.MailContext;
-import org.minig.server.service.impl.helper.BodyConverter.BodyType;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -24,16 +18,18 @@ import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.minig.MinigConstants.FORWARDED;
+import static org.minig.MinigConstants.FORWARDED_MESSAGE_ID;
+import static org.minig.MinigConstants.IN_REPLY_TO;
+import static org.minig.MinigConstants.MDN_SENT;
+import static org.minig.MinigConstants.X_DRAFT_INFO;
 import static org.springframework.core.convert.TypeDescriptor.collection;
 import static org.springframework.core.convert.TypeDescriptor.forObject;
 import static org.springframework.core.convert.TypeDescriptor.valueOf;
@@ -44,19 +40,8 @@ import static org.springframework.core.convert.TypeDescriptor.valueOf;
 @Component
 public class MessageMapper {
 
-    private static final String X_PRIORITY = "X-PRIORITY";
-    private static final String X_DRAFT_INFO = "X-Mozilla-Draft-Info";
     private static final Pattern RECEIPT = Pattern.compile(".*receipt=(1);?.*");
     private static final Pattern DSN = Pattern.compile(".*DSN=(1);?.*");
-    private static final String MDN_SENT = "$MDNSent";
-    private static final String FORWARDED = "$Forwarded";
-    private static final String IN_REPLY_TO = "In-Reply-To";
-    private static final String FORWARDED_MESSAGE_ID = "X-Forwarded-Message-Id";
-
-    // TODO
-    private MessageServiceFactoryImpl messageServiceFactory = new MessageServiceFactoryImpl();
-
-    private MailContext mailContext;
 
     private ConversionService conversionService;
 
@@ -126,45 +111,6 @@ public class MessageMapper {
 
         if (header != null && header.length == 1) {
             cm.setForwardedMessageId(header[0]);
-        }
-    }
-
-    // TODO
-	@Deprecated
-    public Mime4jMessage toMessageImpl(Message msg) {
-        try {
-            // TODO
-            MessageBuilder builder = messageServiceFactory.newMessageBuilder();
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-
-            msg.writeTo(output);
-
-            InputStream decodedInput = new ByteArrayInputStream((output).toByteArray());
-
-            MessageImpl parseMessage = (MessageImpl) builder.parseMessage(decodedInput);
-
-            return new Mime4jMessage(parseMessage);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-    }
-
-    // TODO
-    public MimeMessage toMimeMessage(Mime4jMessage msg) {
-        try {
-            // TODO
-            MessageWriter newMessageWriter = messageServiceFactory.newMessageWriter();
-
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            newMessageWriter.writeMessage(msg.getMessage(), out);
-
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(out.toByteArray());
-
-            MimeMessage mimeMessage = new MimeMessage(mailContext.getSession(), byteArrayInputStream);
-
-            return mimeMessage;
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
@@ -306,12 +252,12 @@ public class MessageMapper {
                     int endIndex = next.length();
 
                     for (int i = 0; i < next.length(); i++) {
-                        switch(next.charAt(i)) {
-                        case '<':
-                            startIndex = i + 1;
-                            break;
-                        case '>':
-                            endIndex = i;
+                        switch (next.charAt(i)) {
+                            case '<':
+                                startIndex = i + 1;
+                                break;
+                            case '>':
+                                endIndex = i;
                         }
                     }
 
@@ -329,12 +275,11 @@ public class MessageMapper {
     }
 
     private void setBody(MailMessage cm, Message msg) throws MessagingException, IOException {
-        String text = (String) BodyConverter.get(msg, BodyType.TEXT);
-        String html = (String) BodyConverter.get(msg, BodyType.HTML);
+        Mime4jMessage mime4jMessage = new Mime4jMessage(msg);
         MailMessageBody b = new MailMessageBody();
 
-        b.setPlain(text);
-        b.setHtml(html);
+        b.setPlain(mime4jMessage.getPlain());
+        b.setHtml(mime4jMessage.getHtml());
         cm.setBody(b);
     }
 
@@ -496,17 +441,11 @@ public class MessageMapper {
     }
 
     public Mime4jMessage toMime4jMessage(MailMessage source) {
-        MessageBuilder newMessageBuilder = messageServiceFactory.newMessageBuilder();
-        MessageImpl message = (MessageImpl) newMessageBuilder.newMessage();
-        Mime4jMessage target = new Mime4jMessage(message);
-
-        target.setId(source);
+        Mime4jMessage target = new Mime4jMessage(source);
 
         if (source.getBody() != null) {
-            target.setHtml(source.getBody().getHtml());
             target.setPlain(source.getBody().getPlain());
-        } else {
-            target.setPlain("");
+            target.setHtml(source.getBody().getHtml());
         }
 
         if (source.getSender() != null) {
@@ -536,7 +475,7 @@ public class MessageMapper {
 
         if (source.getTo() != null) {
             for (MailMessageAddress address : source.getTo()) {
-                if(address.getEmail() != null) {
+                if (address.getEmail() != null) {
                     target.addTo(address.getEmail());
                 }
             }
@@ -557,19 +496,14 @@ public class MessageMapper {
         }
 
         if (source.getHighPriority() != null && source.getHighPriority()) {
-            target.setHeader(X_PRIORITY, "1");
+            target.setHighPriority();
         }
 
-        target.setHeader(X_DRAFT_INFO, draftInfo);
+        target.setDraftInfo(draftInfo);
         target.setInReplyTo(source.getInReplyTo());
         target.setForwardedMessageId(source.getForwardedMessageId());
 
         return target;
-    }
-
-    @Autowired
-    public void setMailContext(MailContext mailContext) {
-        this.mailContext = mailContext;
     }
 
     @Autowired

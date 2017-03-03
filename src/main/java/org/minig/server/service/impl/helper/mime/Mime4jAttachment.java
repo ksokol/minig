@@ -2,33 +2,53 @@ package org.minig.server.service.impl.helper.mime;
 
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
-import org.springframework.util.Assert;
 
 import java.io.InputStream;
+import java.util.Objects;
 
 /**
  * @author Kamill Sokol
  */
 public final class Mime4jAttachment {
-	private final CompositeAttachmentId id;
-	private final Mime4jAttachmentData metadata;
 
-	public Mime4jAttachment(CompositeId compositeId, Mime4jAttachmentData metadata) {
-		Assert.notNull(compositeId);
-		Assert.notNull(metadata);
-		this.id = new CompositeAttachmentId(compositeId.getFolder(), compositeId.getMessageId(), metadata.getFilename());
-		this.metadata = metadata;
-	}
+    private CompositeId id;
+    private String filename;
+    private final String mimeType;
+    private final InputStream data;
 
-	public CompositeAttachmentId getId() {
-		return id;
-	}
+    public Mime4jAttachment(String filename, String mimeType, InputStream data) {
+        Objects.requireNonNull(filename);
+        Objects.requireNonNull(mimeType);
+        this.filename = filename;
+        this.mimeType = mimeType;
+        this.data = data;
+    }
 
-	public String getMimeType() {
-		return metadata.getMimeType();
-	}
+    public CompositeAttachmentId getId() {
+        if(id == null) {
+            throw new IllegalStateException("id is null");
+        }
+        return new CompositeAttachmentId(id.getFolder(), id.getMessageId(), filename);
+    }
 
-	public InputStream getData() {
-		return metadata.getData();
-	}
+    public String getFilename() {
+        return filename;
+    }
+
+    @Deprecated
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public InputStream getData() {
+        return data;
+    }
+
+    public void setId(CompositeId id) {
+        this.id = id;
+    }
 }

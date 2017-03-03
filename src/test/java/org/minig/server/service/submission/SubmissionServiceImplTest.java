@@ -1,12 +1,6 @@
 package org.minig.server.service.submission;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
-import org.apache.james.mime4j.MimeException;
+import config.ServiceTestConfig;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,9 +12,7 @@ import org.minig.server.MailMessageList;
 import org.minig.server.TestConstants;
 import org.minig.server.service.MailRepository;
 import org.minig.server.service.MimeMessageBuilder;
-import config.ServiceTestConfig;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
-import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
 import org.minig.test.javamail.MailboxHolder;
@@ -28,6 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
@@ -74,7 +71,7 @@ public class SubmissionServiceImplTest {
         assertThat(sentBox, hasSize(1));
         assertThat(inbox, hasSize(1));
 
-        Mime4jMessage mime4jMessage = Mime4jTestHelper.convertMimeMessage(inbox.get(0));
+        Mime4jMessage mime4jMessage = new Mime4jMessage(inbox.get(0));
 
         assertEquals("testuser@localhost", mime4jMessage.getSender());
         assertEquals("test subject", mime4jMessage.getSubject());
@@ -108,7 +105,7 @@ public class SubmissionServiceImplTest {
         assertThat(sentBox, hasSize(1));
         assertThat(inbox, hasSize(1));
 
-        Mime4jMessage mime4jMessage = Mime4jTestHelper.convertMimeMessage(inbox.get(0));
+        Mime4jMessage mime4jMessage = new Mime4jMessage(inbox.get(0));
 
         assertEquals("testuser@localhost", mime4jMessage.getSender());
         assertEquals("msg with forward", mime4jMessage.getSubject());
@@ -138,9 +135,9 @@ public class SubmissionServiceImplTest {
     }
 
     @Test
-    public void testSendDraftMessage() throws MessagingException, IOException, MimeException {
+    public void testSendDraftMessage() throws MessagingException, IOException {
         MimeMessage toBeSend = new MimeMessageBuilder().setFolder("INBOX.Drafts").build(TestConstants.MULTIPART_WITH_PLAIN_AND_ATTACHMENT);
-        Mime4jMessage mime4jMessageToBeSend = Mime4jTestHelper.convertMimeMessage(toBeSend);
+        Mime4jMessage mime4jMessageToBeSend = new Mime4jMessage(toBeSend);
 
         assertThat(mime4jMessageToBeSend.getAttachments(), hasSize(2));
 
@@ -167,7 +164,7 @@ public class SubmissionServiceImplTest {
         assertThat(sentBox, Matchers.hasSize(1));
         assertThat(draftsBox, Matchers.hasSize(0));
 
-		Mime4jMessage mime4jMessage = Mime4jTestHelper.convertMimeMessage(inbox.get(0));
+        Mime4jMessage mime4jMessage = new Mime4jMessage(inbox.get(0));
 
         assertEquals("testuser@localhost", mime4jMessage.getSender());
         assertEquals("msg with attachment", mime4jMessage.getSubject());
