@@ -1,4 +1,4 @@
-package org.minig.server.service.impl;
+package org.minig.server.service;
 
 import config.ServiceTestConfig;
 import org.junit.After;
@@ -10,9 +10,6 @@ import org.junit.runner.RunWith;
 import org.minig.server.MailFolder;
 import org.minig.server.MailFolderList;
 import org.minig.server.TestConstants;
-import org.minig.server.service.FolderService;
-import org.minig.server.service.MimeMessageBuilder;
-import org.minig.server.service.SmtpAndImapMockServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -29,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest
 @Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
-public class FolderServiceImplTest {
+public class FolderServiceTest {
 
     @Autowired
     private FolderService uut;
