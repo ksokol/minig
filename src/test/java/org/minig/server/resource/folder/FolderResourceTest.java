@@ -2,23 +2,19 @@ package org.minig.server.resource.folder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.core.IsEqual;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import config.RessourceTestConfig;
 import org.minig.server.MailFolder;
 import org.minig.server.MailFolderList;
 import org.minig.server.TestConstants;
 import org.minig.server.service.FolderService;
 import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.anyString;
@@ -33,79 +29,68 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
  * @author Kamill Sokol
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = RessourceTestConfig.class)
-@ActiveProfiles("test")
+@RunWith(SpringRunner.class)
+@WebMvcTest(controllers = FolderResource.class, secure = false)
 public class FolderResourceTest {
 
     private static final String PREFIX = "/1";
 
-    @Autowired
-    private WebApplicationContext wac;
+    @MockBean
+    private FolderService folderService;
 
     @Autowired
-    private FolderService folderServiceMock;
-
     private MockMvc mockMvc;
-
-    @Before
-    public void setUp() throws Exception {
-        mockMvc = webAppContextSetup(wac).build();
-        reset(folderServiceMock);
-    }
 
     @Test
     public void testFindBySubscribed_params() throws Exception {
-        when(folderServiceMock.findBySubscribed(Matchers.<Boolean> anyObject())).thenReturn(new MailFolderList());
+        when(folderService.findBySubscribed(Matchers.<Boolean> anyObject())).thenReturn(new MailFolderList());
 
         mockMvc.perform(get(PREFIX + "/folder")).andExpect(status().isOk()).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8));
-        verify(folderServiceMock).findBySubscribed(null);
+        verify(folderService).findBySubscribed(null);
 
-        reset(folderServiceMock);
+        reset(folderService);
 
-        when(folderServiceMock.findBySubscribed(Matchers.<Boolean> anyObject())).thenReturn(new MailFolderList());
+        when(folderService.findBySubscribed(Matchers.<Boolean> anyObject())).thenReturn(new MailFolderList());
 
         mockMvc.perform(get(PREFIX + "/folder").param("subscribed", "true")).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
-        verify(folderServiceMock).findBySubscribed(true);
+        verify(folderService).findBySubscribed(true);
 
-        reset(folderServiceMock);
+        reset(folderService);
 
-        when(folderServiceMock.findBySubscribed(Matchers.<Boolean> anyObject())).thenReturn(new MailFolderList());
+        when(folderService.findBySubscribed(Matchers.<Boolean> anyObject())).thenReturn(new MailFolderList());
 
         mockMvc.perform(get(PREFIX + "/folder").param("subscribed", "false")).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
-        verify(folderServiceMock).findBySubscribed(false);
+        verify(folderService).findBySubscribed(false);
     }
 
     @Test
     public void testFindById() throws Exception {
-        when(folderServiceMock.findById(anyString())).thenReturn(new MailFolder());
+        when(folderService.findById(anyString())).thenReturn(new MailFolder());
 
         mockMvc.perform(get(PREFIX + "/folder/INBOX/test")).andExpect(status().isOk());
-        verify(folderServiceMock).findById("INBOX/test");
+        verify(folderService).findById("INBOX/test");
 
-        reset(folderServiceMock);
+        reset(folderService);
 
-        when(folderServiceMock.findById(anyString())).thenReturn(new MailFolder());
+        when(folderService.findById(anyString())).thenReturn(new MailFolder());
 
         mockMvc.perform(get(PREFIX + "/folder/INBOX.test")).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
-        verify(folderServiceMock).findById("INBOX.test");
+        verify(folderService).findById("INBOX.test");
 
-        reset(folderServiceMock);
+        reset(folderService);
 
-        when(folderServiceMock.findById(anyString())).thenReturn(new MailFolder());
+        when(folderService.findById(anyString())).thenReturn(new MailFolder());
 
         mockMvc.perform(get(PREFIX + "/folder/INBOX.test%20test")).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
-        verify(folderServiceMock).findById("INBOX.test test");
+        verify(folderService).findById("INBOX.test test");
     }
 
     @Test
@@ -113,11 +98,11 @@ public class FolderResourceTest {
         MailFolder mailFolder = new MailFolder();
         mailFolder.setId("INBOX");
 
-        when(folderServiceMock.findById(anyString())).thenReturn(mailFolder);
+        when(folderService.findById(anyString())).thenReturn(mailFolder);
 
         mockMvc.perform(get(PREFIX + "/folder/INBOX")).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.id").value("INBOX"));
-        verify(folderServiceMock).findById("INBOX");
+        verify(folderService).findById("INBOX");
     }
 
     @Test
@@ -128,7 +113,7 @@ public class FolderResourceTest {
         String content = new ObjectMapper().writeValueAsString(request);
 
         mockMvc.perform(post(PREFIX + "/folder").contentType(MediaType.APPLICATION_JSON).content(content)).andExpect(status().isCreated());
-        verify(folderServiceMock).createFolderInInbox("INBOX/createme/nested1");
+        verify(folderService).createFolderInInbox("INBOX/createme/nested1");
     }
 
     @Test
@@ -138,7 +123,7 @@ public class FolderResourceTest {
         MailFolder mailFolder = new MailFolder();
         mailFolder.setId("INBOX/createme/nested2");
 
-        when(folderServiceMock.createFolderInParent("INBOX/createme", "nested2")).thenReturn(mailFolder);
+        when(folderService.createFolderInParent("INBOX/createme", "nested2")).thenReturn(mailFolder);
 
         String content = new ObjectMapper().writeValueAsString(request);
 
@@ -158,9 +143,9 @@ public class FolderResourceTest {
         mockMvc.perform(put(PREFIX + "/folder/INBOX/createme/nested3").contentType(MediaType.APPLICATION_JSON).content(content)).andExpect(
                 status().isOk());
 
-        verify(folderServiceMock).updateFolder(
+        verify(folderService).updateFolder(
                 argThat(org.hamcrest.Matchers.<MailFolder> hasProperty("id", IsEqual.<String> equalTo("INBOX/createme/nested3"))));
-        verify(folderServiceMock).updateFolder(
+        verify(folderService).updateFolder(
                 argThat(org.hamcrest.Matchers.<MailFolder> hasProperty("subscribed", IsEqual.<Boolean> equalTo(Boolean.TRUE))));
     }
 
@@ -168,6 +153,6 @@ public class FolderResourceTest {
     public void testDeleteFolder() throws Exception {
         mockMvc.perform(delete(PREFIX + "/folder/INBOX/createme/nested5")).andExpect(status().isOk());
 
-        verify(folderServiceMock).deleteFolder("INBOX/createme/nested5");
+        verify(folderService).deleteFolder("INBOX/createme/nested5");
     }
 }

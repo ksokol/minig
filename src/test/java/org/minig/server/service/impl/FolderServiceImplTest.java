@@ -10,12 +10,14 @@ import org.junit.runner.RunWith;
 import org.minig.server.MailFolder;
 import org.minig.server.MailFolderList;
 import org.minig.server.TestConstants;
-import org.minig.server.service.*;
-
+import org.minig.server.service.FolderService;
+import org.minig.server.service.MimeMessageBuilder;
+import org.minig.server.service.SmtpAndImapMockServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.mail.internet.MimeMessage;
 
@@ -23,8 +25,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { ServiceTestConfig.class })
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
 public class FolderServiceImplTest {
 

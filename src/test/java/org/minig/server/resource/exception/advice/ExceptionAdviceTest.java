@@ -1,55 +1,39 @@
 package org.minig.server.resource.exception.advice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import config.RessourceTestConfig;
+import org.minig.server.resource.folder.FolderResource;
 import org.minig.server.service.FolderService;
-
 import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
  * @author Kamill Sokol
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = RessourceTestConfig.class)
-@ActiveProfiles("test")
+@RunWith(SpringRunner.class)
+@WebMvcTest(controllers = FolderResource.class, secure = false)
 public class ExceptionAdviceTest {
 
     private static final String PREFIX = "/1";
 
-    @Autowired
-    private WebApplicationContext wac;
+    @MockBean
+    private FolderService folderService;
 
     @Autowired
-    private FolderService folderServiceMock;
-
     private MockMvc mockMvc;
-
-    @Before
-    public void setUp() throws Exception {
-        mockMvc = webAppContextSetup(wac).build();
-        reset(folderServiceMock);
-    }
 
     @Test
     public void testAnnotationResponseStatus() throws Exception {
@@ -58,7 +42,7 @@ public class ExceptionAdviceTest {
 
     @Test
     public void testCustomExceptionResolver() throws Exception {
-        when(folderServiceMock.findBySubscribed(Matchers.<Boolean> anyObject())).thenThrow(new RuntimeException());
+        when(folderService.findBySubscribed(Matchers.<Boolean> anyObject())).thenThrow(new RuntimeException());
 
         Map<String, Object> map = new HashMap<>();
         map.put("status", 500);

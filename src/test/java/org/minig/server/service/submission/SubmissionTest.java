@@ -1,28 +1,34 @@
 package org.minig.server.service.submission;
 
+import config.ServiceTestConfig;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.TestConstants;
-import config.ServiceTestConfig;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
 import org.minig.test.javamail.MailboxRule;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.mail.Message;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasItemInArray;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
  * @author Kamill Sokol
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { ServiceTestConfig.class })
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
 public class SubmissionTest {
 

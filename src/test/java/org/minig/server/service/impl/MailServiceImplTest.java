@@ -1,14 +1,6 @@
 package org.minig.server.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
+import config.ServiceTestConfig;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +13,6 @@ import org.minig.server.service.CompositeId;
 import org.minig.server.service.MailService;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.NotFoundException;
-import config.ServiceTestConfig;
 import org.minig.server.service.SmtpAndImapMockServer;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.minig.test.javamail.Mailbox;
@@ -29,9 +20,18 @@ import org.minig.test.javamail.MailboxBuilder;
 import org.minig.test.javamail.MailboxHolder;
 import org.minig.test.javamail.MailboxRule;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -41,8 +41,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { ServiceTestConfig.class })
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
 public class MailServiceImplTest {
 

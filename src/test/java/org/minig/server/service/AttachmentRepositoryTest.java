@@ -12,9 +12,10 @@ import org.minig.server.TestConstants;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.activation.FileDataSource;
 import javax.mail.MessagingException;
@@ -40,8 +41,9 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Kamill Sokol
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { ServiceTestConfig.class })
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
 public class AttachmentRepositoryTest {
 

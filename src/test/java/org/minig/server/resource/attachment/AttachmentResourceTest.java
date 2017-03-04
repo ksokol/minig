@@ -2,10 +2,8 @@ package org.minig.server.resource.attachment;
 
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.core.IsEqual;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import config.RessourceTestConfig;
 import org.minig.server.MailAttachment;
 import org.minig.server.MailAttachmentList;
 import org.minig.server.TestConstants;
@@ -16,12 +14,10 @@ import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
 
 import javax.activation.DataSource;
 import java.io.ByteArrayInputStream;
@@ -31,10 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
@@ -44,32 +38,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
  * @author Kamill Sokol
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = RessourceTestConfig.class)
-@ActiveProfiles("test")
+@RunWith(SpringRunner.class)
+@WebMvcTest(controllers = AttachmentResource.class, secure = false)
 public class AttachmentResourceTest {
 
     private static final String PREFIX = "/1";
 
-    @Autowired
-    private WebApplicationContext wac;
+    @MockBean
+    private AttachmentService attachmentService;
 
     @Autowired
-    private AttachmentService attachmentServiceMock;
-
     private MockMvc mockMvc;
-
-    @Before
-    public void setUp() throws Exception {
-        mockMvc = webAppContextSetup(wac).build();
-        reset(attachmentServiceMock);
-    }
 
     @Test
     public void testReadAttachment_hasAttachment() throws Exception {
@@ -83,7 +66,7 @@ public class AttachmentResourceTest {
 		ma.setFolder("folder");
         l.add(ma);
 
-        when(attachmentServiceMock.findAttachments(Matchers.<CompositeId> anyObject())).thenReturn(new MailAttachmentList(l));
+        when(attachmentService.findAttachments(Matchers.<CompositeId> anyObject())).thenReturn(new MailAttachmentList(l));
 
         mockMvc.perform(get(PREFIX + "/attachment/INBOX/test|1")).andExpect(status().isOk())
 				.andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
@@ -91,9 +74,9 @@ public class AttachmentResourceTest {
                 .andExpect(jsonPath("attachmentMetadata[0].id").value("folder|messageId|filename"))
                 .andExpect(jsonPath("attachmentMetadata[0].mime").value("mime"));
 
-        verify(attachmentServiceMock).findAttachments(
+        verify(attachmentService).findAttachments(
                 argThat(org.hamcrest.Matchers.<CompositeId> hasProperty("messageId", IsEqual.<String> equalTo("1"))));
-        verify(attachmentServiceMock).findAttachments(
+        verify(attachmentService).findAttachments(
                 argThat(org.hamcrest.Matchers.<CompositeId> hasProperty("folder", IsEqual.<String> equalTo("INBOX/test"))));
     }
 
@@ -106,7 +89,7 @@ public class AttachmentResourceTest {
         ma.setId("id");
         ma.setMime("mime");
 
-        when(attachmentServiceMock.findAttachment(Matchers.<CompositeAttachmentId> anyObject())).thenReturn(ma);
+        when(attachmentService.findAttachment(Matchers.<CompositeAttachmentId> anyObject())).thenReturn(ma);
 
         doAnswer(new Answer<Void>() {
             @Override
@@ -115,7 +98,7 @@ public class AttachmentResourceTest {
                 IOUtils.copy(new ByteArrayInputStream(expected), out);
                 return null;
             }
-        }).when(attachmentServiceMock).readAttachment(Matchers.<CompositeAttachmentId> anyObject(), Matchers.<OutputStream> anyObject());
+        }).when(attachmentService).readAttachment(Matchers.<CompositeAttachmentId> anyObject(), Matchers.<OutputStream> anyObject());
 
         mockMvc.perform(get(PREFIX + "/attachment/INBOX/test|<id@localhost>|1.png").param("download", "true")).andExpect(status().isOk())
                 .andExpect(content().bytes(expected)).andExpect(header().string("Content-Disposition", "attachment; filename=\"filename\""))
@@ -126,7 +109,7 @@ public class AttachmentResourceTest {
     public void testUploadAttachment() throws Exception {
         CompositeAttachmentId compositeId = new CompositeAttachmentId("INBOX/test", "id", "data.txt");
 
-        when(attachmentServiceMock.addAttachment(Matchers.<CompositeId>anyObject(), Matchers.<MultipartfileDataSource>anyObject()))
+        when(attachmentService.addAttachment(Matchers.<CompositeId>anyObject(), Matchers.<MultipartfileDataSource>anyObject()))
                 .thenReturn(compositeId);
 
         MailAttachment mailAttachment = new MailAttachment();
@@ -138,7 +121,7 @@ public class AttachmentResourceTest {
         MailAttachmentList mailAttachmentList = new MailAttachmentList();
         mailAttachmentList.setAttachmentMetadata(Arrays.asList(mailAttachment));
 
-        when(attachmentServiceMock.findAttachments(compositeId)).thenReturn(mailAttachmentList);
+        when(attachmentService.findAttachments(compositeId)).thenReturn(mailAttachmentList);
 
         mockMvc.perform(fileUpload(PREFIX + "/attachment/INBOX/test|id").file("data.txt", "data".getBytes()))
                 .andDo(print())
@@ -151,7 +134,7 @@ public class AttachmentResourceTest {
                 .andExpect(jsonPath("$.attachments[0].folder").value("INBOX/test"))
                 .andExpect(jsonPath("$.attachments[0].fileName").value("file.html"))
                 .andExpect(jsonPath("$.attachments[0].mime").value("text/html"));
-        verify(attachmentServiceMock).addAttachment(
+        verify(attachmentService).addAttachment(
                 argThat(org.hamcrest.Matchers.<CompositeId> hasProperty("messageId", IsEqual.<String> equalTo("id"))),
                 Matchers.<DataSource> anyObject());
     }
@@ -167,7 +150,7 @@ public class AttachmentResourceTest {
 
 		l.add(ma);
 
-		when(attachmentServiceMock.findAttachments(Matchers.<CompositeId> anyObject())).thenReturn(new MailAttachmentList(l));
+		when(attachmentService.findAttachments(Matchers.<CompositeId> anyObject())).thenReturn(new MailAttachmentList(l));
 
 		mockMvc.perform(get(PREFIX + "/attachment/INBOX/test|1"))
 				.andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))

@@ -11,9 +11,7 @@ import org.minig.server.resource.argumentresolver.StringIdHandlerMethodArgumentR
 import org.minig.server.resource.config.CompositeAttachmentIdSerializer;
 import org.minig.server.service.CompositeAttachmentId;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -31,8 +29,6 @@ import java.util.List;
  * @author Kamill Sokol
  */
 @Configuration
-@ComponentScan(basePackages = "org.minig.server.resource")
-@Profile({ "dev", "test", "prod" })
 public class ResourceConfig extends WebMvcConfigurerAdapter {
 
 	@Override

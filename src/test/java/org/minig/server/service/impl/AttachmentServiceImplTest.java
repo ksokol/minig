@@ -1,12 +1,6 @@
 package org.minig.server.service.impl;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.util.Arrays;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
+import config.ServiceTestConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,20 +12,27 @@ import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.NotFoundException;
-import config.ServiceTestConfig;
 import org.minig.server.service.SmtpAndImapMockServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.util.Arrays;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { ServiceTestConfig.class })
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
 public class AttachmentServiceImplTest {
 
