@@ -1,4 +1,4 @@
-package org.minig.server.service.impl;
+package org.minig.server.service;
 
 import java.util.List;
 
@@ -10,10 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailFolder;
-import org.minig.server.service.MockMailAuthentication;
-import org.minig.server.service.RepositoryException;
 import config.ServiceTestConfig;
-import org.minig.server.service.SmtpAndImapMockServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -27,13 +24,13 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { ServiceTestConfig.class })
 @ActiveProfiles("test")
-public class FolderRepositoryImplTest {
+public class FolderRepositoryTest {
 
     @Autowired
     private SmtpAndImapMockServer mockServer;
 
     @Autowired
-    private FolderRepositoryImpl uut;
+    private FolderRepository uut;
 
     @Autowired
     private MockMailAuthentication mockMailAuthentication;
