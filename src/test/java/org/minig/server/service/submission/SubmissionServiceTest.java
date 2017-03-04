@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest
 @Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
-public class SubmissionServiceImplTest {
+public class SubmissionServiceTest {
 
     @Autowired
     private SubmissionService uut;
