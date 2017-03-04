@@ -1,9 +1,20 @@
 package org.minig.server.service;
 
 import org.minig.server.MailFolder;
+import org.springframework.stereotype.Component;
 
-public interface PermissionService {
+import java.util.Arrays;
+import java.util.List;
 
-	boolean writable(MailFolder folder);
+@Component
+public class PermissionService {
+
+    private final List<String> notWritable = Arrays.asList("INBOX",
+            "INBOX/Trash", "INBOX/Sent", "INBOX/Drafts", "INBOX.Trash",
+            "INBOX.Sent", "INBOX.Drafts");
+
+    public boolean writable(MailFolder folder) {
+        return !notWritable.contains(folder.getId());
+    }
 
 }
