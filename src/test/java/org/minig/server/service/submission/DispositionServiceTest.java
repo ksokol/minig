@@ -33,10 +33,10 @@ import static org.junit.Assert.assertThat;
 @SpringBootTest
 @Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
-public class DispositionServiceImplTest {
+public class DispositionServiceTest {
 
     @Autowired
-    private DispositionServiceImpl uut;
+    private DispositionService uut;
 
     @Before
     public void setUp() throws Exception {
