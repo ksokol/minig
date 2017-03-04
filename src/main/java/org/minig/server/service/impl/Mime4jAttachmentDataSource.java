@@ -10,7 +10,7 @@ import java.io.OutputStream;
 /**
  * @author Kamill Sokol
  */
-class Mime4jAttachmentDataSource implements DataSource {
+public class Mime4jAttachmentDataSource implements DataSource {
 
     private final Mime4jAttachment attachment;
 

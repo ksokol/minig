@@ -1,4 +1,4 @@
-package org.minig.server.service.impl;
+package org.minig.server.service;
 
 import config.ServiceTestConfig;
 import org.junit.Rule;
@@ -9,11 +9,6 @@ import org.minig.server.MailMessageAddress;
 import org.minig.server.MailMessageBody;
 import org.minig.server.MailMessageList;
 import org.minig.server.TestConstants;
-import org.minig.server.service.CompositeId;
-import org.minig.server.service.MailService;
-import org.minig.server.service.MimeMessageBuilder;
-import org.minig.server.service.NotFoundException;
-import org.minig.server.service.SmtpAndImapMockServer;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
@@ -45,7 +40,7 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest
 @Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
-public class MailServiceImplTest {
+public class MailServiceTest {
 
     @Autowired
     private MailService uut;
