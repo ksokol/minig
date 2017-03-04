@@ -1,4 +1,4 @@
-package org.minig.server.service.impl;
+package org.minig.server.service;
 
 import config.ServiceTestConfig;
 import org.apache.commons.io.IOUtils;
@@ -8,11 +8,6 @@ import org.junit.runner.RunWith;
 import org.minig.server.MailAttachment;
 import org.minig.server.MailAttachmentList;
 import org.minig.server.TestConstants;
-import org.minig.server.service.CompositeAttachmentId;
-import org.minig.server.service.CompositeId;
-import org.minig.server.service.MimeMessageBuilder;
-import org.minig.server.service.NotFoundException;
-import org.minig.server.service.SmtpAndImapMockServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -34,13 +29,13 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest
 @Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
-public class AttachmentServiceImplTest {
+public class AttachmentServiceTest {
 
     @Autowired
     private SmtpAndImapMockServer mockServer;
 
     @Autowired
-    private AttachmentServiceImpl uut;
+    private AttachmentService uut;
 
     @Before
     public void setUp() throws Exception {
