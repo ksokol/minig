@@ -1,21 +1,12 @@
-package org.minig.server.service.impl;
+package org.minig.server.service;
 
-import java.util.List;
-import java.util.ArrayList;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
+import config.ServiceTestConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
 import org.minig.server.TestConstants;
-import org.minig.server.service.CompositeId;
-import org.minig.server.service.MimeMessageBuilder;
-import config.ServiceTestConfig;
-import org.minig.server.service.SmtpAndImapMockServer;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +14,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.hasSize;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -37,13 +31,13 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { ServiceTestConfig.class })
 @ActiveProfiles("test")
-public class MailRepositoryImplTest {
+public class MailRepositoryTest {
 
     @Autowired
     private SmtpAndImapMockServer mockServer;
 
     @Autowired
-    private MailRepositoryImpl uut;
+    private MailRepository uut;
 
     @Before
     public void setUp() throws Exception {
