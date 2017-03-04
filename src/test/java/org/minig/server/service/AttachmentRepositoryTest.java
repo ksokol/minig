@@ -1,5 +1,6 @@
-package org.minig.server.service.impl;
+package org.minig.server.service;
 
+import config.ServiceTestConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,13 +9,6 @@ import org.minig.server.MailAttachment;
 import org.minig.server.MailAttachmentList;
 import org.minig.server.MailMessage;
 import org.minig.server.TestConstants;
-import org.minig.server.service.CompositeAttachmentId;
-import org.minig.server.service.CompositeId;
-import org.minig.server.service.MailRepository;
-import org.minig.server.service.MimeMessageBuilder;
-import org.minig.server.service.NotFoundException;
-import config.ServiceTestConfig;
-import org.minig.server.service.SmtpAndImapMockServer;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +27,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -51,13 +43,13 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { ServiceTestConfig.class })
 @ActiveProfiles("test")
-public class AttachmentRepositoryImplTest {
+public class AttachmentRepositoryTest {
 
     @Autowired
     private SmtpAndImapMockServer mockServer;
 
     @Autowired
-    private AttachmentRepositoryImpl uut;
+    private AttachmentRepository uut;
 
     @Autowired
     private MailRepository mailRepository;
