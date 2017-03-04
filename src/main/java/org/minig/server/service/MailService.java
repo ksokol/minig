@@ -1,6 +1,6 @@
 package org.minig.server.service;
 
-import org.minig.MailAuthentication;
+import org.minig.security.MailAuthentication;
 import org.minig.server.MailFolder;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;

@@ -1,9 +1,8 @@
 package org.minig.config;
 
-import org.minig.MailAuthentication;
+import org.minig.security.MailAuthentication;
 import org.minig.security.ApiAuthenticationEntryPoint;
 import org.minig.security.MailAuthenticationProvider;
-import org.minig.security.SecurityContextMailAuthentication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -23,7 +22,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public MailAuthentication mailAuthentication() {
-        return new SecurityContextMailAuthentication();
+        return new MailAuthentication();
     }
 
     @Override

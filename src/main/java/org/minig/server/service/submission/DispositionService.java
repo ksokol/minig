@@ -2,7 +2,7 @@ package org.minig.server.service.submission;
 
 import com.sun.mail.dsn.DeliveryStatus;
 import com.sun.mail.dsn.MultipartReport;
-import org.minig.MailAuthentication;
+import org.minig.security.MailAuthentication;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.MailRepository;
 import org.minig.server.service.impl.MailContext;

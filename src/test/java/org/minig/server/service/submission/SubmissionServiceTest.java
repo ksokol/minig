@@ -5,7 +5,7 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.minig.MailAuthentication;
+import org.minig.security.MailAuthentication;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
 import org.minig.server.MailMessageList;

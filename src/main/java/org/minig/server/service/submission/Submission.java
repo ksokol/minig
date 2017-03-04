@@ -1,6 +1,6 @@
 package org.minig.server.service.submission;
 
-import org.minig.MailAuthentication;
+import org.minig.security.MailAuthentication;
 import org.minig.server.service.impl.MailContext;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.springframework.beans.factory.annotation.Autowired;

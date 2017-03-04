@@ -10,21 +10,22 @@ import java.util.Collection;
  */
 public class MailAuthenticationToken extends UsernamePasswordAuthenticationToken {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
-	private String domain;
+    private final String domain;
+    private final char folderSeparator;
 
-	public MailAuthenticationToken() {
-		super("anonymous", null);
-	}
+    public MailAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, String domain, char folderSeparator) {
+        super(principal, credentials, authorities);
+        this.domain = domain;
+        this.folderSeparator = folderSeparator;
+    }
 
-	public MailAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, String domain) {
-		super(principal, credentials, authorities);
-		this.domain = domain;
-	}
+    public String getDomain() {
+        return domain;
+    }
 
-	public String getDomain() {
-		return domain;
-	}
-
+    public char getFolderSeparator() {
+        return folderSeparator;
+    }
 }

@@ -10,7 +10,7 @@ import org.junit.Assert;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
 import org.minig.test.javamail.MailboxHolder;
-import org.minig.MailAuthentication;
+import org.minig.security.MailAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;

@@ -1,16 +1,20 @@
 package config;
 
 import org.minig.config.ServiceConfig;
+import org.minig.security.MailAuthenticationToken;
 import org.minig.server.service.impl.MailContext;
 import org.minig.server.service.submission.TestJavaMailSenderFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.support.ConversionServiceFactoryBean;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Configuration
 @Profile({ "test" })
-public class ServiceTestConfig {
+public class ServiceTestConfig implements InitializingBean {
 
     @Bean(name = "mailContext")
     public MailContext mailContext() {
@@ -25,5 +29,13 @@ public class ServiceTestConfig {
     @Bean
     public ConversionServiceFactoryBean conversionService() {
         return new ServiceConfig().conversionService();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        MailAuthenticationToken mailAuthenticationToken =
+                new MailAuthenticationToken("testuser", "login", AuthorityUtils.createAuthorityList("ROLE_USER"), "localhost", '.');
+
+        SecurityContextHolder.getContext().setAuthentication(mailAuthenticationToken);
     }
 }

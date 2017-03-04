@@ -2,10 +2,7 @@ package org.minig.server.service;
 
 import config.ServiceTestConfig;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailFolder;
@@ -33,9 +30,6 @@ public class FolderRepositoryTest {
 
     @Autowired
     private FolderRepository uut;
-
-    @Autowired
-    private MockMailAuthentication mockMailAuthentication;
 
     @Before
     public void setUp() throws Exception {
@@ -220,25 +214,25 @@ public class FolderRepositoryTest {
 
     @Test
     public void testGetInbox() {
-        assertEquals(mockMailAuthentication.getInboxFolder(), uut.getInbox().getId());
+        assertEquals("INBOX", uut.getInbox().getId());
     }
 
     @Test
     public void testGetTrash() {
         MailFolder trash = uut.getTrash();
-        assertEquals(mockMailAuthentication.getTrashFolder(), trash.getId());
+        assertEquals("INBOX.Trash", trash.getId());
     }
 
     @Test
     public void testGetDraft() {
         MailFolder draft = uut.getDraft();
-        assertEquals(mockMailAuthentication.getDraftsFolder(), draft.getId());
+        assertEquals("INBOX.Drafts", draft.getId());
     }
 
     @Test
     public void testGetSent() {
         MailFolder sent = uut.getSent();
-        assertEquals(mockMailAuthentication.getSentFolder(), sent.getId());
+        assertEquals("INBOX.Sent", sent.getId());
     }
 
     @Test

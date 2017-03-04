@@ -1,6 +1,5 @@
 package org.minig.security;
 
-import org.minig.MailAuthentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.Serializable;
@@ -8,16 +7,15 @@ import java.io.Serializable;
 /**
  * @author Kamill Sokol
  */
-public class SecurityContextMailAuthentication implements MailAuthentication, Serializable {
+public class MailAuthentication implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
-    @Override
     public String getEmailAddress() {
         return getAddress();
     }
 
-    @Override
+    @Deprecated
     public String getAddress() {
         if (getUserMail().contains("@")) {
             return getUserMail();
@@ -26,17 +24,15 @@ public class SecurityContextMailAuthentication implements MailAuthentication, Se
         }
     }
 
-    @Override
+    @Deprecated
     public String getUserMail() {
         return getMailAuthenticationToken().getName();
     }
 
-    @Override
     public String getPassword() {
         return (String) getMailAuthenticationToken().getCredentials();
     }
 
-    @Override
     public String getDomain() {
         return getMailAuthenticationToken().getDomain();
     }
@@ -45,34 +41,27 @@ public class SecurityContextMailAuthentication implements MailAuthentication, Se
         return (MailAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
     }
 
-    @Override
     public String getInboxFolder() {
         // TODO
         return "INBOX";
     }
 
-    @Override
     public String getTrashFolder() {
         // TODO
-        return "INBOX/Trash";
+        return getInboxFolder() + getFolderSeparator() + "Trash";
     }
 
-    @Override
     public String getDraftsFolder() {
         // TODO
-        return "INBOX/Drafts";
+        return getInboxFolder() + getFolderSeparator() + "Drafts";
     }
 
-    @Override
     public String getSentFolder() {
         // TODO
-        return "INBOX/Sent";
+        return getInboxFolder() + getFolderSeparator() + "Sent";
     }
 
-    @Override
     public char getFolderSeparator() {
-        // TODO
-        return '/';
+        return getMailAuthenticationToken().getFolderSeparator();
     }
-
 }
