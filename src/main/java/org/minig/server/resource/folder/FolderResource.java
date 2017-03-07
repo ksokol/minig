@@ -1,7 +1,6 @@
 package org.minig.server.resource.folder;
 
 import org.minig.server.MailFolder;
-import org.minig.server.MailFolderList;
 import org.minig.server.resource.Id;
 import org.minig.server.service.FolderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.List;
+
 @Controller
 @RequestMapping(value = "1", produces = "application/json; charset=UTF-8")
 public class FolderResource {
@@ -23,7 +24,7 @@ public class FolderResource {
 
     @RequestMapping(value = "folder", method = RequestMethod.GET)
     @ResponseBody
-    public MailFolderList findBySubscribed(@RequestParam(required = false) Boolean subscribed) {
+    public List<MailFolder> findBySubscribed(@RequestParam(required = false) Boolean subscribed) {
         return folderService.findBySubscribed(subscribed);
     }
 

@@ -5,7 +5,6 @@ import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailFolder;
-import org.minig.server.MailFolderList;
 import org.minig.server.TestConstants;
 import org.minig.server.service.FolderService;
 import org.mockito.Matchers;
@@ -15,6 +14,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.anyString;
@@ -47,14 +48,14 @@ public class FolderResourceTest {
 
     @Test
     public void testFindBySubscribed_params() throws Exception {
-        when(folderService.findBySubscribed(Matchers.<Boolean> anyObject())).thenReturn(new MailFolderList());
+        when(folderService.findBySubscribed(Matchers.<Boolean> anyObject())).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get(PREFIX + "/folder")).andExpect(status().isOk()).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8));
         verify(folderService).findBySubscribed(null);
 
         reset(folderService);
 
-        when(folderService.findBySubscribed(Matchers.<Boolean> anyObject())).thenReturn(new MailFolderList());
+        when(folderService.findBySubscribed(Matchers.<Boolean> anyObject())).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get(PREFIX + "/folder").param("subscribed", "true")).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());
@@ -62,7 +63,7 @@ public class FolderResourceTest {
 
         reset(folderService);
 
-        when(folderService.findBySubscribed(Matchers.<Boolean> anyObject())).thenReturn(new MailFolderList());
+        when(folderService.findBySubscribed(Matchers.<Boolean> anyObject())).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get(PREFIX + "/folder").param("subscribed", "false")).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk());

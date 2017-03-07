@@ -38,7 +38,7 @@ describe('FolderListCtrl', function() {
 
     it('should have same json structure', function() {
         $httpBackend.flush();
-        expect(scope.folders).toBeJsonEqual(fixtureFolderlist.folderList);
+        expect(scope.folders).toBeJsonEqual(fixtureFolderlist);
     });
 });
 

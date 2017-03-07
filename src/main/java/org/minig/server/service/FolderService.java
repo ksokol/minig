@@ -1,7 +1,6 @@
 package org.minig.server.service;
 
 import org.minig.server.MailFolder;
-import org.minig.server.MailFolderList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -44,22 +43,19 @@ public class FolderService {
         return folderRepository.create(parentFolder.getId(), folder);
     }
 
-    public MailFolderList findBySubscribed(Boolean subscribed) {
-        List<MailFolder> l = folderRepository.findBySubscribed(subscribed);
+    public List<MailFolder> findBySubscribed(Boolean subscribed) {
+        List<MailFolder> mailFolders = folderRepository.findBySubscribed(subscribed);
 
-        for (MailFolder mf : l) {
-            boolean writable = permissionService.writable(mf);
-            mf.setEditable(writable);
+        for (MailFolder mailFolder : mailFolders) {
+            boolean writable = permissionService.writable(mailFolder);
+            mailFolder.setEditable(writable);
         }
 
-        return new MailFolderList(l);
+        return mailFolders;
     }
 
-    public MailFolderList findByParent(String parent) {
-
-        List<MailFolder> findChildren = folderRepository.findChildren(parent);
-
-        return new MailFolderList(findChildren);
+    public List<MailFolder> findByParent(String parent) {
+        return folderRepository.findChildren(parent);
     }
 
     public void updateFolder(MailFolder source) {

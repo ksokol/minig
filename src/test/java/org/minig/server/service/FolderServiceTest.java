@@ -179,13 +179,13 @@ public class FolderServiceTest {
     public void testUpdateFolder_unsubscribing() throws InterruptedException {
         mockServer.createAndSubscribeMailBox("INBOX.test");
 
-        assertEquals(4, uut.findBySubscribed(true).getFolderList().size());
+        assertEquals(4, uut.findBySubscribed(true).size());
 
         MailFolder mf = uut.findById("INBOX.test");
         mf.setSubscribed(false);
         uut.updateFolder(mf);
 
-        assertEquals(3, uut.findBySubscribed(true).getFolderList().size());
+        assertEquals(3, uut.findBySubscribed(true).size());
     }
 
     @Test
@@ -199,8 +199,8 @@ public class FolderServiceTest {
         mf.setParentFolderId("INBOX.target");
         uut.updateFolder(mf);
 
-        assertEquals(0, uut.findByParent("INBOX.source").getFolderList().size());
-        assertEquals(1, uut.findByParent("INBOX.target").getFolderList().size());
+        assertEquals(0, uut.findByParent("INBOX.source").size());
+        assertEquals(1, uut.findByParent("INBOX.target").size());
         assertEquals("INBOX.target", uut.findById("INBOX.target.folder").getParentFolderId());
     }
 
@@ -217,10 +217,10 @@ public class FolderServiceTest {
         uut.updateFolder(mf);
 
         assertTrue(uut.findById("INBOX.source.folder") == null);
-        assertEquals(0, uut.findByParent("INBOX.source").getFolderList().size());
-        assertEquals(1, uut.findByParent("INBOX.target").getFolderList().size());
+        assertEquals(0, uut.findByParent("INBOX.source").size());
+        assertEquals(1, uut.findByParent("INBOX.target").size());
         assertEquals("INBOX.target", uut.findById("INBOX.target.folder").getParentFolderId());
-        assertEquals(2, uut.findByParent("INBOX.target.folder").getFolderList().size());
+        assertEquals(2, uut.findByParent("INBOX.target.folder").size());
     }
 
     @Test
@@ -237,10 +237,10 @@ public class FolderServiceTest {
         mf.setParentFolderId("INBOX.target");
         uut.updateFolder(mf);
 
-        assertEquals(0, uut.findByParent("INBOX.source").getFolderList().size());
-        assertEquals(1, uut.findByParent("INBOX.target").getFolderList().size());
+        assertEquals(0, uut.findByParent("INBOX.source").size());
+        assertEquals(1, uut.findByParent("INBOX.target").size());
         assertEquals("INBOX.target", uut.findById("INBOX.target.folder").getParentFolderId());
-        assertEquals(2, uut.findByParent("INBOX.target.folder").getFolderList().size());
+        assertEquals(2, uut.findByParent("INBOX.target.folder").size());
 
         mockServer.verifyMessageCount("INBOX.target.folder", 1);
         mockServer.verifyMessageCount("INBOX.target.folder.nested1", 1);
@@ -276,7 +276,7 @@ public class FolderServiceTest {
     public void testDeleteFolder_trashedNoMessagesNoNestedFolders() {
         mockServer.createAndSubscribeMailBox("INBOX.Trash.deleteme");
         uut.deleteFolder("INBOX.Trash.deleteme");
-        assertEquals(0, uut.findByParent("INBOX.Trash").getFolderList().size());
+        assertEquals(0, uut.findByParent("INBOX.Trash").size());
     }
 
     @Test
@@ -286,7 +286,7 @@ public class FolderServiceTest {
         mockServer.createAndSubscribeMailBox("INBOX.Trash.deleteme.nested2");
 
         uut.deleteFolder("INBOX.Trash.deleteme");
-        assertEquals(0, uut.findByParent("INBOX.Trash").getFolderList().size());
+        assertEquals(0, uut.findByParent("INBOX.Trash").size());
     }
 
     @Test
@@ -300,15 +300,15 @@ public class FolderServiceTest {
 
         uut.deleteFolder("INBOX.Trash.deleteme.nested1");
 
-        assertEquals(1, uut.findByParent("INBOX.Trash").getFolderList().size());
-        assertEquals(1, uut.findByParent("INBOX.Trash.deleteme").getFolderList().size());
+        assertEquals(1, uut.findByParent("INBOX.Trash").size());
+        assertEquals(1, uut.findByParent("INBOX.Trash.deleteme").size());
 
         mockServer.verifyMessageCount("INBOX.Trash.deleteme", 1);
         mockServer.verifyMessageCount("INBOX.Trash.deleteme.nested2", 1);
 
         uut.deleteFolder("INBOX.Trash.deleteme");
 
-        assertEquals(0, uut.findByParent("INBOX.Trash").getFolderList().size());
+        assertEquals(0, uut.findByParent("INBOX.Trash").size());
     }
 
     @Test
@@ -356,36 +356,4 @@ public class FolderServiceTest {
         mockServer.verifyMessageCount("INBOX.Trash.deleteme2.nested2", 1);
         mockServer.verifyMessageCount("INBOX.Trash.nested1", 1);
     }
-
-    // @Test
-    // public void testFindByEditable_invalidArgument() {
-    // assertEquals(0, uut.findByEditable(null).getFolderList().size());
-    // }
-
-    // @Test
-    // public void testFindByEditable_false() {
-    // MailFolderList findByEditable = uut.findByEditable(false);
-    //
-    // for (MailFolder mf : findByEditable.getFolderList()) {
-    // System.out.println(mf.getId());
-    // }
-    //
-    // System.out.println(findByEditable.getFolderList().size());
-    //
-    // }
-
-    //
-    // @Test
-    // public void testFindBySubscribed() {
-    // fail("Not yet implemented");
-    // }
-    //
-
-    //
-    // @Test
-    // public void testFindById() {
-    // fail("Not yet implemented");
-    // }
-    //
-
 }

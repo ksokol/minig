@@ -1,17 +1,10 @@
 //TODO replace $resource with $http
 app.factory('folderService', ['$q', '$resource', 'deferService', 'folderCache', 'API_HOME', function($q, $resource, deferService, folderCache, API_HOME) {
 
-	var folderResourceGet =  $resource(API_HOME + 'folder/:id', {}, {_findAll : {method: 'GET', isArray: true, transformResponse: _transFindAll}});
+	var folderResourceGet =  $resource(API_HOME + 'folder/:id', {}, {_findAll : {method: 'GET', isArray: true}});
     var folderResourcePost =  $resource(API_HOME + 'folder/:id', {'id':'@id'}, {_create : {method: 'POST'}});
     var folderResourceDelete =  $resource(API_HOME + 'folder/:id', {'id':'@id'}, {_delete : {method: 'DELETE'}});
     var folderResourcePut =  $resource(API_HOME + 'folder/:id', {'id':'@id'}, {_put : {method: 'PUT'}});
-
-    function _transFindAll(data) {
-		try {
-			var json = angular.fromJson(data);
-			return json.folderList;
-		} catch(e) {}
-	}
 
 	folderResourceGet.findAll = function() {
         if(!folderCache.isEmpty()) {
