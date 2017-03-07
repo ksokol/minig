@@ -8,7 +8,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailFolder;
-import org.minig.server.MailFolderList;
 import org.minig.server.TestConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +18,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.mail.internet.MimeMessage;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
@@ -156,18 +154,6 @@ public class FolderServiceTest {
 
         uut.createFolderInParent("INBOX.test2", "test3");
         mockServer.verifyMailbox("INBOX.test2.test3");
-    }
-
-    @Test
-    public void testFindAll() {
-        MailFolderList findAll = uut.findAll();
-
-        // INBOX, Trash, Sent, Drafts
-        assertEquals(4, findAll.getFolderList().size());
-
-        for (MailFolder mf : findAll.getFolderList()) {
-            assertFalse(mf.getEditable());
-        }
     }
 
     @Test

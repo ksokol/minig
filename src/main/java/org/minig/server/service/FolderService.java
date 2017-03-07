@@ -44,17 +44,6 @@ public class FolderService {
         return folderRepository.create(parentFolder.getId(), folder);
     }
 
-    public MailFolderList findAll() {
-        List<MailFolder> l = folderRepository.findAll();
-
-        for (MailFolder mf : l) {
-            boolean writable = permissionService.writable(mf);
-            mf.setEditable(writable);
-        }
-
-        return new MailFolderList(l);
-    }
-
     public MailFolderList findBySubscribed(Boolean subscribed) {
         List<MailFolder> l = folderRepository.findBySubscribed(subscribed);
 
