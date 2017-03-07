@@ -34,7 +34,7 @@ public class JavaMailPropertyBuilder {
             javaMailProperties.put("mail.smtp.ssl.socketFactory", sf);
             javaMailProperties.put("mail.imap.ssl.socketFactory", sf);
 
-            //javaMailProperties.put("mail.smtp.ssl.checkserveridentity", "true");
+            javaMailProperties.put("mail.smtp.ssl.checkserveridentity", "true");
             //javaMailProperties.put("mail.debug", "true");
 
             return javaMailProperties;
