@@ -506,7 +506,7 @@ public class Mime4jMessageTest {
     }
 
     @Test
-    public void n12ame() throws Exception {
+    public void shouldDeleteAttachment() throws Exception {
         Mime4jMessage mime4jMessage = aMime4jMessage();
 
         mime4jMessage.addAttachment(new StringDataSource("attachment1"));
