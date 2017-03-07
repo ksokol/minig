@@ -5,8 +5,6 @@ import org.minig.server.MailAttachmentList;
 import org.minig.server.service.impl.MailContext;
 import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -24,12 +22,9 @@ import java.util.List;
 public class AttachmentRepository {
 
     private final MailContext mailContext;
-    private final ConversionService conversionService;
 
-    @Autowired
-    public AttachmentRepository(MailContext mailContext, ConversionService conversionService) {
+    public AttachmentRepository(MailContext mailContext) {
         this.mailContext = mailContext;
-        this.conversionService = conversionService;
     }
 
     public MailAttachmentList readMetadata(CompositeId id) {
@@ -65,7 +60,15 @@ public class AttachmentRepository {
                 return null;
             }
             Mime4jAttachment attachment = new Mime4jMessage(search[0]).getAttachment(id.getFileName());
-            return conversionService.convert(attachment, MailAttachment.class);
+            MailAttachment mailAttachment = null;
+
+            if(attachment != null) {
+                mailAttachment = new MailAttachment();
+                mailAttachment.setCompositeAttachmentId(attachment.getId());
+                mailAttachment.setMime(attachment.getMimeType());
+                mailAttachment.setFileName(attachment.getFilename());
+            }
+            return mailAttachment;
         } catch (Exception e) {
             throw new RepositoryException(e.getMessage(), e);
         }
