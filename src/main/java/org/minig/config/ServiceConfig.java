@@ -1,6 +1,5 @@
 package org.minig.config;
 
-import org.minig.server.converter.MessageToCompositeAttachmentIdConverter;
 import org.minig.server.converter.Mime4jAttachmentToMailAttachmentConverter;
 import org.minig.server.service.submission.JavaMailSenderFactory;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +27,6 @@ public class ServiceConfig {
     public ConversionServiceFactoryBean conversionService() {
         ConversionServiceFactoryBean conversionServiceFactoryBean = new ConversionServiceFactoryBean();
         Set<Converter> converters = new HashSet<>();
-        converters.add(new MessageToCompositeAttachmentIdConverter());
         converters.add(new Mime4jAttachmentToMailAttachmentConverter());
         conversionServiceFactoryBean.setConverters(converters);
         return conversionServiceFactoryBean;

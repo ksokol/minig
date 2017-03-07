@@ -1,23 +1,17 @@
 package org.minig.server.service.impl.helper;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageBody;
 import org.minig.server.TestConstants;
-import org.minig.server.converter.MessageToCompositeAttachmentIdConverter;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
-import org.springframework.context.support.ConversionServiceFactoryBean;
-import org.springframework.core.convert.converter.Converter;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -34,19 +28,6 @@ import static org.junit.Assert.assertTrue;
 public class MessageMapperTest {
 
     private static MessageMapper uut = new MessageMapper();
-
-    @BeforeClass
-    public static void beforeClass() {
-        ConversionServiceFactoryBean conversionServiceFactoryBean = new ConversionServiceFactoryBean();
-
-        Set<Converter> converters = new HashSet<>();
-        converters.add(new MessageToCompositeAttachmentIdConverter());
-
-        conversionServiceFactoryBean.setConverters(converters);
-        conversionServiceFactoryBean.afterPropertiesSet();
-
-        uut.setConversionService(conversionServiceFactoryBean.getObject());
-    }
 
     @Test
     public void testId() {

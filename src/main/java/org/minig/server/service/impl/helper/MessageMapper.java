@@ -4,9 +4,8 @@ import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
 import org.minig.server.MailMessageBody;
 import org.minig.server.service.CompositeAttachmentId;
+import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -24,15 +23,13 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.minig.MinigConstants.FORWARDED;
 import static org.minig.MinigConstants.FORWARDED_MESSAGE_ID;
 import static org.minig.MinigConstants.IN_REPLY_TO;
 import static org.minig.MinigConstants.MDN_SENT;
 import static org.minig.MinigConstants.X_DRAFT_INFO;
-import static org.springframework.core.convert.TypeDescriptor.collection;
-import static org.springframework.core.convert.TypeDescriptor.forObject;
-import static org.springframework.core.convert.TypeDescriptor.valueOf;
 
 /**
  * @author Kamill Sokol
@@ -42,8 +39,6 @@ public class MessageMapper {
 
     private static final Pattern RECEIPT = Pattern.compile(".*receipt=(1);?.*");
     private static final Pattern DSN = Pattern.compile(".*DSN=(1);?.*");
-
-    private ConversionService conversionService;
 
     public MailMessage convertShort(Message msg) {
         if (msg == null) {
@@ -284,8 +279,8 @@ public class MessageMapper {
     }
 
     private void setAttachmentId(MailMessage cm, Message msg) throws MessagingException, IOException {
-        List<CompositeAttachmentId> convert = (List<CompositeAttachmentId>) conversionService.convert(msg, forObject(msg), collection(List.class, valueOf(CompositeAttachmentId.class)));
-        cm.setAttachments(convert);
+        List<CompositeAttachmentId> attachmentIds = new Mime4jMessage(msg).getAttachments().stream().map(Mime4jAttachment::getId).collect(Collectors.toList());
+        cm.setAttachments(attachmentIds);
     }
 
     private void setForwarded(MailMessage cm, Message msg) throws MessagingException {
@@ -504,10 +499,5 @@ public class MessageMapper {
         target.setForwardedMessageId(source.getForwardedMessageId());
 
         return target;
-    }
-
-    @Autowired
-    public void setConversionService(ConversionService conversionService) {
-        this.conversionService = conversionService;
     }
 }
