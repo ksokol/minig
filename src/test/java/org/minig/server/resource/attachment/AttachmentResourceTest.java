@@ -5,7 +5,6 @@ import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailAttachment;
-import org.minig.server.MailAttachmentList;
 import org.minig.server.TestConstants;
 import org.minig.server.service.AttachmentService;
 import org.minig.server.service.CompositeAttachmentId;
@@ -24,7 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Matchers.argThat;
@@ -56,7 +55,7 @@ public class AttachmentResourceTest {
 
     @Test
     public void testReadAttachment_hasAttachment() throws Exception {
-        List<MailAttachment> l = new ArrayList<MailAttachment>();
+        List<MailAttachment> mailAttachments = new ArrayList<MailAttachment>();
         MailAttachment ma = new MailAttachment();
 
         ma.setFileName("filename");
@@ -64,15 +63,15 @@ public class AttachmentResourceTest {
         ma.setMime("mime");
 		ma.setMessageId("messageId");
 		ma.setFolder("folder");
-        l.add(ma);
+        mailAttachments.add(ma);
 
-        when(attachmentService.findAttachments(Matchers.<CompositeId> anyObject())).thenReturn(new MailAttachmentList(l));
+        when(attachmentService.findAttachments(Matchers.<CompositeId> anyObject())).thenReturn(mailAttachments);
 
         mockMvc.perform(get(PREFIX + "/attachment/INBOX/test|1")).andExpect(status().isOk())
 				.andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("attachmentMetadata[0].fileName").value("filename"))
-                .andExpect(jsonPath("attachmentMetadata[0].id").value("folder|messageId|filename"))
-                .andExpect(jsonPath("attachmentMetadata[0].mime").value("mime"));
+                .andExpect(jsonPath("$[0].fileName").value("filename"))
+                .andExpect(jsonPath("$[0].id").value("folder|messageId|filename"))
+                .andExpect(jsonPath("$[0].mime").value("mime"));
 
         verify(attachmentService).findAttachments(
                 argThat(org.hamcrest.Matchers.<CompositeId> hasProperty("messageId", IsEqual.<String> equalTo("1"))));
@@ -118,10 +117,7 @@ public class AttachmentResourceTest {
         mailAttachment.setFolder(compositeId.getFolder());
         mailAttachment.setMime("text/html");
 
-        MailAttachmentList mailAttachmentList = new MailAttachmentList();
-        mailAttachmentList.setAttachmentMetadata(Arrays.asList(mailAttachment));
-
-        when(attachmentService.findAttachments(compositeId)).thenReturn(mailAttachmentList);
+        when(attachmentService.findAttachments(compositeId)).thenReturn(Collections.singletonList(mailAttachment));
 
         mockMvc.perform(fileUpload(PREFIX + "/attachment/INBOX/test|id").file("data.txt", "data".getBytes()))
                 .andDo(print())
@@ -141,20 +137,21 @@ public class AttachmentResourceTest {
 
 	@Test
 	public void testReadAttachment_encodedFilename() throws Exception {
-		List<MailAttachment> l = new ArrayList<MailAttachment>();
+		List<MailAttachment> mailAttachments = new ArrayList<MailAttachment>();
 		MailAttachment ma = new MailAttachment();
 
 		ma.setFolder("folder");
 		ma.setMessageId("messageId");
 		ma.setFileName("umlaut ä.png");
 
-		l.add(ma);
+		mailAttachments.add(ma);
 
-		when(attachmentService.findAttachments(Matchers.<CompositeId> anyObject())).thenReturn(new MailAttachmentList(l));
+		when(attachmentService.findAttachments(Matchers.<CompositeId> anyObject())).thenReturn(mailAttachments);
 
 		mockMvc.perform(get(PREFIX + "/attachment/INBOX/test|1"))
 				.andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("attachmentMetadata[0].fileName").value("umlaut ä.png"))
-				.andExpect(jsonPath("attachmentMetadata[0].id").value("folder|messageId|umlaut%2B%25C3%25A4.png"));
+                .andDo(print())
+				.andExpect(jsonPath("$[0].fileName").value("umlaut ä.png"))
+				.andExpect(jsonPath("$[0].id").value("folder|messageId|umlaut%2B%25C3%25A4.png"));
 	}
 }

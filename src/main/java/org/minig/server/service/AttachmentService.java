@@ -2,7 +2,6 @@ package org.minig.server.service;
 
 import org.apache.commons.io.IOUtils;
 import org.minig.server.MailAttachment;
-import org.minig.server.MailAttachmentList;
 import org.minig.server.MailMessage;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,8 @@ import javax.activation.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class AttachmentService {
@@ -26,7 +27,7 @@ public class AttachmentService {
     @Autowired
     private FolderRepository folderRepository;
 
-    public MailAttachmentList findAttachments(CompositeId id) {
+    public List<MailAttachment> findAttachments(CompositeId id) {
         Assert.notNull(id);
 
         MailMessage message = mailRepository.read(id);
@@ -34,7 +35,7 @@ public class AttachmentService {
         if (message != null) {
             return attachmentRepository.readMetadata(message);
         } else {
-            return new MailAttachmentList();
+            return Collections.emptyList();
         }
     }
 

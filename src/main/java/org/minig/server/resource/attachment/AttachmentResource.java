@@ -1,14 +1,6 @@
 package org.minig.server.resource.attachment;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.minig.server.MailAttachment;
-import org.minig.server.MailAttachmentList;
 import org.minig.server.resource.Id;
 import org.minig.server.resource.exception.ClientIllegalArgumentException;
 import org.minig.server.service.AttachmentService;
@@ -16,9 +8,7 @@ import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +17,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Kamill Sokol
@@ -51,8 +47,8 @@ public class AttachmentResource {
 
         }
         if (id instanceof CompositeId) {
-            MailAttachmentList findAttachments = attachmentService.findAttachments(id);
-            ResponseEntity<MailAttachmentList> responseEntity = new ResponseEntity<MailAttachmentList>(findAttachments, HttpStatus.OK);
+            List<MailAttachment> findAttachments = attachmentService.findAttachments(id);
+            ResponseEntity<List<MailAttachment>> responseEntity = new ResponseEntity<>(findAttachments, HttpStatus.OK);
             return responseEntity;
         }
 
@@ -78,11 +74,11 @@ public class AttachmentResource {
 
         MultipartFile multipartFile = file.getFileMap().values().iterator().next();
         CompositeId newMailId = attachmentService.addAttachment(id, new MultipartfileDataSource(multipartFile));
-        MailAttachmentList attachments = attachmentService.findAttachments(newMailId);
+        List<MailAttachment> attachments = attachmentService.findAttachments(newMailId);
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", newMailId);
-        map.put("attachments", attachments.getAttachmentMetadata());
+        map.put("attachments", attachments);
         return map;
     }
 
@@ -91,11 +87,11 @@ public class AttachmentResource {
     @ResponseBody
     public Map<String, Object> deleteAttachment(@Id CompositeAttachmentId id) {
         CompositeId newMailId = attachmentService.deleteAttachment(id);
-        MailAttachmentList attachments = attachmentService.findAttachments(newMailId);
+        List<MailAttachment> attachments = attachmentService.findAttachments(newMailId);
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", newMailId);
-        map.put("attachments", attachments.getAttachmentMetadata());
+        map.put("attachments", attachments);
         return map;
     }
 }

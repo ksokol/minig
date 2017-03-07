@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailAttachment;
-import org.minig.server.MailAttachmentList;
 import org.minig.server.TestConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +18,7 @@ import javax.mail.internet.MimeMessage;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -52,9 +52,9 @@ public class AttachmentServiceTest {
 
         mockServer.prepareMailBox("INBOX", m);
 
-        MailAttachmentList findAttachments = uut.findAttachments(id);
+        List<MailAttachment> findAttachments = uut.findAttachments(id);
 
-        assertEquals(2, findAttachments.getAttachmentMetadata().size());
+        assertEquals(2, findAttachments.size());
     }
 
     @Test
@@ -67,9 +67,9 @@ public class AttachmentServiceTest {
 
         mockServer.prepareMailBox("INBOX", m);
 
-        MailAttachmentList findAttachments = uut.findAttachments(id);
+        List<MailAttachment> findAttachments = uut.findAttachments(id);
 
-        assertEquals(0, findAttachments.getAttachmentMetadata().size());
+        assertEquals(0, findAttachments.size());
     }
 
     @Test
@@ -78,9 +78,9 @@ public class AttachmentServiceTest {
         id.setFolder("INBOX");
         id.setMessageId("<id@localhost>");
 
-        MailAttachmentList findAttachments = uut.findAttachments(id);
+        List<MailAttachment> findAttachments = uut.findAttachments(id);
 
-        assertEquals(0, findAttachments.getAttachmentMetadata().size());
+        assertEquals(0, findAttachments.size());
     }
 
     @Test(expected = NotFoundException.class)

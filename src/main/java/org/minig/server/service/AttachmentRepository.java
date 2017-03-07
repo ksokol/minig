@@ -1,7 +1,6 @@
 package org.minig.server.service;
 
 import org.minig.server.MailAttachment;
-import org.minig.server.MailAttachmentList;
 import org.minig.server.service.impl.MailContext;
 import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
@@ -27,15 +26,15 @@ public class AttachmentRepository {
         this.mailContext = mailContext;
     }
 
-    public MailAttachmentList readMetadata(CompositeId id) {
+    public List<MailAttachment> readMetadata(CompositeId id) {
         Assert.notNull(id);
-        List<MailAttachment> metaDataList = new ArrayList<>();
         Mime4jMessage mime4jMessage = readInternal(id);
 
         if (mime4jMessage == null) {
-            return new MailAttachmentList(metaDataList);
+            return Collections.emptyList();
         }
 
+        List<MailAttachment> metaDataList = new ArrayList<>();
         List<Mime4jAttachment> attachments2 = mime4jMessage.getAttachments();
 
         for (Mime4jAttachment attachment : attachments2) {
@@ -47,7 +46,7 @@ public class AttachmentRepository {
             metaDataList.add(metaData);
         }
 
-        return new MailAttachmentList(metaDataList);
+        return metaDataList;
     }
 
     public MailAttachment read(CompositeAttachmentId id) {

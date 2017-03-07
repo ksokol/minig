@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailAttachment;
-import org.minig.server.MailAttachmentList;
 import org.minig.server.MailMessage;
 import org.minig.server.TestConstants;
 import org.minig.test.javamail.Mailbox;
@@ -68,7 +67,7 @@ public class AttachmentRepositoryTest {
         mm.setFolder("fakeFolder");
         mm.setAttachments(Collections.EMPTY_LIST);
 
-        List<MailAttachment> attachmentMetadata = uut.readMetadata(mm).getAttachmentMetadata();
+        List<MailAttachment> attachmentMetadata = uut.readMetadata(mm);
 
         assertEquals(0, attachmentMetadata.size());
     }
@@ -81,7 +80,7 @@ public class AttachmentRepositoryTest {
         mockServer.prepareMailBox("INBOX", m);
         MailMessage mm = mailRepository.read(id);
 
-        List<MailAttachment> attachmentMetadata = uut.readMetadata(mm).getAttachmentMetadata();
+        List<MailAttachment> attachmentMetadata = uut.readMetadata(mm);
 
         assertEquals(0, attachmentMetadata.size());
     }
@@ -95,10 +94,10 @@ public class AttachmentRepositoryTest {
 
         MailMessage mm = mailRepository.read(id);
 
-        List<MailAttachment> attachmentMetadata = uut.readMetadata(mm).getAttachmentMetadata();
+        List<MailAttachment> attachmentMetadata = uut.readMetadata(mm);
 
-        MailAttachment mailAttachment1 = uut.readMetadata(mm).getAttachmentMetadata().get(0);
-        MailAttachment mailAttachment2 = uut.readMetadata(mm).getAttachmentMetadata().get(1);
+        MailAttachment mailAttachment1 = uut.readMetadata(mm).get(0);
+        MailAttachment mailAttachment2 = uut.readMetadata(mm).get(1);
 
         assertThat(attachmentMetadata, hasSize(2));
         assertThat(mailAttachment1.getFileName(), is("1.png"));
@@ -187,13 +186,13 @@ public class AttachmentRepositoryTest {
 
         mockServer.prepareMailBox("INBOX.Drafts", m);
 
-        MailAttachmentList readMetadata = uut.readMetadata(new CompositeId("INBOX.Drafts", m.getMessageID()));
-        assertEquals(0, readMetadata.getAttachmentMetadata().size());
+        List<MailAttachment> readMetadata = uut.readMetadata(new CompositeId("INBOX.Drafts", m.getMessageID()));
+        assertEquals(0, readMetadata.size());
 
         CompositeAttachmentId id = new CompositeAttachmentId("INBOX.Drafts", m.getMessageID(), "folder.gif");
         CompositeId appendAttachmentId = uut.appendAttachment(id, new FileDataSource(new File(TestConstants.ATTACHMENT_IMAGE_FOLDER_GIF)));
 
-        MailAttachmentList readMetadata2 = uut.readMetadata(appendAttachmentId);
+        List<MailAttachment> readMetadata2 = uut.readMetadata(appendAttachmentId);
         MailMessage read = mailRepository.read(id);
 
         assertThat(read.getBody().getPlain().length(), greaterThanOrEqualTo(1449)); //ignore line endings
@@ -202,8 +201,8 @@ public class AttachmentRepositoryTest {
         assertThat(read.getBody().getHtml().length(), greaterThanOrEqualTo(25257));
         assertTrue(read.getBody().getHtml().contains("<td><br><h3>178.254.55.49</h3></td></tr>"));
 
-        assertEquals(1, readMetadata2.getAttachmentMetadata().size());
-        assertEquals("folder.gif", readMetadata2.getAttachmentMetadata().get(0).getFileName());
+        assertEquals(1, readMetadata2.size());
+        assertEquals("folder.gif", readMetadata2.get(0).getFileName());
     }
 
     @Test
@@ -215,15 +214,15 @@ public class AttachmentRepositoryTest {
         CompositeAttachmentId id = new CompositeAttachmentId("INBOX.Drafts", m.getMessageID(), "folder.gif");
         CompositeId appendAttachmentId = uut.appendAttachment(id, new FileDataSource(new File(TestConstants.ATTACHMENT_IMAGE_FOLDER_GIF)));
 
-        MailAttachmentList readMetadata2 = uut.readMetadata(appendAttachmentId);
+        List<MailAttachment> readMetadata2 = uut.readMetadata(appendAttachmentId);
         MailMessage read = mailRepository.read(id);
 
         assertThat(read.getBody().getPlain(), isEmptyString());
         assertThat(read.getBody().getHtml().length(), greaterThanOrEqualTo(173)); //ignore line endings
         assertThat(read.getBody().getHtml(), containsString("</body>"));
 
-        assertThat(readMetadata2.getAttachmentMetadata(), hasSize(1));
-        assertThat(readMetadata2.getAttachmentMetadata().get(0).getFileName(), is("folder.gif"));
+        assertThat(readMetadata2, hasSize(1));
+        assertThat(readMetadata2.get(0).getFileName(), is("folder.gif"));
     }
 
     @Test
@@ -235,7 +234,7 @@ public class AttachmentRepositoryTest {
         CompositeAttachmentId id = new CompositeAttachmentId("INBOX.Drafts", m.getMessageID(), "folder.gif");
         CompositeId appendAttachmentId = uut.appendAttachment(id, new FileDataSource(new File(TestConstants.ATTACHMENT_IMAGE_FOLDER_GIF)));
 
-        MailAttachmentList readMetadata2 = uut.readMetadata(appendAttachmentId);
+        List<MailAttachment> readMetadata2 = uut.readMetadata(appendAttachmentId);
         MailMessage read = mailRepository.read(id);
 
         assertThat(read.getBody().getPlain().length(), greaterThanOrEqualTo(70)); //ignore line endings
@@ -243,7 +242,7 @@ public class AttachmentRepositoryTest {
 
         assertThat(read.getBody().getHtml(), isEmptyString());
 
-        assertEquals(1, readMetadata2.getAttachmentMetadata().size());
-        assertEquals("folder.gif", readMetadata2.getAttachmentMetadata().get(0).getFileName());
+        assertEquals(1, readMetadata2.size());
+        assertEquals("folder.gif", readMetadata2.get(0).getFileName());
     }
 }
