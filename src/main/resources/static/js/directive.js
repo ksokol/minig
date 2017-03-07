@@ -322,16 +322,16 @@ app.directive("messageText", function() {
 
     return {
         restrict: "E",
-        link: function ($scope, element, attrs) {
+        link: function ($scope) {
             $scope.$watch('mail', function(mail) {
-                if(!mail || !mail.body) {
+                if(!mail) {
                     return;
                 }
                 //TODO support html mails
-                if(mail.body.plain) {
-                    $scope.messageText = formatPlain(mail.body.plain);
+                if(mail.plain) {
+                    $scope.messageText = formatPlain(mail.plain);
                 } else {
-                    $scope.messageText = formatHtml(mail.body.html);
+                    $scope.messageText = formatHtml(mail.html);
                 }
             });
         }
@@ -551,10 +551,10 @@ app.directive("bodyEditor", ['localStorageService', 'textAngularManager', 'htmlC
             prepareToolbar(scope, element);
 
             textAngularManager.retrieveEditor('htmlEditor').scope.$watch("html", function(html) {
-                if(!scope.mail || !scope.mail.body) {
+                if(!scope.mail) {
                     return;
                 }
-                scope.mail.body.plain = htmlConversion.convertToPlain(html);
+                scope.mail.plain = htmlConversion.convertToPlain(html);
             });
         }
     }
