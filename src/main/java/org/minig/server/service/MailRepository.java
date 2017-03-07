@@ -1,8 +1,8 @@
 package org.minig.server.service;
 
+import com.sun.mail.imap.IMAPFolder;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
-import org.minig.server.repository.mail.MailFetchProfile;
 import org.minig.server.service.impl.MailContext;
 import org.minig.server.service.impl.helper.MessageMapper;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import javax.mail.FetchProfile;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -59,7 +60,7 @@ public class MailRepository {
             }
 
             Message[] messages = storeFolder.getMessages(start, end);
-            storeFolder.fetch(messages, MailFetchProfile.overview());
+            storeFolder.fetch(messages, fullMailProfile());
 
             for (Message m : messages) {
                 MailMessage message = mapper.convertShort(m);
@@ -84,7 +85,7 @@ public class MailRepository {
             }
 
             Message[] search = storeFolder.search(new MessageIDTerm(id.getMessageId()));
-            storeFolder.fetch(search, MailFetchProfile.details());
+            storeFolder.fetch(search, fullMailProfile());
 
             if (search.length > 0) {
                 return mapper.convertFull(search[0]);
@@ -356,5 +357,23 @@ public class MailRepository {
             throw new RepositoryException(e.getMessage(), e);
         }
         return compositeId;
+    }
+
+    private static FetchProfile fullMailProfile() {
+        FetchProfile fp = new FetchProfile();
+        fp.add(FetchProfile.Item.ENVELOPE);
+        fp.add(FetchProfile.Item.FLAGS);
+        fp.add(FetchProfile.Item.CONTENT_INFO);
+        fp.add(IMAPFolder.FetchProfileItem.MESSAGE);
+        fp.add("X-Mozilla-Draft-Info");
+        fp.add("$MDNSent");
+        fp.add("$Forwarded");
+        fp.add("X-PRIORITY");
+        fp.add("Message-ID");
+        fp.add("Disposition-Notification-To");
+        fp.add("In-Reply-To");
+        fp.add("X-Forwarded-Message-Id");
+        fp.add("User-Agent");
+        return fp;
     }
 }
