@@ -2,7 +2,6 @@ package org.minig.server.service.impl.helper;
 
 import org.junit.Test;
 import org.minig.server.MailMessage;
-import org.minig.server.MailMessageBody;
 import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.MimeMessageBuilder;
@@ -115,8 +114,8 @@ public class MessageMapperTest {
 
         MailMessage c = uut.convertFull(m);
 
-        String plain = c.getBody().getPlain();
-        String html = c.getBody().getHtml();
+        String plain = c.getPlain();
+        String html = c.getHtml();
 
         assertThat(plain.length(), greaterThanOrEqualTo(1449)); //ignore line endings
         assertTrue(plain.contains("From: 2013-04-25 09:35:54, To: 2013-04-25 09:44:54, Downtime: 0h 09m 00s"));
@@ -180,9 +179,7 @@ public class MessageMapperTest {
     @Test
     public void testToMime4jMessage() throws MessagingException {
         MailMessage mailMessage = new MailMessage();
-        MailMessageBody mailMessageBody = new MailMessageBody();
-        mailMessageBody.setPlain("plain");
-        mailMessage.setBody(mailMessageBody);
+        mailMessage.setPlain("plain");
         mailMessage.setInReplyTo("inReplyTo");
         mailMessage.setForwardedMessageId("forwardId");
 

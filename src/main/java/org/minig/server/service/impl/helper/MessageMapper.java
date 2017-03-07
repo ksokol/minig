@@ -2,7 +2,6 @@ package org.minig.server.service.impl.helper;
 
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
-import org.minig.server.MailMessageBody;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
@@ -271,11 +270,8 @@ public class MessageMapper {
 
     private void setBody(MailMessage cm, Message msg) throws MessagingException, IOException {
         Mime4jMessage mime4jMessage = new Mime4jMessage(msg);
-        MailMessageBody b = new MailMessageBody();
-
-        b.setPlain(mime4jMessage.getPlain());
-        b.setHtml(mime4jMessage.getHtml());
-        cm.setBody(b);
+        cm.setPlain(mime4jMessage.getPlain());
+        cm.setHtml(mime4jMessage.getHtml());
     }
 
     private void setAttachmentId(MailMessage cm, Message msg) throws MessagingException, IOException {
@@ -354,19 +350,17 @@ public class MessageMapper {
             JavaMailSenderImpl javaMailSenderImpl = new JavaMailSenderImpl();
 
             MimeMessage message = javaMailSenderImpl.createMimeMessage();
-            MimeMessageHelper target = null;
+            MimeMessageHelper target;
 
-            if (source.getBody() != null) {
-                if (source.getBody().getPlain() != null && source.getBody().getHtml() != null) {
-                    target = new MimeMessageHelper(message, true, "UTF-8");
-                    target.setText(source.getBody().getPlain(), source.getBody().getHtml());
-                } else if (source.getBody().getPlain() != null && source.getBody().getHtml() == null) {
-                    target = new MimeMessageHelper(message, "UTF-8");
-                    target.setText(source.getBody().getPlain());
-                } else {
-                    target = new MimeMessageHelper(message, "UTF-8");
-                    target.setText(source.getBody().getHtml(), true);
-                }
+            if (source.getPlain() != null && source.getHtml() != null) {
+                target = new MimeMessageHelper(message, true, "UTF-8");
+                target.setText(source.getPlain(), source.getHtml());
+            } else if (source.getPlain() != null && source.getHtml() == null) {
+                target = new MimeMessageHelper(message, "UTF-8");
+                target.setText(source.getPlain());
+            } else {
+                target = new MimeMessageHelper(message, "UTF-8");
+                target.setText(source.getHtml(), true);
             }
 
             if (source.getSender() != null) {
@@ -438,10 +432,8 @@ public class MessageMapper {
     public Mime4jMessage toMime4jMessage(MailMessage source) {
         Mime4jMessage target = new Mime4jMessage(source);
 
-        if (source.getBody() != null) {
-            target.setPlain(source.getBody().getPlain());
-            target.setHtml(source.getBody().getHtml());
-        }
+        target.setPlain(source.getPlain());
+        target.setHtml(source.getHtml());
 
         if (source.getSender() != null) {
             // TODO , source.getSender().getDisplay()

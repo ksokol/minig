@@ -195,11 +195,11 @@ public class AttachmentRepositoryTest {
         List<MailAttachment> readMetadata2 = uut.readMetadata(appendAttachmentId);
         MailMessage read = mailRepository.read(id);
 
-        assertThat(read.getBody().getPlain().length(), greaterThanOrEqualTo(1449)); //ignore line endings
-        assertTrue(read.getBody().getPlain().contains("From: 2013-04-25 09:35:54, To: 2013-04-25 09:44:54, Downtime: 0h 09m 00s"));
+        assertThat(read.getPlain().length(), greaterThanOrEqualTo(1449)); //ignore line endings
+        assertTrue(read.getPlain().contains("From: 2013-04-25 09:35:54, To: 2013-04-25 09:44:54, Downtime: 0h 09m 00s"));
 
-        assertThat(read.getBody().getHtml().length(), greaterThanOrEqualTo(25257));
-        assertTrue(read.getBody().getHtml().contains("<td><br><h3>178.254.55.49</h3></td></tr>"));
+        assertThat(read.getHtml().length(), greaterThanOrEqualTo(25257));
+        assertTrue(read.getHtml().contains("<td><br><h3>178.254.55.49</h3></td></tr>"));
 
         assertEquals(1, readMetadata2.size());
         assertEquals("folder.gif", readMetadata2.get(0).getFileName());
@@ -217,9 +217,9 @@ public class AttachmentRepositoryTest {
         List<MailAttachment> readMetadata2 = uut.readMetadata(appendAttachmentId);
         MailMessage read = mailRepository.read(id);
 
-        assertThat(read.getBody().getPlain(), isEmptyString());
-        assertThat(read.getBody().getHtml().length(), greaterThanOrEqualTo(173)); //ignore line endings
-        assertThat(read.getBody().getHtml(), containsString("</body>"));
+        assertThat(read.getPlain(), isEmptyString());
+        assertThat(read.getHtml().length(), greaterThanOrEqualTo(173)); //ignore line endings
+        assertThat(read.getHtml(), containsString("</body>"));
 
         assertThat(readMetadata2, hasSize(1));
         assertThat(readMetadata2.get(0).getFileName(), is("folder.gif"));
@@ -237,10 +237,10 @@ public class AttachmentRepositoryTest {
         List<MailAttachment> readMetadata2 = uut.readMetadata(appendAttachmentId);
         MailMessage read = mailRepository.read(id);
 
-        assertThat(read.getBody().getPlain().length(), greaterThanOrEqualTo(70)); //ignore line endings
-        assertTrue(read.getBody().getPlain().contains("row with text"));
+        assertThat(read.getPlain().length(), greaterThanOrEqualTo(70)); //ignore line endings
+        assertTrue(read.getPlain().contains("row with text"));
 
-        assertThat(read.getBody().getHtml(), isEmptyString());
+        assertThat(read.getHtml(), isEmptyString());
 
         assertEquals(1, readMetadata2.size());
         assertEquals("folder.gif", readMetadata2.get(0).getFileName());

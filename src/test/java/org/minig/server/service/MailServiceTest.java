@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
-import org.minig.server.MailMessageBody;
 import org.minig.server.MailMessageList;
 import org.minig.server.TestConstants;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
@@ -366,9 +365,7 @@ public class MailServiceTest {
         MailMessage m = new MailMessage();
         m.setSubject("draft message");
 
-        MailMessageBody body = new MailMessageBody();
-        body.setPlain("plain body");
-        m.setBody(body);
+        m.setPlain("plain body");
 
         MailMessageAddress recipient = new MailMessageAddress();
         recipient.setDisplayName("sender@localhost");
@@ -382,7 +379,7 @@ public class MailServiceTest {
         assertThat(draftMessage.getTo(), hasSize(1));
         assertThat(draftMessage.getTo().get(0).getEmail(), is("sender@localhost"));
         assertThat(draftMessage.getTo().get(0).getDisplayName(), is("sender@localhost"));
-        assertThat(draftMessage.getBody().getPlain(), is("plain body"));
+        assertThat(draftMessage.getPlain(), is("plain body"));
     }
 
     @Test
@@ -397,8 +394,8 @@ public class MailServiceTest {
         MailMessage mm = new MailMessage();
         mm.setCompositeId(id);
         mm.setSubject("save draft");
-        mm.getBody().setPlain(replacedBody);
-        mm.getBody().setHtml(replacedBody);
+        mm.setPlain(replacedBody);
+        mm.setHtml(replacedBody);
 
         MailMessage updateDraftMessage = uut.updateDraftMessage(mm);
 
@@ -406,8 +403,8 @@ public class MailServiceTest {
 
         assertFalse(id.getId().equals(updateDraftMessage.getId()));
         assertEquals(2, updateDraftMessage.getAttachments().size());
-        assertEquals(replacedBody, updateDraftMessage.getBody().getPlain());
-        assertEquals(replacedBody, updateDraftMessage.getBody().getHtml());
+        assertEquals(replacedBody, updateDraftMessage.getPlain());
+        assertEquals(replacedBody, updateDraftMessage.getHtml());
         assertEquals("save draft", updateDraftMessage.getSubject());
         assertEquals("1.png", updateDraftMessage.getAttachments().get(0).getFileName());
     }

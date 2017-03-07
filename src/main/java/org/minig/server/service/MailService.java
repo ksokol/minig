@@ -237,8 +237,8 @@ public class MailService {
         }
 
         mimeMessage.setSubject(message.getSubject());
-        mimeMessage.setHtml(message.getBody().getHtml());
-        mimeMessage.setPlain(message.getBody().getPlain());
+        mimeMessage.setHtml(message.getHtml());
+        mimeMessage.setPlain(message.getPlain());
 
         mimeMessage.setAskForDispositionNotification(message.getAskForDispositionNotification());
         mimeMessage.setHighPriority(message.getHighPriority());

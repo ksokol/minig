@@ -65,8 +65,8 @@ public class SubmissionServiceTest {
         mm.setSender(new MailMessageAddress(mailAuthentication.getEmailAddress()));
         mm.setTo(Arrays.asList(new MailMessageAddress("test@example.com")));
         mm.setSubject("test subject");
-        mm.getBody().setHtml(expectedBody);
-        mm.getBody().setPlain(expectedBody);
+        mm.setHtml(expectedBody);
+        mm.setPlain(expectedBody);
 
         uut.sendMessage(mm);
 
@@ -98,8 +98,8 @@ public class SubmissionServiceTest {
         mm.setSender(new MailMessageAddress(mailAuthentication.getEmailAddress()));
         mm.setTo(Arrays.asList(new MailMessageAddress("test@example.com")));
         mm.setSubject("msg with forward");
-        mm.getBody().setHtml(expectedBody);
-        mm.getBody().setPlain(expectedBody);
+        mm.setHtml(expectedBody);
+        mm.setPlain(expectedBody);
         mm.setForwardedMessageId(toBeForwarded.getMessageID());
 
         uut.sendMessage(mm);

@@ -41,12 +41,30 @@ public class MailMessage extends CompositeId {
         this.subject = subject;
     }
 
+    @Deprecated
     public MailMessageBody getBody() {
         return body;
     }
 
+    @Deprecated
     public void setBody(MailMessageBody body) {
         this.body = body;
+    }
+
+    public void setPlain(String plain) {
+        body.setPlain(plain);
+    }
+
+    public String getPlain() {
+        return body.getPlain();
+    }
+
+    public void setHtml(String html) {
+        body.setHtml(html);
+    }
+
+    public String getHtml() {
+        return body.getHtml();
     }
 
     public List<CompositeAttachmentId> getAttachments() {

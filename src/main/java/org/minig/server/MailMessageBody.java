@@ -16,6 +16,7 @@
 
 package org.minig.server;
 
+@Deprecated
 public class MailMessageBody {
 
 	private String html = "";
