@@ -21,28 +21,28 @@ import java.util.List;
 
 public class MailMessageList {
 
-    private int fullLength;
+    private long fullLength;
     private int page;
     private List<MailMessage> mailList;
 
     public MailMessageList() {
-        this.mailList = new ArrayList<MailMessage>();
+        this.mailList = new ArrayList<>();
         this.page = 1;
         this.fullLength = 0;
 
     }
 
-    public MailMessageList(List<MailMessage> mailList, int page, int fullLength) {
+    public MailMessageList(List<MailMessage> mailList, int page, long fullLength) {
         this.mailList = mailList;
         this.page = page;
         this.fullLength = fullLength;
     }
 
-    public int getFullLength() {
+    public long getFullLength() {
         return fullLength;
     }
 
-    public void setFullLength(int fullLength) {
+    public void setFullLength(long fullLength) {
         this.fullLength = fullLength;
     }
 
