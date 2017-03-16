@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -50,14 +51,6 @@ public class MailServiceTest {
 
     @Rule
     public MailboxRule mailboxRule = new MailboxRule(MOCK_USER);
-
-    @Test
-    public void testFolderCountFindMessagesByFolder() {
-        String folder = "INBOX.test";
-        mailboxRule.append(folder, new MimeMessageBuilder().build());
-        MailMessageList findMessagesByFolder = uut.firstPageMessagesByFolder(folder);
-        assertThat(findMessagesByFolder.getFullLength(), is(1L));
-    }
 
     @Test
     public void testFindMessagesByFolderInvalidPageArgument() {
@@ -127,19 +120,16 @@ public class MailServiceTest {
 
     @Test
     public void testTrashMessage() throws MessagingException {
-        MimeMessage m = new MimeMessageBuilder().build();
+        MimeMessage message = new MimeMessageBuilder().build();
 
-        mockServer.prepareMailBox("INBOX", m);
+        mockServer.prepareMailBox("INBOX", message);
         mockServer.createAndSubscribeMailBox("INBOX.Trash");
 
-        assertEquals(1, uut.firstPageMessagesByFolder("INBOX").getFullLength());
-        assertEquals(0, uut.firstPageMessagesByFolder("INBOX.Trash").getFullLength());
-
-        CompositeId id = new CompositeId("INBOX", m.getMessageID());
+        CompositeId id = new CompositeId("INBOX", message.getMessageID());
         uut.deleteMessage(id);
 
-        assertEquals(0, uut.firstPageMessagesByFolder("INBOX").getFullLength());
-        assertEquals(1, uut.firstPageMessagesByFolder("INBOX.Trash").getFullLength());
+        assertThat(mailboxRule.getAllInFolder("INBOX"), empty());
+        assertThat(mailboxRule.getAllInFolder("INBOX.Trash"), hasSize(1));
     }
 
     @Test
@@ -149,30 +139,28 @@ public class MailServiceTest {
         MimeMessage m = new MimeMessageBuilder().build();
         mockServer.prepareMailBox("INBOX.Trash", m);
 
-        assertEquals(1, uut.firstPageMessagesByFolder("INBOX.Trash").getFullLength());
+        assertThat(mailboxRule.getAllInFolder("INBOX.Trash"), hasSize(1));
 
         CompositeId id = new CompositeId("INBOX.Trash", m.getMessageID());
         uut.deleteMessage(id);
 
-        assertEquals(0, uut.firstPageMessagesByFolder("INBOX.Trash").getFullLength());
+        assertThat(mailboxRule.getAllInFolder("INBOX.Trash"), empty());
     }
 
     @Test
     public void testUpdateMessageFlags_valid() throws MessagingException {
-        MimeMessage m = new MimeMessageBuilder().build();
-        mockServer.prepareMailBox("INBOX", m);
+        MimeMessage message = new MimeMessageBuilder().build();
+        mockServer.prepareMailBox("INBOX", message);
 
-        MailMessageList findMessagesByFolder = uut.firstPageMessagesByFolder("INBOX");
-        assertEquals(1, findMessagesByFolder.getFullLength());
+        MailMessageList mailMessageList = uut.findMessagesByFolder("INBOX", 1, 1);
+        MailMessage mailMessage = mailMessageList.getMailList().get(0);
+        mailMessage.setAnswered(true);
+        mailMessage.setRead(true);
+        mailMessage.setStarred(true);
 
-        MailMessage mm = findMessagesByFolder.getMailList().get(0);
-        mm.setAnswered(true);
-        mm.setRead(true);
-        mm.setStarred(true);
+        uut.updateMessageFlags(mailMessage);
 
-        uut.updateMessageFlags(mm);
-
-        CompositeId id = new CompositeId("INBOX", m.getMessageID());
+        CompositeId id = new CompositeId("INBOX", message.getMessageID());
 
         MailMessage after = uut.findMessage(id);
 
@@ -181,14 +169,14 @@ public class MailServiceTest {
         assertTrue(after.getAnswered());
         assertFalse(after.getHighPriority());
 
-        mm.setRead(null);
-        mm.setStarred(null);
-        mm.setAnswered(null);
-        mm.setHighPriority(null);
+        mailMessage.setRead(null);
+        mailMessage.setStarred(null);
+        mailMessage.setAnswered(null);
+        mailMessage.setHighPriority(null);
 
-        uut.updateMessageFlags(mm);
+        uut.updateMessageFlags(mailMessage);
 
-        id = new CompositeId("INBOX", m.getMessageID());
+        id = new CompositeId("INBOX", message.getMessageID());
         after = uut.findMessage(id);
 
         assertTrue(after.getStarred());
@@ -224,54 +212,35 @@ public class MailServiceTest {
 
         mockServer.prepareMailBox("INBOX", mList);
 
-        MailMessageList firstPageMessagesByFolder = uut.firstPageMessagesByFolder("INBOX");
+        MailMessageList mailMessageList = uut.findMessagesByFolder("INBOX", 1, 2);
 
-        for (MailMessage mm : firstPageMessagesByFolder.getMailList()) {
+        for (MailMessage mm : mailMessageList.getMailList()) {
             assertFalse(mm.getStarred());
             mm.setStarred(true);
         }
 
-        uut.updateMessagesFlags(firstPageMessagesByFolder);
+        uut.updateMessagesFlags(mailMessageList);
 
-        firstPageMessagesByFolder = uut.firstPageMessagesByFolder("INBOX");
+        mailMessageList = uut.findMessagesByFolder("INBOX", 1, 2);
 
-        for (MailMessage mm : firstPageMessagesByFolder.getMailList()) {
+        for (MailMessage mm : mailMessageList.getMailList()) {
             assertTrue(mm.getStarred());
         }
     }
 
     @Test
-    public void testMoveMessageToFolder() {
-        mockServer.prepareMailBox("INBOX", new MimeMessageBuilder().build());
+    public void testMoveMessageToFolder() throws MessagingException {
+        MimeMessage message = new MimeMessageBuilder().build();
+
+        mockServer.prepareMailBox("INBOX", message);
         mockServer.createAndSubscribeMailBox("INBOX.test");
 
-        MailMessageList findMessagesByFolder = uut.firstPageMessagesByFolder("INBOX");
-        assertEquals(1, findMessagesByFolder.getFullLength());
+        CompositeId compositeId = new CompositeId("INBOX", message.getMessageID());
+        uut.moveMessageToFolder(compositeId, "INBOX.test");
 
-        MailMessage mm = findMessagesByFolder.getMailList().get(0);
-
-        uut.moveMessageToFolder(mm, "INBOX.test");
-
-        assertEquals(0, uut.firstPageMessagesByFolder("INBOX").getFullLength());
-        assertEquals(1, uut.firstPageMessagesByFolder("INBOX.test").getFullLength());
+        assertThat(mailboxRule.getAllInFolder("INBOX"), empty());
+        assertThat(mailboxRule.getAllInFolder("INBOX.test"), hasSize(1));
     }
-
-    // @Test
-    // public void testCreateMessage() {
-    // MailMessage mm = new MailMessage();
-    // mm.setSubject("testCreateMessage");
-    // mm.setId("messageId");
-    // mm.setFolder("INBOX");
-    //
-    // uut.createMessage(mm);
-    //
-    // MailMessageList firstPageMessagesByFolder =
-    // uut.firstPageMessagesByFolder("INBOX");
-    //
-    // assertEquals(1, firstPageMessagesByFolder.getFullLength());
-    // assertEquals("testCreateMessage",
-    // firstPageMessagesByFolder.getMailList().get(0).getSubject());
-    // }
 
     @Test
     public void testCopyMessagesToFolderWithInvalidArguments() {
@@ -313,8 +282,8 @@ public class MailServiceTest {
 
         uut.copyMessagesToFolder(idList, "INBOX.copy");
 
-        assertEquals(3, uut.firstPageMessagesByFolder("INBOX").getFullLength());
-        assertEquals(3, uut.firstPageMessagesByFolder("INBOX.copy").getFullLength());
+        assertThat(mailboxRule.getAllInFolder("INBOX"), hasSize(3));
+        assertThat(mailboxRule.getAllInFolder("INBOX.copy"), hasSize(3));
 
         idList.add(null);
 
@@ -322,7 +291,7 @@ public class MailServiceTest {
 
         uut.copyMessagesToFolder(idList, "INBOX.copy2");
 
-        assertEquals(3, uut.firstPageMessagesByFolder("INBOX.copy2").getFullLength());
+        assertThat(mailboxRule.getAllInFolder("INBOX.copy2"), hasSize(3));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -345,8 +314,8 @@ public class MailServiceTest {
 
         uut.deleteMessages(idList);
 
-        assertEquals(0, uut.firstPageMessagesByFolder("INBOX").getFullLength());
-        assertEquals(3, uut.firstPageMessagesByFolder("INBOX.Trash").getFullLength());
+        assertThat(mailboxRule.getAllInFolder("INBOX"), empty());
+        assertThat(mailboxRule.getAllInFolder("INBOX.Trash"), hasSize(3));
 
         idList.clear();
 
@@ -356,7 +325,7 @@ public class MailServiceTest {
 
         uut.deleteMessages(idList);
 
-        assertEquals(0, uut.firstPageMessagesByFolder("INBOX.Trash").getFullLength());
+        assertThat(mailboxRule.getAllInFolder("INBOX.Trash"), empty());
     }
 
     @Test

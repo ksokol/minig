@@ -6,8 +6,11 @@ import org.minig.server.TestConstants;
 import javax.mail.Message;
 import javax.mail.internet.MimeMessage;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamill Sokol
@@ -61,6 +64,14 @@ public class MailboxRule extends ExternalResource {
             return Optional.empty();
         }
         return mailbox.stream().findFirst();
+    }
+
+    public List<Message> getAllInFolder(String folder) {
+        Mailbox mailbox = MailboxHolder.get(emailAddress, folder);
+        if(mailbox == null) {
+            return Collections.emptyList();
+        }
+        return mailbox.stream().collect(Collectors.toList());
     }
 
     public void append(String mailboxPath, MimeMessage...messages) {

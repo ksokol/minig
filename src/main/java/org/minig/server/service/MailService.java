@@ -46,10 +46,6 @@ public class MailService {
     @Autowired
     private MessageMapper mapper;
 
-    public MailMessageList firstPageMessagesByFolder(String folder) {
-        return findMessagesByFolder(folder, 1, 10);
-    }
-
     public MailMessageList findMessagesByFolder(String folder, int page, int pageLength) {
         if (pageLength < 1) {
             throw new IllegalArgumentException("pageLength not valid. should have value 1 or greater");
