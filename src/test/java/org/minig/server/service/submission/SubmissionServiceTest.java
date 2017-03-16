@@ -2,36 +2,36 @@ package org.minig.server.service.submission;
 
 import config.ServiceTestConfig;
 import org.hamcrest.Matchers;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.security.MailAuthentication;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
-import org.minig.server.MailMessageList;
 import org.minig.server.TestConstants;
-import org.minig.server.service.MailRepository;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
-import org.minig.test.javamail.MailboxHolder;
+import org.minig.test.javamail.MailboxRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.minig.server.TestConstants.MOCK_USER;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -43,15 +43,10 @@ public class SubmissionServiceTest {
     private SubmissionService uut;
 
     @Autowired
-    private MailRepository mailRepository;
-
-    @Autowired
     private MailAuthentication mailAuthentication;
 
-    @Before
-    public void setUp() throws Exception {
-        MailboxHolder.reset();
-    }
+    @Rule
+    public MailboxRule mailboxRule = new MailboxRule(MOCK_USER);
 
     @Test
     public void testSendMessage() throws MessagingException {
@@ -112,10 +107,11 @@ public class SubmissionServiceTest {
         assertEquals("testuser@localhost", mime4jMessage.getSender());
         assertEquals("msg with forward", mime4jMessage.getSubject());
 
-        MailMessageList findByFolder = mailRepository.findByFolder("INBOX.test", 1, 10);
+        Message actualMessage =
+                mailboxRule.getFirstInFolder("INBOX.test").orElseThrow(() -> new AssertionError("message in folder INBOX.text expected"));
 
-        assertEquals("Pingdom Monthly Report 2013-04-01 to 2013-04-30", findByFolder.getMailList().get(0).getSubject());
-        assertTrue(findByFolder.getMailList().get(0).getForwarded());
+        assertThat(actualMessage.getSubject(), is("Pingdom Monthly Report 2013-04-01 to 2013-04-30"));
+        assertThat(actualMessage.getFlags().getUserFlags(), arrayContaining("$Forwarded"));
     }
 
     @Test

@@ -1,30 +1,34 @@
 package org.minig.server.service;
 
 import config.ServiceTestConfig;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailMessage;
-import org.minig.server.MailMessageList;
 import org.minig.server.TestConstants;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
+import org.minig.test.javamail.MailboxRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.minig.server.TestConstants.MOCK_USER;
 
 /**
  * @author Kamill Sokol
@@ -41,10 +45,8 @@ public class MailRepositoryTest {
     @Autowired
     private MailRepository uut;
 
-    @Before
-    public void setUp() throws Exception {
-        mockServer.reset();
-    }
+    @Rule
+    public MailboxRule mailboxRule = new MailboxRule(MOCK_USER);
 
     @Test
     public void testRead() throws MessagingException {
@@ -59,33 +61,31 @@ public class MailRepositoryTest {
     }
 
     @Test
-    public void testFolderCountVariance() {
-        MimeMessage msg = new MimeMessageBuilder().build(TestConstants.PLAIN);
+    public void shouldReturnCorrectPageWithTwoMessages() {
+        MimeMessage message = new MimeMessageBuilder().build(TestConstants.PLAIN);
+        mailboxRule.append("INBOX", message, message);
 
-        assertEquals(0, uut.findByFolder("INBOX", 1, 20).getFullLength());
+        Page<MimeMessage> page = uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(1, 20));
 
-        mockServer.prepareMailBox("INBOX.testfolder", msg, msg);
+        assertThat(page.getTotalElements(), is(2L));
+        assertThat(page.getContent(), hasSize(2));
+        assertThat(page.getNumberOfElements(), is(2));
+        assertThat(page.getTotalPages(), is(1));
+        assertThat(page.getNumber(), is(0));
+        assertThat(page.getSize(), is(20));
+    }
 
-        assertEquals(0, uut.findByFolder("INBOX", 1, 20).getFullLength());
-        assertEquals(2, uut.findByFolder("INBOX.testfolder", 1, 20).getFullLength());
+    @Test
+    public void shouldCalculateValidPagination() {
+        MimeMessage message = new MimeMessageBuilder().build(TestConstants.PLAIN);
+        IntStream.range(0, 25).forEach(i -> mailboxRule.append("INBOX", message));
 
-        List<MimeMessage> mm = new ArrayList<>();
-
-        for(int i=0; i< 25;i++) {
-            mm.add(msg);
-        }
-
-        mockServer.prepareMailBox("INBOX.testfolder", mm);
-
-        assertEquals(25, uut.findByFolder("INBOX.testfolder", 1, 20).getFullLength());
-        assertEquals(20, uut.findByFolder("INBOX.testfolder", 1, 20).getMailList().size());
-        assertEquals(5, uut.findByFolder("INBOX.testfolder", 2, 20).getMailList().size());
-        assertEquals(25, uut.findByFolder("INBOX.testfolder", 1, 25).getMailList().size());
-        assertEquals(0, uut.findByFolder("INBOX.testfolder", 2, 25).getMailList().size());
-        assertEquals(0, uut.findByFolder("INBOX.testfolder", 2, 26).getMailList().size());
-        assertEquals(13, uut.findByFolder("INBOX.testfolder", 1, 13).getMailList().size());
-        assertEquals(0, uut.findByFolder("INBOX.testfolder", 3, 13).getMailList().size());
-        assertEquals(0, uut.findByFolder("INBOX.testfolder", -5, -5).getMailList().size());
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(2, 20)).getNumberOfElements(), is(5));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(1, 25)).getNumberOfElements(), is(25));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(1, 30)).getNumberOfElements(), is(25));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(2, 30)).getNumberOfElements(), is(0));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(1, 13)).getNumberOfElements(), is(13));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(3, 13)).getNumberOfElements(), is(0));
     }
 
     @Test
@@ -146,35 +146,30 @@ public class MailRepositoryTest {
 
     @Test
     public void testMoveMessage() throws MessagingException {
-        MimeMessage m = new MimeMessageBuilder().build();
+        MimeMessage message = new MimeMessageBuilder().build();
 
-        mockServer.prepareMailBox("INBOX", m);
+        mailboxRule.append("INBOX", message);
 
-        CompositeId id = new CompositeId("INBOX", m.getMessageID());
-        MailMessage read = uut.read(id);
+        CompositeId id = new CompositeId("INBOX", message.getMessageID());
+        MailMessage mail = uut.read(id);
 
-        mockServer.createAndSubscribeMailBox("INBOX.testUpdateFolder");
-        uut.moveMessage(read, "INBOX.testUpdateFolder");
+        mailboxRule.createFolder(MOCK_USER, "INBOX.testUpdateFolder");
+        uut.moveMessage(mail, "INBOX.testUpdateFolder");
 
-        MailMessageList findByFolder = uut.findByFolder("INBOX.testUpdateFolder", 1, 1);
-        assertEquals(1, findByFolder.getFullLength());
-
-        findByFolder = uut.findByFolder("INBOX", 1, 1);
-        assertEquals(0, findByFolder.getFullLength());
+        assertThat(mailboxRule.getFirstInFolder("INBOX").isPresent(), is(false));
+        assertThat(mailboxRule.getFirstInFolder("INBOX.testUpdateFolder").isPresent(), is(true));
     }
 
     @Test
     public void testDelete() throws Exception {
         MimeMessageBuilder builder = new MimeMessageBuilder();
-        MimeMessage m = builder.setStarred(false).build();
+        MimeMessage message = builder.setMessageId("id").build();
 
-        mockServer.prepareMailBox("INBOX", m);
-        MailMessageList findByFolder = uut.findByFolder("INBOX", 1, 1);
-        assertEquals(1, findByFolder.getFullLength());
+        mailboxRule.append("INBOX", message);
 
-        uut.delete(findByFolder.getMailList().get(0));
-        findByFolder = uut.findByFolder("INBOX", 1, 1);
-        assertEquals(0, findByFolder.getFullLength());
+        uut.delete(new CompositeId("INBOX", message.getMessageID()));
+
+        assertThat(mailboxRule.getFirstInFolder("INBOX").isPresent(), is(false));
     }
 
     @Test

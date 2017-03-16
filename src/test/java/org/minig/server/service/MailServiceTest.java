@@ -34,6 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.minig.server.TestConstants.MOCK_USER;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -48,14 +49,14 @@ public class MailServiceTest {
     private SmtpAndImapMockServer mockServer;
 
     @Rule
-    public MailboxRule mailboxRule = new MailboxRule();
+    public MailboxRule mailboxRule = new MailboxRule(MOCK_USER);
 
     @Test
     public void testFolderCountFindMessagesByFolder() {
         String folder = "INBOX.test";
         mailboxRule.append(folder, new MimeMessageBuilder().build());
         MailMessageList findMessagesByFolder = uut.firstPageMessagesByFolder(folder);
-        assertThat(findMessagesByFolder.getFullLength(), is(1));
+        assertThat(findMessagesByFolder.getFullLength(), is(1L));
     }
 
     @Test

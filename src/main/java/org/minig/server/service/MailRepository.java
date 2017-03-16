@@ -2,13 +2,16 @@ package org.minig.server.service;
 
 import com.sun.mail.imap.IMAPFolder;
 import org.minig.server.MailMessage;
-import org.minig.server.MailMessageList;
 import org.minig.server.service.impl.MailContext;
 import org.minig.server.service.impl.helper.MessageMapper;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -17,10 +20,12 @@ import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.mail.search.MessageIDTerm;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Kamill Sokol
@@ -36,41 +41,39 @@ public class MailRepository {
     @Autowired
     private MessageMapper mapper;
 
-    public MailMessageList findByFolder(String folder, int page, int pageLength) {
-        Assert.notNull(folder, "folder is null");
-
-        if (page < 1 || pageLength < 1) {
-            return new MailMessageList();
-        }
+    public Page<MimeMessage> findByFolderOrderByDateDesc(String folder, Pageable pageable) {
+        Objects.requireNonNull(folder, "folder is null");
+        Objects.requireNonNull(pageable, "pageable is null");
 
         try {
-            List<MailMessage> messageList = new ArrayList<MailMessage>();
-            Folder storeFolder = mailContext.openFolder(folder);
+            List<MimeMessage> mimeMessages = new ArrayList<>();
+            Folder storeFolder = mailContext.getFolder(folder);
             int messageCount = storeFolder.getMessageCount();
 
             if (messageCount == 0) {
-                return new MailMessageList();
+                return new PageImpl<>(Collections.emptyList(), pageable, 0);
             }
 
-            int end = messageCount - (page - 1) * pageLength;
-            int start = Math.max(end - pageLength + 1, 1);
+            int end = messageCount - (pageable.getPageNumber() -1 ) * pageable.getPageSize();
+            int start = Math.max(end - pageable.getPageSize() + 1, 1);
 
             if (end < 0) {
-                return new MailMessageList();
+                return new PageImpl<>(Collections.emptyList(), pageable, 0);
             }
 
             Message[] messages = storeFolder.getMessages(start, end);
             storeFolder.fetch(messages, fullMailProfile());
 
             for (Message m : messages) {
-                MailMessage message = mapper.convertShort(m);
-                messageList.add(message);
+                mimeMessages.add((MimeMessage) m);
             }
 
-            Collections.reverse(messageList);
-            return new MailMessageList(messageList, page, messageCount);
-        } catch (Exception e) {
-            throw new RepositoryException(e.getMessage(), e);
+            Collections.reverse(mimeMessages);
+
+            // TODO remove new PageRequest(...)
+            return new PageImpl<>(mimeMessages, new PageRequest(pageable.getPageNumber() - 1, pageable.getPageSize()), messageCount);
+        } catch (Exception exception) {
+            throw new RepositoryException(exception.getMessage(), exception);
         }
     }
 

@@ -12,11 +12,15 @@ import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import javax.mail.internet.MimeMessage;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamill Sokol
@@ -55,7 +59,15 @@ public class MailService {
             throw new IllegalArgumentException("page not valid. should have value 1 or greater");
         }
 
-        return mailRepository.findByFolder(folder, page, pageLength);
+        Page<MimeMessage> mimeMessages = mailRepository.findByFolderOrderByDateDesc(folder, new PageRequest(page, pageLength));
+        List<MailMessage> mailMessages = mimeMessages.getContent().stream().map(mapper::convertShort).collect(Collectors.toList());
+
+        MailMessageList mailMessageList = new MailMessageList();
+        mailMessageList.setMailList(mailMessages);
+        mailMessageList.setPage(mimeMessages.getNumber());
+        mailMessageList.setFullLength(mimeMessages.getTotalElements());
+
+        return mailMessageList;
     }
 
     public MailMessage findMessage(CompositeId id) {
