@@ -246,12 +246,12 @@ app.controller('FolderListCtrl', ['$scope', '$rootScope', 'folderService', 'rout
 
     function _updateFlags(mail) {
         mailService.updateFlags([mail])
-        .catch(function() {
-            $rootScope.$broadcast("error", i18nService.resolve("something wnet wrong"));
+        .catch(function(e) {
+            $rootScope.$broadcast("error", i18nService.resolve("something went wrong"));
         });
 
         $rootScope.$broadcast("more-actions-done");
-    };
+    }
 
     function saveAndNavigateToComposer(mail) {
         draftService.save(mail)
@@ -325,6 +325,10 @@ app.controller('FolderListCtrl', ['$scope', '$rootScope', 'folderService', 'rout
     $scope.refresh = function() {
         mailService.load($routeParams.id).then(function(mail) {
             $scope.mail = mail;
+            if(!$scope.mail.read) {
+                $scope.mail.read = true;
+                _updateFlags($scope.mail);
+            }
         })
         .catch(function(e) {
             $rootScope.$broadcast('error', i18nService.resolve("Message does not exists"));
