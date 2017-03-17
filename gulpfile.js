@@ -124,7 +124,7 @@ gulp.task('process-css', function() {
 gulp.task('karma', function (done) {
     gulp.src(paths.index)
         .pipe(ghtmlSrc({presets: 'script', getFileName: from('src')}))
-        .pipe(addSrc.append(['node_modules/angular-mocks/angular-mocks.js', 'src/test/javascript/test.js', 'src/test/resources/json/**', paths.ngTemplates + '/**'], { base: '.' }))
+        .pipe(addSrc.append(['node_modules/angular-mocks/angular-mocks.js', 'src/test/javascript/**.js', 'src/test/resources/json/**', paths.ngTemplates + '/**'], { base: '.' }))
         .pipe(debug({title: 'javascript file(s) for testing'}))
         .pipe(gutil.buffer(function(error, files) {
             if(error) {
