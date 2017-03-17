@@ -47,14 +47,6 @@ public class MailService {
     private MessageMapper mapper;
 
     public MailMessageList findMessagesByFolder(String folder, int page, int pageLength) {
-        if (pageLength < 1) {
-            throw new IllegalArgumentException("pageLength not valid. should have value 1 or greater");
-        }
-
-        if (page < 1) {
-            throw new IllegalArgumentException("page not valid. should have value 1 or greater");
-        }
-
         Page<MimeMessage> mimeMessages = mailRepository.findByFolderOrderByDateDesc(folder, new PageRequest(page, pageLength));
         List<MailMessage> mailMessages = mimeMessages.getContent().stream().map(mapper::convertShort).collect(Collectors.toList());
 

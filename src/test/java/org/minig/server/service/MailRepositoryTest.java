@@ -65,7 +65,7 @@ public class MailRepositoryTest {
         MimeMessage message = new MimeMessageBuilder().build(TestConstants.PLAIN);
         mailboxRule.append("INBOX", message, message);
 
-        Page<MimeMessage> page = uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(1, 20));
+        Page<MimeMessage> page = uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(0, 20));
 
         assertThat(page.getTotalElements(), is(2L));
         assertThat(page.getContent(), hasSize(2));
@@ -76,16 +76,31 @@ public class MailRepositoryTest {
     }
 
     @Test
+    public void shouldReturnCorrectPaginationAndEmptyContentWhenRequestedSizeIsOutOfBound() {
+        MimeMessage message = new MimeMessageBuilder().build(TestConstants.PLAIN);
+        mailboxRule.append("INBOX", message, message);
+
+        Page<MimeMessage> page = uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(1, 20));
+
+        assertThat(page.getTotalElements(), is(2L));
+        assertThat(page.getContent(), hasSize(0));
+        assertThat(page.getNumberOfElements(), is(0));
+        assertThat(page.getTotalPages(), is(1));
+        assertThat(page.getNumber(), is(1));
+        assertThat(page.getSize(), is(20));
+    }
+
+    @Test
     public void shouldCalculateValidPagination() {
         MimeMessage message = new MimeMessageBuilder().build(TestConstants.PLAIN);
         IntStream.range(0, 25).forEach(i -> mailboxRule.append("INBOX", message));
 
-        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(2, 20)).getNumberOfElements(), is(5));
-        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(1, 25)).getNumberOfElements(), is(25));
-        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(1, 30)).getNumberOfElements(), is(25));
-        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(2, 30)).getNumberOfElements(), is(0));
-        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(1, 13)).getNumberOfElements(), is(13));
-        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(3, 13)).getNumberOfElements(), is(0));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(1, 20)).getNumberOfElements(), is(5));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(0, 25)).getNumberOfElements(), is(25));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(0, 30)).getNumberOfElements(), is(25));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(1, 30)).getNumberOfElements(), is(0));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(0, 13)).getNumberOfElements(), is(13));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(2, 13)).getNumberOfElements(), is(0));
     }
 
     @Test

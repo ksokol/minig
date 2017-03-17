@@ -34,33 +34,33 @@ app.service('i18nService',['$locale', function($locale) {
 
 app.service('pagerFactory',['DEFAULT_PAGE_SIZE', function(DEFAULT_PAGE_SIZE) {
 
-    var DEFAULT =  {currentPage: 1, pageLength:0, fullLength: 0, pages: 0, start: 0, end: 0};
+    var DEFAULT =  {currentPage: 0, pageLength: DEFAULT_PAGE_SIZE, fullLength: 0, pages: 0, start: 0, end: 0};
 
     return {
         newInstance: function(currentPage, pageLength, fullLength) {
-            if(!fullLength || fullLength < 1 || !currentPage || currentPage < 1) {
+            if( !angular.isNumber(fullLength) ||
+                !angular.isNumber(currentPage) ||
+                pageLength === "undefined" ||
+                (fullLength) < 1 ||
+                (pageLength) < 1 ||
+                currentPage < 0
+            ) {
                 return angular.copy(DEFAULT);
-            }
-
-            if(pageLength !== undefined || pageLength < 1) {
-                pageLength = Math.max(DEFAULT_PAGE_SIZE, pageLength);
-            } else {
-                pageLength = DEFAULT_PAGE_SIZE;
             }
 
             var pagination = {
                 currentPage: currentPage,
                 fullLength: fullLength,
-                pageLength: pageLength,
+                pageLength: pageLength || DEFAULT_PAGE_SIZE,
                 start: 0,
                 end: 0
             };
 
-            pagination.pages = parseInt((fullLength + pageLength -1) / pageLength);
+            pagination.pages = Math.ceil((pagination.fullLength) / pagination.pageLength) -1 ;
 
             if(currentPage <= pagination.pages) {
-                pagination.start = (currentPage === 1) ? 1 : (currentPage -1) * pageLength;
-                pagination.end = Math.min(currentPage * pageLength, fullLength);
+                pagination.start = (pagination.currentPage === 0) ? 1 : (pagination.currentPage * pagination.pageLength) + 1;
+                pagination.end = Math.min((pagination.currentPage + 1) * pagination.pageLength, pagination.fullLength);
             }
 
             return pagination;

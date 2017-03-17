@@ -52,56 +52,6 @@ public class MailServiceTest {
     @Rule
     public MailboxRule mailboxRule = new MailboxRule(MOCK_USER);
 
-    @Test
-    public void testFindMessagesByFolderInvalidPageArgument() {
-        int count = 0;
-
-        try {
-            uut.findMessagesByFolder("INBOX", 0, 1);
-        } catch (IllegalArgumentException e) {
-            count++;
-        }
-
-        try {
-            uut.findMessagesByFolder("INBOX", -1, 1);
-        } catch (IllegalArgumentException e) {
-            count++;
-        }
-
-        try {
-            uut.findMessagesByFolder("INBOX", -1000, 1);
-        } catch (IllegalArgumentException e) {
-            count++;
-        }
-
-        assertThat(count, is(3));
-    }
-
-    @Test
-    public void testFindMessagesByFolderInvalidPageLengthArgument() {
-        int count = 0;
-
-        try {
-            uut.findMessagesByFolder("INBOX", 1, 0);
-        } catch (IllegalArgumentException e) {
-            count++;
-        }
-
-        try {
-            uut.findMessagesByFolder("INBOX", 1, -1);
-        } catch (IllegalArgumentException e) {
-            count++;
-        }
-
-        try {
-            uut.findMessagesByFolder("INBOX", 1, -100);
-        } catch (IllegalArgumentException e) {
-            count++;
-        }
-
-        assertThat(count, is(3));
-    }
-
     @Test(expected = NotFoundException.class)
     public void testFindMessageNotExistentMessage() {
         uut.findMessage(new CompositeId("non", "existent"));
@@ -152,7 +102,7 @@ public class MailServiceTest {
         MimeMessage message = new MimeMessageBuilder().build();
         mockServer.prepareMailBox("INBOX", message);
 
-        MailMessageList mailMessageList = uut.findMessagesByFolder("INBOX", 1, 1);
+        MailMessageList mailMessageList = uut.findMessagesByFolder("INBOX", 0, 1);
         MailMessage mailMessage = mailMessageList.getMailList().get(0);
         mailMessage.setAnswered(true);
         mailMessage.setRead(true);

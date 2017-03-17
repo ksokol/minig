@@ -32,7 +32,7 @@ app.controller('FolderListCtrl', ['$scope', '$rootScope', 'folderService', 'rout
     };
 
     $scope.selectFolder = function(folder) {
-        routeService.navigateTo({path: 'box', params: {folder: folder || INITIAL_MAILBOX, page : 1}, reload: true});
+        routeService.navigateTo({path: 'box', params: {folder: folder || INITIAL_MAILBOX, page : 0}, reload: true});
     };
 
     $scope.composer = function() {
@@ -42,7 +42,7 @@ app.controller('FolderListCtrl', ['$scope', '$rootScope', 'folderService', 'rout
 .controller('MailOverviewCtrl', ['$scope', '$rootScope', '$routeParams', 'mailService', 'i18nService', 'draftService', 'routeService', 'INITIAL_MAILBOX', function($scope, $rootScope, $routeParams, mailService, i18nService, draftService, routeService, INITIAL_MAILBOX) {
 
 	$scope.currentFolder = $routeParams.folder || INITIAL_MAILBOX;
-	$scope.currentPage = $routeParams.page || 1;
+	$scope.currentPage = $routeParams.page || 0;
 	$scope.selected = [];
 	$scope.folderIntent;
 	$scope.data;

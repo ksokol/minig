@@ -54,7 +54,7 @@ public class MailRepository {
                 return new PageImpl<>(Collections.emptyList(), pageable, 0);
             }
 
-            int end = messageCount - (pageable.getPageNumber() -1 ) * pageable.getPageSize();
+            int end = Math.max(messageCount - pageable.getPageNumber() * pageable.getPageSize(), 0);
             int start = Math.max(end - pageable.getPageSize() + 1, 1);
 
             if (end < 0) {
@@ -70,8 +70,7 @@ public class MailRepository {
 
             Collections.reverse(mimeMessages);
 
-            // TODO remove new PageRequest(...)
-            return new PageImpl<>(mimeMessages, new PageRequest(pageable.getPageNumber() - 1, pageable.getPageSize()), messageCount);
+            return new PageImpl<>(mimeMessages, pageable, messageCount);
         } catch (Exception exception) {
             throw new RepositoryException(exception.getMessage(), exception);
         }

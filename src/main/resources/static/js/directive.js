@@ -164,13 +164,13 @@ app.directive("pagination", ['DEFAULT_PAGE_SIZE', 'pagerFactory', function(DEFAU
         controller: ['$scope', function($scope) {
             $scope.pager = {
                 pages: 1,
-                currentPage: 1,
+                currentPage: 0,
                 length: DEFAULT_PAGE_SIZE,
                 fullLength: 0
             };
 
             $scope.isFirstPage = function() {
-                return $scope.pager.currentPage === 1;
+                return $scope.pager.currentPage === 0;
             };
 
             $scope.isLastPage = function() {
@@ -178,7 +178,7 @@ app.directive("pagination", ['DEFAULT_PAGE_SIZE', 'pagerFactory', function(DEFAU
             };
 
             $scope.firstPage = function() {
-                $scope.pager.currentPage = 1;
+                $scope.pager.currentPage = 0;
                 $scope.currentPage = $scope.pager.currentPage;
                 $scope.updateOverview();
             };

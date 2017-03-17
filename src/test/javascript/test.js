@@ -53,26 +53,29 @@ describe('PagerFactory', function(){
     });
 
     var combinations = [
-        {actual: [], expected: {currentPage: 1, pageLength: 0, fullLength: 0, pages: 0, start: 0, end: 0}},
-        {actual: [-4,-4,-6], expected: {currentPage: 1, pageLength: 0, fullLength: 0, pages: 0, start: 0, end: 0}},
-        {actual: [0,0,0], expected: {currentPage: 1, pageLength: 0, fullLength: 0, pages: 0, start: 0, end: 0}},
-        {actual: [1,1,1], expected: {currentPage: 1, pageLength: 20, fullLength: 1, pages: 1, start: 1, end: 1}},
-        {actual: [1,20,30], expected: {currentPage: 1, pageLength: 20, fullLength: 30, pages: 2, start: 1, end: 20}},
-        {actual: [2,20,30], expected: {currentPage: 2, pageLength: 20, fullLength: 30, pages: 2, start: 20, end: 30}},
-        {actual: [1,20,20], expected: {currentPage: 1, pageLength: 20, fullLength: 20, pages: 1, start: 1, end: 20}},
-        {actual: [1,20,21], expected: {currentPage: 1, pageLength: 20, fullLength: 21, pages: 2, start: 1, end: 20}},
-        {actual: [2,20,21], expected: {currentPage: 2, pageLength: 20, fullLength: 21, pages: 2, start: 20, end: 21}},
-        {actual: [1,20,15], expected: {currentPage: 1, pageLength: 20, fullLength: 15, pages: 1, start: 1, end: 15}},
-        {actual: [3,20,15], expected: {currentPage: 3, pageLength: 20, fullLength: 15, pages: 1, start: 0, end: 0}},
-        {actual: [3,20,25], expected: {currentPage: 3, pageLength: 20, fullLength: 25, pages: 2, start: 0, end: 0}},
-        {actual: [3,20,20], expected: {currentPage: 3, pageLength: 20, fullLength: 20, pages: 1, start: 0, end: 0}},
-        {actual: [1,30,40], expected: {currentPage: 1, pageLength: 30, fullLength: 40, pages: 2, start: 1, end: 30}},
-        {actual: [1,undefined,40], expected: {currentPage: 1, pageLength: 20, fullLength: 40, pages: 2, start: 1, end: 20}}
+        {actual: [], expected: {currentPage: 0, pageLength: 20, fullLength: 0, pages: 0, start: 0, end: 0}},
+        {actual: [-4,-4,-6], expected: {currentPage: 0, pageLength: 20, fullLength: 0, pages: 0, start: 0, end: 0}},
+        {actual: [0,0,0], expected: {currentPage: 0, pageLength: 20, fullLength: 0, pages: 0, start: 0, end: 0}},
+        {actual: [0,1,1], expected: {currentPage: 0, pageLength: 1, fullLength: 1, pages: 0, start: 1, end: 1}},
+        {actual: [1,1,1], expected: {currentPage: 1, pageLength: 1, fullLength: 1, pages: 0, start: 0, end: 0}},
+        {actual: [0,20,30], expected: {currentPage: 0, pageLength: 20, fullLength: 30, pages: 1, start: 1, end: 20}},
+        {actual: [1,20,30], expected: {currentPage: 1, pageLength: 20, fullLength: 30, pages: 1, start: 21, end: 30}},
+        {actual: [0,20,20], expected: {currentPage: 0, pageLength: 20, fullLength: 20, pages: 0, start: 1, end: 20}},
+        {actual: [1,20,20], expected: {currentPage: 1, pageLength: 20, fullLength: 20, pages: 0, start: 0, end: 0}},
+        {actual: [1,20,21], expected: {currentPage: 1, pageLength: 20, fullLength: 21, pages: 1, start: 21, end: 21}},
+        {actual: [2,20,21], expected: {currentPage: 2, pageLength: 20, fullLength: 21, pages: 1, start: 0, end: 0}},
+        {actual: [0,20,15], expected: {currentPage: 0, pageLength: 20, fullLength: 15, pages: 0, start: 1, end: 15}},
+        {actual: [1,20,15], expected: {currentPage: 1, pageLength: 20, fullLength: 15, pages: 0, start: 0, end: 0}},
+        {actual: [3,20,15], expected: {currentPage: 3, pageLength: 20, fullLength: 15, pages: 0, start: 0, end: 0}},
+        {actual: [3,20,25], expected: {currentPage: 3, pageLength: 20, fullLength: 25, pages: 1, start: 0, end: 0}},
+        {actual: [3,20,20], expected: {currentPage: 3, pageLength: 20, fullLength: 20, pages: 0, start: 0, end: 0}},
+        {actual: [1,30,40], expected: {currentPage: 1, pageLength: 30, fullLength: 40, pages: 1, start: 31, end: 40}},
+        {actual: [1,undefined,40], expected: {currentPage: 1, pageLength: 20, fullLength: 40, pages: 1, start: 21, end: 40}}
     ];
 
     var should = function(combination) {
         return 'should calculate pager with arguments currentPage: ' + combination[0] + ', pageLength: ' + combination[1] + ', fullLength: ' + combination[2];
-    }
+    };
 
     angular.forEach(combinations, function(combination) {
         it(should(combination.actual), function() {
@@ -93,7 +96,7 @@ describe('MailOverviewCtrl', function() {
     beforeEach(inject(function($rootScope, $controller, API_HOME, _$httpBackend_, _fixtureMaillist_){
         $httpBackend = _$httpBackend_;
 
-        _$httpBackend_.whenGET(API_HOME+'message?folder=INBOX&page=1&page_length=20').respond(_fixtureMaillist_);
+        _$httpBackend_.whenGET(API_HOME+'message?folder=INBOX&page=0&page_length=20').respond(_fixtureMaillist_);
         _$httpBackend_.whenGET('templates/box.html').respond("box.html");
 
         scope = $rootScope.$new();
