@@ -53,6 +53,7 @@ import static org.minig.MinigConstants.SUB_TYPE_ALTERNATIVE;
 import static org.minig.MinigConstants.SUB_TYPE_HTML;
 import static org.minig.MinigConstants.SUB_TYPE_MIXED;
 import static org.minig.MinigConstants.SUB_TYPE_PLAIN;
+import static org.minig.server.util.ExceptionUtils.rethrowCheckedAsUnchecked;
 
 /**
  * @author Kamill Sokol
@@ -464,25 +465,5 @@ final class MessageTransformer {
             return contentId;
         }
         return null;
-    }
-
-    @FunctionalInterface
-    interface SupplierWithExceptions<T, E extends Exception> {
-        T get() throws E;
-    }
-
-    private static <R, E extends Exception> R rethrowCheckedAsUnchecked(SupplierWithExceptions<R, E> supplier) {
-        try {
-            return supplier.get();
-        }
-        catch (Exception exception) {
-            throwAsUnchecked(exception);
-        }
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <E extends Throwable> void throwAsUnchecked(Exception exception) throws E {
-        throw (E) exception;
     }
 }
