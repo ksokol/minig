@@ -101,11 +101,11 @@ final class MessageTransformer {
     }
 
     String getText() {
-        return getBodyContent(MIME_TYPE_TEXT_PLAIN);
+        return extractByMimeType(MIME_TYPE_TEXT_PLAIN);
     }
 
     String getHtml() {
-        return getBodyContent(MIME_TYPE_TEXT_HTML);
+        return extractByMimeType(MIME_TYPE_TEXT_HTML);
     }
 
     void setHeader(String key, String value) {
@@ -251,13 +251,35 @@ final class MessageTransformer {
         return transformToAlternative(multipart);
     }
 
-    private String getBodyContent(String mimeType) {
-        if (mimeType.equalsIgnoreCase(message.getMimeType())) {
-            return getReadablePart((TextBody) message.getBody());
+    private String extractByMimeType(String mimeType) {
+        if (mimeType.equals(message.getMimeType())) {
+            return extractText((TextBody) message.getBody());
         } else if (message.isMultipart()) {
-            return getReadablePart(getBodyPart((Multipart) message.getBody(), mimeType));
+            return extractText(extractTextBodyPart((Multipart) message.getBody(), mimeType));
         }
         return "";
+    }
+
+    private static TextBody extractTextBodyPart(Multipart multipart, String mimeType) {
+        for (Entity entity : multipart.getBodyParts()) {
+            if (mimeType.equals(entity.getMimeType())) {
+                return (TextBody) entity.getBody();
+            }
+            if (entity.isMultipart()) {
+                return extractTextBodyPart((Multipart) entity.getBody(), mimeType);
+            }
+        }
+        return null;
+    }
+
+    private static String extractText(TextBody part){
+        if (part == null) {
+            return "";
+        }
+        return rethrowCheckedAsUnchecked(() -> {
+            String mimeCharset = part.getMimeCharset() == null || "us-ascii".equalsIgnoreCase(part.getMimeCharset()) ? UTF_8.name() : part.getMimeCharset();
+            return IOUtils.toString(part.getInputStream(), mimeCharset);
+        });
     }
 
     private static CompositeId createCompositeId(javax.mail.Message message) {
@@ -319,38 +341,6 @@ final class MessageTransformer {
             }
         }
         return null;
-    }
-
-    private static TextBody getBodyPart(Multipart multipart, String mimeType) {
-        List<Entity> bodyParts = multipart.getBodyParts();
-
-        for (Entity entity : bodyParts) {
-            TextBody textBody = null;
-
-            if (mimeType.equals(entity.getMimeType())) {
-                textBody = (TextBody) entity.getBody();
-            }
-
-            if (entity.isMultipart()) {
-                textBody = getBodyPart((Multipart) entity.getBody(), mimeType);
-            }
-
-            if (textBody != null) {
-                return textBody;
-            }
-        }
-
-        return null;
-    }
-
-    private static String getReadablePart(TextBody part) {
-        if (part == null) {
-            return "";
-        }
-        return rethrowCheckedAsUnchecked(() -> {
-            String mimeCharset = part.getMimeCharset() == null || "us-ascii".equalsIgnoreCase(part.getMimeCharset()) ? UTF_8.name() : part.getMimeCharset();
-            return IOUtils.toString(part.getInputStream(), mimeCharset);
-        });
     }
 
     private static BodyPart toBodyPart(String text, String subtype) {
