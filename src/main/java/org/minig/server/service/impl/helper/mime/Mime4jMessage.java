@@ -5,6 +5,7 @@ import org.minig.server.service.CompositeId;
 import javax.activation.DataSource;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.minig.MinigConstants.FORWARDED_MESSAGE_ID;
 import static org.minig.MinigConstants.IN_REPLY_TO;
@@ -70,14 +71,23 @@ public class Mime4jMessage {
 
     public List<Mime4jAttachment> getAttachments() {
         List<Mime4jAttachment> mime4jAttachments = messageTransformer.getAttachments();
-        for (Mime4jAttachment mime4jAttachmentMetadata : mime4jAttachments) {
-            mime4jAttachmentMetadata.setId(getId());
-        }
+        mime4jAttachments.forEach(mime4jAttachment -> mime4jAttachment.setId(getId()));
         return mime4jAttachments;
     }
 
     public void deleteAttachment(String filename) {
         messageTransformer.deleteAttachment(filename);
+    }
+
+    public List<Mime4jAttachment> getInlineAttachments() {
+        List<Mime4jAttachment> inlineAttachments = messageTransformer.getInlineAttachments();
+        inlineAttachments.forEach(mime4jAttachment -> mime4jAttachment.setId(getId()));
+        return inlineAttachments;
+    }
+
+    public Optional<Mime4jAttachment> getInlineAttachment(String contentId) {
+        List<Mime4jAttachment> inlineAttachments = messageTransformer.getInlineAttachments();
+        return inlineAttachments.stream().filter(mime4jAttachment -> contentId.equals(mime4jAttachment.getContentId())).findFirst();
     }
 
     public void setFrom(String email) {

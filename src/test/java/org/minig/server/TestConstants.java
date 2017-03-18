@@ -29,6 +29,8 @@ public class TestConstants {
     public static final String HTML = "src/test/resources/mime/testAppendHtmlAttachment.mail";
     public static final String DISPOSITION_NOTIFICATION = "src/test/resources/mime/testDispositionNotification.mail";
     public static final String NESTED_MESSAGE = "src/test/resources/mime/testNestedMessage.mail";
+    public static final String ALTERNATIVE = "src/test/resources/mime/alternative.mail";
+    public static final String PLAIN_ATTACHMENT = "src/test/resources/mime/plain_attachment.mail";
 
     public static final String ATTACHMENT_IMAGE_1_PNG = "src/test/resources/image/1.png";
     public static final String ATTACHMENT_IMAGE_FOLDER_GIF = "src/test/resources/image/folder.gif";

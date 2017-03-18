@@ -1,0 +1,53 @@
+From: Display Name <sender@localhost>
+To: recipient@localhost
+Message-ID: <208544674.1.1477820621771.JavaMail.localhost@localhost>
+Date: Sun, 31 Oct 2016 10:10:10 +0000 (CET)
+Subject: Pingdom Monthly Report 2013-04-01 to 2013-04-30
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="_=_swift_v4_136776062551865ef16d459_=_"
+X-SG-EID: jWDLmUBNvoqBVDwK+f1TJP4NuzQAIBb/AS22KIcO4CEFekxGY7BIBloI/Xjm+D9ioyd3b5dxcMxH1JwtqmMzl1JWOQ6IG9aGNKqI/hWoDcmzhevWpsNGURcD6OgyOspf
+
+--_=_swift_v4_136776062551865ef16d459_=_
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+plain
+--_=_swift_v4_136776062551865ef16d459_=_
+Content-Type: multipart/related;
+ boundary="_=_swift_v4_136776062551865ef1739e9_=_"
+
+--_=_swift_v4_136776062551865ef1739e9_=_
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+html
+--_=_swift_v4_136776062551865ef1739e9_=_
+Content-Type: image/png; name=logo.png
+Content-Transfer-Encoding: base64
+Content-Disposition: inline; filename=logo.png
+Content-ID: <1367760625.51865ef16cc8c@swift.generated>
+
+YQ==
+
+--_=_swift_v4_136776062551865ef1739e9_=_
+Content-Type: image/png; name=bg2.png
+Content-Transfer-Encoding: base64
+Content-Disposition: inline; filename=bg2.png
+Content-ID: 1367760625.51865ef16f798@swift.generated
+
+YQ==
+
+--_=_swift_v4_136776062551865ef1739e9_=_
+Content-Type: image/png; name=bg1.png
+Content-Transfer-Encoding: base64
+Content-Disposition: inline; filename=bg1.png
+Content-ID: <1367760625.51865ef16e3f6@swift.generated>
+
+YQ==
+
+--_=_swift_v4_136776062551865ef1739e9_=_--
+
+
+--_=_swift_v4_136776062551865ef16d459_=_--
+

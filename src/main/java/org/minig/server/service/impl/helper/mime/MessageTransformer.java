@@ -17,26 +17,26 @@ import org.apache.james.mime4j.message.BodyPart;
 import org.apache.james.mime4j.message.BodyPartBuilder;
 import org.apache.james.mime4j.message.DefaultMessageBuilder;
 import org.apache.james.mime4j.message.DefaultMessageWriter;
-import org.apache.james.mime4j.message.MessageImpl;
 import org.apache.james.mime4j.message.MessageServiceFactoryImpl;
 import org.apache.james.mime4j.message.MultipartBuilder;
 import org.apache.james.mime4j.message.SingleBodyBuilder;
 import org.apache.james.mime4j.stream.Field;
 import org.apache.james.mime4j.stream.RawField;
+import org.apache.tika.mime.MimeType;
+import org.apache.tika.mime.MimeTypes;
 import org.minig.server.service.CompositeId;
 import org.springframework.util.StringUtils;
 
 import javax.activation.DataSource;
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.StringUtils.countMatches;
@@ -58,6 +58,8 @@ import static org.minig.MinigConstants.SUB_TYPE_PLAIN;
  * @author Kamill Sokol
  */
 final class MessageTransformer {
+
+    private static final MimeTypes MIME_TYPES = MimeTypes.getDefaultMimeTypes();
 
     private Message message;
     private CompositeId compositeId;
@@ -167,7 +169,11 @@ final class MessageTransformer {
     }
 
     List<Mime4jAttachment> getAttachments() {
-        return message.isMultipart() ? extractFromMultipart((Multipart) message.getBody()) : Collections.emptyList();
+        return getAllAttachments().stream().filter(Mime4jAttachment::isAttachment).collect(Collectors.toList());
+    }
+
+    List<Mime4jAttachment> getInlineAttachments() {
+        return getAllAttachments().stream().filter(Mime4jAttachment::isInlineAttachment).collect(Collectors.toList());
     }
 
     void addAttachment(DataSource dataSource) {
@@ -186,6 +192,13 @@ final class MessageTransformer {
             new DefaultMessageWriter().writeMessage(message, outputStream);
             return new MimeMessage(null, new ByteArrayInputStream(outputStream.toByteArray()));
         });
+    }
+
+    private List<Mime4jAttachment> getAllAttachments() {
+        if (!message.isMultipart()) {
+            return Collections.emptyList();
+        }
+        return extractFromMultipart((Multipart) message.getBody());
     }
 
     private Multipart transformToMixed() {
@@ -365,73 +378,71 @@ final class MessageTransformer {
     }
 
     private static Message toMime4jMessage(javax.mail.Message message) {
-        try {
+        return rethrowCheckedAsUnchecked(() -> {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             message.writeTo(output);
             return new DefaultMessageBuilder().parseMessage(new ByteArrayInputStream(output.toByteArray()));
-        } catch (MessagingException | IOException exception) {
-            throw new IllegalArgumentException(exception.getMessage(), exception);
-        }
+        });
     }
 
     private static List<Mime4jAttachment> extractFromMultipart(Multipart multipart) {
-        List<BodyPart> rawAttachments = getAttachments(multipart);
-        List<Mime4jAttachment> attachments = new ArrayList<>(rawAttachments.size());
-        for (BodyPart bodyPart : rawAttachments) {
-            attachments.addAll(toMime4jAttachment(bodyPart));
+        List<BodyPart> bodyParts = getBodyPartsFromMultipart(multipart);
+        List<Mime4jAttachment> attachments = new ArrayList<>(bodyParts.size());
+        for (BodyPart bodyPart : bodyParts) {
+            attachments.addAll(extractFromBodyPart(bodyPart));
         }
         return attachments;
     }
 
-    private static List<BodyPart> getAttachments(Multipart multipart) {
-        List<BodyPart> attachments = new ArrayList<>();
+    private static List<Mime4jAttachment> extractFromBodyPart(BodyPart bodyPart) {
+        if(bodyPart.getBody() instanceof SingleBody) {
+            return Collections.singletonList(extractFromSingleBody(bodyPart));
+        }
+        return extractFromMessage((Message) bodyPart.getBody());
+    }
 
+    private static List<Mime4jAttachment> extractFromMessage(Message message) {
+        if(message.getBody() instanceof TextBody) {
+            return Collections.singletonList(extractFromTextBody(message));
+        }
+        //TODO Add support for nested messages
+        return Collections.emptyList();
+    }
+
+    private static Mime4jAttachment extractFromTextBody(Message message) {
+        return rethrowCheckedAsUnchecked(() -> {
+            TextBody textBody = (TextBody) message.getBody();
+            MimeType mimeType = MIME_TYPES.forName(message.getMimeType());
+            String fileName = (message.getSubject() == null ? message.getMessageId() : message.getSubject()) + mimeType.getExtension();
+            return new Mime4jAttachment(fileName, message.getMimeType(), textBody.getInputStream());
+        });
+    }
+
+    private static List<BodyPart> getBodyPartsFromMultipart(Multipart multipart) {
+        List<BodyPart> attachments = new ArrayList<>(multipart.getBodyParts().size());
         for (Entity entity : multipart.getBodyParts()) {
             if ("attachment".equalsIgnoreCase(entity.getDispositionType())) {
                 attachments.add((BodyPart) entity);
             }
-            if (entity.isMultipart()) {
-                List<BodyPart> getAttachments = getAttachments((Multipart) entity.getBody());
-                attachments.addAll(getAttachments);
+            if("inline".equals(entity.getDispositionType())) {
+                attachments.add((BodyPart) entity);
             }
-            if (MIME_TYPE_MESSAGE_RFC_822.equals(entity.getMimeType())) {
+            if (entity.isMultipart()) {
+                attachments.addAll(getBodyPartsFromMultipart((Multipart) entity.getBody()));
+            }
+            if(MIME_TYPE_MESSAGE_RFC_822.equals(entity.getMimeType())) {
                 attachments.add((BodyPart) entity);
             }
         }
-
         return attachments;
-    }
-
-    private static List<Mime4jAttachment> toMime4jAttachment(BodyPart bodyPart) {
-        if (bodyPart.getBody() instanceof SingleBody) {
-            return Collections.singletonList(extractFromSingleBody(bodyPart));
-        }
-        if (bodyPart.getBody() instanceof MessageImpl) {
-            Mime4jAttachment mime4jAttachmentData = extractFromMessage((MessageImpl) bodyPart.getBody());
-            if (mime4jAttachmentData.getFilename() == null) {
-                mime4jAttachmentData.setFilename(getFileName(bodyPart));
-            }
-            return Collections.singletonList(mime4jAttachmentData);
-        }
-        throw new IllegalArgumentException("unknown bodyPart " + bodyPart.getClass());
     }
 
     private static Mime4jAttachment extractFromSingleBody(BodyPart bodyPart) {
         SingleBody source = (SingleBody) bodyPart.getBody();
         String mimeType = bodyPart.getMimeType();
         String filename = getFileName(bodyPart);
-        return rethrowCheckedAsUnchecked(() -> new Mime4jAttachment(filename, mimeType, source.getInputStream()));
-    }
-
-    private static Mime4jAttachment extractFromMessage(Message message) {
-        return MIME_TYPE_TEXT_PLAIN.equals(message.getMimeType()) ? extractFromSingleBody(message) : null;
-    }
-
-    private static Mime4jAttachment extractFromSingleBody(Message message) {
-        SingleBody source = (SingleBody) message.getBody();
-        String mimeType = message.getMimeType();
-        String filename = String.format("%s.eml", message.getSubject());
-        return rethrowCheckedAsUnchecked(() -> new Mime4jAttachment(filename, mimeType, source.getInputStream()));
+        String contentId = extractContentId(bodyPart);
+        return rethrowCheckedAsUnchecked(() -> new Mime4jAttachment(filename, contentId, bodyPart.getDispositionType(), mimeType, source.getInputStream()));
     }
 
     private static String getFileName(BodyPart bodyPart) {
@@ -442,6 +453,17 @@ final class MessageTransformer {
             Field field = bodyPart.getHeader().getField("Content-Disposition");
             return new RFC2231Decoder().parse(field.getBody());
         }
+    }
+
+    private static String extractContentId(BodyPart bodyPart) {
+        Field field = bodyPart.getHeader().getField("content-id");
+        if(field != null) {
+            String contentId = field.getBody();
+            contentId = contentId.startsWith("<") ? contentId.substring(1) : contentId;
+            contentId = contentId.endsWith(">") ? contentId.substring(0, contentId.length() - 1) : contentId;
+            return contentId;
+        }
+        return null;
     }
 
     @FunctionalInterface

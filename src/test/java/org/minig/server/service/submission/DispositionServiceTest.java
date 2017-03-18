@@ -67,6 +67,6 @@ public class DispositionServiceTest {
                 "There is no guarantee that the recipient has read or understood the message contents."));
 
         assertThat(mime4jMessage.getAttachments(), hasSize(1));
-        assertThat(mime4jMessage.getAttachment("Disposition Notification Test.eml"), notNullValue());
+        assertThat(mime4jMessage.getAttachment("Disposition Notification Test.txt"), notNullValue());
     }
 }
