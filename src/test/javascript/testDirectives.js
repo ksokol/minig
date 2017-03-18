@@ -25,3 +25,66 @@ describe("directive messageText", function() {
         expect(scope.messageText).toEqual(["'"]);
     }));
 });
+
+describe("directive backLink", function() {
+
+    var scope, routeService;
+
+    beforeEach(module('minigApp', function($provide) {
+        routeService = {
+            previous: jasmine.createSpy('previous'),
+            currentRoute: jasmine.createSpy('currentRoute')
+        };
+
+        routeService.previous.and.returnValue('/previousRoute');
+
+        $provide.provider('routeService', function() {
+            return {
+                $get: function() {
+                    return routeService;
+                }
+            };
+        });
+
+        $provide.value('i18nFilter', function() {
+            return 'i18nFilter applied'
+        });
+    }));
+
+    beforeEach(inject(function($rootScope) {
+        scope = $rootScope.$new();
+    }));
+
+    it("should set previous route as href attribute", inject(function($compile) {
+        var element = $compile('<back-link></back-link>')(scope);
+        scope.$digest();
+
+        expect(element.find('a')[0].getAttribute('href')).toEqual('#!/previousRoute');
+    }));
+
+    it("should localize link text", inject(function($compile) {
+        var element = $compile('<back-link></back-link>')(scope);
+        scope.$digest();
+
+        expect(element.text()).toEqual('i18nFilter applied');
+    }));
+
+    it("should hide back link when current route is not /message", inject(function($compile) {
+        var element = $compile('<back-link></back-link>')(scope);
+
+        expect(element[0].getAttribute('style')).toEqual('display: none;');
+    }));
+
+    it("should show back link when current route is /message", inject(function($compile) {
+        routeService.currentRoute.and.returnValue(true);
+        var element = $compile('<back-link></back-link>')(scope);
+
+        expect(element[0].getAttribute('style')).toEqual(null);
+    }));
+
+    it("should query for /message route", inject(function($compile) {
+        $compile('<back-link></back-link>')(scope);
+
+        expect(routeService.currentRoute).toHaveBeenCalledWith('message');
+    }));
+});

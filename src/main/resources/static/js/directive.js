@@ -218,8 +218,8 @@ app.directive("pagination", ['DEFAULT_PAGE_SIZE', 'pagerFactory', function(DEFAU
 app.directive('backLink', ['$location', 'routeService', function($location, routeService) {
     return {
         restrict: 'E',
-        template: '<a class="gwt-Anchor noWrap back" href="#{{url}}">{{"« Back" | i18n }}</a>',
-        link: function (scope, elem, attrs) {
+        template: '<a class="gwt-Anchor noWrap back" href="#!{{url}}">{{"« Back" | i18n }}</a>',
+        link: function (scope, elem) {
             scope.url = routeService.previous();
 
             if(routeService.currentRoute('message')) {
