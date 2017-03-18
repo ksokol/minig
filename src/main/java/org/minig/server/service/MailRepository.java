@@ -31,6 +31,7 @@ import java.util.Optional;
 import static org.minig.MinigConstants.FORWARDED;
 import static org.minig.MinigConstants.MDN_SENT;
 import static org.minig.MinigConstants.MESSAGE_ID;
+import static org.minig.server.util.ExceptionUtils.rethrowCheckedAsUnchecked;
 
 /**
  * @author Kamill Sokol
@@ -50,7 +51,7 @@ public class MailRepository {
         Objects.requireNonNull(folder, "folder is null");
         Objects.requireNonNull(pageable, "pageable is null");
 
-        try {
+        return rethrowCheckedAsUnchecked(() -> {
             List<MimeMessage> mimeMessages = new ArrayList<>();
             Folder storeFolder = mailContext.getFolder(folder);
             int messageCount = storeFolder.getMessageCount();
@@ -76,22 +77,17 @@ public class MailRepository {
             Collections.reverse(mimeMessages);
 
             return new PageImpl<>(mimeMessages, pageable, messageCount);
-        } catch (Exception exception) {
-            throw new RepositoryException(exception.getMessage(), exception);
-        }
+        });
     }
 
     public Optional<MimeMessage> findByCompositeId(CompositeId compositeId) {
         Objects.requireNonNull(compositeId, "compositeId is null");
-
-        try {
+        return rethrowCheckedAsUnchecked(() -> {
             Folder storeFolder = mailContext.getFolder(compositeId.getFolder());
             Message[] search = storeFolder.search(new MessageIDTerm(compositeId.getMessageId()));
             storeFolder.fetch(search, fullMailProfile());
             return Arrays.stream(search).findFirst().map(message -> (MimeMessage) message);
-        } catch (Exception exception) {
-            throw new RepositoryException(exception.getMessage(), exception);
-        }
+        });
     }
 
     /**
