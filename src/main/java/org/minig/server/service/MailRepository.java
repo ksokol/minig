@@ -22,9 +22,11 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.MessageIDTerm;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static org.minig.MinigConstants.FORWARDED;
 import static org.minig.MinigConstants.MDN_SENT;
@@ -79,6 +81,23 @@ public class MailRepository {
         }
     }
 
+    public Optional<MimeMessage> findByCompositeId(CompositeId compositeId) {
+        Objects.requireNonNull(compositeId, "compositeId is null");
+
+        try {
+            Folder storeFolder = mailContext.getFolder(compositeId.getFolder());
+            Message[] search = storeFolder.search(new MessageIDTerm(compositeId.getMessageId()));
+            storeFolder.fetch(search, fullMailProfile());
+            return Arrays.stream(search).findFirst().map(message -> (MimeMessage) message);
+        } catch (Exception exception) {
+            throw new RepositoryException(exception.getMessage(), exception);
+        }
+    }
+
+    /**
+     * @deprecated Use {@link #findByCompositeId(CompositeId)} instead.
+     */
+    @Deprecated
     public MailMessage read(CompositeId id) {
         Assert.notNull(id);
 
@@ -103,6 +122,10 @@ public class MailRepository {
         return null;
     }
 
+    /**
+     * @deprecated Use {@link #findByCompositeId(CompositeId)} instead.
+     */
+    @Deprecated
     public Mime4jMessage read(String folder, String messageId) {
 
         try {
@@ -123,6 +146,10 @@ public class MailRepository {
         return findByMessageIdAndFolder(new MessageIDTerm(messageId), mailContext.getInbox());
     }
 
+    /**
+     * @deprecated Use {@link #findByCompositeId(CompositeId)} instead.
+     */
+    @Deprecated
     public MailMessage readPojo(String folder, String messageId) {
 
         try {
