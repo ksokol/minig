@@ -26,6 +26,7 @@ public class Mailbox extends ArrayList<Message> {
     Address address;
     String name;
     String path;
+    MockFolder folder;
 
     boolean exists;
     char separator = '.'; //TODO
@@ -144,6 +145,10 @@ public class Mailbox extends ArrayList<Message> {
 
     char getSeparator() {
         return separator;
+    }
+
+    public List<FetchProfile> getFetchProfiles() {
+        return folder.getFetchProfiles();
     }
 
 	private class MockedMimeMessageFolderAware extends MimeMessage {

@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -26,6 +25,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import static org.minig.MinigConstants.FORWARDED;
+import static org.minig.MinigConstants.MDN_SENT;
+import static org.minig.MinigConstants.MESSAGE_ID;
 
 /**
  * @author Kamill Sokol
@@ -62,7 +65,7 @@ public class MailRepository {
             }
 
             Message[] messages = storeFolder.getMessages(start, end);
-            storeFolder.fetch(messages, fullMailProfile());
+            storeFolder.fetch(messages, partialMailProfile());
 
             for (Message m : messages) {
                 mimeMessages.add((MimeMessage) m);
@@ -361,17 +364,22 @@ public class MailRepository {
         return compositeId;
     }
 
-    private static FetchProfile fullMailProfile() {
+    private static FetchProfile partialMailProfile() {
         FetchProfile fp = new FetchProfile();
         fp.add(FetchProfile.Item.ENVELOPE);
         fp.add(FetchProfile.Item.FLAGS);
         fp.add(FetchProfile.Item.CONTENT_INFO);
+        fp.add(FORWARDED);
+        fp.add(MDN_SENT);
+        fp.add(MESSAGE_ID);
+        return fp;
+    }
+
+    private static FetchProfile fullMailProfile() {
+        FetchProfile fp = partialMailProfile();
         fp.add(IMAPFolder.FetchProfileItem.MESSAGE);
         fp.add("X-Mozilla-Draft-Info");
-        fp.add("$MDNSent");
-        fp.add("$Forwarded");
         fp.add("X-PRIORITY");
-        fp.add("Message-ID");
         fp.add("Disposition-Notification-To");
         fp.add("In-Reply-To");
         fp.add("X-Forwarded-Message-Id");

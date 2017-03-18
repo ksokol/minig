@@ -19,6 +19,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.mail.Flags;
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -102,8 +105,8 @@ public class MailServiceTest {
         MimeMessage message = new MimeMessageBuilder().build();
         mockServer.prepareMailBox("INBOX", message);
 
-        MailMessageList mailMessageList = uut.findMessagesByFolder("INBOX", 0, 1);
-        MailMessage mailMessage = mailMessageList.getMailList().get(0);
+        MailMessage mailMessage = new MailMessage();
+        mailMessage.setCompositeId(new CompositeId("INBOX", message.getMessageID()));
         mailMessage.setAnswered(true);
         mailMessage.setRead(true);
         mailMessage.setStarred(true);
@@ -157,24 +160,27 @@ public class MailServiceTest {
     }
 
     @Test
-    public void testUpdateMessagesFlags_valid() {
-        List<MimeMessage> mList = new MimeMessageBuilder().build(2);
+    public void testUpdateMessagesFlags_valid() throws MessagingException {
+        List<MimeMessage> mimeMessages = new MimeMessageBuilder().build(2);
+        mockServer.prepareMailBox("INBOX", mimeMessages);
 
-        mockServer.prepareMailBox("INBOX", mList);
+        MailMessage mailMessage1 = new MailMessage();
+        mailMessage1.setCompositeId(new CompositeId("INBOX", mimeMessages.get(0).getMessageID()));
+        mailMessage1.setStarred(true);
 
-        MailMessageList mailMessageList = uut.findMessagesByFolder("INBOX", 1, 2);
+        MailMessage mailMessage2 = new MailMessage();
+        mailMessage2.setCompositeId(new CompositeId("INBOX", mimeMessages.get(1).getMessageID()));
+        mailMessage2.setStarred(true);
 
-        for (MailMessage mm : mailMessageList.getMailList()) {
-            assertFalse(mm.getStarred());
-            mm.setStarred(true);
-        }
+        MailMessageList mailMessageList = new MailMessageList();
+        mailMessageList.setMailList(Arrays.asList(mailMessage1, mailMessage2));
 
         uut.updateMessagesFlags(mailMessageList);
 
-        mailMessageList = uut.findMessagesByFolder("INBOX", 1, 2);
+        List<Message> inbox = mailboxRule.getAllInFolder("INBOX");
 
-        for (MailMessage mm : mailMessageList.getMailList()) {
-            assertTrue(mm.getStarred());
+        for (Message message : inbox) {
+            assertThat(message.getFlags().getSystemFlags(), arrayContaining(Flags.Flag.FLAGGED));
         }
     }
 

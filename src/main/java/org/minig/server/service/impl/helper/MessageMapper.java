@@ -33,39 +33,14 @@ import static org.minig.MinigConstants.X_DRAFT_INFO;
 /**
  * @author Kamill Sokol
  */
+@Deprecated
 @Component
 public class MessageMapper {
 
     private static final Pattern RECEIPT = Pattern.compile(".*receipt=(1);?.*");
     private static final Pattern DSN = Pattern.compile(".*DSN=(1);?.*");
 
-    public MailMessage convertShort(Message msg) {
-        if (msg == null) {
-            return new MailMessage();
-        }
-
-        try {
-            MailMessage cm = new MailMessage();
-
-            setMessageId(cm, (MimeMessage) msg);
-            setFolder(cm, msg);
-            setSender(cm, msg);
-            setSubject(cm, msg);
-            setDate(cm, msg);
-            setHighPriority(cm, msg);
-            setFlags(cm, msg);
-            setAttachmentId(cm, msg);
-            setReceipt(cm, msg);
-            setAskForDispositionNotification(cm, msg);
-            setForwarded(cm, msg);
-            setMdnSent(cm, msg);
-
-            return cm;
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-    }
-
+    @Deprecated
     public MailMessage convertFull(Message msg) {
         if (msg == null) {
             return new MailMessage();
@@ -343,6 +318,7 @@ public class MessageMapper {
         }
     }
 
+    @Deprecated
     public MimeMessage toMimeMessage(MailMessage source) {
         try {
 
@@ -425,10 +401,12 @@ public class MessageMapper {
         }
     }
 
+    @Deprecated
     public Message toMessage(MailMessage source) {
         return this.toMimeMessage(source);
     }
 
+    @Deprecated
     public Mime4jMessage toMime4jMessage(MailMessage source) {
         Mime4jMessage target = new Mime4jMessage(source);
 

@@ -7,13 +7,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
+import org.minig.server.PartialMailMessage;
 import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.MailService;
+import org.minig.server.service.MimeMessageBuilder;
 import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -59,27 +63,44 @@ public class MailResourceTest {
     }
 
     @Test
+    public void name() throws Exception {
+        PartialMailMessage partialMailMessage = new PartialMailMessage(new MimeMessageBuilder().build(TestConstants.HTML));
+        when(mailService.findMessagesByFolder(anyString(), anyInt(), anyInt()))
+                .thenReturn(new PageImpl<>(Collections.singletonList(partialMailMessage), new PageRequest(0, 1), 1));
+
+        mockMvc.perform(get(PREFIX + "/message").param("folder", "INBOX"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.mailList[0].date").value("2013-07-20T16:33:20Z"))
+                .andExpect(jsonPath("$.mailList[0].folder").value("folder"))
+                .andExpect(jsonPath("$.mailList[0].messageId").value("<51EABBD0.3060000@localhost>"))
+                .andExpect(jsonPath("$.mailList[0].answered").value(false))
+                .andExpect(jsonPath("$.mailList[0].read").value(false))
+                .andExpect(jsonPath("$.mailList[0].starred").value(false))
+                .andExpect(jsonPath("$.mailList[0].subject").value("test"))
+                .andExpect(jsonPath("$.mailList[0].sender.email").value("testuser@localhost"))
+                .andExpect(jsonPath("$.mailList[0].sender.displayName").value("Test"))
+                .andExpect(jsonPath("$.mailList[0].sender.display").value("Test"))
+                .andExpect(jsonPath("$.mailList[0].deleted").value(false))
+                .andExpect(jsonPath("$.mailList[0].id").value("folder|<51EABBD0.3060000@localhost>"))
+                .andExpect(jsonPath("$.fullLength").value(1))
+                .andExpect(jsonPath("$.page").value(0));
+    }
+
+    @Test
     public void testFindMessagesByFolder_defaultArguments() throws Exception {
-        MailMessageList mailMessageList = new MailMessageList(Collections.EMPTY_LIST, 1, 1);
+        when(mailService.findMessagesByFolder(anyString(), anyInt(), anyInt())).thenReturn(new PageImpl<>(Collections.emptyList(), new PageRequest(1, 1), 1));
 
-        when(mailService.findMessagesByFolder(anyString(), anyInt(), anyInt())).thenReturn(mailMessageList);
-
-        mockMvc.perform(get(PREFIX + "/message").param("folder", "INBOX")).andExpect(status().isOk())
-                .andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8)).andExpect(jsonPath("$.fullLength").value(1))
-                .andExpect(jsonPath("$.page").value(1));
+        mockMvc.perform(get(PREFIX + "/message").param("folder", "INBOX"));
 
         verify(mailService).findMessagesByFolder("INBOX", 1, 10);
     }
 
     @Test
     public void testFindMessagesByFolder_explicitArguments() throws Exception {
-        MailMessageList mailMessageList = new MailMessageList(Collections.EMPTY_LIST, 3, 5);
+        when(mailService.findMessagesByFolder(anyString(), anyInt(), anyInt())).thenReturn(new PageImpl<>(Collections.emptyList(), new PageRequest(3, 5), 5));
 
-        when(mailService.findMessagesByFolder(anyString(), anyInt(), anyInt())).thenReturn(mailMessageList);
-
-        mockMvc.perform(get(PREFIX + "/message").param("folder", "INBOX").param("page", "7").param("page_length", "11"))
-                .andExpect(status().isOk()).andExpect(content().contentType(TestConstants.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.fullLength").value(5)).andExpect(jsonPath("$.page").value(3));
+        mockMvc.perform(get(PREFIX + "/message").param("folder", "INBOX").param("page", "7").param("page_length", "11"));
 
         verify(mailService).findMessagesByFolder("INBOX", 7, 11);
     }
@@ -202,26 +223,6 @@ public class MailResourceTest {
 
         verify(mailService).deleteMessages(request.getMessageIdList());
     }
-
-    //
-    // @Test
-    // public void testCreateMessage() throws Exception {
-    // String expectedFolder = "INBOX";
-    //
-    // MailMessage mm = new MailMessage();
-    // mm.setFolder(expectedFolder);
-    //
-    // String content = new ObjectMapper().writeValueAsString(mm);
-    //
-    // doNothing().when(mailService).createMessage(any(MailMessage.class));
-    //
-    // mockMvc.perform(post(PREFIX +
-    // "/message").contentType(MediaType.APPLICATION_JSON).content(content)).andExpect(status().isCreated());
-    //
-    // verify(mailService).createMessage(
-    // argThat(org.hamcrest.Matchers.<MailMessage> hasProperty("folder",
-    // IsEqual.<String> equalTo(expectedFolder))));
-    // }
 
     @Test
     public void testCreateDraftMessage() throws Exception {

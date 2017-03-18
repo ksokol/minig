@@ -2,25 +2,31 @@ package org.minig.test.javamail;
 
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.mail.FetchProfile;
+import javax.mail.Flags;
+import javax.mail.Flags.Flag;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Store;
+import javax.mail.search.SearchTerm;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import javax.mail.*;
-import javax.mail.Flags.Flag;
-import javax.mail.search.SearchTerm;
-
 /**
- * @author dev@sokol-web.de <Kamill Sokol>
- *
+ * @author Kamill Sokol
  */
 class MockFolder extends Folder {
 
     private Mailbox mailbox;
+    private final List<FetchProfile> fetchProfiles = new ArrayList<>(5);
 
     MockFolder(Store store, Mailbox mailbox) {
         super(store);
 
         this.mailbox = mailbox;
+        this.mailbox.folder = this;
     }
 
     @Override
@@ -236,6 +242,16 @@ class MockFolder extends Folder {
     @Override
     public void copyMessages(Message[] msgs, Folder folder) throws MessagingException {
         super.copyMessages(enhance(msgs), folder);
+    }
+
+    @Override
+    public void fetch(Message[] msgs, FetchProfile fp) throws MessagingException {
+        fetchProfiles.add(fp);
+        super.fetch(msgs, fp);
+    }
+
+    public List<FetchProfile> getFetchProfiles() {
+        return Collections.unmodifiableList(fetchProfiles);
     }
 
     private Message enhance(Message msg) {

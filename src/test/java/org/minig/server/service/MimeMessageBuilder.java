@@ -170,7 +170,10 @@ public class MimeMessageBuilder {
             }
 
             when(m.getFlags().getSystemFlags()).thenReturn(flags.toArray(new Flag[flags.size()]));
-            when(m.getFrom()).thenReturn(new Address[] { new InternetAddress(sender) });
+
+            if(sender != null) {
+                when(m.getFrom()).thenReturn(new Address[]{new InternetAddress(sender)});
+            }
         } catch (MessagingException e) {
             throw new RuntimeException(e.getMessage(), e);
         }

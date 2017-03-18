@@ -35,32 +35,10 @@ public class MessageMapperTest {
 
         String expectedId = "folderTest|messageIdTest";
 
-        MailMessage c = uut.convertShort(m);
+        MailMessage c = uut.convertFull(m);
 
         assertEquals(expectedId, c.getId());
         assertEquals("folderTest", c.getFolder());
-    }
-
-    @Test
-    public void testConvertShort() {
-        MimeMessageBuilder builder = new MimeMessageBuilder();
-        MimeMessage m = builder.mock();
-
-        MailMessage c = uut.convertShort(m);
-
-        assertEquals(builder.getFolder(), c.getFolder());
-        assertEquals(builder.getSender(), c.getSender());
-        assertEquals(builder.getSubject(), c.getSubject());
-        assertEquals(builder.getDate(), c.getDate());
-        assertEquals(builder.isAnswered(), c.getAnswered());
-        assertEquals(builder.isHighPriority(), c.getHighPriority());
-        assertEquals(builder.isStarred(), c.getStarred());
-        assertEquals(builder.isRead(), c.getRead());
-        assertEquals(builder.isAskForDispositionNotification(), c.getAskForDispositionNotification());
-        assertEquals(builder.isReceipt(), c.getReceipt());
-        assertEquals(builder.isDeleted(), c.getDeleted());
-
-        assertNotNull(c.getAttachments());
     }
 
     @Test
@@ -101,7 +79,7 @@ public class MessageMapperTest {
         CompositeAttachmentId id1 = new CompositeAttachmentId(m.getFolder().getFullName(), m.getMessageID(), "1.png");
         CompositeAttachmentId id2 = new CompositeAttachmentId(m.getFolder().getFullName(), m.getMessageID(), "2.png");
 
-        MailMessage c = uut.convertShort(m);
+        MailMessage c = uut.convertFull(m);
 
         assertEquals(id1.getId(), c.getAttachments().get(0).getId());
         assertEquals(id2.getId(), c.getAttachments().get(1).getId());
@@ -164,16 +142,6 @@ public class MessageMapperTest {
         message = uut.toMessage(mm);
         header = message.getHeader("X-Priority");
         assertEquals("1", header[0]);
-    }
-
-    @Test
-    public void testToMimeMessage_userFlags() throws MessagingException {
-        MimeMessage m = new MimeMessageBuilder().setRecipientDispositionNotification("test@localhost").setForwarded(true).setMDNSent(true).mock();
-
-        MailMessage mm = uut.convertShort(m);
-
-        assertTrue(mm.getForwarded());
-        assertTrue(mm.getDispositionNotification() == null);
     }
 
     @Test

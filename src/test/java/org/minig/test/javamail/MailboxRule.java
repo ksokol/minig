@@ -46,6 +46,10 @@ public class MailboxRule extends ExternalResource {
         new MailboxBuilder(user).mailbox(mailBox).subscribed().exists().build();
     }
 
+    public Mailbox getMailbox(String folder) {
+        return MailboxHolder.get(emailAddress, folder);
+    }
+
     /**
      * Use {@link #getFirstInFolder(String)} instead.
      */

@@ -2,10 +2,12 @@ package org.minig.server.resource.mail;
 
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
+import org.minig.server.PartialMailMessage;
 import org.minig.server.resource.Id;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping(value = "1")
@@ -24,9 +29,19 @@ class MailResource {
 
     @RequestMapping(value = "message", method = RequestMethod.GET)
     @ResponseBody
-    public MailMessageList findMessagesByFolder(@RequestParam String folder, @RequestParam(defaultValue = "1") int page,
-            @RequestParam(value = "page_length", defaultValue = "10") int pageLength) {
-        return mailService.findMessagesByFolder(folder, page, pageLength);
+    public Map<String, Object> findMessagesByFolder(@RequestParam String folder, @RequestParam(defaultValue = "1") int page,
+                                                       @RequestParam(value = "page_length", defaultValue = "10") int pageLength) {
+
+        Page<PartialMailMessage> messagesByFolder = mailService.findMessagesByFolder(folder, page, pageLength);
+
+        // maintain API compatibility
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("fullLength", messagesByFolder.getTotalElements());
+        response.put("page", messagesByFolder.getNumber());
+        response.put("mailList", messagesByFolder.getContent());
+
+        return response;
     }
 
     @RequestMapping(value = "message/**", method = RequestMethod.GET)

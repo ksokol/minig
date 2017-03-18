@@ -1143,10 +1143,6 @@ html>body .gwt-DecoratedTabBar .gwt-TabBarItem-selected .tabTopRight {
 	cursor: pointer;
 }
 
-.convAttach {
-	width: 1.5em;
-}
-
 .convDate {
 	width: 6em;
 }
@@ -2341,11 +2337,6 @@ textarea {
 
 .forwardedanswered {
 	background: url("../images/forwardedanswered.png") no-repeat;
-	padding: 0px 10px 15px;
-}
-
-.attachment {
-	background: url("../images/paperclip.gif") no-repeat;
 	padding: 0px 10px 15px;
 }
 

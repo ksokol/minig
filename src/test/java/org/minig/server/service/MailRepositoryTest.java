@@ -17,11 +17,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.mail.FetchProfile;
+import javax.mail.FetchProfile.Item;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -101,6 +104,19 @@ public class MailRepositoryTest {
         assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(1, 30)).getNumberOfElements(), is(0));
         assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(0, 13)).getNumberOfElements(), is(13));
         assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(2, 13)).getNumberOfElements(), is(0));
+    }
+
+    @Test
+    public void shouldFetchMessagesWithFetchProfile() throws Exception {
+        MimeMessage message = new MimeMessageBuilder().build(TestConstants.PLAIN);
+        mailboxRule.append("INBOX", message);
+
+        uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(0, 25));
+        List<FetchProfile> fetchProfiles = mailboxRule.getMailbox("INBOX").getFetchProfiles();
+
+        assertThat(fetchProfiles, hasSize(1));
+        assertThat(fetchProfiles.get(0).getItems(), arrayContaining(Item.ENVELOPE, Item.FLAGS, Item.CONTENT_INFO));
+        assertThat(fetchProfiles.get(0).getHeaderNames(), arrayContaining("$Forwarded", "$MDNSent", "Message-ID"));
     }
 
     @Test

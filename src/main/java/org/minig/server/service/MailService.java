@@ -5,6 +5,7 @@ import org.minig.server.MailFolder;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
 import org.minig.server.MailMessageList;
+import org.minig.server.PartialMailMessage;
 import org.minig.server.service.impl.Mime4jAttachmentDataSource;
 import org.minig.server.service.impl.helper.MessageMapper;
 import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
@@ -18,9 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import javax.mail.internet.MimeMessage;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Kamill Sokol
@@ -46,16 +45,10 @@ public class MailService {
     @Autowired
     private MessageMapper mapper;
 
-    public MailMessageList findMessagesByFolder(String folder, int page, int pageLength) {
-        Page<MimeMessage> mimeMessages = mailRepository.findByFolderOrderByDateDesc(folder, new PageRequest(page, pageLength));
-        List<MailMessage> mailMessages = mimeMessages.getContent().stream().map(mapper::convertShort).collect(Collectors.toList());
-
-        MailMessageList mailMessageList = new MailMessageList();
-        mailMessageList.setMailList(mailMessages);
-        mailMessageList.setPage(mimeMessages.getNumber());
-        mailMessageList.setFullLength(mimeMessages.getTotalElements());
-
-        return mailMessageList;
+    public Page<PartialMailMessage> findMessagesByFolder(String folder, int page, int pageLength) {
+        return mailRepository
+                .findByFolderOrderByDateDesc(folder, new PageRequest(page, pageLength))
+                .map(PartialMailMessage::new);
     }
 
     public MailMessage findMessage(CompositeId id) {
