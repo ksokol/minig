@@ -9,6 +9,9 @@ public final class MinigConstants {
         // prevent instantiation
     }
 
+    public static final String API_VERSION = "1";
+    public static final String RESOURCE_ATTACHMENT = "attachment";
+
     public static final String PRIMARY_TYPE_TEXT = "text";
     public static final String PRIMARY_TYPE_MULTIPART = "multipart";
 
