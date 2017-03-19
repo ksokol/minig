@@ -10,6 +10,7 @@ import org.minig.server.service.impl.Mime4jAttachmentDataSource;
 import org.minig.server.service.impl.helper.MessageMapper;
 import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.minig.server.service.mail.ContentIdSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,9 @@ public class MailService {
     @Autowired
     private AttachmentRepository attachmentRepository;
 
+    @Autowired
+    private ContentIdSanitizer contentIdSanitizer;
+
     // TODO
     @Autowired
     private MessageMapper mapper;
@@ -51,6 +55,12 @@ public class MailService {
                 .map(PartialMailMessage::new);
     }
 
+    public String findHtmlBodyByCompositeId(CompositeId compositeId) {
+        Mime4jMessage mime4jMessage = mailRepository.findByCompositeId(compositeId).map(Mime4jMessage::new).orElseThrow(NotFoundException::new);
+        return contentIdSanitizer.sanitize(mime4jMessage.getHtml(), mime4jMessage.getInlineAttachments());
+    }
+
+    @Deprecated
     public MailMessage findMessage(CompositeId id) {
         Assert.notNull(id);
 

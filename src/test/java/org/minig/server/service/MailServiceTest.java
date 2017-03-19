@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -426,5 +427,23 @@ public class MailServiceTest {
         MailMessage updateDraftMessage = uut.createDraftMessage(mm);
 
         assertThat(updateDraftMessage.getAttachments(), hasSize(0));
+    }
+
+    @Test
+    public void shouldReturnHtmlBodyWithAbsoluteUrlsToInlineAttachments() throws Exception {
+        MimeMessage message = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
+        mailboxRule.append("INBOX/test", message);
+
+        String actualHtmlBody = uut.findHtmlBodyByCompositeId(new CompositeId("INBOX/test", message.getMessageID()));
+
+        assertThat(actualHtmlBody, containsString("background-image:url(http://localhost/1/attachment/folder|<1367760625.51865ef16e3f6@swift.generated>|1367760625.51865ef16e3f6@swift.generated);"));
+        assertThat(actualHtmlBody, containsString("<img src=\"http://localhost/1/attachment/folder|<1367760625.51865ef16e3f6@swift.generated>|1367760625.51865ef16cc8c@swift.generated\" alt=\"Pingdom\" /><"));
+        assertThat(actualHtmlBody, containsString("background-image:url(http://localhost/1/attachment/folder|<1367760625.51865ef16e3f6@swift.generated>|1367760625.51865ef16f798@swift.generated);"));
+
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void shouldThrowNotFoundExceptionWhenUnknownCompositeIdGiven() throws Exception {
+        uut.findHtmlBodyByCompositeId(new CompositeId("INBOX", "unknown"));
     }
 }
