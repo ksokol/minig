@@ -70,9 +70,7 @@ public class Mime4jMessage {
     }
 
     public List<Mime4jAttachment> getAttachments() {
-        List<Mime4jAttachment> mime4jAttachments = messageTransformer.getAttachments();
-        mime4jAttachments.forEach(mime4jAttachment -> mime4jAttachment.setId(getId()));
-        return mime4jAttachments;
+        return messageTransformer.getAttachments();
     }
 
     public void deleteAttachment(String filename) {
@@ -80,9 +78,7 @@ public class Mime4jMessage {
     }
 
     public List<Mime4jAttachment> getInlineAttachments() {
-        List<Mime4jAttachment> inlineAttachments = messageTransformer.getInlineAttachments();
-        inlineAttachments.forEach(mime4jAttachment -> mime4jAttachment.setId(getId()));
-        return inlineAttachments;
+        return messageTransformer.getInlineAttachments();
     }
 
     public Optional<Mime4jAttachment> getInlineAttachment(String contentId) {

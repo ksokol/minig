@@ -11,41 +11,33 @@ import java.util.Objects;
  */
 public final class Mime4jAttachment {
 
-    private CompositeId id;
+    private CompositeAttachmentId id;
     private String filename;
     private final String contentId;
     private final String dispositionType;
     private final String mimeType;
     private final InputStream data;
 
-    public Mime4jAttachment(String filename, String mimeType, InputStream data) {
-        this(filename, null, "attachment", mimeType, data);
+    public Mime4jAttachment(CompositeId CompositeId, String filename, String mimeType, InputStream data) {
+        this(CompositeId, filename, null, "attachment", mimeType, data);
     }
 
-    public Mime4jAttachment(String filename, String contentId, String dispositionType, String mimeType, InputStream data) {
-        Objects.requireNonNull(filename);
-        Objects.requireNonNull(mimeType);
-        this.filename = filename;
+    public Mime4jAttachment(CompositeId compositeId, String filename, String contentId, String dispositionType, String mimeType, InputStream data) {
+        Objects.requireNonNull(compositeId);
+        this.id = new CompositeAttachmentId(compositeId.getFolder(), compositeId.getMessageId(), "attachment".equals(dispositionType) ? filename : contentId);
+        this.filename = Objects.requireNonNull(filename);
+        this.mimeType = Objects.requireNonNull(mimeType);
         this.contentId = contentId;
         this.dispositionType = dispositionType;
-        this.mimeType = mimeType;
         this.data = data;
     }
 
     public CompositeAttachmentId getId() {
-        if(id == null) {
-            throw new IllegalStateException("id is null");
-        }
-        return new CompositeAttachmentId(id.getFolder(), id.getMessageId(), isAttachment() ? filename : contentId);
+        return id;
     }
 
     public String getFilename() {
         return filename;
-    }
-
-    @Deprecated
-    public void setFilename(String filename) {
-        this.filename = filename;
     }
 
     public String getContentId() {
@@ -62,10 +54,6 @@ public final class Mime4jAttachment {
 
     public InputStream getData() {
         return data;
-    }
-
-    public void setId(CompositeId id) {
-        this.id = id;
     }
 
     public boolean isAttachment() {

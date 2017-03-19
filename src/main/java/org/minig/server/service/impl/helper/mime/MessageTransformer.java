@@ -260,6 +260,47 @@ final class MessageTransformer {
         return "";
     }
 
+    private List<Mime4jAttachment> extractFromMultipart(Multipart multipart) {
+        List<BodyPart> bodyParts = getBodyPartsFromMultipart(multipart);
+        List<Mime4jAttachment> attachments = new ArrayList<>(bodyParts.size());
+        for (BodyPart bodyPart : bodyParts) {
+            attachments.addAll(extractFromBodyPart(bodyPart));
+        }
+        return attachments;
+    }
+
+    private List<Mime4jAttachment> extractFromBodyPart(BodyPart bodyPart) {
+        if(bodyPart.getBody() instanceof SingleBody) {
+            return Collections.singletonList(extractFromSingleBody(bodyPart));
+        }
+        return extractFromMessage((Message) bodyPart.getBody());
+    }
+
+    private List<Mime4jAttachment> extractFromMessage(Message message) {
+        if(message.getBody() instanceof TextBody) {
+            return Collections.singletonList(extractFromTextBody(message));
+        }
+        //TODO Add support for nested messages
+        return Collections.emptyList();
+    }
+
+    private Mime4jAttachment extractFromTextBody(Message message) {
+        return rethrowCheckedAsUnchecked(() -> {
+            TextBody textBody = (TextBody) message.getBody();
+            MimeType mimeType = MIME_TYPES.forName(message.getMimeType());
+            String fileName = (message.getSubject() == null ? message.getMessageId() : message.getSubject()) + mimeType.getExtension();
+            return new Mime4jAttachment(compositeId, fileName, message.getMimeType(), textBody.getInputStream());
+        });
+    }
+
+    private Mime4jAttachment extractFromSingleBody(BodyPart bodyPart) {
+        SingleBody source = (SingleBody) bodyPart.getBody();
+        String mimeType = bodyPart.getMimeType();
+        String filename = getFileName(bodyPart);
+        String contentId = extractContentId(bodyPart);
+        return rethrowCheckedAsUnchecked(() -> new Mime4jAttachment(compositeId, filename, contentId, bodyPart.getDispositionType(), mimeType, source.getInputStream()));
+    }
+
     private static TextBody extractTextBodyPart(Multipart multipart, String mimeType) {
         for (Entity entity : multipart.getBodyParts()) {
             if (mimeType.equals(entity.getMimeType())) {
@@ -376,39 +417,6 @@ final class MessageTransformer {
         });
     }
 
-    private static List<Mime4jAttachment> extractFromMultipart(Multipart multipart) {
-        List<BodyPart> bodyParts = getBodyPartsFromMultipart(multipart);
-        List<Mime4jAttachment> attachments = new ArrayList<>(bodyParts.size());
-        for (BodyPart bodyPart : bodyParts) {
-            attachments.addAll(extractFromBodyPart(bodyPart));
-        }
-        return attachments;
-    }
-
-    private static List<Mime4jAttachment> extractFromBodyPart(BodyPart bodyPart) {
-        if(bodyPart.getBody() instanceof SingleBody) {
-            return Collections.singletonList(extractFromSingleBody(bodyPart));
-        }
-        return extractFromMessage((Message) bodyPart.getBody());
-    }
-
-    private static List<Mime4jAttachment> extractFromMessage(Message message) {
-        if(message.getBody() instanceof TextBody) {
-            return Collections.singletonList(extractFromTextBody(message));
-        }
-        //TODO Add support for nested messages
-        return Collections.emptyList();
-    }
-
-    private static Mime4jAttachment extractFromTextBody(Message message) {
-        return rethrowCheckedAsUnchecked(() -> {
-            TextBody textBody = (TextBody) message.getBody();
-            MimeType mimeType = MIME_TYPES.forName(message.getMimeType());
-            String fileName = (message.getSubject() == null ? message.getMessageId() : message.getSubject()) + mimeType.getExtension();
-            return new Mime4jAttachment(fileName, message.getMimeType(), textBody.getInputStream());
-        });
-    }
-
     private static List<BodyPart> getBodyPartsFromMultipart(Multipart multipart) {
         List<BodyPart> attachments = new ArrayList<>(multipart.getBodyParts().size());
         for (Entity entity : multipart.getBodyParts()) {
@@ -426,14 +434,6 @@ final class MessageTransformer {
             }
         }
         return attachments;
-    }
-
-    private static Mime4jAttachment extractFromSingleBody(BodyPart bodyPart) {
-        SingleBody source = (SingleBody) bodyPart.getBody();
-        String mimeType = bodyPart.getMimeType();
-        String filename = getFileName(bodyPart);
-        String contentId = extractContentId(bodyPart);
-        return rethrowCheckedAsUnchecked(() -> new Mime4jAttachment(filename, contentId, bodyPart.getDispositionType(), mimeType, source.getInputStream()));
     }
 
     private static String getFileName(BodyPart bodyPart) {
