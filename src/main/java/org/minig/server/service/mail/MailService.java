@@ -1,4 +1,4 @@
-package org.minig.server.service;
+package org.minig.server.service.mail;
 
 import org.minig.security.MailAuthentication;
 import org.minig.server.MailFolder;
@@ -6,11 +6,15 @@ import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
 import org.minig.server.MailMessageList;
 import org.minig.server.PartialMailMessage;
+import org.minig.server.service.AttachmentRepository;
+import org.minig.server.service.CompositeId;
+import org.minig.server.service.FolderRepository;
+import org.minig.server.service.MailRepository;
+import org.minig.server.service.NotFoundException;
 import org.minig.server.service.impl.Mime4jAttachmentDataSource;
 import org.minig.server.service.impl.helper.MessageMapper;
 import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
-import org.minig.server.service.mail.ContentIdSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +47,7 @@ public class MailService {
     private AttachmentRepository attachmentRepository;
 
     @Autowired
-    private ContentIdSanitizer contentIdSanitizer;
+    private UriComponentsBuilderResolver uriComponentsBuilderResolver;
 
     // TODO
     @Autowired
@@ -57,7 +61,7 @@ public class MailService {
 
     public String findHtmlBodyByCompositeId(CompositeId compositeId) {
         Mime4jMessage mime4jMessage = mailRepository.findByCompositeId(compositeId).map(Mime4jMessage::new).orElseThrow(NotFoundException::new);
-        return contentIdSanitizer.sanitize(mime4jMessage.getHtml(), mime4jMessage.getInlineAttachments());
+        return mime4jMessage.getHtml(uriComponentsBuilderResolver.resolveAttachmentUri());
     }
 
     @Deprecated

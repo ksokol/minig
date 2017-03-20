@@ -10,7 +10,7 @@ import org.minig.server.MailMessageList;
 import org.minig.server.PartialMailMessage;
 import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeId;
-import org.minig.server.service.MailService;
+import org.minig.server.service.mail.MailService;
 import org.minig.server.service.MimeMessageBuilder;
 import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;

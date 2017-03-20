@@ -5,7 +5,7 @@ import org.minig.server.MailMessageList;
 import org.minig.server.PartialMailMessage;
 import org.minig.server.resource.Id;
 import org.minig.server.service.CompositeId;
-import org.minig.server.service.MailService;
+import org.minig.server.service.mail.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;

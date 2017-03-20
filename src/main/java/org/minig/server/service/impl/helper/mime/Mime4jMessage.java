@@ -1,6 +1,7 @@
 package org.minig.server.service.impl.helper.mime;
 
 import org.minig.server.service.CompositeId;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.activation.DataSource;
 import java.util.Date;
@@ -47,6 +48,14 @@ public class Mime4jMessage {
         return messageTransformer.getHtml();
     }
 
+    public String getHtml(UriComponentsBuilder uriComponentsBuilder) {
+        String sanitizedHtmlBody = messageTransformer.getHtml();
+        for (Mime4jAttachment attachment : getInlineAttachments()) {
+            sanitizedHtmlBody = sanitize(sanitizedHtmlBody, attachment, uriComponentsBuilder.cloneBuilder());
+        }
+        return sanitizedHtmlBody;
+    }
+
     public void setPlain(String plain) {
         messageTransformer.setText(plain);
     }
@@ -75,10 +84,6 @@ public class Mime4jMessage {
 
     public void deleteAttachment(String filename) {
         messageTransformer.deleteAttachment(filename);
-    }
-
-    public List<Mime4jAttachment> getInlineAttachments() {
-        return messageTransformer.getInlineAttachments();
     }
 
     public Optional<Mime4jAttachment> getInlineAttachment(String contentId) {
@@ -200,6 +205,16 @@ public class Mime4jMessage {
 
     public void setHighPriority() {
         messageTransformer.setHeader(X_PRIORITY, "1");
+    }
+
+    protected List<Mime4jAttachment> getInlineAttachments() {
+        return messageTransformer.getInlineAttachments();
+    }
+
+    private String sanitize(String htmlBody, Mime4jAttachment attachment, UriComponentsBuilder uriComponentsBuilder) {
+        String contentUrl = uriComponentsBuilder.pathSegment(attachment.getId().toString()).build().toUriString();
+        String replacedCid = htmlBody.replaceAll("cid:" + attachment.getContentId(), contentUrl);
+        return replacedCid.replaceAll("mid:" + attachment.getContentId(), contentUrl);
     }
 
     private void updateXPriority() {

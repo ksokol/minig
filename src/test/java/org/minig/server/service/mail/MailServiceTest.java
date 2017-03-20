@@ -1,4 +1,4 @@
-package org.minig.server.service;
+package org.minig.server.service.mail;
 
 import config.ServiceTestConfig;
 import org.junit.Rule;
@@ -8,6 +8,10 @@ import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
 import org.minig.server.MailMessageList;
 import org.minig.server.TestConstants;
+import org.minig.server.service.CompositeId;
+import org.minig.server.service.MimeMessageBuilder;
+import org.minig.server.service.NotFoundException;
+import org.minig.server.service.SmtpAndImapMockServer;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
@@ -436,10 +440,7 @@ public class MailServiceTest {
 
         String actualHtmlBody = uut.findHtmlBodyByCompositeId(new CompositeId("INBOX/test", message.getMessageID()));
 
-        assertThat(actualHtmlBody, containsString("background-image:url(http://localhost/1/attachment/folder|<1367760625.51865ef16e3f6@swift.generated>|1367760625.51865ef16e3f6@swift.generated);"));
-        assertThat(actualHtmlBody, containsString("<img src=\"http://localhost/1/attachment/folder|<1367760625.51865ef16e3f6@swift.generated>|1367760625.51865ef16cc8c@swift.generated\" alt=\"Pingdom\" /><"));
-        assertThat(actualHtmlBody, containsString("background-image:url(http://localhost/1/attachment/folder|<1367760625.51865ef16e3f6@swift.generated>|1367760625.51865ef16f798@swift.generated);"));
-
+        assertThat(actualHtmlBody, containsString("http://localhost/1/attachment/folder|<1367760625.51865ef16e3f6@swift.generated>|1367760625.51865ef16e3f6@swift.generated"));
     }
 
     @Test(expected = NotFoundException.class)

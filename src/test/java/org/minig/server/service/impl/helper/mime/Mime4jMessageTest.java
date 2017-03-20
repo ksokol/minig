@@ -6,6 +6,7 @@ import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeId;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.activation.FileDataSource;
 import java.util.Arrays;
@@ -18,6 +19,7 @@ import static javax.mail.Message.RecipientType.CC;
 import static javax.mail.Message.RecipientType.TO;
 import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 import static org.hamcrest.Matchers.hasProperty;
@@ -667,6 +669,19 @@ public class Mime4jMessageTest {
 
         assertThat(attachment.getMimeType(), CoreMatchers.is("image/png"));
         assertThat(attachment.getFilename(), CoreMatchers.is("umlaut ä veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery long.png"));
+    }
+
+    @Test
+    public void shouldReplaceCidAndMidWithUrl() throws Exception {
+        Mime4jMessage message = Mime4jTestHelper.freshMime4jMessage(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.newInstance();
+        uriComponentsBuilder.pathSegment("attachment", "junit");
+
+        String actualHtmlBody = message.getHtml(uriComponentsBuilder);
+
+        assertThat(actualHtmlBody, containsString("background-image:url(/attachment/junit/folder|<1367760625.51865ef16e3f6@swift.generated>|1367760625.51865ef16e3f6@swift.generated);"));
+        assertThat(actualHtmlBody, containsString("<img src=\"/attachment/junit/folder|<1367760625.51865ef16e3f6@swift.generated>|1367760625.51865ef16cc8c@swift.generated\" alt=\"Pingdom\" /><"));
+        assertThat(actualHtmlBody, containsString("background-image:url(/attachment/junit/folder|<1367760625.51865ef16e3f6@swift.generated>|1367760625.51865ef16f798@swift.generated);"));
     }
 
     private static Mime4jMessage aMime4jMessage() {
