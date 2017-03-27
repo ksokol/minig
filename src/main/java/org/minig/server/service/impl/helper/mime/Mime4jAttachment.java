@@ -4,7 +4,8 @@ import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
 
 import java.io.InputStream;
-import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * @author Kamill Sokol
@@ -23,10 +24,10 @@ public final class Mime4jAttachment {
     }
 
     public Mime4jAttachment(CompositeId compositeId, String filename, String contentId, String dispositionType, String mimeType, InputStream data) {
-        Objects.requireNonNull(compositeId);
+        requireNonNull(compositeId, "compositeId is null");
+        this.mimeType = requireNonNull(mimeType);
         this.id = new CompositeAttachmentId(compositeId.getFolder(), compositeId.getMessageId(), "attachment".equals(dispositionType) ? filename : contentId);
-        this.filename = Objects.requireNonNull(filename);
-        this.mimeType = Objects.requireNonNull(mimeType);
+        this.filename = filename;
         this.contentId = contentId;
         this.dispositionType = dispositionType;
         this.data = data;

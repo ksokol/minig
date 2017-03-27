@@ -246,12 +246,12 @@ app.controller('FolderListCtrl', ['$scope', '$rootScope', 'folderService', 'rout
 
     function _updateFlags(mail) {
         mailService.updateFlags([mail])
-        .catch(function(e) {
+        .catch(function() {
             $rootScope.$broadcast("error", i18nService.resolve("something went wrong"));
         });
 
         $rootScope.$broadcast("more-actions-done");
-    }
+    };
 
     function saveAndNavigateToComposer(mail) {
         draftService.save(mail)

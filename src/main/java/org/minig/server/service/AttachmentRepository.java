@@ -35,14 +35,10 @@ public class AttachmentRepository {
         }
 
         List<MailAttachment> metaDataList = new ArrayList<>();
-        List<Mime4jAttachment> attachments2 = mime4jMessage.getAttachments();
+        List<Mime4jAttachment> mime4jAttachments = mime4jMessage.getAttachments();
 
-        for (Mime4jAttachment attachment : attachments2) {
-            // TODO
-            MailAttachment metaData = new MailAttachment();
-            metaData.setCompositeId(attachment.getId());
-            metaData.setFileName(attachment.getId().getFileName());
-            metaData.setMime(attachment.getMimeType());
+        for (Mime4jAttachment attachment : mime4jAttachments) {
+            MailAttachment metaData = new MailAttachment(attachment.getId(), attachment.getMimeType(), attachment.getContentId(), attachment.getDispositionType(), null);
             metaDataList.add(metaData);
         }
 
@@ -62,10 +58,7 @@ public class AttachmentRepository {
             MailAttachment mailAttachment = null;
 
             if(attachment != null) {
-                mailAttachment = new MailAttachment();
-                mailAttachment.setCompositeAttachmentId(attachment.getId());
-                mailAttachment.setMime(attachment.getMimeType());
-                mailAttachment.setFileName(attachment.getFilename());
+                mailAttachment = new MailAttachment(attachment.getId(), attachment.getMimeType(), attachment.getContentId(), attachment.getDispositionType(), null);
             }
             return mailAttachment;
         } catch (Exception e) {

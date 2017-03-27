@@ -1,18 +1,23 @@
 package org.minig.server.service.impl.helper.mime;
 
+import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
+import org.minig.util.PercentEscaper;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.activation.DataSource;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.minig.MinigConstants.FORWARDED_MESSAGE_ID;
 import static org.minig.MinigConstants.IN_REPLY_TO;
 import static org.minig.MinigConstants.REFERENCES;
 import static org.minig.MinigConstants.X_DRAFT_INFO;
 import static org.minig.MinigConstants.X_PRIORITY;
+import static org.minig.server.util.ExceptionUtils.rethrowCheckedAsUnchecked;
 
 /**
  * @author Kamill Sokol
@@ -68,6 +73,14 @@ public class Mime4jMessage {
         messageTransformer.addAttachment(dataSource);
     }
 
+    public Optional<Mime4jAttachment> getAttachment(CompositeAttachmentId id) {
+        return messageTransformer.getAllAttachments().stream().filter(mime4jAttachment -> mime4jAttachment.getId().equals(id)).findFirst();
+    }
+
+    /**
+     * @deprecated Use {@link #getAttachment(CompositeAttachmentId)} instead.
+     */
+    @Deprecated
     public Mime4jAttachment getAttachment(String filename) {
         List<Mime4jAttachment> attachments = getAttachments();
         for (Mime4jAttachment attachment : attachments) {
@@ -212,7 +225,7 @@ public class Mime4jMessage {
     }
 
     private String sanitize(String htmlBody, Mime4jAttachment attachment, UriComponentsBuilder uriComponentsBuilder) {
-        String contentUrl = uriComponentsBuilder.pathSegment(attachment.getId().toString()).build().toUriString();
+        String contentUrl = uriComponentsBuilder.pathSegment(escape(attachment.getId())).build().toUriString();
         String replacedCid = htmlBody.replaceAll("cid:" + attachment.getContentId(), contentUrl);
         return replacedCid.replaceAll("mid:" + attachment.getContentId(), contentUrl);
     }
@@ -237,5 +250,9 @@ public class Mime4jMessage {
         }
 
         messageTransformer.setHeader(X_DRAFT_INFO, value);
+    }
+
+    private static String escape(CompositeAttachmentId id) {
+        return rethrowCheckedAsUnchecked(() -> URLEncoder.encode(new PercentEscaper("-.*", true).escape(id.toString()), UTF_8.name()));
     }
 }

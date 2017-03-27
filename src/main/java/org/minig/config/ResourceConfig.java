@@ -1,15 +1,11 @@
 package org.minig.config;
 
-import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import org.minig.server.resource.argumentresolver.CompositeIdHandlerMethodArgumentResolver;
 import org.minig.server.resource.argumentresolver.StringIdHandlerMethodArgumentResolver;
-import org.minig.server.resource.config.CompositeAttachmentIdSerializer;
-import org.minig.server.service.CompositeAttachmentId;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -31,23 +27,23 @@ import java.util.List;
 @Configuration
 public class ResourceConfig extends WebMvcConfigurerAdapter {
 
-	@Override
-	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-		configurer.defaultContentType(MediaType.APPLICATION_JSON).ignoreAcceptHeader(true).useJaf(false).favorPathExtension(false);
-	}
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+        configurer.defaultContentType(MediaType.APPLICATION_JSON).ignoreAcceptHeader(false).useJaf(false).favorPathExtension(false);
+    }
 
-	@Override
-	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-		argumentResolvers.add(new StringIdHandlerMethodArgumentResolver());
-		argumentResolvers.add(new CompositeIdHandlerMethodArgumentResolver());
-	}
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        argumentResolvers.add(new StringIdHandlerMethodArgumentResolver());
+        argumentResolvers.add(new CompositeIdHandlerMethodArgumentResolver());
+    }
 
-	@Bean(name = "multipartResolver")
-	public MultipartResolver getMultipartResolver() {
-		CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-		multipartResolver.setMaxUploadSize(20971520); // 20MB
-		return multipartResolver;
-	}
+    @Bean(name = "multipartResolver")
+    public MultipartResolver getMultipartResolver() {
+        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+        multipartResolver.setMaxUploadSize(20971520); // 20MB
+        return multipartResolver;
+    }
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -68,10 +64,6 @@ public class ResourceConfig extends WebMvcConfigurerAdapter {
         objectMapper.configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false);
         objectMapper.setDateFormat(new ISO8601DateFormat());
 
-		SimpleModule testModule = new SimpleModule("MinigModule", new Version(1, 0, 0, null));
-		testModule.addSerializer(CompositeAttachmentId.class, new CompositeAttachmentIdSerializer());
-		objectMapper.registerModule(testModule);
-
-		return objectMapper;
-	}
+        return objectMapper;
+    }
 }

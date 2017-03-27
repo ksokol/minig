@@ -3,6 +3,7 @@ package org.minig.server.resource.argumentresolver;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.net.URLDecoder;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -48,10 +49,10 @@ public class CompositeIdHandlerMethodArgumentResolver implements HandlerMethodAr
         String bestMatchPattern = (String) nativeRequest.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 
         if (path != null && bestMatchPattern != null) {
-            String finalPath = apm.extractPathWithinPattern(bestMatchPattern, path);
+            Map<String, String> map = apm.extractUriTemplateVariables(bestMatchPattern, path);
 
-            if (finalPath != null && !finalPath.isEmpty()) {
-                String value = finalPath.trim();
+            if (map.containsKey("id")) {
+                String value = map.get("id").trim();
 
                 try {
                     String decoded = URLDecoder.decode(value, "UTF-8");

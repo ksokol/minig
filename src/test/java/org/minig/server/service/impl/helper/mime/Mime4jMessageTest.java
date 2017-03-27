@@ -5,10 +5,13 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.minig.server.TestConstants;
+import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
+import org.minig.server.service.MimeMessageBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.activation.FileDataSource;
+import javax.mail.internet.MimeMessage;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +44,8 @@ import static org.minig.test.hamcrest.Mime4jMessageMatchers.octetStreamBody;
 import static org.minig.test.hamcrest.Mime4jMessageMatchers.related;
 import static org.minig.test.hamcrest.Mime4jMessageMatchers.textBody;
 import static org.minig.test.hamcrest.MimeMatcherAssert.assertMimeMessage;
+import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
+import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
 /**
  * @author Kamill Sokol
@@ -515,6 +520,39 @@ public class Mime4jMessageTest {
     }
 
     @Test
+    public void shouldReturnAttachment() throws Exception {
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.PLAIN_ATTACHMENT);
+        byte[] BODY = new byte[] { (byte) 'a' };
+        CompositeAttachmentId compositeAttachmentId =
+                new CompositeAttachmentId("folder", "<208544674.1.1477820621771.JavaMail.localhost@localhost>", "example.pdf");
+
+        Mime4jAttachment attachment = mime4jMessage.getAttachment(compositeAttachmentId).orElseThrow(() -> new AssertionError("attachment expected"));
+
+        assertThat(attachment.getId(), is(compositeAttachmentId));
+        assertThat(attachment.getContentId(), nullValue());
+        assertThat(attachment.getMimeType(), is(APPLICATION_PDF_VALUE));
+        assertThat(attachment.getFilename(), is("example.pdf"));
+        assertThat(IOUtils.toByteArray(attachment.getData()), is(BODY));
+    }
+
+    @Test
+    public void shouldReturnInlineAttachment() throws Exception {
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.ALTERNATIVE);
+        byte[] BODY = new byte[] { (byte) 'a' };
+
+        CompositeAttachmentId compositeAttachmentId =
+                new CompositeAttachmentId("folder", "<208544674.1.1477820621771.JavaMail.localhost@localhost>", "1367760625.51865ef16f798@swift.generated");
+
+        Mime4jAttachment attachment = mime4jMessage.getAttachment(compositeAttachmentId).orElseThrow(() -> new AssertionError("inline attachment expected"));
+
+        assertThat(attachment.getId(), is(compositeAttachmentId));
+        assertThat(attachment.getContentId(), is("1367760625.51865ef16f798@swift.generated"));
+        assertThat(attachment.getMimeType(), is(IMAGE_PNG_VALUE));
+        assertThat(attachment.getFilename(), is("bg2.png"));
+        assertThat(IOUtils.toByteArray(attachment.getData()), is(BODY));
+    }
+
+    @Test
     public void shouldClearToAddresses() throws Exception {
         Mime4jMessage mime4j = aMime4jMessage();
 
@@ -673,15 +711,17 @@ public class Mime4jMessageTest {
 
     @Test
     public void shouldReplaceCidAndMidWithUrl() throws Exception {
-        Mime4jMessage message = Mime4jTestHelper.freshMime4jMessage(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
+        MimeMessage mimeMessage = new MimeMessageBuilder().setFolder("INBOX/folder").build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
+        Mime4jMessage message = new Mime4jMessage(mimeMessage);
+
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.newInstance();
         uriComponentsBuilder.pathSegment("attachment", "junit");
 
         String actualHtmlBody = message.getHtml(uriComponentsBuilder);
 
-        assertThat(actualHtmlBody, containsString("background-image:url(/attachment/junit/folder|<1367760625.51865ef16e3f6@swift.generated>|1367760625.51865ef16e3f6@swift.generated);"));
-        assertThat(actualHtmlBody, containsString("<img src=\"/attachment/junit/folder|<1367760625.51865ef16e3f6@swift.generated>|1367760625.51865ef16cc8c@swift.generated\" alt=\"Pingdom\" /><"));
-        assertThat(actualHtmlBody, containsString("background-image:url(/attachment/junit/folder|<1367760625.51865ef16e3f6@swift.generated>|1367760625.51865ef16f798@swift.generated);"));
+        assertThat(actualHtmlBody, containsString("background-image:url(/attachment/junit/INBOX%252Ffolder%257C%253C1367760625.51865ef16e3f6%2540swift.generated%253E%257C1367760625.51865ef16f798%2540swift.generated);"));
+        assertThat(actualHtmlBody, containsString("<img src=\"/attachment/junit/INBOX%252Ffolder%257C%253C1367760625.51865ef16e3f6%2540swift.generated%253E%257C1367760625.51865ef16cc8c%2540swift.generated\" alt=\"Pingdom\" />"));
+        assertThat(actualHtmlBody, containsString("background-image:url(/attachment/junit/INBOX%252Ffolder%257C%253C1367760625.51865ef16e3f6%2540swift.generated%253E%257C1367760625.51865ef16e3f6%2540swift.generated);"));
     }
 
     private static Mime4jMessage aMime4jMessage() {

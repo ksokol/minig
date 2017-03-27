@@ -1,15 +1,26 @@
 package org.minig.server.service;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.minig.server.resource.config.CompositeIdSerializer;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Objects;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * @author Kamill Sokol
+ *
+ * TODO move id parse to JsonDeserializer
  */
 public class CompositeId {
 
-    public static final String SEPARATOR = "|";
+    static final String SEPARATOR = "|";
 
+    @JsonSerialize(using = CompositeIdSerializer.class)
     protected String id;
     private String messageId;
     private String folder;
@@ -33,6 +44,7 @@ public class CompositeId {
     public CompositeId(String folder, String messageId) {
         this.folder = folder;
         this.messageId = messageId;
+        buildId();
     }
 
     public String getId() {
@@ -64,13 +76,23 @@ public class CompositeId {
 
     public void setId(String id) {
         if (id != null && folder == null && messageId == null) {
-            String[] split = id.split("\\" + SEPARATOR);
-
-            if (split != null && split.length > 1) {
-                messageId = split[1];
-                folder = split[0];
-                buildId();
+            try {
+                // TODO double decode id e.g. INBOX%252Ftest -> INBOX%2Ftest -> INBOX/test
+                String decodedId = URLDecoder.decode(URLDecoder.decode(id, UTF_8.name()), UTF_8.name());
+                splitAndSet(decodedId);
+            } catch (UnsupportedEncodingException exception) {
+                throw new IllegalArgumentException(exception.getMessage(), exception);
             }
+        }
+    }
+
+    private void splitAndSet(String decodedId) {
+        String[] split = decodedId.split("\\" + SEPARATOR);
+
+        if (split.length > 1) {
+            messageId = split[1];
+            folder = split[0];
+            buildId();
         }
     }
 
@@ -82,6 +104,19 @@ public class CompositeId {
         if (id == null && folder != null && messageId != null) {
             id = folder + SEPARATOR + messageId;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CompositeId)) return false;
+        CompositeId that = (CompositeId) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

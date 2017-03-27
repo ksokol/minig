@@ -1297,6 +1297,10 @@ html>body .dataGrid {
     display: none !important;
 }
 
+.not-visible {
+	visibility: hidden !important;
+}
+
 .recipientsDetails {
 	text-align: right;
 	white-space: nowrap;

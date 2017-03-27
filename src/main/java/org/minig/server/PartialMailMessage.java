@@ -1,5 +1,7 @@
 package org.minig.server;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.minig.server.resource.config.CompositeIdSerializer;
 import org.minig.server.service.CompositeId;
 
 import javax.mail.Address;
@@ -26,6 +28,7 @@ public class PartialMailMessage {
         this.compositeId = new CompositeId(mimeMessage);
     }
 
+    @JsonSerialize(using = CompositeIdSerializer.class)
     public String getId() {
         return compositeId.getId();
     }

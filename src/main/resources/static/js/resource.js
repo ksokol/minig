@@ -54,7 +54,7 @@ app.factory('folderService', ['$q', '$resource', 'deferService', 'folderCache', 
 }]);
 
 //TODO replace $resource with $http
-app.factory('mailService', ['$resource','mailCache','deferService', 'API_HOME','DEFAULT_PAGE_SIZE', function($resource, mailCache, deferService, API_HOME, DEFAULT_PAGE_SIZE) {
+app.factory('mailService', ['$resource', '$http', 'deferService', 'API_HOME','DEFAULT_PAGE_SIZE', function($resource, $http, deferService, API_HOME, DEFAULT_PAGE_SIZE) {
 	var defaults = {page: 1, page_length: DEFAULT_PAGE_SIZE};
 	
 	var messageDelete = $resource(API_HOME+'message/delete', {}, {deleteMails: {method: 'PUT', isArray:true, transformRequest: _transMessageDelete }});
@@ -62,8 +62,6 @@ app.factory('mailService', ['$resource','mailCache','deferService', 'API_HOME','
 	var messageUpdateFlag = $resource(API_HOME+'message/flag', {}, {updateFlags: {method: 'PUT', isArray:true, transformRequest: _transMessageUpdateFlags}});
 	var messageMove = $resource(API_HOME+'message/move', {}, {moveMessage: {method: 'PUT', isArray:true, transformRequest: _transMessageMoveCopy}});
 	var messageCopy = $resource(API_HOME+'message/copy', {}, {copyMessage: {method: 'PUT', isArray:true, transformRequest: _transMessageMoveCopy}});
-    var messageLoad = $resource(API_HOME+'message/:id', {'id':'@id'}, {_load: {method: 'GET'}});
-    var messageDeleteSingle = $resource(API_HOME+'message/:id', {'id':'@id'}, {_delete: {method: 'DELETE' }});
 
     function _transMessageDelete(mails) {
 		var idList = [];
@@ -101,30 +99,15 @@ app.factory('mailService', ['$resource','mailCache','deferService', 'API_HOME','
         return angular.toJson({folder: folder, messageIdList: ids});
 	}
 
-    var _load = function(id) {
-        var cached = mailCache.get(id);
-        if(cached) {
-            return deferService.resolved(cached);
-        }
-
-        var deferred = deferService.deferred(messageLoad._load, { 'id' : encodeURIComponent(id)});
-        deferred.then(function(result) {
-            mailCache.add(result);
-        });
-        return deferred;
-    };
-
-    var _delete = function(id) {
-        var deferred = deferService.deferred(messageDeleteSingle._delete, { 'id' : encodeURIComponent(id)});
-        deferred.then(function() {
-            mailCache.evict(id);
-        });
-        return deferred;
-    };
-
 	return {
-        load: _load,
-        delete: _delete,
+        load: function(id) {
+            return $http.get(API_HOME + 'message/' + id).then(function(result) {
+                return result.data;
+            });
+        },
+        delete: function(id) {
+            return $http.delete(API_HOME + 'message/' + id);
+        },
         deleteMails: function(params) {
             return deferService.deferred(messageDelete.deleteMails, params);
         },
@@ -139,6 +122,9 @@ app.factory('mailService', ['$resource','mailCache','deferService', 'API_HOME','
         },
         updateFlags: function(params) {
             return deferService.deferred(messageUpdateFlag.updateFlags, params);
+        },
+        htmlUrl: function(params) {
+            return API_HOME + 'message/' + params.id + '/html';
         }
 	};
 }]);

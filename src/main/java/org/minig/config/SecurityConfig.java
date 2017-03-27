@@ -56,6 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .authorizeRequests().anyRequest().fullyAuthenticated()
                     .and()
                     .httpBasic().authenticationEntryPoint(new ApiAuthenticationEntryPoint())
+                    .and().headers().frameOptions().disable()
                     .and().csrf().disable();
         }
     }

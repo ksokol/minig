@@ -195,7 +195,7 @@ final class MessageTransformer {
         });
     }
 
-    private List<Mime4jAttachment> getAllAttachments() {
+    List<Mime4jAttachment> getAllAttachments() {
         if (!message.isMultipart()) {
             return Collections.emptyList();
         }

@@ -158,8 +158,7 @@ gulp.task('karma', function (done) {
                     prependPrefix : 'fixture/'
                 },
                 ngHtml2JsPreprocessor: {
-                    stripPrefix: paths.static + 'templates/',
-                    prependPrefix: 'html/',
+                    stripPrefix: paths.static,
                     moduleName: 'htmlTemplates'
                 },
                 coverageReporter: {

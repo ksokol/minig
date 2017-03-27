@@ -1,25 +1,33 @@
 package org.minig.server.service;
 
+import org.minig.server.MailMessageAddress;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
+
+import javax.mail.Address;
+import javax.mail.Flags.Flag;
+import javax.mail.Folder;
+import javax.mail.IllegalWriteException;
+import javax.mail.Message;
+import javax.mail.Message.RecipientType;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.mail.search.SearchTerm;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import javax.mail.*;
-import javax.mail.Flags.Flag;
-import javax.mail.Message.RecipientType;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
-import org.minig.server.MailMessageAddress;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
-
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 public class MimeMessageBuilder {
 
@@ -102,6 +110,12 @@ public class MimeMessageBuilder {
             when(m.getHeader("User-Agent")).thenReturn(new String[] { mailer });
             when(m.getHeader("Message-ID")).thenReturn(new String[] { messageId });
             when(m.getHeader("In-Reply-To")).thenReturn(new String[] { inReplyTo });
+
+            when(m.match(any(SearchTerm.class))).then(invocation -> {
+                Object[] arguments = invocation.getArguments();
+                SearchTerm term = (SearchTerm) arguments[0];
+                return term.match(m);
+            });
 
             if (highPriority) {
                 when(m.getHeader("X-Priority")).thenReturn(new String[] { "1 " });

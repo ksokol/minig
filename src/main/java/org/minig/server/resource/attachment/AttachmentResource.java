@@ -1,71 +1,61 @@
 package org.minig.server.resource.attachment;
 
+import org.apache.commons.io.IOUtils;
 import org.minig.server.MailAttachment;
 import org.minig.server.resource.Id;
 import org.minig.server.resource.exception.ClientIllegalArgumentException;
 import org.minig.server.service.AttachmentService;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
-import org.minig.server.service.NotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Objects.requireNonNull;
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.ALL_VALUE;
+
 /**
  * @author Kamill Sokol
  */
 @Controller
-@RequestMapping(value = "1", produces = "application/json; charset=UTF-8")
+@RequestMapping(value = "1")
 public class AttachmentResource {
 
-    @Autowired
-    private AttachmentService attachmentService;
+    private final AttachmentService attachmentService;
 
-    @RequestMapping(value = "attachment/**", method = RequestMethod.GET)
-    public ResponseEntity<?> readAttachment(@Id CompositeId id) {
-        if (id.getId() == null) {
-            throw new NotFoundException();
-        }
-
-        if (id instanceof CompositeAttachmentId) {
-            MailAttachment findAttachment = attachmentService.findAttachment((CompositeAttachmentId) id);
-            ResponseEntity<?> responseEntity = new ResponseEntity<MailAttachment>(findAttachment, HttpStatus.OK);
-            return responseEntity;
-
-        }
-        if (id instanceof CompositeId) {
-            List<MailAttachment> findAttachments = attachmentService.findAttachments(id);
-            ResponseEntity<List<MailAttachment>> responseEntity = new ResponseEntity<>(findAttachments, HttpStatus.OK);
-            return responseEntity;
-        }
-
-        throw new NotFoundException();
+    public AttachmentResource(AttachmentService attachmentService) {
+        this.attachmentService = requireNonNull(attachmentService, "attachmentService is null");
     }
 
-    @RequestMapping(value = "attachment/**", produces = "*/*", params = "download=true", method = RequestMethod.GET)
-    public void downloadAttachment(@Id CompositeAttachmentId id, HttpServletResponse response) throws IOException {
-        MailAttachment attachment = attachmentService.findAttachment(id);
+    @GetMapping(value = "attachment/{id:.*}", produces = ALL_VALUE)
+    public ResponseEntity<?> downloadAttachment(@Id CompositeAttachmentId id) throws IOException {
+        MailAttachment attachment = attachmentService.findById(id);
 
-        response.setContentType(attachment.getMime());
-        response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", attachment.getFileName()));
-        attachmentService.readAttachment(id, response.getOutputStream());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(CONTENT_TYPE, attachment.getMime());
+        httpHeaders.add(CONTENT_DISPOSITION, String.format("%s; filename=\"%s\"", attachment.getDispositionType(), attachment.getFileName()));
+
+        return new ResponseEntity<>(IOUtils.toByteArray(attachment.getData()), httpHeaders, HttpStatus.OK);
     }
 
     @ResponseStatus(value = HttpStatus.CREATED)
-    @RequestMapping(value = "attachment/**", method = RequestMethod.POST)
+    @PostMapping("attachment/{id:.*}")
     @ResponseBody
     public Map<String, Object> uploadAttachment(@Id CompositeId id, MultipartRequest file) throws IOException {
         if(file.getFileMap().size() > 1) {
@@ -82,8 +72,7 @@ public class AttachmentResource {
         return map;
     }
 
-    @ResponseStatus(value = HttpStatus.OK)
-    @RequestMapping(value = "attachment/**", method = RequestMethod.DELETE)
+    @DeleteMapping("attachment/{id:.*}")
     @ResponseBody
     public Map<String, Object> deleteAttachment(@Id CompositeAttachmentId id) {
         CompositeId newMailId = attachmentService.deleteAttachment(id);

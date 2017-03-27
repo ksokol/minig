@@ -440,7 +440,7 @@ public class MailServiceTest {
 
         String actualHtmlBody = uut.findHtmlBodyByCompositeId(new CompositeId("INBOX/test", message.getMessageID()));
 
-        assertThat(actualHtmlBody, containsString("http://localhost/1/attachment/folder|<1367760625.51865ef16e3f6@swift.generated>|1367760625.51865ef16e3f6@swift.generated"));
+        assertThat(actualHtmlBody, containsString("http://localhost/1/attachment/folder%257C%253C1367760625.51865ef16e3f6%2540swift.generated%253E%257C1367760625.51865ef16e3f6%2540swift.generated"));
     }
 
     @Test(expected = NotFoundException.class)

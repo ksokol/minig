@@ -1,12 +1,10 @@
 beforeEach(module('minigApp', 'fixture/maillist.json', 'htmlTemplates'));
 
 describe("directive pagination", function() {
-    it("should calculate pager and append it to scope", inject(function($compile, $rootScope, _fixtureMaillist_, _$httpBackend_) {
-        _$httpBackend_.whenGET('templates/pagination.html').respond("pagination.html");
+    it("should calculate pager and append it to scope", inject(function($compile, $rootScope, _fixtureMaillist_) {
         scope = $rootScope.$new();
 
         $compile('<pagination data="data"></pagination>')(scope);
-        _$httpBackend_.flush();
 
         scope.data = _fixtureMaillist_;
         scope.$digest();
