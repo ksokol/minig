@@ -90,7 +90,7 @@ public class PartialMailMessage {
         return Arrays.stream(mimeMessage.getFlags().getSystemFlags()).anyMatch(flag -> flag == expectedFlag);
     }
 
-    private boolean hasUserFlag(String flag) throws MessagingException {
+    protected boolean hasUserFlag(String flag) throws MessagingException {
         return mimeMessage.getFlags().getUserFlags() != null && Arrays.stream(mimeMessage.getFlags().getUserFlags()).anyMatch(flag::equals);
     }
 }

@@ -144,7 +144,7 @@ public class Mime4jMessageTest {
     public void testSetMultipart8() throws Exception {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.MULTIPART_WITH_ATTACHMENT);
 
-        assertEquals("", mime4jMessage.getPlain().trim());
+        assertEquals("plain", mime4jMessage.getPlain().trim());
         assertEquals("", mime4jMessage.getHtml().trim());
 
         String replacedBody = "replaced plain " + new Date().toString();
