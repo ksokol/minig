@@ -67,7 +67,7 @@ public class PartialMailMessage {
     }
 
     public boolean getForwarded() throws MessagingException {
-        return mimeMessage.getFlags().getUserFlags() != null && Arrays.stream(mimeMessage.getFlags().getUserFlags()).anyMatch(FORWARDED::equals);
+        return hasUserFlag(FORWARDED);
     }
 
     public boolean getRead() throws MessagingException {
@@ -88,5 +88,9 @@ public class PartialMailMessage {
 
     private boolean hasFlag(Flags.Flag expectedFlag) throws MessagingException {
         return Arrays.stream(mimeMessage.getFlags().getSystemFlags()).anyMatch(flag -> flag == expectedFlag);
+    }
+
+    private boolean hasUserFlag(String flag) throws MessagingException {
+        return mimeMessage.getFlags().getUserFlags() != null && Arrays.stream(mimeMessage.getFlags().getUserFlags()).anyMatch(flag::equals);
     }
 }
