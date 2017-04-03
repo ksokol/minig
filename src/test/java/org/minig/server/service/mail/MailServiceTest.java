@@ -355,10 +355,8 @@ public class MailServiceTest {
         mm.setReceipt(true);
         mm.setDate(new Date());
 
-        MailMessageAddress recipientAddress = new MailMessageAddress();
-        recipientAddress.setDisplayName(recipient);
-        recipientAddress.setEmail(recipient);
-        List<MailMessageAddress> addresses = Arrays.asList(recipientAddress);
+        MailMessageAddress recipientAddress = new MailMessageAddress(recipient);
+        List<MailMessageAddress> addresses = Collections.singletonList(recipientAddress);
 
         mm.setTo(addresses);
         mm.setCc(addresses);

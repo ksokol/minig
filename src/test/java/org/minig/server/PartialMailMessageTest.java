@@ -124,12 +124,12 @@ public class PartialMailMessageTest {
     }
 
     @Test
-    public void getUndisclosedSender() throws Exception {
+    public void getUndisclosedAddress() throws Exception {
         partialMailMessage = new PartialMailMessage(builder.setSender(null).mock());
         assertThat(partialMailMessage.getSender(),
                 allOf(
-                        hasProperty("email", is("undisclosed sender")),
-                        hasProperty("displayName", is("undisclosed sender"))
+                        hasProperty("email", is("")),
+                        hasProperty("displayName", is("undisclosed address"))
                 )
         );
     }

@@ -49,7 +49,7 @@ public class PartialMailMessage {
         Address[] addresses = mimeMessage.getFrom();
 
         if (addresses == null) {
-            return new MailMessageAddress("undisclosed sender");
+            return new MailMessageAddress();
         }
 
         InternetAddress internetAddress = (InternetAddress) addresses[0];

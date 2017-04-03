@@ -16,13 +16,19 @@
 
 package org.minig.server;
 
+import org.minig.server.service.impl.helper.mime.Mime4jAddress;
+
+import static java.util.Objects.requireNonNull;
+
 public class MailMessageAddress {
+
+	private static final String UNDISCLOSED_ADDRESS = "undisclosed address";
 
 	private String email;
 	private String displayName;
 
 	public MailMessageAddress() {
-		this("undisclosed recipient", "");
+		this(UNDISCLOSED_ADDRESS, "");
 	}
 
 	public MailMessageAddress(String displayName, String email) {
@@ -33,6 +39,12 @@ public class MailMessageAddress {
 		}
 		this.email = email;
 	}
+
+    public MailMessageAddress(Mime4jAddress mime4jAddress) {
+        requireNonNull(mime4jAddress);
+        this.email = mime4jAddress.getAddress();
+        this.displayName = mime4jAddress.getPersonal();
+    }
 
 	public MailMessageAddress(String email) {
 		this.displayName = email;
