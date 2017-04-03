@@ -20,7 +20,6 @@ import javax.activation.FileDataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -164,7 +163,7 @@ public class AttachmentRepositoryTest {
         InputStream readAttachmentPayload = uut.readAttachmentPayload(id);
 
         byte[] byteArray = IOUtils.toByteArray(readAttachmentPayload);
-        byte[] expected = IOUtils.toByteArray(new FileInputStream(TestConstants.ATTACHMENT_IMAGE_1_PNG));
+        byte[] expected = new byte[] { 'a' };
 
         assertTrue(Arrays.equals(expected, byteArray));
     }
