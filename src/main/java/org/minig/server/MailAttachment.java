@@ -1,6 +1,7 @@
 package org.minig.server;
 
 import org.minig.server.service.CompositeAttachmentId;
+import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
 
 import java.io.InputStream;
 
@@ -13,6 +14,10 @@ public class MailAttachment extends CompositeAttachmentId {
     private String contentId;
     private String dispositionType;
     private InputStream data;
+
+    public MailAttachment(Mime4jAttachment mime4jAttachment) {
+        this(mime4jAttachment.getId(), mime4jAttachment.getMimeType(), mime4jAttachment.getContentId(), mime4jAttachment.getDispositionType(), mime4jAttachment.getData());
+    }
 
     public MailAttachment(CompositeAttachmentId compositeAttachmentId, String mime, String contentId, String dispositionType, InputStream data) {
         super(compositeAttachmentId.getFolder(), compositeAttachmentId.getMessageId(), compositeAttachmentId.getFileName());
