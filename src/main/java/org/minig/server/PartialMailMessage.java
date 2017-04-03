@@ -66,31 +66,31 @@ public class PartialMailMessage {
         return mimeMessage.getSentDate();
     }
 
-    public boolean getForwarded() throws MessagingException {
+    public boolean isForwarded() throws MessagingException {
         return hasUserFlag(FORWARDED);
     }
 
-    public boolean getRead() throws MessagingException {
+    public boolean isRead() throws MessagingException {
         return hasFlag(Flags.Flag.SEEN);
     }
 
-    public boolean getStarred() throws MessagingException {
+    public boolean isStarred() throws MessagingException {
         return hasFlag(Flags.Flag.FLAGGED);
     }
 
-    public boolean getAnswered() throws MessagingException {
+    public boolean isAnswered() throws MessagingException {
         return hasFlag(Flags.Flag.ANSWERED);
     }
 
-    public Boolean getDeleted() throws MessagingException {
+    public boolean isDeleted() throws MessagingException {
         return hasFlag(Flags.Flag.DELETED);
-    }
-
-    private boolean hasFlag(Flags.Flag expectedFlag) throws MessagingException {
-        return Arrays.stream(mimeMessage.getFlags().getSystemFlags()).anyMatch(flag -> flag == expectedFlag);
     }
 
     protected boolean hasUserFlag(String flag) throws MessagingException {
         return mimeMessage.getFlags().getUserFlags() != null && Arrays.stream(mimeMessage.getFlags().getUserFlags()).anyMatch(flag::equals);
+    }
+
+    private boolean hasFlag(Flags.Flag expectedFlag) throws MessagingException {
+        return Arrays.stream(mimeMessage.getFlags().getSystemFlags()).anyMatch(flag -> flag == expectedFlag);
     }
 }
