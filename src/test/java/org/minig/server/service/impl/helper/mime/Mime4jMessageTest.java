@@ -2,6 +2,7 @@ package org.minig.server.service.impl.helper.mime;
 
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.minig.server.TestConstants;
@@ -20,6 +21,8 @@ import java.util.Scanner;
 import static javax.mail.Message.RecipientType.BCC;
 import static javax.mail.Message.RecipientType.CC;
 import static javax.mail.Message.RecipientType.TO;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
@@ -607,6 +610,10 @@ public class Mime4jMessageTest {
         mime4j.addTo("test2@example");
 
         assertThat(Arrays.toString(mime4j.toMessage().getRecipients(TO)), is("[test1@example, test2@example]"));
+        assertThat(mime4j.getTo(), contains(
+                address(is("test1@example"), is("test1@example")),
+                address(is("test2@example"), is("test2@example"))
+        ));
     }
 
     @Test
@@ -617,6 +624,10 @@ public class Mime4jMessageTest {
         mime4j.addBcc("test2@example");
 
         assertThat(Arrays.toString(mime4j.toMessage().getRecipients(BCC)), is("[test1@example, test2@example]"));
+        assertThat(mime4j.getBcc(), contains(
+                address(is("test1@example"), is("test1@example")),
+                address(is("test2@example"), is("test2@example"))
+        ));
     }
 
     @Test
@@ -627,6 +638,10 @@ public class Mime4jMessageTest {
         mime4j.addCc("test2@example");
 
         assertThat(Arrays.toString(mime4j.toMessage().getRecipients(CC)), is("[test1@example, test2@example]"));
+        assertThat(mime4j.getCc(), contains(
+                address(is("test1@example"), is("test1@example")),
+                address(is("test2@example"), is("test2@example"))
+        ));
     }
 
     @Test
@@ -646,6 +661,67 @@ public class Mime4jMessageTest {
         mime4j.setFrom("test1@example");
 
         assertThat(mime4j.toMessage().getSender().toString(), is("test1@example"));
+        assertThat(mime4j.getSender(), is("test1@example"));
+    }
+
+    @Test
+    public void shouldSetDispositionNotificationTo() throws Exception {
+        MimeMessage mimeMessage = MimeMessageBuilder.withSource(TestConstants.MULTIPART_WITH_ATTACHMENT)
+                .setRecipientDispositionNotification("r1@local", "personal1")
+                .setRecipientDispositionNotification("r2@local").spy();
+
+        assertThat(new Mime4jMessage(mimeMessage).getDispositionNotificationTo(), contains(
+                address(is("r1@local"), is("personal1")),
+                address(is("r2@local"), is("r2@local"))
+        ));
+    }
+
+    @Test
+    public void shouldSetReplyTo() throws Exception {
+        MimeMessage mimeMessage = MimeMessageBuilder.withSource(TestConstants.MULTIPART_WITH_ATTACHMENT)
+                .setReplyTo("r1@local", "personal1")
+                .setReplyTo("r2@local").spy();
+
+        assertThat(new Mime4jMessage(mimeMessage).getReplyTo(), contains(
+                address(is("r1@local"), is("personal1")),
+                address(is("r2@local"), is("r2@local"))
+        ));
+    }
+
+    @Test
+    public void shouldNotHaveAnyAddress() throws Exception {
+        Mime4jMessage mime4jMessage = new Mime4jMessage(MimeMessageBuilder.withSource(TestConstants.MULTIPART_WITH_ATTACHMENT).spy());
+
+        assertThat(mime4jMessage.getTo(), empty());
+        assertThat(mime4jMessage.getCc(), empty());
+        assertThat(mime4jMessage.getBcc(), empty());
+        assertThat(mime4jMessage.getReplyTo(), empty());
+    }
+
+    @Test
+    public void shouldGetInReplyTo() throws Exception {
+        MimeMessage mimeMessage = MimeMessageBuilder.withSource(TestConstants.MULTIPART_WITH_ATTACHMENT).setInReplyTo("<messageId>").spy();
+
+        assertThat(new Mime4jMessage(mimeMessage).getInReplyTo(), is("<messageId>"));
+        assertThat(new Mime4jMessage(mimeMessage).getReferences(), is("<messageId>"));
+    }
+
+    @Test
+    public void shouldSetInReplyTo() throws Exception {
+        Mime4jMessage mime4jMessage = aMime4jMessage();
+        mime4jMessage.setInReplyTo("<messageId>");
+
+        assertThat(mime4jMessage.toMessage().getHeader("In-Reply-To"), arrayContaining("<messageId>"));
+        assertThat(mime4jMessage.toMessage().getHeader("References"), arrayContaining("<messageId>"));
+    }
+
+    @Test
+    public void shouldSetPriority() throws Exception {
+        Mime4jMessage mime4jMessage = aMime4jMessage();
+        mime4jMessage.setHighPriority(true);
+
+        assertThat(mime4jMessage.isHighPriority(), is(true));
+        assertThat(mime4jMessage.toMessage().getHeader("X-Priority"), arrayContaining("1"));
     }
 
     @Test
@@ -655,6 +731,54 @@ public class Mime4jMessageTest {
         mime4jMessage.setSubject("test");
 
         assertThat(mime4jMessage.toMessage().getSubject(), is("test"));
+        assertThat(mime4jMessage.getSubject(), is("test"));
+    }
+
+    @Test
+    public void shouldSetDSN() throws Exception {
+        Mime4jMessage mime4jMessage = aMime4jMessage();
+        mime4jMessage.setAskForDispositionNotification(true);
+
+        assertThat(mime4jMessage.toMessage().getHeader("X-Mozilla-Draft-Info"), arrayContaining("DSN=1"));
+    }
+
+    @Test
+    public void shouldSetReceipt() throws Exception {
+        Mime4jMessage mime4jMessage = aMime4jMessage();
+        mime4jMessage.setReceipt(true);
+
+        assertThat(mime4jMessage.toMessage().getHeader("X-Mozilla-Draft-Info"), arrayContaining("receipt=1"));
+    }
+
+    @Test
+    public void shouldSetReceiptAndDSN() throws Exception {
+        Mime4jMessage mime4jMessage = aMime4jMessage();
+        mime4jMessage.setAskForDispositionNotification(true);
+        mime4jMessage.setReceipt(true);
+
+        assertThat(mime4jMessage.toMessage().getHeader("X-Mozilla-Draft-Info"), arrayContaining("receipt=1; DSN=1"));
+    }
+
+    @Test
+    public void shouldGetForwardedMessageId() throws Exception {
+        MimeMessage mimeMessage = MimeMessageBuilder.withSource(TestConstants.MULTIPART_WITH_ATTACHMENT).setForwardedMessageId("<messageId>").spy();
+
+        assertThat(new Mime4jMessage(mimeMessage).getForwardedMessageId(), is("<messageId>"));
+    }
+
+    @Test
+    public void shouldGetUserAgent() throws Exception {
+        MimeMessage mimeMessage = MimeMessageBuilder.withSource(TestConstants.MULTIPART_WITH_ATTACHMENT).setMailer("mailer").spy();
+
+        assertThat(new Mime4jMessage(mimeMessage).getUserAgent(), is("mailer"));
+    }
+
+    @Test
+    public void shouldSetForwardedMessageId() throws Exception {
+        Mime4jMessage mime4jMessage = aMime4jMessage();
+        mime4jMessage.setForwardedMessageId("<messageId>");
+
+        assertThat(mime4jMessage.toMessage().getHeader("X-Forwarded-Message-Id"), arrayContaining("<messageId>"));
     }
 
     @Test
@@ -722,6 +846,13 @@ public class Mime4jMessageTest {
         assertThat(actualHtmlBody, containsString("background-image:url(/attachment/junit/INBOX%252Ffolder%257C%253C1367760625.51865ef16e3f6%2540swift.generated%253E%257C1367760625.51865ef16f798%2540swift.generated);"));
         assertThat(actualHtmlBody, containsString("<img src=\"/attachment/junit/INBOX%252Ffolder%257C%253C1367760625.51865ef16e3f6%2540swift.generated%253E%257C1367760625.51865ef16cc8c%2540swift.generated\" alt=\"Pingdom\" />"));
         assertThat(actualHtmlBody, containsString("background-image:url(/attachment/junit/INBOX%252Ffolder%257C%253C1367760625.51865ef16e3f6%2540swift.generated%253E%257C1367760625.51865ef16e3f6%2540swift.generated);"));
+    }
+
+    private Matcher<Mime4jAddress> address(Matcher<String> emailMatcher, Matcher<String> personalMatcher) {
+        return allOf(
+                hasProperty("address", emailMatcher),
+                hasProperty("personal", personalMatcher)
+        );
     }
 
     private static Mime4jMessage aMime4jMessage() {

@@ -28,11 +28,17 @@ public final class MinigConstants {
     public static final String MIME_TYPE_MESSAGE_RFC_822 = "message/rfc822";
 
     public static final String MESSAGE_ID = "Message-ID";
+    public static final String USER_AGENT = "User-Agent";
     public static final String X_DRAFT_INFO = "X-Mozilla-Draft-Info";
     public static final String X_PRIORITY = "X-PRIORITY";
+    public static final String TO = "To";
+    public static final String CC = "Cc";
+    public static final String BCC = "Bcc";
     public static final String IN_REPLY_TO = "In-Reply-To";
+    public static final String REPLY_TO = "Reply-To";
     public static final String REFERENCES = "References";
     public static final String FORWARDED_MESSAGE_ID = "X-Forwarded-Message-Id";
     public static final String MDN_SENT = "$MDNSent";
     public static final String FORWARDED = "$Forwarded";
+    public static final String DISPOSITION_NOTIFICATION_TO = "Disposition-Notification-To";
 }

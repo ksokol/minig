@@ -7,14 +7,22 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.activation.DataSource;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.minig.MinigConstants.BCC;
+import static org.minig.MinigConstants.CC;
+import static org.minig.MinigConstants.DISPOSITION_NOTIFICATION_TO;
 import static org.minig.MinigConstants.FORWARDED_MESSAGE_ID;
 import static org.minig.MinigConstants.IN_REPLY_TO;
 import static org.minig.MinigConstants.REFERENCES;
+import static org.minig.MinigConstants.REPLY_TO;
+import static org.minig.MinigConstants.TO;
+import static org.minig.MinigConstants.USER_AGENT;
 import static org.minig.MinigConstants.X_DRAFT_INFO;
 import static org.minig.MinigConstants.X_PRIORITY;
 import static org.minig.server.util.ExceptionUtils.rethrowCheckedAsUnchecked;
@@ -43,6 +51,26 @@ public class Mime4jMessage {
     @Deprecated
     public CompositeId getId() {
         return messageTransformer.getCompositeId();
+    }
+
+    public List<Mime4jAddress> getTo() {
+        return getAddresses(TO);
+    }
+
+    public List<Mime4jAddress> getCc() {
+        return getAddresses(CC);
+    }
+
+    public List<Mime4jAddress> getBcc() {
+        return getAddresses(BCC);
+    }
+
+    public List<Mime4jAddress> getDispositionNotificationTo() {
+        return getAddresses(DISPOSITION_NOTIFICATION_TO);
+    }
+
+    public List<Mime4jAddress> getReplyTo() {
+        return getAddresses(REPLY_TO);
     }
 
     public String getPlain() {
@@ -99,11 +127,6 @@ public class Mime4jMessage {
         messageTransformer.deleteAttachment(filename);
     }
 
-    public Optional<Mime4jAttachment> getInlineAttachment(String contentId) {
-        List<Mime4jAttachment> inlineAttachments = messageTransformer.getInlineAttachments();
-        return inlineAttachments.stream().filter(mime4jAttachment -> contentId.equals(mime4jAttachment.getContentId())).findFirst();
-    }
-
     public void setFrom(String email) {
         messageTransformer.setFrom(email);
     }
@@ -140,11 +163,6 @@ public class Mime4jMessage {
         return getDraftInfo().contains("receipt=1");
     }
 
-    private String getDraftInfo() {
-        String value = messageTransformer.getHeader(X_DRAFT_INFO);
-        return value == null ? "" : value;
-    }
-
     public String getSender() {
         return messageTransformer.getFrom();
     }
@@ -175,7 +193,7 @@ public class Mime4jMessage {
 
     public void setAskForDispositionNotification(Boolean askForDispositionNotification) {
         this.askForDispositionNotification = askForDispositionNotification == null ? false : askForDispositionNotification;
-        updateXPriority();
+        updateDraftInfo();
     }
 
     public void setHighPriority(Boolean highPriority) {
@@ -188,7 +206,7 @@ public class Mime4jMessage {
 
     public void setReceipt(Boolean receipt) {
         this.receipt = receipt == null ? false : receipt;
-        updateXPriority();
+        updateDraftInfo();
     }
 
     public String getSubject() {
@@ -202,6 +220,10 @@ public class Mime4jMessage {
 
     public String getInReplyTo() {
         return messageTransformer.getHeader(IN_REPLY_TO);
+    }
+
+    public String getReferences() {
+        return getInReplyTo();
     }
 
     public String getForwardedMessageId() {
@@ -220,8 +242,34 @@ public class Mime4jMessage {
         messageTransformer.setHeader(X_PRIORITY, "1");
     }
 
+    public boolean isHighPriority() {
+        return getHeader(X_PRIORITY).filter(value -> value.startsWith("1")).isPresent();
+    }
+
+    public String getUserAgent() {
+        return messageTransformer.getHeader(USER_AGENT);
+    }
+
     protected List<Mime4jAttachment> getInlineAttachments() {
         return messageTransformer.getInlineAttachments();
+    }
+
+    private Optional<String> getHeader(String key) {
+        return Optional.ofNullable(messageTransformer.getHeader(key));
+    }
+
+    private List<Mime4jAddress> getAddresses(String addressType) {
+        String header = getHeader(addressType).orElse("");
+        String[] addresses = header.split("\\s*,\\s*");
+        return Arrays.stream(addresses)
+                .filter(address -> !address.isEmpty())
+                .map(Mime4jAddress::new)
+                .collect(Collectors.toList());
+    }
+
+    private String getDraftInfo() {
+        String value = messageTransformer.getHeader(X_DRAFT_INFO);
+        return value == null ? "" : value;
     }
 
     private String sanitize(String htmlBody, Mime4jAttachment attachment, UriComponentsBuilder uriComponentsBuilder) {
@@ -230,7 +278,7 @@ public class Mime4jMessage {
         return replacedCid.replaceAll("mid:" + attachment.getContentId(), contentUrl);
     }
 
-    private void updateXPriority() {
+    private void updateDraftInfo() {
         String value = null;
 
         if (this.receipt) {
@@ -239,17 +287,15 @@ public class Mime4jMessage {
 
         if (this.askForDispositionNotification) {
             if (value == null) {
-                value += "DSN=1";
+                value = "DSN=1";
             } else {
                 value += "; DSN=1";
             }
         }
 
-        if (value == null) {
-            messageTransformer.removeHeader(X_PRIORITY);
+        if (value != null) {
+            messageTransformer.setHeader(X_DRAFT_INFO, value);
         }
-
-        messageTransformer.setHeader(X_DRAFT_INFO, value);
     }
 
     private static String escape(CompositeAttachmentId id) {
