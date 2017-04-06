@@ -99,6 +99,10 @@ app.factory('mailService', ['$resource', '$http', 'deferService', 'API_HOME','DE
         return angular.toJson({folder: folder, messageIdList: ids});
 	}
 
+    function _htmlUrl(id) {
+        return API_HOME + 'message/' + id + '/html';
+    }
+
 	return {
         load: function(id) {
             return $http.get(API_HOME + 'message/' + id).then(function(result) {
@@ -124,7 +128,12 @@ app.factory('mailService', ['$resource', '$http', 'deferService', 'API_HOME','DE
             return deferService.deferred(messageUpdateFlag.updateFlags, params);
         },
         htmlUrl: function(params) {
-            return API_HOME + 'message/' + params.id + '/html';
+            return _htmlUrl(params.id);
+        },
+        loadHtml: function(id) {
+            return $http.get(_htmlUrl(id)).then(function(result) {
+                return result.data;
+            });
         }
 	};
 }]);

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.minig.server.FullMailMessage;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
 import org.minig.server.PartialMailMessage;
@@ -145,40 +146,32 @@ public class MailResourceTest {
 
     @Test
     public void testFindMessage_slashAsFolderSeparator() throws Exception {
-        MailMessage mailMessage = new MailMessage();
-        mailMessage.setMessageId("1");
-        mailMessage.setFolder("INBOX/deep/folder/structure");
+        FullMailMessage message = new FullMailMessage(MimeMessageBuilder.withSource(TestConstants.MULTIPART_WITH_ATTACHMENT)
+                .setFolder("INBOX/deep/folder/structure")
+                .setMessageId("1").spy());
 
-        when(mailService.findMessage(anyObject())).thenReturn(mailMessage);
+        when(mailService.findByCompositeId(new CompositeId("INBOX/deep/folder/structure", "1")))
+                .thenReturn(message);
 
         mockMvc.perform(get(PREFIX + "/message/INBOX%2Fdeep%2Ffolder%2Fstructure%7C1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.id", is("INBOX%252Fdeep%252Ffolder%252Fstructure%257C1")));
-
-        verify(mailService).findMessage(argThat(allOf(
-                hasProperty("messageId", is("1")),
-                hasProperty("folder", is("INBOX/deep/folder/structure"))
-        )));
     }
 
     @Test
     public void testFindMessage_dotAsFolderSeparator() throws Exception {
-        MailMessage mailMessage = new MailMessage();
-        mailMessage.setMessageId("1");
-        mailMessage.setFolder("INBOX.deep.folder.structure");
+        FullMailMessage message = new FullMailMessage(MimeMessageBuilder.withSource(TestConstants.MULTIPART_WITH_ATTACHMENT)
+                .setFolder("INBOX.deep.folder.structure")
+                .setMessageId("1").spy());
 
-        when(mailService.findMessage(anyObject())).thenReturn(mailMessage);
+        when(mailService.findByCompositeId(new CompositeId("INBOX.deep.folder.structure", "1")))
+                .thenReturn(message);
 
         mockMvc.perform(get(PREFIX + "/message/INBOX.deep.folder.structure|1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.id", is("INBOX.deep.folder.structure%257C1")));
-
-        verify(mailService).findMessage(argThat(allOf(
-                hasProperty("messageId", is("1")),
-                hasProperty("folder", is("INBOX.deep.folder.structure"))
-        )));
     }
 
     @Test

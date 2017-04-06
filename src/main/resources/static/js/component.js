@@ -10,7 +10,7 @@ angular.module("minigAppComponents", [])
         this.$onChanges = function(changesObj) {
             if (changesObj.mail.currentValue) {
                 // TODO
-                $scope.hasHtml = changesObj.mail.currentValue.html.length > 0;
+                $scope.hasHtml = changesObj.mail.currentValue.html;
                 $scope.mail = changesObj.mail.currentValue;
             }
         }

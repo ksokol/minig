@@ -547,6 +547,8 @@ app.directive("bodyEditor", ['localStorageService', 'textAngularManager', 'htmlC
                 if(!scope.mail) {
                     return;
                 }
+
+                scope.mail.html = html;
                 scope.mail.plain = htmlConversion.convertToPlain(html);
             });
         }

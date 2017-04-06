@@ -1,6 +1,7 @@
 package org.minig.server.service.mail;
 
 import org.minig.security.MailAuthentication;
+import org.minig.server.FullMailMessage;
 import org.minig.server.MailFolder;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
@@ -62,6 +63,10 @@ public class MailService {
     public String findHtmlBodyByCompositeId(CompositeId compositeId) {
         Mime4jMessage mime4jMessage = mailRepository.findByCompositeId(compositeId).map(Mime4jMessage::new).orElseThrow(NotFoundException::new);
         return mime4jMessage.getHtml(uriComponentsBuilderResolver.resolveAttachmentUri());
+    }
+
+    public FullMailMessage findByCompositeId(CompositeId id) {
+        return mailRepository.findByCompositeId(id).map(FullMailMessage::new).orElseThrow(NotFoundException::new);
     }
 
     @Deprecated

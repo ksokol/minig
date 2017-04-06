@@ -1,5 +1,6 @@
 package org.minig.server.resource.mail;
 
+import org.minig.server.FullMailMessage;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageList;
 import org.minig.server.PartialMailMessage;
@@ -54,8 +55,8 @@ class MailResource {
     }
 
     @GetMapping("{id:.*}")
-    public MailMessage findMessage(@Id CompositeId id) {
-        return mailService.findMessage(id);
+    public FullMailMessage findMessage(@Id CompositeId id) {
+        return mailService.findByCompositeId(id);
     }
 
     @DeleteMapping("{id:.*}")

@@ -4,6 +4,7 @@ import config.ServiceTestConfig;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.minig.server.FullMailMessage;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
 import org.minig.server.MailMessageList;
@@ -63,6 +64,20 @@ public class MailServiceTest {
     @Test(expected = NotFoundException.class)
     public void testFindMessageNotExistentMessage() {
         uut.findMessage(new CompositeId("non", "existent"));
+    }
+
+    @Test
+    public void shouldReturnMessage() throws Exception {
+        MimeMessage message = new MimeMessageBuilder().build();
+        mailboxRule.append("INBOX", message);
+
+        FullMailMessage actual = uut.findByCompositeId(new CompositeId("INBOX", message.getMessageID()));
+        assertThat(actual.getId(), is("INBOX|" + message.getMessageID()));
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void shouldThrowNotFoundException() throws Exception {
+        uut.findByCompositeId(new CompositeId("INBOX", "unknown"));
     }
 
     @Test

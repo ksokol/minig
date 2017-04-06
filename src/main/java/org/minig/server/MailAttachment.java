@@ -1,5 +1,6 @@
 package org.minig.server;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
 
@@ -13,6 +14,8 @@ public class MailAttachment extends CompositeAttachmentId {
     private String mime;
     private String contentId;
     private String dispositionType;
+
+    @JsonIgnore
     private InputStream data;
 
     public MailAttachment(Mime4jAttachment mime4jAttachment) {
