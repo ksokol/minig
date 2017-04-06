@@ -556,6 +556,18 @@ public class Mime4jMessageTest {
     }
 
     @Test
+    public void shouldReturnInlineAttachmentsIfContentIdIsPresent() throws Exception {
+        Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.MULTIPART_WITH_INLINE_PLAIN_AND_INLINE_HTML);
+
+        List<Mime4jAttachment> inlineAttachments = mime4jMessage.getInlineAttachments();
+
+        assertThat(inlineAttachments, hasSize(3));
+        assertThat(inlineAttachments.get(0).getFilename(), is("logo.png"));
+        assertThat(inlineAttachments.get(1).getFilename(), is("bg2.png"));
+        assertThat(inlineAttachments.get(2).getFilename(), is("bg1.png"));
+    }
+
+    @Test
     public void shouldClearToAddresses() throws Exception {
         Mime4jMessage mime4j = aMime4jMessage();
 

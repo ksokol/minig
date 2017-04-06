@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -271,7 +272,7 @@ final class MessageTransformer {
 
     private List<Mime4jAttachment> extractFromBodyPart(BodyPart bodyPart) {
         if(bodyPart.getBody() instanceof SingleBody) {
-            return Collections.singletonList(extractFromSingleBody(bodyPart));
+            return extractFromSingleBody(bodyPart).map(Collections::singletonList).orElseGet(Collections::emptyList);
         }
         return extractFromMessage((Message) bodyPart.getBody());
     }
@@ -293,12 +294,19 @@ final class MessageTransformer {
         });
     }
 
-    private Mime4jAttachment extractFromSingleBody(BodyPart bodyPart) {
+    private Optional<Mime4jAttachment> extractFromSingleBody(BodyPart bodyPart) {
         SingleBody source = (SingleBody) bodyPart.getBody();
         String mimeType = bodyPart.getMimeType();
         String filename = getFileName(bodyPart);
         String contentId = extractContentId(bodyPart);
-        return rethrowCheckedAsUnchecked(() -> new Mime4jAttachment(compositeId, filename, contentId, bodyPart.getDispositionType(), mimeType, source.getInputStream()));
+
+        if(filename == null && contentId == null) {
+            // text or html body with Content-Disposition inline
+            return Optional.empty();
+        }
+
+        return rethrowCheckedAsUnchecked(() ->
+                Optional.of(new Mime4jAttachment(compositeId, filename, contentId, bodyPart.getDispositionType(), mimeType, source.getInputStream())));
     }
 
     private static TextBody extractTextBodyPart(Multipart multipart, String mimeType) {
