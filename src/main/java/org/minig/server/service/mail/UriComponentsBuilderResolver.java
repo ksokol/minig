@@ -14,9 +14,9 @@ import static org.minig.MinigConstants.RESOURCE_ATTACHMENT;
  * @author Kamill Sokol
  */
 @Component
-class UriComponentsBuilderResolver {
+final class UriComponentsBuilderResolver {
 
-    public UriComponentsBuilder resolveAttachmentUri() {
+    UriComponentsBuilder resolveAttachmentUri() {
         return resolveFromCurrentServletMapping().pathSegment(API_VERSION, RESOURCE_ATTACHMENT);
     }
 

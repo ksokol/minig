@@ -15,7 +15,7 @@ public final class Mime4jAddress {
     private final String address;
     private final String personal;
 
-    protected Mime4jAddress(String address) {
+    Mime4jAddress(String address) {
         String addressTmp = "";
         String personalTmp = UNDISCLOSED_ADDRESS;
 

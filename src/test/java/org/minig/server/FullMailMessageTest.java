@@ -18,6 +18,8 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.minig.server.TestConstants.BODY_A;
+import static org.minig.server.TestConstants.BODY_B;
 
 /**
  * @author Kamill Sokol
@@ -158,9 +160,6 @@ public class FullMailMessageTest {
 
     @Test
     public void shouldGetAttachments() throws Exception {
-        byte[] BODY = new byte[] { (byte) 'a' };
-        byte[] BODY2 = new byte[] { (byte) 'b' };
-
         List<MailAttachment> attachments = givenFullMailMessage().getAttachments();
         assertThat(attachments, hasSize(2));
 
@@ -168,13 +167,13 @@ public class FullMailMessageTest {
         assertThat(attachments.get(0).getContentId(), nullValue());
         assertThat(attachments.get(0).getMime(), is("image/png"));
         assertThat(attachments.get(0).getFileName(), is("1.png"));
-        assertThat(IOUtils.toByteArray(attachments.get(0).getData()), is(BODY));
+        assertThat(IOUtils.toByteArray(attachments.get(0).getData()), is(BODY_A));
 
         assertThat(attachments.get(1).getId(), is("folder|<51BDA5AE.90106@localhost>|2.png"));
         assertThat(attachments.get(1).getContentId(), nullValue());
         assertThat(attachments.get(1).getMime(), is("image/png"));
         assertThat(attachments.get(1).getFileName(), is("2.png"));
-        assertThat(IOUtils.toByteArray(attachments.get(1).getData()), is(BODY2));
+        assertThat(IOUtils.toByteArray(attachments.get(1).getData()), is(BODY_B));
     }
 
     private FullMailMessage givenFullMailMessage() {

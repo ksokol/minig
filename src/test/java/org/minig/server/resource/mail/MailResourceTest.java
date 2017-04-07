@@ -132,7 +132,7 @@ public class MailResourceTest {
 
         mockMvc.perform(get(PREFIX + "/message").param("folder", "INBOX"));
 
-        verify(mailService).findMessagesByFolder("INBOX", 1, 10);
+        verify(mailService).findMessagesByFolder("INBOX", 0, 10);
     }
 
     @Test
@@ -145,7 +145,7 @@ public class MailResourceTest {
     }
 
     @Test
-    public void testFindMessage_slashAsFolderSeparator() throws Exception {
+    public void testFindMessageWhenFolderHasSlashAsFolderSeparator() throws Exception {
         FullMailMessage message = new FullMailMessage(MimeMessageBuilder.withSource(TestConstants.MULTIPART_WITH_ATTACHMENT)
                 .setFolder("INBOX/deep/folder/structure")
                 .setMessageId("1").spy());
@@ -160,7 +160,7 @@ public class MailResourceTest {
     }
 
     @Test
-    public void testFindMessage_dotAsFolderSeparator() throws Exception {
+    public void testFindMessageWhenFolderHasDotAsFolderSeparator() throws Exception {
         FullMailMessage message = new FullMailMessage(MimeMessageBuilder.withSource(TestConstants.MULTIPART_WITH_ATTACHMENT)
                 .setFolder("INBOX.deep.folder.structure")
                 .setMessageId("1").spy());

@@ -38,5 +38,7 @@ public class TestConstants {
 
     public static final String ATTACHMENT_IMAGE_1_PNG = "src/test/resources/image/1.png";
     public static final String ATTACHMENT_IMAGE_FOLDER_GIF = "src/test/resources/image/folder.gif";
-    public static final String MULTIPART_RFC_2231_2_IMAGE = "src/test/resources/image/multipart_rfc2231_2_image.png";
+
+    public static final byte[] BODY_A = new byte[] { (byte) 'a' };
+    public static final byte[] BODY_B= new byte[] { (byte) 'b' };
 }

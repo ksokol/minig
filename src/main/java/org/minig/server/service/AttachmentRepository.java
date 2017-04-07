@@ -13,9 +13,9 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.search.MessageIDTerm;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class AttachmentRepository {
@@ -34,36 +34,7 @@ public class AttachmentRepository {
             return Collections.emptyList();
         }
 
-        List<MailAttachment> metaDataList = new ArrayList<>();
-        List<Mime4jAttachment> mime4jAttachments = mime4jMessage.getAttachments();
-
-        for (Mime4jAttachment attachment : mime4jAttachments) {
-            MailAttachment metaData = new MailAttachment(attachment.getId(), attachment.getMimeType(), attachment.getContentId(), attachment.getDispositionType(), null);
-            metaDataList.add(metaData);
-        }
-
-        return metaDataList;
-    }
-
-    public MailAttachment read(CompositeAttachmentId id) {
-        Assert.notNull(id);
-
-        try {
-            Folder folder = mailContext.openFolder(id.getFolder());
-            Message[] search = folder.search(new MessageIDTerm(id.getMessageId()));
-            if (search.length == 0) {
-                return null;
-            }
-            Mime4jAttachment attachment = new Mime4jMessage(search[0]).getAttachment(id.getFileName());
-            MailAttachment mailAttachment = null;
-
-            if(attachment != null) {
-                mailAttachment = new MailAttachment(attachment.getId(), attachment.getMimeType(), attachment.getContentId(), attachment.getDispositionType(), null);
-            }
-            return mailAttachment;
-        } catch (Exception e) {
-            throw new RepositoryException(e.getMessage(), e);
-        }
+        return mime4jMessage.getAttachments().stream().map(MailAttachment::new).collect(Collectors.toList());
     }
 
     public InputStream readAttachmentPayload(CompositeAttachmentId id) {

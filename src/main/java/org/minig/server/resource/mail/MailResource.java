@@ -23,18 +23,19 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.minig.MinigConstants.API_VERSION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 
 @RestController
-@RequestMapping(value = "1/message")
+@RequestMapping(value = API_VERSION + "/message")
 class MailResource {
 
     @Autowired
     private MailService mailService;
 
     @GetMapping({"", "/"})
-    public Map<String, Object> findMessagesByFolder(@RequestParam String folder, @RequestParam(defaultValue = "1") int page,
+    public Map<String, Object> findMessagesByFolder(@RequestParam String folder, @RequestParam(defaultValue = "0") int page,
                                                     @RequestParam(value = "page_length", defaultValue = "10") int pageLength) {
 
         Page<PartialMailMessage> messagesByFolder = mailService.findMessagesByFolder(folder, page, pageLength);

@@ -249,7 +249,6 @@ public class MimeMessageBuilder {
                 mimeMessage.setHeader("In-Reply-To", inReplyTo);
             }
 
-
             if(mdnSent) {
                 spy.setFlags(new Flags("$MDNSent"), true);
             }

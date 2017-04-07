@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
+import static org.minig.MinigConstants.API_VERSION;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.ALL_VALUE;
@@ -34,7 +35,7 @@ import static org.springframework.http.MediaType.ALL_VALUE;
  * @author Kamill Sokol
  */
 @Controller
-@RequestMapping(value = "1")
+@RequestMapping(value = API_VERSION + "/attachment")
 public class AttachmentResource {
 
     private final AttachmentService attachmentService;
@@ -43,7 +44,7 @@ public class AttachmentResource {
         this.attachmentService = requireNonNull(attachmentService, "attachmentService is null");
     }
 
-    @GetMapping(value = "attachment/{id:.*}", produces = ALL_VALUE)
+    @GetMapping(value = "{id:.*}", produces = ALL_VALUE)
     public ResponseEntity<?> downloadAttachment(@Id CompositeAttachmentId id) throws IOException {
         MailAttachment attachment = attachmentService.findById(id);
 
@@ -55,7 +56,7 @@ public class AttachmentResource {
     }
 
     @ResponseStatus(value = HttpStatus.CREATED)
-    @PostMapping("attachment/{id:.*}")
+    @PostMapping("{id:.*}")
     @ResponseBody
     public Map<String, Object> uploadAttachment(@Id CompositeId id, MultipartRequest file) throws IOException {
         if(file.getFileMap().size() > 1) {
@@ -72,7 +73,7 @@ public class AttachmentResource {
         return map;
     }
 
-    @DeleteMapping("attachment/{id:.*}")
+    @DeleteMapping("{id:.*}")
     @ResponseBody
     public Map<String, Object> deleteAttachment(@Id CompositeAttachmentId id) {
         CompositeId newMailId = attachmentService.deleteAttachment(id);

@@ -2,7 +2,6 @@ package org.minig.server.service;
 
 import org.minig.server.MailAttachment;
 import org.minig.server.MailMessage;
-import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -12,6 +11,8 @@ import javax.mail.internet.MimeMessage;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Objects.requireNonNull;
+
 @Component
 public class AttachmentService {
 
@@ -20,9 +21,9 @@ public class AttachmentService {
     private final FolderRepository folderRepository;
 
     public AttachmentService(MailRepository mailRepository, AttachmentRepository attachmentRepository, FolderRepository folderRepository) {
-        this.mailRepository = mailRepository;
-        this.attachmentRepository = attachmentRepository;
-        this.folderRepository = folderRepository;
+        this.mailRepository = requireNonNull(mailRepository, "mailRepository is null");
+        this.attachmentRepository = requireNonNull(attachmentRepository, "attachmentRepository is null");
+        this.folderRepository = requireNonNull(folderRepository, "folderRepository is null");
     }
 
     public List<MailAttachment> findAttachments(CompositeId id) {
@@ -39,8 +40,7 @@ public class AttachmentService {
 
     public MailAttachment findById(CompositeAttachmentId id) {
         MimeMessage mimeMessage = mailRepository.findByCompositeId(id).orElseThrow(NotFoundException::new);
-        Mime4jAttachment attachment  = new Mime4jMessage(mimeMessage).getAttachment(id).orElseThrow(NotFoundException::new);
-        return new MailAttachment(attachment.getId(), attachment.getMimeType(), attachment.getContentId(), attachment.getDispositionType(), attachment.getData());
+        return new Mime4jMessage(mimeMessage).getAttachment(id).map(MailAttachment::new).orElseThrow(NotFoundException::new);
     }
 
     public CompositeId addAttachment(CompositeId attachmentId, DataSource dataSource) {

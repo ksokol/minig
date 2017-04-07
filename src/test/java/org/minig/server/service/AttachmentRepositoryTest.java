@@ -35,6 +35,7 @@ import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.minig.server.TestConstants.BODY_A;
 
 /**
  * @author Kamill Sokol
@@ -115,44 +116,6 @@ public class AttachmentRepositoryTest {
     }
 
     @Test
-    public void testRead_hasNoAttachments() throws MessagingException {
-        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
-
-        CompositeAttachmentId id = new CompositeAttachmentId("INBOX", m.getMessageID(), "1.png");
-
-        mockServer.prepareMailBox("INBOX", m);
-
-        MailAttachment read = uut.read(id);
-        assertTrue(read == null);
-    }
-
-    @Test
-    public void testRead_hasAttachments() throws MessagingException {
-        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_ATTACHMENT);
-        CompositeAttachmentId id = new CompositeAttachmentId("INBOX", m.getMessageID(), "1.png");
-
-        Mailbox inbox = new MailboxBuilder("testuser@localhost").mailbox("INBOX").subscribed().exists().build();
-        inbox.add(m);
-
-        MailAttachment read = uut.read(id);
-
-        assertEquals("1.png", read.getFileName());
-        assertEquals(id.getId(), read.getId());
-        assertThat(read.getMime(), is(equalToIgnoringWhiteSpace("image/png")));
-    }
-
-	@Test
-	public void testRead_hasAttachmentWithEncodedFilename() throws MessagingException {
-		MimeMessage m = new MimeMessageBuilder().setFolder("INBOX").build(TestConstants.MULTIPART_ATTACHMENT_BINARY);
-		mockServer.prepareMailBox("INBOX", m);
-
-		CompositeAttachmentId id = new CompositeAttachmentId("INBOX", m.getMessageID(), "umlaut ä.png");
-		MailAttachment ma = uut.read(id);
-
-		assertThat(ma.getFileName(), is("umlaut ä.png"));
-	}
-
-    @Test
     public void testReadAttachmentPayload() throws Exception {
         MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_ATTACHMENT);
 
@@ -163,9 +126,8 @@ public class AttachmentRepositoryTest {
         InputStream readAttachmentPayload = uut.readAttachmentPayload(id);
 
         byte[] byteArray = IOUtils.toByteArray(readAttachmentPayload);
-        byte[] expected = new byte[] { 'a' };
 
-        assertTrue(Arrays.equals(expected, byteArray));
+        assertTrue(Arrays.equals(BODY_A, byteArray));
     }
 
     @Test(expected = NotFoundException.class)

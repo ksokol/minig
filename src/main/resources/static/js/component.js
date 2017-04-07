@@ -9,7 +9,7 @@ angular.module("minigAppComponents", [])
 
         this.$onChanges = function(changesObj) {
             if (changesObj.mail.currentValue) {
-                // TODO
+                // TODO replace with Link
                 $scope.hasHtml = changesObj.mail.currentValue.html;
                 $scope.mail = changesObj.mail.currentValue;
             }

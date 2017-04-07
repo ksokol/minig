@@ -42,6 +42,7 @@ public class FullMailMessage extends PartialMailMessage {
     }
 
     public boolean isHtml() {
+        //TODO replace with Link
         return mime4jMessage.getHtml().length() > 0;
     }
 

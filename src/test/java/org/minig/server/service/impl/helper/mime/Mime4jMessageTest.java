@@ -37,6 +37,7 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.minig.server.TestConstants.BODY_A;
 import static org.minig.test.hamcrest.Mime4jMessageMatchers.alternative;
 import static org.minig.test.hamcrest.Mime4jMessageMatchers.attachment;
 import static org.minig.test.hamcrest.Mime4jMessageMatchers.attachmentName;
@@ -479,7 +480,6 @@ public class Mime4jMessageTest {
     @Test
     public void shouldContainInlineAttachments() throws Exception {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.ALTERNATIVE);
-        byte[] BODY = new byte[] { (byte) 'a' };
 
         assertThat(mime4jMessage.getAttachments(), hasSize(0));
         assertThat(mime4jMessage.getInlineAttachments(), hasSize(3));
@@ -489,27 +489,26 @@ public class Mime4jMessageTest {
         assertThat(firstInline.getContentId(), is("1367760625.51865ef16cc8c@swift.generated"));
         assertThat(firstInline.getMimeType(), is("image/png"));
         assertThat(firstInline.getFilename(), is("logo.png"));
-        assertThat(IOUtils.toByteArray(firstInline.getData()), is(BODY));
+        assertThat(IOUtils.toByteArray(firstInline.getData()), is(BODY_A));
 
         Mime4jAttachment secondInline = mime4jMessage.getInlineAttachments().get(1);
         assertThat(secondInline.getId().getId(), is("folder|<208544674.1.1477820621771.JavaMail.localhost@localhost>|1367760625.51865ef16f798@swift.generated"));
         assertThat(secondInline.getContentId(), is("1367760625.51865ef16f798@swift.generated"));
         MatcherAssert.assertThat(secondInline.getMimeType(), is("image/png"));
         MatcherAssert.assertThat(secondInline.getFilename(), is("bg2.png"));
-        MatcherAssert.assertThat(IOUtils.toByteArray(secondInline.getData()), is(BODY));
+        MatcherAssert.assertThat(IOUtils.toByteArray(secondInline.getData()), is(BODY_A));
 
         Mime4jAttachment thirdInline = mime4jMessage.getInlineAttachments().get(2);
         assertThat(thirdInline.getId().getId(), is("folder|<208544674.1.1477820621771.JavaMail.localhost@localhost>|1367760625.51865ef16e3f6@swift.generated"));
         MatcherAssert.assertThat(thirdInline.getContentId(), is("1367760625.51865ef16e3f6@swift.generated"));
         MatcherAssert.assertThat(thirdInline.getMimeType(), is("image/png"));
         MatcherAssert.assertThat(thirdInline.getFilename(), is("bg1.png"));
-        MatcherAssert.assertThat(IOUtils.toByteArray(thirdInline.getData()), is(BODY));
+        MatcherAssert.assertThat(IOUtils.toByteArray(thirdInline.getData()), is(BODY_A));
     }
 
     @Test
     public void shouldContainAttachments() throws Exception {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.PLAIN_ATTACHMENT);
-        byte[] BODY = new byte[] { (byte) 'a' };
 
         assertThat(mime4jMessage.getAttachments(), hasSize(1));
         assertThat(mime4jMessage.getInlineAttachments(), empty());
@@ -519,13 +518,13 @@ public class Mime4jMessageTest {
         assertThat(attachment.getContentId(), nullValue());
         assertThat(attachment.getMimeType(), is("application/pdf"));
         assertThat(attachment.getFilename(), is("example.pdf"));
-        assertThat(IOUtils.toByteArray(attachment.getData()), is(BODY));
+        assertThat(IOUtils.toByteArray(attachment.getData()), is(BODY_A));
     }
 
     @Test
     public void shouldReturnAttachment() throws Exception {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.PLAIN_ATTACHMENT);
-        byte[] BODY = new byte[] { (byte) 'a' };
+
         CompositeAttachmentId compositeAttachmentId =
                 new CompositeAttachmentId("folder", "<208544674.1.1477820621771.JavaMail.localhost@localhost>", "example.pdf");
 
@@ -535,13 +534,12 @@ public class Mime4jMessageTest {
         assertThat(attachment.getContentId(), nullValue());
         assertThat(attachment.getMimeType(), is(APPLICATION_PDF_VALUE));
         assertThat(attachment.getFilename(), is("example.pdf"));
-        assertThat(IOUtils.toByteArray(attachment.getData()), is(BODY));
+        assertThat(IOUtils.toByteArray(attachment.getData()), is(BODY_A));
     }
 
     @Test
     public void shouldReturnInlineAttachment() throws Exception {
         Mime4jMessage mime4jMessage = Mime4jTestHelper.freshMime4jMessage(TestConstants.ALTERNATIVE);
-        byte[] BODY = new byte[] { (byte) 'a' };
 
         CompositeAttachmentId compositeAttachmentId =
                 new CompositeAttachmentId("folder", "<208544674.1.1477820621771.JavaMail.localhost@localhost>", "1367760625.51865ef16f798@swift.generated");
@@ -552,7 +550,7 @@ public class Mime4jMessageTest {
         assertThat(attachment.getContentId(), is("1367760625.51865ef16f798@swift.generated"));
         assertThat(attachment.getMimeType(), is(IMAGE_PNG_VALUE));
         assertThat(attachment.getFilename(), is("bg2.png"));
-        assertThat(IOUtils.toByteArray(attachment.getData()), is(BODY));
+        assertThat(IOUtils.toByteArray(attachment.getData()), is(BODY_A));
     }
 
     @Test
