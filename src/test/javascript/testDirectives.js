@@ -17,7 +17,7 @@ describe("directive pagination", function() {
 describe("directive messageText", function() {
     it("should decode html entities", inject(function($compile, $rootScope) {
         scope = $rootScope.$new();
-        scope.mail = {plain: "&#39;"};
+        scope.mail = {text: "&#39;"};
         $compile('<message-text></message-text>')(scope);
         scope.$digest();
         expect(scope.messageText).toEqual(["'"]);

@@ -323,8 +323,8 @@ app.directive("messageText", function() {
                 if(!mail) {
                     return;
                 }
-                if(mail.plain) {
-                    $scope.messageText = formatPlain(mail.plain);
+                if(mail.text) {
+                    $scope.messageText = formatPlain(mail.text);
                 }
             });
         }
