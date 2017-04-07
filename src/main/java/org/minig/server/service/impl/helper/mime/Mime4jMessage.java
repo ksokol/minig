@@ -1,8 +1,8 @@
 package org.minig.server.service.impl.helper.mime;
 
+import com.google.api.client.util.escape.PercentEscaper;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
-import org.minig.util.PercentEscaper;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.activation.DataSource;
