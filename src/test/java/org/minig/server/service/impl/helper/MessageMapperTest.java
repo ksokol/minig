@@ -183,7 +183,7 @@ public class MessageMapperTest {
         List<CompositeAttachmentId> attachments = uut.convertFull(mime).getAttachments();
 
         assertThat(attachments, hasSize(1));
-        assertThat(attachments.get(0).getFileName(), is("Disposition Notification Test.eml"));
+        assertThat(attachments.get(0).getFileName(), is("Disposition Notification Test.txt"));
     }
 
     @Test

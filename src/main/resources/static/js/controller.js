@@ -246,12 +246,12 @@ app.controller('FolderListCtrl', ['$scope', '$rootScope', 'folderService', 'rout
 
     function _updateFlags(mail) {
         mailService.updateFlags([mail])
-        .catch(function(e) {
+        .catch(function() {
             $rootScope.$broadcast("error", i18nService.resolve("something went wrong"));
         });
 
         $rootScope.$broadcast("more-actions-done");
-    }
+    };
 
     function saveAndNavigateToComposer(mail) {
         draftService.save(mail)
@@ -360,6 +360,8 @@ app.controller('FolderListCtrl', ['$scope', '$rootScope', 'folderService', 'rout
         bcc : []
     };
 
+    $scope.htmlBody = null;
+
     $scope.refresh = function() {
         if(!$routeParams.id) {
             return;
@@ -369,6 +371,11 @@ app.controller('FolderListCtrl', ['$scope', '$rootScope', 'folderService', 'rout
                 $scope.mail = mail;
                 $scope.showCc = $scope.mail.cc.length > 0;
                 $scope.showBcc = $scope.mail.bcc.length > 0;
+
+                mailService.loadHtml(mail.id).then(function(htmlBody) {
+                    $scope.htmlBody = htmlBody;
+                });
+
                 return;
             }
             $rootScope.$broadcast("error", i18nService.resolve("This is not a draft"));

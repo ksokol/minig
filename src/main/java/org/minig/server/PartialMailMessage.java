@@ -1,5 +1,7 @@
 package org.minig.server;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.minig.server.resource.config.CompositeIdSerializer;
 import org.minig.server.service.CompositeId;
 
 import javax.mail.Address;
@@ -26,6 +28,7 @@ public class PartialMailMessage {
         this.compositeId = new CompositeId(mimeMessage);
     }
 
+    @JsonSerialize(using = CompositeIdSerializer.class)
     public String getId() {
         return compositeId.getId();
     }
@@ -46,7 +49,7 @@ public class PartialMailMessage {
         Address[] addresses = mimeMessage.getFrom();
 
         if (addresses == null) {
-            return new MailMessageAddress("undisclosed sender");
+            return new MailMessageAddress();
         }
 
         InternetAddress internetAddress = (InternetAddress) addresses[0];
@@ -63,24 +66,28 @@ public class PartialMailMessage {
         return mimeMessage.getSentDate();
     }
 
-    public boolean getForwarded() throws MessagingException {
-        return mimeMessage.getFlags().getUserFlags() != null && Arrays.stream(mimeMessage.getFlags().getUserFlags()).anyMatch(FORWARDED::equals);
+    public boolean isForwarded() throws MessagingException {
+        return hasUserFlag(FORWARDED);
     }
 
-    public boolean getRead() throws MessagingException {
+    public boolean isRead() throws MessagingException {
         return hasFlag(Flags.Flag.SEEN);
     }
 
-    public boolean getStarred() throws MessagingException {
+    public boolean isStarred() throws MessagingException {
         return hasFlag(Flags.Flag.FLAGGED);
     }
 
-    public boolean getAnswered() throws MessagingException {
+    public boolean isAnswered() throws MessagingException {
         return hasFlag(Flags.Flag.ANSWERED);
     }
 
-    public Boolean getDeleted() throws MessagingException {
+    public boolean isDeleted() throws MessagingException {
         return hasFlag(Flags.Flag.DELETED);
+    }
+
+    protected boolean hasUserFlag(String flag) throws MessagingException {
+        return mimeMessage.getFlags().getUserFlags() != null && Arrays.stream(mimeMessage.getFlags().getUserFlags()).anyMatch(flag::equals);
     }
 
     private boolean hasFlag(Flags.Flag expectedFlag) throws MessagingException {

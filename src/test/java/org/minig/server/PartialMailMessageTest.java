@@ -59,46 +59,46 @@ public class PartialMailMessageTest {
     @Test
     public void getAnswered() throws Exception {
         partialMailMessage = new PartialMailMessage(builder.setAnswered(false).mock());
-        assertThat(partialMailMessage.getAnswered(), is(false));
+        assertThat(partialMailMessage.isAnswered(), is(false));
 
         partialMailMessage = new PartialMailMessage(builder.setAnswered(true).mock());
-        assertThat(partialMailMessage.getAnswered(), is(true));
+        assertThat(partialMailMessage.isAnswered(), is(true));
     }
 
     @Test
     public void getDeleted() throws Exception {
         partialMailMessage = new PartialMailMessage(builder.setDeleted(false).mock());
-        assertThat(partialMailMessage.getDeleted(), is(false));
+        assertThat(partialMailMessage.isDeleted(), is(false));
 
         partialMailMessage = new PartialMailMessage(builder.setDeleted(true).mock());
-        assertThat(partialMailMessage.getDeleted(), is(true));
+        assertThat(partialMailMessage.isDeleted(), is(true));
     }
 
     @Test
     public void getRead() throws Exception {
         partialMailMessage = new PartialMailMessage(builder.setRead(false).mock());
-        assertThat(partialMailMessage.getRead(), is(false));
+        assertThat(partialMailMessage.isRead(), is(false));
 
         partialMailMessage = new PartialMailMessage(builder.setRead(true).mock());
-        assertThat(partialMailMessage.getRead(), is(true));
+        assertThat(partialMailMessage.isRead(), is(true));
     }
 
     @Test
     public void getStarred() throws Exception {
         partialMailMessage = new PartialMailMessage(builder.setStarred(false).mock());
-        assertThat(partialMailMessage.getStarred(), is(false));
+        assertThat(partialMailMessage.isStarred(), is(false));
 
         partialMailMessage = new PartialMailMessage(builder.setStarred(true).mock());
-        assertThat(partialMailMessage.getStarred(), is(true));
+        assertThat(partialMailMessage.isStarred(), is(true));
     }
 
     @Test
     public void getForwarded() throws Exception {
         partialMailMessage = new PartialMailMessage(builder.setForwarded(false).mock());
-        assertThat(partialMailMessage.getForwarded(), is(false));
+        assertThat(partialMailMessage.isForwarded(), is(false));
 
         partialMailMessage = new PartialMailMessage(builder.setForwarded(true).mock());
-        assertThat(partialMailMessage.getForwarded(), is(true));
+        assertThat(partialMailMessage.isForwarded(), is(true));
     }
 
     @Test
@@ -124,12 +124,12 @@ public class PartialMailMessageTest {
     }
 
     @Test
-    public void getUndisclosedSender() throws Exception {
+    public void getUndisclosedAddress() throws Exception {
         partialMailMessage = new PartialMailMessage(builder.setSender(null).mock());
         assertThat(partialMailMessage.getSender(),
                 allOf(
-                        hasProperty("email", is("undisclosed sender")),
-                        hasProperty("displayName", is("undisclosed sender"))
+                        hasProperty("email", is("")),
+                        hasProperty("displayName", is("undisclosed address"))
                 )
         );
     }

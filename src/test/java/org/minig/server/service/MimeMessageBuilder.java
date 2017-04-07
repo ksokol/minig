@@ -1,25 +1,34 @@
 package org.minig.server.service;
 
+import org.minig.server.MailMessageAddress;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
+
+import javax.mail.Address;
+import javax.mail.Flags;
+import javax.mail.Flags.Flag;
+import javax.mail.Folder;
+import javax.mail.IllegalWriteException;
+import javax.mail.Message;
+import javax.mail.Message.RecipientType;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.mail.search.SearchTerm;
 import java.io.FileInputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import javax.mail.*;
-import javax.mail.Flags.Flag;
-import javax.mail.Message.RecipientType;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
-import org.minig.server.MailMessageAddress;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
-
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 public class MimeMessageBuilder {
 
@@ -27,36 +36,32 @@ public class MimeMessageBuilder {
     private String messageId = "1";
     private String folder = "folder";
     private String sender = "sender@localhost";
-    private String subject = "subject";
-    private Date date = new Date();
-    private String mailer = "mailer";
-    private boolean highPriority = false;
-    private boolean answered = false;
-    private boolean read = false;
-    private boolean starred = false;
-    private boolean askForDispositionNotification = false;
-    private boolean receipt = false;
-    private boolean deleted = false;
-    private List<InternetAddress> recipientToList = new ArrayList<InternetAddress>();
-    private List<InternetAddress> recipientCcList = new ArrayList<InternetAddress>();
-    private List<InternetAddress> recipientBccList = new ArrayList<InternetAddress>();
-    private List<InternetAddress> dispositionNotification = new ArrayList<InternetAddress>();
-    private List<String> attachmentIdList = new ArrayList<String>();
+    private String subject;
+    private Date date;
+    private String mailer;
+    private boolean highPriority;
+    private boolean answered;
+    private boolean read;
+    private boolean starred;
+    private boolean askForDispositionNotification;
+    private boolean receipt;
+    private boolean deleted;
+    private List<InternetAddress> recipientToList = new ArrayList<>();
+    private List<InternetAddress> recipientCcList = new ArrayList<>();
+    private List<InternetAddress> recipientBccList = new ArrayList<>();
+    private List<InternetAddress> replyToList = new ArrayList<>();
+    private List<InternetAddress> dispositionNotification = new ArrayList<>();
     private boolean forwarded;
     private boolean mdnSent;
-    private String inReplyTo = "inReplyTo";
+    private String inReplyTo;
+    private String forwardedMessageId;
 
-    public MimeMessageBuilder() {
-        try {
-            recipientToList.add(new InternetAddress("recipient1@localhost"));
-            recipientCcList.add(new InternetAddress("recipient10@localhost"));
-            recipientBccList.add(new InternetAddress("recipient20@localhost"));
-            dispositionNotification.add(new InternetAddress("recipient100@localhost"));
+    private String file;
 
-            attachmentIdList.add("1");
-        } catch (AddressException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
+    public static MimeMessageBuilder withSource(String file) {
+        MimeMessageBuilder mimeMessageBuilder = new MimeMessageBuilder();
+        mimeMessageBuilder.file = file;
+        return mimeMessageBuilder;
     }
 
     public List<MimeMessage> build(int count) {
@@ -102,6 +107,12 @@ public class MimeMessageBuilder {
             when(m.getHeader("User-Agent")).thenReturn(new String[] { mailer });
             when(m.getHeader("Message-ID")).thenReturn(new String[] { messageId });
             when(m.getHeader("In-Reply-To")).thenReturn(new String[] { inReplyTo });
+
+            when(m.match(any(SearchTerm.class))).then(invocation -> {
+                Object[] arguments = invocation.getArguments();
+                SearchTerm term = (SearchTerm) arguments[0];
+                return term.match(m);
+            });
 
             if (highPriority) {
                 when(m.getHeader("X-Priority")).thenReturn(new String[] { "1 " });
@@ -185,11 +196,15 @@ public class MimeMessageBuilder {
         return doThrow(new IllegalWriteException("IMAPMessage is read-only")).when(mock);
     }
 
+    /**
+     * Use {@link #spy()} instead.
+     */
+    @Deprecated
     public MimeMessage build(String file) {
         try {
             MimeMessage mimeMessage = new MimeMessage(null, new FileInputStream(file));
 
-            MimeMessage spy = spy(mimeMessage);
+            MimeMessage spy = Mockito.spy(mimeMessage);
             Folder folderMock = Mockito.mock(Folder.class);
 
             when(folderMock.getFullName()).thenReturn(folder);
@@ -217,6 +232,69 @@ public class MimeMessageBuilder {
             return spy;
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public MimeMessage spy() {
+        try {
+            MimeMessage mimeMessage = new MimeMessage(null, new FileInputStream(file));
+            MimeMessage spy = Mockito.spy(mimeMessage);
+            Folder folderMock = Mockito.mock(Folder.class);
+
+            when(folderMock.getFullName()).thenReturn(folder);
+            when(spy.getFolder()).thenReturn(folderMock);
+            when(spy.getMessageID()).thenReturn(messageId);
+
+            if(inReplyTo != null) {
+                mimeMessage.setHeader("In-Reply-To", inReplyTo);
+            }
+
+            if(mdnSent) {
+                spy.setFlags(new Flags("$MDNSent"), true);
+            }
+
+            if(forwardedMessageId != null) {
+                mimeMessage.setHeader("X-Forwarded-Message-Id", forwardedMessageId);
+            }
+
+            if(receipt) {
+                mimeMessage.setHeader("X-Mozilla-Draft-Info", "receipt=1");
+            }
+
+            if(askForDispositionNotification) {
+                String[] header = mimeMessage.getHeader("X-Mozilla-Draft-Info");
+
+                if(header != null && header.length == 1) {
+                    mimeMessage.setHeader("X-Mozilla-Draft-Info", header[0] + ";DSN=1");
+                } else {
+                    mimeMessage.setHeader("X-Mozilla-Draft-Info", "DSN=1");
+                }
+            }
+
+            if(highPriority) {
+                mimeMessage.setHeader("X-Priority", "1");
+            }
+
+            if(mailer != null) {
+                mimeMessage.setHeader("User-Agent", mailer);
+            }
+
+            if (!dispositionNotification.isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                for (InternetAddress internetAddress : dispositionNotification) {
+                    sb.append(internetAddress.toString()).append(", ");
+                }
+                mimeMessage.setHeader("Disposition-Notification-To", sb.substring(0, sb.length() - 2));
+            }
+
+            mimeMessage.setRecipients(RecipientType.BCC, recipientBccList.toArray(new Address[recipientBccList.size()]));
+            mimeMessage.setRecipients(RecipientType.CC, recipientCcList.toArray(new Address[recipientCcList.size()]));
+            mimeMessage.setRecipients(RecipientType.TO, recipientToList.toArray(new Address[recipientToList.size()]));
+            mimeMessage.setReplyTo(replyToList.toArray(new Address[replyToList.size()]));
+
+            return spy;
+        } catch (Exception exception) {
+            throw new RuntimeException(exception.getMessage(), exception);
         }
     }
 
@@ -289,6 +367,15 @@ public class MimeMessageBuilder {
         return this;
     }
 
+    public MimeMessageBuilder setRecipientTo(String recipient, String personal) {
+        try {
+            recipientToList.add(new InternetAddress(recipient, personal));
+        } catch (UnsupportedEncodingException exception) {
+            throw new RuntimeException(exception.getMessage(), exception);
+        }
+        return this;
+    }
+
     public MimeMessageBuilder setRecipientTo(List<InternetAddress> recipients) {
         if(recipients == null) {
             recipientToList = Collections.emptyList();
@@ -308,10 +395,28 @@ public class MimeMessageBuilder {
         return this;
     }
 
+    public MimeMessageBuilder setRecipientCc(String recipient, String personal) {
+        try {
+            recipientCcList.add(new InternetAddress(recipient, personal));
+        } catch (UnsupportedEncodingException exception) {
+            throw new RuntimeException(exception.getMessage(), exception);
+        }
+        return this;
+    }
+
     public MimeMessageBuilder setRecipientBcc(String recipient) {
         try {
             recipientBccList.add(new InternetAddress(recipient));
         } catch (AddressException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+        return this;
+    }
+
+    public MimeMessageBuilder setRecipientBcc(String recipient, String personal) {
+        try {
+            recipientBccList.add(new InternetAddress(recipient, personal));
+        } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
         return this;
@@ -322,6 +427,15 @@ public class MimeMessageBuilder {
             dispositionNotification.add(new InternetAddress(recipient));
         } catch (AddressException e) {
             throw new RuntimeException(e.getMessage(), e);
+        }
+        return this;
+    }
+
+    public MimeMessageBuilder setRecipientDispositionNotification(String recipient, String personal) {
+        try {
+            dispositionNotification.add(new InternetAddress(recipient, personal));
+        } catch (UnsupportedEncodingException exception) {
+            throw new RuntimeException(exception.getMessage(), exception);
         }
         return this;
     }
@@ -392,16 +506,6 @@ public class MimeMessageBuilder {
         return l;
     }
 
-    public List<String> getAttachmentIdList() {
-        List<String> l = new ArrayList<String>();
-
-        for (String s : attachmentIdList) {
-            l.add(s);
-        }
-
-        return l;
-    }
-
     public List<MailMessageAddress> getDispositionNotification() {
         List<MailMessageAddress> l = new ArrayList<MailMessageAddress>();
 
@@ -426,6 +530,24 @@ public class MimeMessageBuilder {
         return this;
     }
 
+    public MimeMessageBuilder setReplyTo(String replyTo) {
+        try {
+            replyToList.add(new InternetAddress(replyTo));
+        } catch (AddressException exception) {
+            throw new RuntimeException(exception.getMessage(), exception);
+        }
+        return this;
+    }
+
+    public MimeMessageBuilder setReplyTo(String replyTo, String personal) {
+        try {
+            replyToList.add(new InternetAddress(replyTo, personal));
+        } catch (UnsupportedEncodingException exception) {
+            throw new RuntimeException(exception.getMessage(), exception);
+        }
+        return this;
+    }
+
     public boolean isReceipt() {
         return receipt;
     }
@@ -441,6 +563,11 @@ public class MimeMessageBuilder {
 
     public MimeMessageBuilder setDeleted(boolean deleted) {
         this.deleted = deleted;
+        return this;
+    }
+
+    public MimeMessageBuilder setForwardedMessageId(String forwardedMessageId) {
+        this.forwardedMessageId = forwardedMessageId;
         return this;
     }
 }

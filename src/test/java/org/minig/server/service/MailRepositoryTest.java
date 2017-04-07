@@ -1,5 +1,6 @@
 package org.minig.server.service;
 
+import com.sun.mail.imap.IMAPFolder.FetchProfileItem;
 import config.ServiceTestConfig;
 import org.junit.Rule;
 import org.junit.Test;
@@ -117,6 +118,51 @@ public class MailRepositoryTest {
         assertThat(fetchProfiles, hasSize(1));
         assertThat(fetchProfiles.get(0).getItems(), arrayContaining(Item.ENVELOPE, Item.FLAGS, Item.CONTENT_INFO));
         assertThat(fetchProfiles.get(0).getHeaderNames(), arrayContaining("$Forwarded", "$MDNSent", "Message-ID"));
+    }
+
+    @Test
+    public void shouldFindMimeMessageByCompositeId() throws Exception {
+        MimeMessage message1 = new MimeMessageBuilder().build(TestConstants.PLAIN);
+        MimeMessage message2 = new MimeMessageBuilder().build(TestConstants.HTML);
+        String messageId = message1.getMessageID();
+        mailboxRule.append("INBOX", message1, message2);
+
+        MimeMessage inbox = uut.findByCompositeId(new CompositeId("INBOX", messageId))
+                .orElseThrow(() -> new AssertionError("mime message with message id " + messageId + " expected"));
+
+        assertThat(inbox, is(message1));
+    }
+
+    @Test
+    public void shouldReturnEmptyOptionalWhenCompositeIdIsUnknown() throws Exception {
+        assertThat(uut.findByCompositeId(new CompositeId("INBOX", "unknown")).isPresent(), is(false));
+    }
+
+    @Test
+    public void shouldFetchCompleteMessage() throws Exception {
+        MimeMessage message = new MimeMessageBuilder().build(TestConstants.PLAIN);
+        String messageId = message.getMessageID();
+        mailboxRule.append("INBOX", message);
+
+        uut.findByCompositeId(new CompositeId("INBOX", messageId))
+                .orElseThrow(() -> new AssertionError("mime message with message id " + messageId + " expected"));
+
+        List<FetchProfile> fetchProfiles = mailboxRule.getMailbox("INBOX").getFetchProfiles();
+
+        assertThat(fetchProfiles, hasSize(1));
+        assertThat(fetchProfiles.get(0).getItems(), arrayContaining(Item.ENVELOPE, Item.FLAGS, Item.CONTENT_INFO, FetchProfileItem.MESSAGE));
+        assertThat(fetchProfiles.get(0).getHeaderNames(),
+                arrayContaining("$Forwarded",
+                                "$MDNSent",
+                                "Message-ID",
+                                "X-Mozilla-Draft-Info",
+                                "X-PRIORITY",
+                                "Disposition-Notification-To",
+                                "In-Reply-To",
+                                "X-Forwarded-Message-Id",
+                                "User-Agent"
+                    )
+                );
     }
 
     @Test

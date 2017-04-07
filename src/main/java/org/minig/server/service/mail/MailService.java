@@ -1,11 +1,17 @@
-package org.minig.server.service;
+package org.minig.server.service.mail;
 
 import org.minig.security.MailAuthentication;
+import org.minig.server.FullMailMessage;
 import org.minig.server.MailFolder;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
 import org.minig.server.MailMessageList;
 import org.minig.server.PartialMailMessage;
+import org.minig.server.service.AttachmentRepository;
+import org.minig.server.service.CompositeId;
+import org.minig.server.service.FolderRepository;
+import org.minig.server.service.MailRepository;
+import org.minig.server.service.NotFoundException;
 import org.minig.server.service.impl.Mime4jAttachmentDataSource;
 import org.minig.server.service.impl.helper.MessageMapper;
 import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
@@ -41,6 +47,9 @@ public class MailService {
     @Autowired
     private AttachmentRepository attachmentRepository;
 
+    @Autowired
+    private UriComponentsBuilderResolver uriComponentsBuilderResolver;
+
     // TODO
     @Autowired
     private MessageMapper mapper;
@@ -51,6 +60,16 @@ public class MailService {
                 .map(PartialMailMessage::new);
     }
 
+    public String findHtmlBodyByCompositeId(CompositeId compositeId) {
+        Mime4jMessage mime4jMessage = mailRepository.findByCompositeId(compositeId).map(Mime4jMessage::new).orElseThrow(NotFoundException::new);
+        return mime4jMessage.getHtml(uriComponentsBuilderResolver.resolveAttachmentUri());
+    }
+
+    public FullMailMessage findByCompositeId(CompositeId id) {
+        return mailRepository.findByCompositeId(id).map(FullMailMessage::new).orElseThrow(NotFoundException::new);
+    }
+
+    @Deprecated
     public MailMessage findMessage(CompositeId id) {
         Assert.notNull(id);
 

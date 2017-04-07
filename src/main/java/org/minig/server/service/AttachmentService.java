@@ -1,31 +1,30 @@
 package org.minig.server.service;
 
-import org.apache.commons.io.IOUtils;
 import org.minig.server.MailAttachment;
 import org.minig.server.MailMessage;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import javax.activation.DataSource;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import javax.mail.internet.MimeMessage;
 import java.util.Collections;
 import java.util.List;
 
-@Service
+import static java.util.Objects.requireNonNull;
+
+@Component
 public class AttachmentService {
 
-    @Autowired
-    private MailRepository mailRepository;
+    private final MailRepository mailRepository;
+    private final AttachmentRepository attachmentRepository;
+    private final FolderRepository folderRepository;
 
-    @Autowired
-    private AttachmentRepository attachmentRepository;
-
-    @Autowired
-    private FolderRepository folderRepository;
+    public AttachmentService(MailRepository mailRepository, AttachmentRepository attachmentRepository, FolderRepository folderRepository) {
+        this.mailRepository = requireNonNull(mailRepository, "mailRepository is null");
+        this.attachmentRepository = requireNonNull(attachmentRepository, "attachmentRepository is null");
+        this.folderRepository = requireNonNull(folderRepository, "folderRepository is null");
+    }
 
     public List<MailAttachment> findAttachments(CompositeId id) {
         Assert.notNull(id);
@@ -39,32 +38,9 @@ public class AttachmentService {
         }
     }
 
-    public MailAttachment findAttachment(CompositeAttachmentId attachmentId) {
-        Assert.notNull(attachmentId);
-
-        MailAttachment attachment = attachmentRepository.read(attachmentId);
-
-        if (attachment == null) {
-            throw new NotFoundException();
-        }
-
-        return attachment;
-    }
-
-    public void readAttachment(CompositeAttachmentId attachmentId, OutputStream output) {
-        Assert.notNull(attachmentId);
-
-        InputStream input = attachmentRepository.readAttachmentPayload(attachmentId);
-
-        if (input == null) {
-            throw new NotFoundException();
-        } else {
-            try {
-                IOUtils.copy(input, output);
-            } catch (IOException e) {
-                throw new RuntimeException();
-            }
-        }
+    public MailAttachment findById(CompositeAttachmentId id) {
+        MimeMessage mimeMessage = mailRepository.findByCompositeId(id).orElseThrow(NotFoundException::new);
+        return new Mime4jMessage(mimeMessage).getAttachment(id).map(MailAttachment::new).orElseThrow(NotFoundException::new);
     }
 
     public CompositeId addAttachment(CompositeId attachmentId, DataSource dataSource) {

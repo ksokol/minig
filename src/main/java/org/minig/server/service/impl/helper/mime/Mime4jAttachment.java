@@ -4,40 +4,49 @@ import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
 
 import java.io.InputStream;
-import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * @author Kamill Sokol
  */
 public final class Mime4jAttachment {
 
-    private CompositeId id;
+    private CompositeAttachmentId id;
     private String filename;
+    private final String contentId;
+    private final String dispositionType;
     private final String mimeType;
     private final InputStream data;
 
-    public Mime4jAttachment(String filename, String mimeType, InputStream data) {
-        Objects.requireNonNull(filename);
-        Objects.requireNonNull(mimeType);
+    public Mime4jAttachment(CompositeId CompositeId, String filename, String mimeType, InputStream data) {
+        this(CompositeId, filename, null, "attachment", mimeType, data);
+    }
+
+    public Mime4jAttachment(CompositeId compositeId, String filename, String contentId, String dispositionType, String mimeType, InputStream data) {
+        requireNonNull(compositeId, "compositeId is null");
+        this.mimeType = requireNonNull(mimeType);
+        this.id = new CompositeAttachmentId(compositeId.getFolder(), compositeId.getMessageId(), "attachment".equals(dispositionType) ? filename : contentId);
         this.filename = filename;
-        this.mimeType = mimeType;
+        this.contentId = contentId;
+        this.dispositionType = dispositionType;
         this.data = data;
     }
 
     public CompositeAttachmentId getId() {
-        if(id == null) {
-            throw new IllegalStateException("id is null");
-        }
-        return new CompositeAttachmentId(id.getFolder(), id.getMessageId(), filename);
+        return id;
     }
 
     public String getFilename() {
         return filename;
     }
 
-    @Deprecated
-    public void setFilename(String filename) {
-        this.filename = filename;
+    public String getContentId() {
+        return contentId;
+    }
+
+    public String getDispositionType() {
+        return dispositionType;
     }
 
     public String getMimeType() {
@@ -48,7 +57,12 @@ public final class Mime4jAttachment {
         return data;
     }
 
-    public void setId(CompositeId id) {
-        this.id = id;
+    public boolean isAttachment() {
+        return "attachment".equals(dispositionType);
     }
+
+    public boolean isInlineAttachment() {
+        return "inline".equals(dispositionType);
+    }
+
 }

@@ -2,11 +2,12 @@ package org.minig.server.service;
 
 import config.ServiceTestConfig;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailAttachment;
 import org.minig.server.TestConstants;
+import org.minig.test.javamail.MailboxRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -15,15 +16,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.minig.server.TestConstants.MOCK_USER;
+import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -32,44 +31,37 @@ import static org.junit.Assert.assertTrue;
 public class AttachmentServiceTest {
 
     @Autowired
-    private SmtpAndImapMockServer mockServer;
+    private AttachmentService service;
 
-    @Autowired
-    private AttachmentService uut;
-
-    @Before
-    public void setUp() throws Exception {
-        mockServer.reset();
-    }
+    @Rule
+    public MailboxRule mailboxRule = new MailboxRule(MOCK_USER);
 
     @Test
     public void testFindAttachments_hasAttachments() throws MessagingException {
-        MimeMessage m = new MimeMessageBuilder().setFolder("INBOX").build(TestConstants.MULTIPART_WITH_ATTACHMENT);
+        MimeMessage mimeMessage = new MimeMessageBuilder().setFolder("INBOX").build(TestConstants.MULTIPART_WITH_ATTACHMENT);
+        mailboxRule.append("INBOX", mimeMessage);
 
         CompositeId id = new CompositeId();
         id.setFolder("INBOX");
-        id.setMessageId(m.getMessageID());
+        id.setMessageId(mimeMessage.getMessageID());
 
-        mockServer.prepareMailBox("INBOX", m);
+        List<MailAttachment> findAttachments = service.findAttachments(id);
 
-        List<MailAttachment> findAttachments = uut.findAttachments(id);
-
-        assertEquals(2, findAttachments.size());
+        assertThat(findAttachments, hasSize(2));
     }
 
     @Test
     public void testFindAttachments_hasNoAttachments() throws MessagingException {
-        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
+        MimeMessage mimeMessage = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
+        mailboxRule.append("INBOX", mimeMessage);
 
         CompositeId id = new CompositeId();
         id.setFolder("INBOX");
-        id.setMessageId(m.getMessageID());
+        id.setMessageId(mimeMessage.getMessageID());
 
-        mockServer.prepareMailBox("INBOX", m);
+        List<MailAttachment> findAttachments = service.findAttachments(id);
 
-        List<MailAttachment> findAttachments = uut.findAttachments(id);
-
-        assertEquals(0, findAttachments.size());
+        assertThat(findAttachments, hasSize(0));
     }
 
     @Test
@@ -78,70 +70,30 @@ public class AttachmentServiceTest {
         id.setFolder("INBOX");
         id.setMessageId("<id@localhost>");
 
-        List<MailAttachment> findAttachments = uut.findAttachments(id);
+        List<MailAttachment> findAttachments = service.findAttachments(id);
 
-        assertEquals(0, findAttachments.size());
+        assertThat(findAttachments, hasSize(0));
     }
 
     @Test(expected = NotFoundException.class)
-    public void testFindAttachment_doesNotExist() {
-        uut.findAttachment(new CompositeAttachmentId("INBOX", "<id@localhost>", "fake"));
+    public void shouldThrowNotFoundExceptionWhenAttachmentIsUnknown() throws Exception {
+        service.findById(new CompositeAttachmentId("INBOX", "unknown","unknown"));
     }
 
     @Test
-    public void testFindAttachment() throws MessagingException {
-        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_ATTACHMENT);
-        CompositeAttachmentId id = new CompositeAttachmentId("INBOX", m.getMessageID(), "1.png");
+    public void shouldFindInlineAttachmentById() throws Exception {
+        MimeMessage mimeMessage = new MimeMessageBuilder().setFolder("INBOX").build(TestConstants.ALTERNATIVE);
+        mailboxRule.append("INBOX", mimeMessage);
 
-        mockServer.prepareMailBox("INBOX", m);
+        CompositeAttachmentId compositeAttachmentId = new CompositeAttachmentId("INBOX", mimeMessage.getMessageID(),"1367760625.51865ef16cc8c@swift.generated");
+        MailAttachment mailAttachment = service.findById(compositeAttachmentId);
 
-        MailAttachment findAttachment = uut.findAttachment(id);
-
-        assertEquals("1.png", findAttachment.getFileName());
+        assertThat(mailAttachment.getId(), is(compositeAttachmentId.getId()));
+        assertThat(mailAttachment.getMime(), is(IMAGE_PNG_VALUE));
+        assertThat(mailAttachment.getContentId(), is(compositeAttachmentId.getFileName()));
+        assertThat(mailAttachment.getDispositionType(), is("inline"));
+        assertThat(mailAttachment.getFileName(), is(compositeAttachmentId.getFileName()));
+        assertThat(IOUtils.toByteArray(mailAttachment.getData()), is(new byte[] { (byte) 'a' }));
     }
 
-    @Test(expected = NotFoundException.class)
-    public void testReadAttachment_hasNoAttachment() throws Exception {
-        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
-        CompositeAttachmentId id = new CompositeAttachmentId("INBOX", m.getMessageID(), "1.png");
-
-        mockServer.prepareMailBox("INBOX", m);
-
-        uut.readAttachment(id, new ByteArrayOutputStream());
-    }
-
-    @Test
-    public void testReadAttachment_hasAttachment() throws Exception {
-        MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_ATTACHMENT);
-        CompositeAttachmentId id = new CompositeAttachmentId("INBOX", m.getMessageID(), "1.png");
-
-        mockServer.prepareMailBox("INBOX", m);
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-        uut.readAttachment(id, byteArrayOutputStream);
-
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
-        byte[] expected = IOUtils.toByteArray(new FileInputStream(TestConstants.ATTACHMENT_IMAGE_1_PNG));
-
-        assertTrue(Arrays.equals(expected, byteArray));
-    }
-
-
-	@Test
-	public void testReadAttachment_hasAttachment2() throws Exception {
-		MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_RFC_2231_2);
-		CompositeAttachmentId id = new CompositeAttachmentId("INBOX", m.getMessageID(), "umlaut ä veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery long.png");
-
-		mockServer.prepareMailBox("INBOX", m);
-
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-		uut.readAttachment(id, byteArrayOutputStream);
-
-		byte[] byteArray = byteArrayOutputStream.toByteArray();
-		byte[] expected = IOUtils.toByteArray(new FileInputStream(TestConstants.MULTIPART_RFC_2231_2_IMAGE));
-
-		assertThat(byteArray, is(expected));
-	}
 }

@@ -1,32 +1,48 @@
-
 package org.minig.server;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.minig.server.service.CompositeAttachmentId;
+import org.minig.server.service.impl.helper.mime.Mime4jAttachment;
+
+import java.io.InputStream;
 
 /**
  * @author Kamill Sokol
  */
 public class MailAttachment extends CompositeAttachmentId {
 
-	private String mime;
+    private String mime;
+    private String contentId;
+    private String dispositionType;
 
-	public MailAttachment() {
-        //empty
+    @JsonIgnore
+    private InputStream data;
+
+    public MailAttachment(Mime4jAttachment mime4jAttachment) {
+        this(mime4jAttachment.getId(), mime4jAttachment.getMimeType(), mime4jAttachment.getContentId(), mime4jAttachment.getDispositionType(), mime4jAttachment.getData());
     }
 
-	public String getMime() {
-		return mime;
-	}
+    public MailAttachment(CompositeAttachmentId compositeAttachmentId, String mime, String contentId, String dispositionType, InputStream data) {
+        super(compositeAttachmentId.getFolder(), compositeAttachmentId.getMessageId(), compositeAttachmentId.getFileName());
+        this.mime = mime;
+        this.contentId = contentId;
+        this.dispositionType = dispositionType;
+        this.data = data;
+    }
 
-	public void setMime(String mime) {
-		this.mime = mime;
-	}
+    public String getMime() {
+        return mime;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public String getContentId() {
+        return contentId;
+    }
 
-	public void setId(String id) {
-		super.setId(id);
-	}
+    public String getDispositionType() {
+        return dispositionType;
+    }
+
+    public InputStream getData() {
+        return data;
+    }
 }

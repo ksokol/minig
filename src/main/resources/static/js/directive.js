@@ -316,10 +316,6 @@ app.directive("messageText", function() {
         return split;
     };
 
-    var formatHtml = function (html) {
-        return html.split(/<\s*b\s*r\s*\/?>/g);
-    };
-
     return {
         restrict: "E",
         link: function ($scope) {
@@ -327,11 +323,8 @@ app.directive("messageText", function() {
                 if(!mail) {
                     return;
                 }
-                //TODO support html mails
-                if(mail.plain) {
-                    $scope.messageText = formatPlain(mail.plain);
-                } else {
-                    $scope.messageText = formatHtml(mail.html);
+                if(mail.text) {
+                    $scope.messageText = formatPlain(mail.text);
                 }
             });
         }
@@ -554,6 +547,8 @@ app.directive("bodyEditor", ['localStorageService', 'textAngularManager', 'htmlC
                 if(!scope.mail) {
                     return;
                 }
+
+                scope.mail.html = html;
                 scope.mail.plain = htmlConversion.convertToPlain(html);
             });
         }

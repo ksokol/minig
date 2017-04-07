@@ -22,7 +22,7 @@ public class MockStore extends Store {
     }
 
     protected boolean protocolConnect(String host, int port, String user, String password) throws MessagingException {
-        address = new InternetAddress(user + '@' + host);
+        address = new InternetAddress(user);
 
         Mailbox mailbox = MailboxHolder.get(address, "INBOX");
 

@@ -1,0 +1,15 @@
+<message-html mail="mail" ng-if="hasHtml"></message-html>
+
+<message-text ng-if="!hasHtml">
+    <table cellspacing="0" cellpadding="0" class="messageText">
+        <tbody>
+        <tr ng-repeat="line in messageText track by $index">
+            <td align="left" style="vertical-align: top;">
+                <div class="gwt-HTML wrapword">
+                    {{line}}<br>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</message-text>

@@ -1,13 +1,18 @@
-package org.minig.server.service;
+package org.minig.server.service.mail;
 
 import config.ServiceTestConfig;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.minig.server.FullMailMessage;
 import org.minig.server.MailMessage;
 import org.minig.server.MailMessageAddress;
 import org.minig.server.MailMessageList;
 import org.minig.server.TestConstants;
+import org.minig.server.service.CompositeId;
+import org.minig.server.service.MimeMessageBuilder;
+import org.minig.server.service.NotFoundException;
+import org.minig.server.service.SmtpAndImapMockServer;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
@@ -30,6 +35,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -58,6 +64,20 @@ public class MailServiceTest {
     @Test(expected = NotFoundException.class)
     public void testFindMessageNotExistentMessage() {
         uut.findMessage(new CompositeId("non", "existent"));
+    }
+
+    @Test
+    public void shouldReturnMessage() throws Exception {
+        MimeMessage message = new MimeMessageBuilder().build();
+        mailboxRule.append("INBOX", message);
+
+        FullMailMessage actual = uut.findByCompositeId(new CompositeId("INBOX", message.getMessageID()));
+        assertThat(actual.getId(), is("INBOX|" + message.getMessageID()));
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void shouldThrowNotFoundException() throws Exception {
+        uut.findByCompositeId(new CompositeId("INBOX", "unknown"));
     }
 
     @Test
@@ -350,10 +370,8 @@ public class MailServiceTest {
         mm.setReceipt(true);
         mm.setDate(new Date());
 
-        MailMessageAddress recipientAddress = new MailMessageAddress();
-        recipientAddress.setDisplayName(recipient);
-        recipientAddress.setEmail(recipient);
-        List<MailMessageAddress> addresses = Arrays.asList(recipientAddress);
+        MailMessageAddress recipientAddress = new MailMessageAddress(recipient);
+        List<MailMessageAddress> addresses = Collections.singletonList(recipientAddress);
 
         mm.setTo(addresses);
         mm.setCc(addresses);
@@ -426,5 +444,20 @@ public class MailServiceTest {
         MailMessage updateDraftMessage = uut.createDraftMessage(mm);
 
         assertThat(updateDraftMessage.getAttachments(), hasSize(0));
+    }
+
+    @Test
+    public void shouldReturnHtmlBodyWithAbsoluteUrlsToInlineAttachments() throws Exception {
+        MimeMessage message = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
+        mailboxRule.append("INBOX/test", message);
+
+        String actualHtmlBody = uut.findHtmlBodyByCompositeId(new CompositeId("INBOX/test", message.getMessageID()));
+
+        assertThat(actualHtmlBody, containsString("http://localhost/1/attachment/folder%257C%253C1367760625.51865ef16e3f6%2540swift.generated%253E%257C1367760625.51865ef16e3f6%2540swift.generated"));
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void shouldThrowNotFoundExceptionWhenUnknownCompositeIdGiven() throws Exception {
+        uut.findHtmlBodyByCompositeId(new CompositeId("INBOX", "unknown"));
     }
 }
