@@ -5,7 +5,6 @@ import org.apache.tika.metadata.HttpHeaders;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.minig.server.TestConstants;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.test.javamail.MailboxRule;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +80,7 @@ public class SecurityConfigTest {
 
     private MultiValueMap<String, String> credentials() {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("username", TestConstants.MOCK_USER);
+        body.add("username", MOCK_USER);
         body.add("password", "irrelevant");
         return body;
     }

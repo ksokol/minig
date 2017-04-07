@@ -360,7 +360,7 @@ app.controller('FolderListCtrl', ['$scope', '$rootScope', 'folderService', 'rout
         bcc : []
     };
 
-    $scope.htmlBody;
+    $scope.htmlBody = null;
 
     $scope.refresh = function() {
         if(!$routeParams.id) {

@@ -5,10 +5,6 @@ package org.minig;
  */
 public final class MinigConstants {
 
-    private MinigConstants() {
-        // prevent instantiation
-    }
-
     public static final String API_VERSION = "1";
     public static final String RESOURCE_ATTACHMENT = "attachment";
 
@@ -41,4 +37,8 @@ public final class MinigConstants {
     public static final String MDN_SENT = "$MDNSent";
     public static final String FORWARDED = "$Forwarded";
     public static final String DISPOSITION_NOTIFICATION_TO = "Disposition-Notification-To";
+
+    private MinigConstants() {
+        // prevent instantiation
+    }
 }

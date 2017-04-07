@@ -101,7 +101,7 @@ public class MailResourceTest {
         when(mailService.findHtmlBodyByCompositeId(any())).thenReturn("html");
 
         mockMvc.perform(get(PREFIX + "/message/INBOX%2Ftest%7C1@example.com/html")
-                .accept(MediaType.TEXT_HTML)
+                .accept(TEXT_HTML)
                 .accept(TEXT_HTML))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(TEXT_HTML))
