@@ -160,7 +160,7 @@ public class AttachmentRepositoryTest {
         assertTrue(read.getPlain().contains("From: 2013-04-25 09:35:54, To: 2013-04-25 09:44:54, Downtime: 0h 09m 00s"));
 
         assertThat(read.getHtml().length(), greaterThanOrEqualTo(25257));
-        assertTrue(read.getHtml().contains("<td><br><h3>178.254.55.49</h3></td></tr>"));
+        assertTrue(read.getHtml().contains("<td><br><h3>178.254.55.49</h3></td>"));
 
         assertEquals(1, readMetadata2.size());
         assertEquals("folder.gif", readMetadata2.get(0).getFileName());

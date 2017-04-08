@@ -1,6 +1,9 @@
 package org.minig.server.service.impl.helper.mime;
 
 import com.google.api.client.util.escape.PercentEscaper;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -78,13 +81,13 @@ public class Mime4jMessage {
     }
 
     public String getHtml() {
-        return messageTransformer.getHtml();
+        return sanitizeLinks(messageTransformer.getHtml());
     }
 
     public String getHtml(UriComponentsBuilder uriComponentsBuilder) {
-        String sanitizedHtmlBody = messageTransformer.getHtml();
+        String sanitizedHtmlBody = getHtml();
         for (Mime4jAttachment attachment : getInlineAttachments()) {
-            sanitizedHtmlBody = sanitize(sanitizedHtmlBody, attachment, uriComponentsBuilder.cloneBuilder());
+            sanitizedHtmlBody = sanitizeContentId(sanitizedHtmlBody, attachment, uriComponentsBuilder.cloneBuilder());
         }
         return sanitizedHtmlBody;
     }
@@ -272,7 +275,7 @@ public class Mime4jMessage {
         return value == null ? "" : value;
     }
 
-    private String sanitize(String htmlBody, Mime4jAttachment attachment, UriComponentsBuilder uriComponentsBuilder) {
+    private String sanitizeContentId(String htmlBody, Mime4jAttachment attachment, UriComponentsBuilder uriComponentsBuilder) {
         String contentUrl = uriComponentsBuilder.pathSegment(escape(attachment.getId())).build().toUriString();
         String replacedCid = htmlBody.replaceAll("cid:" + attachment.getContentId(), contentUrl);
         return replacedCid.replaceAll("mid:" + attachment.getContentId(), contentUrl);
@@ -300,5 +303,15 @@ public class Mime4jMessage {
 
     private static String escape(CompositeAttachmentId id) {
         return rethrowCheckedAsUnchecked(() -> URLEncoder.encode(new PercentEscaper("-.*", true).escape(id.toString()), UTF_8.name()));
+    }
+
+    private static String sanitizeLinks(String html) {
+        Document document = Jsoup.parse(html);
+        Elements aTags = document.body().getElementsByTag("a");
+        if(aTags.size() == 0) {
+            return html;
+        }
+        aTags.forEach(aTag -> aTag.attr("target", "_blank"));
+        return document.html();
     }
 }

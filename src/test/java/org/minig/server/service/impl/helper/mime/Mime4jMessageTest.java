@@ -4,6 +4,8 @@ import org.apache.commons.io.IOUtils;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
+import org.jsoup.Jsoup;
+import org.jsoup.select.Elements;
 import org.junit.Test;
 import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeAttachmentId;
@@ -854,8 +856,19 @@ public class Mime4jMessageTest {
         String actualHtmlBody = message.getHtml(uriComponentsBuilder);
 
         assertThat(actualHtmlBody, containsString("background-image:url(/attachment/junit/INBOX%252Ffolder%257C%253C1367760625.51865ef16e3f6%2540swift.generated%253E%257C1367760625.51865ef16f798%2540swift.generated);"));
-        assertThat(actualHtmlBody, containsString("<img src=\"/attachment/junit/INBOX%252Ffolder%257C%253C1367760625.51865ef16e3f6%2540swift.generated%253E%257C1367760625.51865ef16cc8c%2540swift.generated\" alt=\"Pingdom\" />"));
+        assertThat(actualHtmlBody, containsString("<img src=\"/attachment/junit/INBOX%252Ffolder%257C%253C1367760625.51865ef16e3f6%2540swift.generated%253E%257C1367760625.51865ef16cc8c%2540swift.generated\""));
         assertThat(actualHtmlBody, containsString("background-image:url(/attachment/junit/INBOX%252Ffolder%257C%253C1367760625.51865ef16e3f6%2540swift.generated%253E%257C1367760625.51865ef16e3f6%2540swift.generated);"));
+    }
+
+    @Test
+    public void shouldAddTargetAttributeToLinks() throws Exception {
+        Mime4jMessage message = new Mime4jMessage(MimeMessageBuilder.withSource(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML).spy());
+        Elements aTags = Jsoup.parse(message.getHtml()).body().getElementsByTag("a");
+        Elements aTagsWithUriBuilder = Jsoup.parse(message.getHtml(UriComponentsBuilder.newInstance())).body().getElementsByTag("a");
+
+        assertThat(aTags, hasSize(1));
+        assertThat(aTags.get(0).attr("target"), is("_blank"));
+        assertThat(aTagsWithUriBuilder.get(0).attr("target"), is("_blank"));
     }
 
     private Matcher<Mime4jAddress> address(Matcher<String> emailMatcher, Matcher<String> personalMatcher) {
