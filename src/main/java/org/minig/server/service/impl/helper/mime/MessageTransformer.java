@@ -28,6 +28,7 @@ import org.minig.server.service.CompositeId;
 import org.springframework.util.StringUtils;
 
 import javax.activation.DataSource;
+import javax.mail.internet.ContentDisposition;
 import javax.mail.internet.MimeMessage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -42,6 +43,8 @@ import java.util.stream.Collectors;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.StringUtils.countMatches;
 import static org.apache.james.mime4j.message.MessageBuilder.createCopy;
+import static org.minig.MinigConstants.CONTENT_DISPOSITION;
+import static org.minig.MinigConstants.FILENAME;
 import static org.minig.MinigConstants.MESSAGE_ID;
 import static org.minig.MinigConstants.MIME_TYPE_MESSAGE_RFC_822;
 import static org.minig.MinigConstants.MIME_TYPE_MULTIPART_ALTERNATIVE;
@@ -448,10 +451,13 @@ final class MessageTransformer {
         if (bodyPart.getFilename() != null) {
             return DecoderUtil.decodeEncodedWords(bodyPart.getFilename(), (DecodeMonitor) null);
         } else {
-            //TODO remove me after https://issues.apache.org/jira/browse/MIME4J-109 has been implemented
-            Field field = bodyPart.getHeader().getField("Content-Disposition");
-            return new RFC2231Decoder().parse(field.getBody());
+            Field field = bodyPart.getHeader().getField(CONTENT_DISPOSITION);
+            return decodeContentDisposition(field.getBody());
         }
+    }
+
+    private static String decodeContentDisposition(String headerValue) {
+        return rethrowCheckedAsUnchecked(() -> new ContentDisposition(headerValue).getParameter(FILENAME));
     }
 
     private static String extractContentId(BodyPart bodyPart) {

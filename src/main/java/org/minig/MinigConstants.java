@@ -37,6 +37,9 @@ public final class MinigConstants {
     public static final String MDN_SENT = "$MDNSent";
     public static final String FORWARDED = "$Forwarded";
     public static final String DISPOSITION_NOTIFICATION_TO = "Disposition-Notification-To";
+    public static final String CONTENT_DISPOSITION = "Content-Disposition";
+
+    public static final String FILENAME = "filename";
 
     private MinigConstants() {
         // prevent instantiation
