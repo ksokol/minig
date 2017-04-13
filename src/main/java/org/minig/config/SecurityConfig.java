@@ -1,8 +1,9 @@
 package org.minig.config;
 
-import org.minig.security.MailAuthentication;
 import org.minig.security.ApiAuthenticationEntryPoint;
+import org.minig.security.MailAuthentication;
 import org.minig.security.MailAuthenticationProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -25,11 +26,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new MailAuthentication();
     }
 
-    @Override
-    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .eraseCredentials(false)
-                .authenticationProvider(authenticationProvider());
+    @Autowired
+    protected void configureGlobal(final AuthenticationManagerBuilder auth) {
+        auth.eraseCredentials(false)
+            .authenticationProvider(authenticationProvider());
     }
 
     @Override
@@ -41,13 +41,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Order(1)
     @Configuration
-    public static class ApiWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+    public static class ApiMessageHtmlWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
         @Override
-        protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-            auth
-                    .eraseCredentials(false);
+        public void configure(final HttpSecurity http) throws Exception {
+            http
+                    .antMatcher("/api/*/message/*/html")
+                    .authorizeRequests().anyRequest().fullyAuthenticated()
+                    .and()
+                    .httpBasic().authenticationEntryPoint(new ApiAuthenticationEntryPoint())
+                    .and().csrf().disable()
+                    .headers().frameOptions().disable().contentSecurityPolicy("script-src 'self'");
         }
+    }
+
+    @Order(2)
+    @Configuration
+    public static class ApiWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
         @Override
         public void configure(final HttpSecurity http) throws Exception {
@@ -56,20 +66,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .authorizeRequests().anyRequest().fullyAuthenticated()
                     .and()
                     .httpBasic().authenticationEntryPoint(new ApiAuthenticationEntryPoint())
-                    .and().headers().frameOptions().disable()
-                    .and().csrf().disable();
+                    .and().csrf().disable()
+                    .headers().contentSecurityPolicy("script-src 'self'");
         }
     }
 
-    @Order(2)
+    @Order(3)
     @Configuration
     public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-
-        @Override
-        protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-            auth
-                    .eraseCredentials(false);
-        }
 
         @Override
         public void configure(final HttpSecurity http) throws Exception {

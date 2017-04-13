@@ -5,6 +5,7 @@ import org.apache.tika.metadata.HttpHeaders;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.minig.server.TestConstants;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.test.javamail.MailboxRule;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.minig.server.TestConstants.MOCK_USER;
@@ -53,14 +56,49 @@ public class SecurityConfigTest {
         MimeMessage mimeMessage = new MimeMessageBuilder().setFolder("INBOX").setMessageId("1").mock();
         mailboxRule.append("INBOX", mimeMessage);
 
-        ResponseEntity<String> response = restTemplate.exchange("/api/1/message/INBOX%257C1/html", HttpMethod.GET, withSessionIdCookieHeader(), String.class);
+        ResponseEntity<String> messageHtmlBody = restTemplate.exchange("/api/1/message/INBOX%257C1/html", HttpMethod.GET, withSessionCookie(), String.class);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
-        assertThat(response.getHeaders().get("X-Frame-Options"), nullValue());
+        assertThat(messageHtmlBody.getStatusCode(), is(HttpStatus.OK));
+        assertThat(messageHtmlBody.getHeaders().get("X-Frame-Options"), nullValue());
+
+        ResponseEntity<Void> loginPage = restTemplate.exchange("/login", HttpMethod.GET, withoutSessionCookie(), Void.class);
+
+        assertThat(loginPage.getStatusCode(), is(HttpStatus.OK));
+        assertThat(loginPage.getHeaders().get("X-Frame-Options"), contains("DENY"));
     }
 
-    private HttpEntity<Void> withSessionIdCookieHeader() {
+    @Test
+    public void shouldDisallowUntrustedJavascriptInMessageHtmlBody() throws Exception {
+        MimeMessage mimeMessage = new MimeMessageBuilder().setFolder("INBOX").setMessageId("1").mock();
+        mailboxRule.append("INBOX", mimeMessage);
+
+        ResponseEntity<String> messageHtmlBody = restTemplate.exchange("/api/1/message/INBOX%257C1/html", HttpMethod.GET, withSessionCookie(), String.class);
+
+        assertThat(messageHtmlBody.getStatusCode(), is(HttpStatus.OK));
+        assertThat(messageHtmlBody.getHeaders().get("Content-Security-Policy"), contains("script-src 'self'"));
+    }
+
+    @Test
+    public void shouldPreventJavascriptFromReadingSessionCookie() throws Exception {
+        ResponseEntity<Void> afterProcessingLogin = restTemplate.exchange("/check", HttpMethod.POST, withUserCredentials(), Void.class);
+
+        assertThat(afterProcessingLogin.getHeaders().get("Set-Cookie"), contains(containsString("HttpOnly")));
+    }
+
+    private HttpEntity<Void> withSessionCookie() {
         return new HttpEntity<>(buildSessionIdCookieHeader());
+    }
+
+    private HttpEntity<Void> withoutSessionCookie() {
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("Accept", MediaType.ALL_VALUE);
+        return new HttpEntity<>(headers);
+    }
+
+    private HttpEntity<Object> withUserCredentials() {
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+        return new HttpEntity<>(String.format("username=%s&password=irrelevant", TestConstants.MOCK_USER), headers);
     }
 
     private MultiValueMap<String, String> buildSessionIdCookieHeader() {
