@@ -4,4 +4,19 @@ jdk:
 
 sudo: false
 
-script: mvn cobertura:cobertura coveralls:cobertura
+addons:
+  sonarqube:
+    organization: "ksokol-github"
+    token:
+      secure: "SOZZqfBQM2gni77jXEqAOIUJOEQGXMj9uyG9KPHw8ICS4/gV9JWxT+JojQQ3PZ+ZuTsRsVF+s7lZv2H45WC43sytzehCYEENPtPZOw0q2Czn+xOrPemCbriAUAfP0CK514kPnPwGbvhlwGZ6v90D/BwzKcS/KfS71qxouPxm42w="
+    github_token:
+      secure: "Z5dFuq5iuApzcvAwMitEXKWAwQ+ozCk9c+iHKfzKaWABX4nEHPAJDm7w25yyFpCkALgWMDJEPFZQcFM19tdls4ToVowMoXw/ZVvJxYH4lXxK8FDTRqZsx5tGuLgf1mxchbmr7L5Nw9HYqkExaGzSMWEwRv2pOPFKpMPWtXDDc3U="
+
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+    - '$HOME/.sonar/cache'
+    - '$HOME/minig/node_modules'
+
+script:
+    - mvn verify sonar:sonar

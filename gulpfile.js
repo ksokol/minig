@@ -162,6 +162,7 @@ gulp.task('karma', function (done) {
                     moduleName: 'htmlTemplates'
                 },
                 coverageReporter: {
+                    type : 'lcov',
                     dir : 'target/site/istanbul/'
                 },
                 files: processedFiles,

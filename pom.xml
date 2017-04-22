@@ -5,10 +5,30 @@
 
   <groupId>miniG</groupId>
   <artifactId>miniG</artifactId>
+  <name>miniG</name>
+  <description>MiniG is a webmailer written in Java.</description>
+  <url>https://github.com/ksokol/minig</url>
+  <inceptionYear>2013</inceptionYear>
   <version>3.1.0</version>
   <packaging>jar</packaging>
 
-  <name>miniG</name>
+  <scm>
+    <connection>scm:git:git@github.com:ksokol/minig.git</connection>
+    <developerConnection>scm:git:git@github.com:ksokol/minig.git</developerConnection>
+    <url>https://github.com/ksokol/minig</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <issueManagement>
+    <system>github</system>
+    <url>https://github.com/ksokol/minig/issues</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>Travis</system>
+    <url>https://travis-ci.org/ksokol/minig</url>
+    <notifiers />
+  </ciManagement>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -96,11 +116,6 @@
           <executable>true</executable>
           <addResources>true</addResources>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.eluder.coveralls</groupId>
-        <artifactId>coveralls-maven-plugin</artifactId>
-        <version>2.0.1</version>
       </plugin>
       <plugin>
         <groupId>com.github.eirslett</groupId>
