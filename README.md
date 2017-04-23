@@ -1,4 +1,4 @@
-minig [![Build Status](https://api.travis-ci.org/ksokol/minig.png?branch=master)](https://travis-ci.org/ksokol/minig/) [![Coverage Status](https://coveralls.io/repos/ksokol/minig/badge.png?branch=master)](https://coveralls.io/r/ksokol/minig?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/8aaa319469304062be0fea445a0309d0)](https://www.codacy.com/app/ksokol/minig)
+minig [![Build Status](https://api.travis-ci.org/ksokol/minig.png?branch=master)](https://travis-ci.org/ksokol/minig/) [![Quality Gate](https://sonarqube.com/api/badges/gate?key=miniG:miniG)](https://sonarqube.com/dashboard/index/miniG:miniG) [![Technical debt ratio](https://sonarqube.com/api/badges/measure?key=miniG:miniG&metric=sqale_debt_ratio)](https://sonarqube.com/dashboard/index/miniG:miniG) 
 =====
 
 MiniG is a webmailer written in Java.
