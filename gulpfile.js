@@ -163,7 +163,7 @@ gulp.task('karma', function (done) {
                 },
                 coverageReporter: {
                     type : 'lcov',
-                    dir : 'target/site/istanbul/'
+                    dir : 'target/coverage/'
                 },
                 files: processedFiles,
                 reporters: ['progress', 'junit', 'coverage'],
