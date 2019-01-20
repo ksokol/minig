@@ -101,18 +101,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.codefx.maven.plugin</groupId>
-        <artifactId>jdeps-maven-plugin</artifactId>
-        <version>0.1</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>jdkinternals</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
