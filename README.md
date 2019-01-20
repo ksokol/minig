@@ -6,13 +6,13 @@ MiniG is a webmailer written in Java.
 Installation
 ------------
 
-**Prerequisite**
+**Dependencies**
 
-- Oracle Java 8
+- Java 8
 - IMAP Server
 
 **Build and package**
 
-- run `mvnw package`
-- You will find a fat jar (Spring Boot application) under `target`
-- run `java -jar minig.jar`
+- run `./mvnw package` or `mvnw.cmd package` on Windows
+- you will find a fat jar (Spring Boot application) in the `target` folder
+- run `java -jar target/minig.jar`
