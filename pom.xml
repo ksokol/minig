@@ -41,7 +41,8 @@
     <java.version>1.8</java.version>
     <javamail.version>1.5.2</javamail.version>
     <mime4j.version>0.8.0</mime4j.version>
-    <sonar.host.url>https://sonarqube.com</sonar.host.url>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.organization>ksokol-github</sonar.organization>
     <sonar.sources>src/main/java,src/main/resources/static</sonar.sources>
     <sonar.exclusions>src/main/resources/static/bower_components/**</sonar.exclusions>
     <sonar.javascript.lcov.reportPath>target/coverage/PhantomJS 2.1.1 (Linux 0.0.0)/lcov.info</sonar.javascript.lcov.reportPath>
