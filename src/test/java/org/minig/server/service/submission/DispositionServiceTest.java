@@ -8,6 +8,7 @@ import org.minig.server.TestConstants;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.minig.test.WithAuthenticatedUser;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
 import org.minig.test.javamail.MailboxHolder;
@@ -33,13 +34,14 @@ import static org.junit.Assert.assertThat;
 @SpringBootTest
 @Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
+@WithAuthenticatedUser
 public class DispositionServiceTest {
 
     @Autowired
     private DispositionService uut;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MailboxHolder.reset();
     }
 

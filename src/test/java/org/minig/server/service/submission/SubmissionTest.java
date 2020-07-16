@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.minig.server.TestConstants;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
 import org.minig.server.service.impl.helper.mime.Mime4jTestHelper;
+import org.minig.test.WithAuthenticatedUser;
 import org.minig.test.javamail.MailboxRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,6 +31,7 @@ import static org.junit.Assert.assertThat;
 @SpringBootTest
 @Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
+@WithAuthenticatedUser
 public class SubmissionTest {
 
     @Autowired
@@ -39,7 +41,7 @@ public class SubmissionTest {
     private TestJavaMailSenderFactory javaMailSenderFactory;
 
     @Rule
-    public MailboxRule mailboxRule = new MailboxRule();
+    public MailboxRule mailboxRule = new MailboxRule(TestConstants.MOCK_USER);
 
     @Test
     public void testReceiptOffDSNOff() throws Exception {

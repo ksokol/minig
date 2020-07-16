@@ -1,16 +1,15 @@
 package org.minig.test.javamail;
 
 import org.junit.rules.ExternalResource;
-import org.minig.server.TestConstants;
 
 import javax.mail.Message;
 import javax.mail.internet.MimeMessage;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author Kamill Sokol
@@ -19,20 +18,12 @@ public class MailboxRule extends ExternalResource {
 
     private final String emailAddress;
 
-    /**
-     * @deprecated Use {@link #MailboxRule(String)} instead.
-     */
-    @Deprecated
-    public MailboxRule() {
-        this(TestConstants.MOCK_USER);
-    }
-
     public MailboxRule(String emailAddress) {
         this.emailAddress = emailAddress;
     }
 
     @Override
-    protected void before() throws Throwable {
+    protected void before() {
         MailboxHolder.reset();
         MailboxBuilder.buildDefault(emailAddress);
     }
@@ -75,7 +66,7 @@ public class MailboxRule extends ExternalResource {
         if(mailbox == null) {
             return Collections.emptyList();
         }
-        return mailbox.stream().collect(Collectors.toList());
+        return new ArrayList<>(mailbox);
     }
 
     public void append(String mailboxPath, MimeMessage...messages) {

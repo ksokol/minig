@@ -56,7 +56,7 @@ public class MailService {
 
     public Page<PartialMailMessage> findMessagesByFolder(String folder, int page, int pageLength) {
         return mailRepository
-                .findByFolderOrderByDateDesc(folder, new PageRequest(page, pageLength))
+                .findByFolderOrderByDateDesc(folder, PageRequest.of(page, pageLength))
                 .map(PartialMailMessage::new);
     }
 
@@ -200,7 +200,7 @@ public class MailService {
         Mime4jMessage mime4jMessage = mapper.toMime4jMessage(message);
         mime4jMessage.setFrom(authentication.getEmailAddress());
 
-        if(StringUtils.hasText(message.getForwardedMessageId())) {
+        if (StringUtils.hasText(message.getForwardedMessageId())) {
             CompositeId compositeId = mailRepository.findByMessageId(message.getForwardedMessageId());
 
             if (compositeId != null) {
@@ -230,19 +230,19 @@ public class MailService {
         mimeMessage.clearCc();
         mimeMessage.clearBcc();
 
-        if(message.getTo() != null) {
+        if (message.getTo() != null) {
             for (MailMessageAddress mailMessageAddress : message.getTo()) {
                 mimeMessage.addRecipient(mailMessageAddress.getEmail());
             }
         }
 
-        if(message.getCc() != null) {
+        if (message.getCc() != null) {
             for (MailMessageAddress mailMessageAddress : message.getCc()) {
                 mimeMessage.addCc(mailMessageAddress.getEmail());
             }
         }
 
-        if(message.getBcc() != null) {
+        if (message.getBcc() != null) {
             for (MailMessageAddress mailMessageAddress : message.getBcc()) {
                 mimeMessage.addBcc(mailMessageAddress.getEmail());
             }
@@ -264,7 +264,7 @@ public class MailService {
     }
 
     public void flagAsAnswered(String messageId) {
-        if(!StringUtils.hasText(messageId)) {
+        if (!StringUtils.hasText(messageId)) {
             return;
         }
 
@@ -275,13 +275,13 @@ public class MailService {
     }
 
     public void flagAsForwarded(String messageId) {
-        if(!StringUtils.hasText(messageId)) {
+        if (!StringUtils.hasText(messageId)) {
             return;
         }
 
         CompositeId compositeId = mailRepository.findByMessageId(messageId);
 
-        if(compositeId == null) {
+        if (compositeId == null) {
             log.debug("could not find message for messageId {}", messageId);
             return;
         }

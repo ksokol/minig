@@ -10,6 +10,7 @@ import org.minig.server.MailMessageAddress;
 import org.minig.server.TestConstants;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.minig.test.WithAuthenticatedUser;
 import org.minig.test.javamail.MailboxRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -42,7 +43,7 @@ import static org.junit.Assert.assertThat;
 import static org.minig.server.TestConstants.MOCK_USER;
 import static org.minig.test.JsonRequestPostProcessors.jsonBody;
 import static org.minig.test.JsonRequestPostProcessors.jsonFromClasspath;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
@@ -59,6 +60,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = {Starter.class, ServiceTestConfig.class})
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
+@WithAuthenticatedUser
 public class IntegrationTest {
 
     private static final String PREFIX = "/1";
@@ -77,7 +79,7 @@ public class IntegrationTest {
 
         mockMvc.perform(get(PREFIX + "/message/INBOX|" + mimeMessage.getMessageID()))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is("INBOX%257C%253C1367760625.51865ef16e3f6%2540swift.generated%253E")))
                 .andExpect(jsonPath("$.subject", is("Pingdom Monthly Report 2013-04-01 to 2013-04-30")));
     }
@@ -87,14 +89,14 @@ public class IntegrationTest {
         MvcResult draftCreated = mockMvc.perform(post(PREFIX + "/message/draft")
                 .with(jsonFromClasspath(JSON_DRAFT_MESSAGE)))
                 .andExpect(status().isCreated())
-                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(APPLICATION_JSON))
                 .andReturn();
 
         String draftId = extractMessageId(draftCreated, "$.id");
 
         mockMvc.perform(get(PREFIX + "/message/" + draftId))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(encode(draftId))));
 
         MockMultipartFile attachment = new MockMultipartFile("draft.json", "draft.json", APPLICATION_JSON_VALUE, "attachment".getBytes());

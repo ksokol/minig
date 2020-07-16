@@ -6,6 +6,7 @@ import org.minig.server.MailAttachment;
 import org.minig.server.service.AttachmentService;
 import org.minig.server.service.CompositeAttachmentId;
 import org.minig.server.service.CompositeId;
+import org.minig.test.WithAuthenticatedUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,7 +38,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Kamill Sokol
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = AttachmentResource.class, secure = false)
+@WebMvcTest(controllers = AttachmentResource.class)
+@WithAuthenticatedUser
 public class AttachmentResourceTest {
 
     private static final String PREFIX = "/1";

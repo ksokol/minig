@@ -14,6 +14,7 @@ import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.NotFoundException;
 import org.minig.server.service.SmtpAndImapMockServer;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.minig.test.WithAuthenticatedUser;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
 import org.minig.test.javamail.MailboxHolder;
@@ -42,6 +43,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.minig.server.TestConstants.MOCK_USER;
@@ -50,6 +52,7 @@ import static org.minig.server.TestConstants.MOCK_USER;
 @SpringBootTest
 @Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
+@WithAuthenticatedUser
 public class MailServiceTest {
 
     @Autowired
@@ -76,7 +79,7 @@ public class MailServiceTest {
     }
 
     @Test(expected = NotFoundException.class)
-    public void shouldThrowNotFoundException() throws Exception {
+    public void shouldThrowNotFoundException() {
         uut.findByCompositeId(new CompositeId("INBOX", "unknown"));
     }
 
@@ -229,13 +232,13 @@ public class MailServiceTest {
         }
 
         try {
-            uut.copyMessagesToFolder(Collections.EMPTY_LIST, null);
+            uut.copyMessagesToFolder(Collections.emptyList(), null);
         } catch (IllegalArgumentException e) {
             count++;
         }
 
         try {
-            uut.copyMessagesToFolder(Collections.EMPTY_LIST, "   ");
+            uut.copyMessagesToFolder(Collections.emptyList(), "   ");
         } catch (IllegalArgumentException e) {
             count++;
         }
@@ -246,7 +249,7 @@ public class MailServiceTest {
     @Test
     public void testCopyMessagesToFolder() throws MessagingException {
         List<MimeMessage> mList = new MimeMessageBuilder().build(3);
-        List<CompositeId> idList = new ArrayList<CompositeId>();
+        List<CompositeId> idList = new ArrayList<>();
 
         mockServer.prepareMailBox("INBOX", mList);
 
@@ -278,7 +281,7 @@ public class MailServiceTest {
     @Test
     public void testDeleteMessages() throws MessagingException {
         List<MimeMessage> mList = new MimeMessageBuilder().build(3);
-        List<CompositeId> idList = new ArrayList<CompositeId>();
+        List<CompositeId> idList = new ArrayList<>();
 
         mockServer.prepareMailBox("INBOX", mList);
 
@@ -316,7 +319,7 @@ public class MailServiceTest {
         MailMessageAddress recipient = new MailMessageAddress();
         recipient.setDisplayName("sender@localhost");
         recipient.setEmail("sender@localhost");
-        m.setTo(Arrays.asList(recipient));
+        m.setTo(Collections.singletonList(recipient));
 
         MailMessage draftMessage = uut.createDraftMessage(m);
 
@@ -347,7 +350,7 @@ public class MailServiceTest {
 
         mockServer.verifyMessageCount("INBOX.Drafts", 1);
 
-        assertFalse(id.getId().equals(updateDraftMessage.getId()));
+        assertNotEquals(id.getId(), updateDraftMessage.getId());
         assertEquals(2, updateDraftMessage.getAttachments().size());
         assertEquals(replacedBody, updateDraftMessage.getPlain());
         assertEquals(replacedBody, updateDraftMessage.getHtml());
@@ -435,7 +438,7 @@ public class MailServiceTest {
     }
 
     @Test
-    public void testCreateDraftWithInvalidForwardAndAttachments() throws MessagingException {
+    public void testCreateDraftWithInvalidForwardAndAttachments() {
         new MailboxBuilder("testuser@localhost").mailbox("INBOX.Drafts").exists(true).subscribed().build();
 
         MailMessage mm = new MailMessage();
@@ -457,7 +460,7 @@ public class MailServiceTest {
     }
 
     @Test(expected = NotFoundException.class)
-    public void shouldThrowNotFoundExceptionWhenUnknownCompositeIdGiven() throws Exception {
+    public void shouldThrowNotFoundExceptionWhenUnknownCompositeIdGiven() {
         uut.findHtmlBodyByCompositeId(new CompositeId("INBOX", "unknown"));
     }
 }

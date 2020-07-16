@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailFolder;
+import org.minig.test.WithAuthenticatedUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -14,8 +15,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -23,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest
 @Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
+@WithAuthenticatedUser
 public class FolderRepositoryTest {
 
     @Autowired
@@ -32,7 +36,7 @@ public class FolderRepositoryTest {
     private FolderRepository uut;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mockServer.reset();
         assertEquals(0, uut.findBySubscribed(true).size());
     }
@@ -206,10 +210,10 @@ public class FolderRepositoryTest {
     @Test
     public void testRead() {
         MailFolder read1 = uut.read("INBOX");
-        assertEquals(read1.getName(), "INBOX");
+        assertEquals("INBOX", read1.getName());
 
         MailFolder shouldBeNull = uut.read("VOID");
-        assertEquals(null, shouldBeNull);
+        assertNull(shouldBeNull);
     }
 
     @Test
@@ -327,8 +331,8 @@ public class FolderRepositoryTest {
         List<MailFolder> findBySubscribed = uut.findBySubscribed(false);
 
         assertThat(findBySubscribed, Matchers.hasSize(2));
-        assertThat(findBySubscribed, Matchers.hasItem(Matchers.<MailFolder> hasProperty("id", Matchers.is("INBOX.test"))));
-        assertThat(findBySubscribed, Matchers.everyItem(Matchers.<MailFolder> hasProperty("subscribed", Matchers.is(false))));
+        assertThat(findBySubscribed, Matchers.hasItem(hasProperty("id", Matchers.is("INBOX.test"))));
+        assertThat(findBySubscribed, Matchers.everyItem(hasProperty("subscribed", Matchers.is(false))));
 
         MailFolder mailFolder = null;
 
@@ -349,8 +353,8 @@ public class FolderRepositoryTest {
         findBySubscribed = uut.findBySubscribed(false);
 
         assertThat(findBySubscribed, Matchers.hasSize(2));
-        assertThat(findBySubscribed, Matchers.hasItem(Matchers.<MailFolder> hasProperty("id", Matchers.is("INBOX.test"))));
-        assertThat(findBySubscribed, Matchers.everyItem(Matchers.<MailFolder> hasProperty("subscribed", Matchers.is(false))));
+        assertThat(findBySubscribed, Matchers.hasItem(hasProperty("id", Matchers.is("INBOX.test"))));
+        assertThat(findBySubscribed, Matchers.everyItem(hasProperty("subscribed", Matchers.is(false))));
     }
 
     @Test
@@ -360,8 +364,8 @@ public class FolderRepositoryTest {
         List<MailFolder> findBySubscribed = uut.findBySubscribed(false);
 
         assertThat(findBySubscribed, Matchers.hasSize(2));
-        assertThat(findBySubscribed, Matchers.hasItem(Matchers.<MailFolder> hasProperty("id", Matchers.is("INBOX.test"))));
-        assertThat(findBySubscribed, Matchers.everyItem(Matchers.<MailFolder> hasProperty("subscribed", Matchers.is(false))));
+        assertThat(findBySubscribed, Matchers.hasItem(hasProperty("id", Matchers.is("INBOX.test"))));
+        assertThat(findBySubscribed, Matchers.everyItem(hasProperty("subscribed", Matchers.is(false))));
 
         MailFolder mailFolder = null;
 

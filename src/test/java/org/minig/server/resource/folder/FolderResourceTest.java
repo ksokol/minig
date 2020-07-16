@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailFolder;
 import org.minig.server.service.FolderService;
+import org.minig.test.WithAuthenticatedUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -35,7 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Kamill Sokol
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = FolderResource.class, secure = false)
+@WebMvcTest(controllers = FolderResource.class)
+@WithAuthenticatedUser
 public class FolderResourceTest {
 
     private static final String PREFIX = "/1";

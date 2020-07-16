@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailMessage;
 import org.minig.server.TestConstants;
+import org.minig.test.WithAuthenticatedUser;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
 import org.minig.test.javamail.MailboxRule;
@@ -41,6 +42,7 @@ import static org.minig.server.TestConstants.MOCK_USER;
 @SpringBootTest
 @Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
+@WithAuthenticatedUser
 public class MailRepositoryTest {
 
     @Autowired
@@ -69,7 +71,7 @@ public class MailRepositoryTest {
         MimeMessage message = new MimeMessageBuilder().build(TestConstants.PLAIN);
         mailboxRule.append("INBOX", message, message);
 
-        Page<MimeMessage> page = uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(0, 20));
+        Page<MimeMessage> page = uut.findByFolderOrderByDateDesc("INBOX", PageRequest.of(0, 20));
 
         assertThat(page.getTotalElements(), is(2L));
         assertThat(page.getContent(), hasSize(2));
@@ -84,7 +86,7 @@ public class MailRepositoryTest {
         MimeMessage message = new MimeMessageBuilder().build(TestConstants.PLAIN);
         mailboxRule.append("INBOX", message, message);
 
-        Page<MimeMessage> page = uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(1, 20));
+        Page<MimeMessage> page = uut.findByFolderOrderByDateDesc("INBOX", PageRequest.of(1, 20));
 
         assertThat(page.getTotalElements(), is(2L));
         assertThat(page.getContent(), hasSize(0));
@@ -99,20 +101,20 @@ public class MailRepositoryTest {
         MimeMessage message = new MimeMessageBuilder().build(TestConstants.PLAIN);
         IntStream.range(0, 25).forEach(i -> mailboxRule.append("INBOX", message));
 
-        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(1, 20)).getNumberOfElements(), is(5));
-        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(0, 25)).getNumberOfElements(), is(25));
-        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(0, 30)).getNumberOfElements(), is(25));
-        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(1, 30)).getNumberOfElements(), is(0));
-        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(0, 13)).getNumberOfElements(), is(13));
-        assertThat(uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(2, 13)).getNumberOfElements(), is(0));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", PageRequest.of(1, 20)).getNumberOfElements(), is(5));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", PageRequest.of(0, 25)).getNumberOfElements(), is(25));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", PageRequest.of(0, 30)).getNumberOfElements(), is(25));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", PageRequest.of(1, 30)).getNumberOfElements(), is(0));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", PageRequest.of(0, 13)).getNumberOfElements(), is(13));
+        assertThat(uut.findByFolderOrderByDateDesc("INBOX", PageRequest.of(2, 13)).getNumberOfElements(), is(0));
     }
 
     @Test
-    public void shouldFetchMessagesWithFetchProfile() throws Exception {
+    public void shouldFetchMessagesWithFetchProfile() {
         MimeMessage message = new MimeMessageBuilder().build(TestConstants.PLAIN);
         mailboxRule.append("INBOX", message);
 
-        uut.findByFolderOrderByDateDesc("INBOX", new PageRequest(0, 25));
+        uut.findByFolderOrderByDateDesc("INBOX", PageRequest.of(0, 25));
         List<FetchProfile> fetchProfiles = mailboxRule.getMailbox("INBOX").getFetchProfiles();
 
         assertThat(fetchProfiles, hasSize(1));
@@ -134,7 +136,7 @@ public class MailRepositoryTest {
     }
 
     @Test
-    public void shouldReturnEmptyOptionalWhenCompositeIdIsUnknown() throws Exception {
+    public void shouldReturnEmptyOptionalWhenCompositeIdIsUnknown() {
         assertThat(uut.findByCompositeId(new CompositeId("INBOX", "unknown")).isPresent(), is(false));
     }
 

@@ -13,6 +13,7 @@ import org.minig.server.service.CompositeId;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.NotFoundException;
 import org.minig.server.service.mail.MailService;
+import org.minig.test.WithAuthenticatedUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -38,7 +39,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -52,7 +52,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Kamill Sokol
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = MailResource.class, secure = false)
+@WebMvcTest(controllers = MailResource.class)
+@WithAuthenticatedUser
 public class MailResourceTest {
 
     private static final String PREFIX = "/1";
@@ -78,7 +79,7 @@ public class MailResourceTest {
 
         mockMvc.perform(get(PREFIX + "/message").param("folder", "INBOX"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.mailList[0].date").value("2013-07-20T16:33:20.000+0000"))
                 .andExpect(jsonPath("$.mailList[0].folder").value("folder"))
                 .andExpect(jsonPath("$.mailList[0].messageId").value("<51EABBD0.3060000@localhost>"))
@@ -159,7 +160,7 @@ public class MailResourceTest {
 
         mockMvc.perform(get(PREFIX + "/message/INBOX%2Fdeep%2Ffolder%2Fstructure%7C1"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is("INBOX%252Fdeep%252Ffolder%252Fstructure%257C1")));
     }
 
@@ -174,7 +175,7 @@ public class MailResourceTest {
 
         mockMvc.perform(get(PREFIX + "/message/INBOX.deep.folder.structure|1"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is("INBOX.deep.folder.structure%257C1")));
     }
 

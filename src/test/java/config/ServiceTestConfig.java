@@ -1,20 +1,14 @@
 package config;
 
-import org.minig.security.MailAuthenticationToken;
 import org.minig.server.service.impl.MailContext;
 import org.minig.server.service.submission.TestJavaMailSenderFactory;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 
-import static org.minig.server.TestConstants.MOCK_USER;
-
-@Configuration
+@TestConfiguration
 @Profile({ "test" })
-public class ServiceTestConfig implements InitializingBean {
+public class ServiceTestConfig {
 
     @Bean(name = "mailContext")
     public MailContext mailContext() {
@@ -24,13 +18,5 @@ public class ServiceTestConfig implements InitializingBean {
     @Bean(name = "javaMailSenderFactory")
     public TestJavaMailSenderFactory javaMailSenderFactory() {
         return new TestJavaMailSenderFactory();
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        MailAuthenticationToken mailAuthenticationToken =
-                new MailAuthenticationToken(MOCK_USER, "login", AuthorityUtils.createAuthorityList("ROLE_USER"), "localhost", '.');
-
-        SecurityContextHolder.getContext().setAuthentication(mailAuthenticationToken);
     }
 }

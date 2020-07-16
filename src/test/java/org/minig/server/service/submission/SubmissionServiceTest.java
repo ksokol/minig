@@ -11,6 +11,7 @@ import org.minig.server.MailMessageAddress;
 import org.minig.server.TestConstants;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.impl.helper.mime.Mime4jMessage;
+import org.minig.test.WithAuthenticatedUser;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
 import org.minig.test.javamail.MailboxRule;
@@ -23,8 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.arrayContaining;
@@ -37,6 +37,7 @@ import static org.minig.server.TestConstants.MOCK_USER;
 @SpringBootTest
 @Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
+@WithAuthenticatedUser
 public class SubmissionServiceTest {
 
     @Autowired
@@ -49,7 +50,7 @@ public class SubmissionServiceTest {
     public MailboxRule mailboxRule = new MailboxRule(MOCK_USER);
 
     @Test
-    public void testSendMessage() throws MessagingException {
+    public void testSendMessage() {
         String expectedBody = "html with umlaut ä";
         new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Drafts").subscribed().exists().build();
 
@@ -58,7 +59,7 @@ public class SubmissionServiceTest {
 
         MailMessage mm = new MailMessage();
         mm.setSender(new MailMessageAddress(mailAuthentication.getEmailAddress()));
-        mm.setTo(Arrays.asList(new MailMessageAddress("test@example.com")));
+        mm.setTo(Collections.singletonList(new MailMessageAddress("test@example.com")));
         mm.setSubject("test subject");
         mm.setHtml(expectedBody);
         mm.setPlain(expectedBody);
@@ -91,7 +92,7 @@ public class SubmissionServiceTest {
 
         MailMessage mm = new MailMessage();
         mm.setSender(new MailMessageAddress(mailAuthentication.getEmailAddress()));
-        mm.setTo(Arrays.asList(new MailMessageAddress("test@example.com")));
+        mm.setTo(Collections.singletonList(new MailMessageAddress("test@example.com")));
         mm.setSubject("msg with forward");
         mm.setHtml(expectedBody);
         mm.setPlain(expectedBody);
@@ -115,7 +116,7 @@ public class SubmissionServiceTest {
     }
 
     @Test
-    public void testInvalidForwardMessage() throws MessagingException {
+    public void testInvalidForwardMessage() {
         new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX").subscribed().exists().build();
         new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Drafts").subscribed().exists().build();
 
@@ -123,7 +124,7 @@ public class SubmissionServiceTest {
         Mailbox sentBox = new MailboxBuilder(mailAuthentication.getEmailAddress()).mailbox("INBOX.Sent").subscribed().exists().build();
 
         MailMessage mm = new MailMessage();
-        mm.setTo(Arrays.asList(new MailMessageAddress("test@example.com")));
+        mm.setTo(Collections.singletonList(new MailMessageAddress("test@example.com")));
         mm.setForwardedMessageId("42");
 
         uut.sendMessage(mm);
@@ -133,7 +134,7 @@ public class SubmissionServiceTest {
     }
 
     @Test
-    public void testSendDraftMessage() throws MessagingException, IOException {
+    public void testSendDraftMessage() throws MessagingException {
         MimeMessage toBeSend = new MimeMessageBuilder().setFolder("INBOX.Drafts").build(TestConstants.MULTIPART_WITH_PLAIN_AND_ATTACHMENT);
         Mime4jMessage mime4jMessageToBeSend = new Mime4jMessage(toBeSend);
 
@@ -147,7 +148,7 @@ public class SubmissionServiceTest {
 
         MailMessage mm = new MailMessage();
         mm.setSender(new MailMessageAddress(mailAuthentication.getEmailAddress()));
-        mm.setTo(Arrays.asList(new MailMessageAddress("testuser@localhost")));
+        mm.setTo(Collections.singletonList(new MailMessageAddress("testuser@localhost")));
         mm.setSubject("msg with attachment");
         mm.setFolder("INBOX.Drafts");
         mm.setMessageId(toBeSend.getMessageID());

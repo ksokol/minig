@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.minig.server.MailAttachment;
 import org.minig.server.MailMessage;
 import org.minig.server.TestConstants;
+import org.minig.test.WithAuthenticatedUser;
 import org.minig.test.javamail.Mailbox;
 import org.minig.test.javamail.MailboxBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,18 +21,17 @@ import javax.activation.FileDataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
+import static org.hamcrest.Matchers.emptyString;
+import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -44,6 +44,7 @@ import static org.minig.server.TestConstants.BODY_A;
 @SpringBootTest
 @Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
+@WithAuthenticatedUser
 public class AttachmentRepositoryTest {
 
     @Autowired
@@ -56,16 +57,16 @@ public class AttachmentRepositoryTest {
     private MailRepository mailRepository;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mockServer.reset();
     }
 
     @Test
-    public void testReadMetadata_fakeMessage() throws MessagingException, IOException {
+    public void testReadMetadata_fakeMessage() {
         MailMessage mm = new MailMessage();
         mm.setMessageId("fakeId");
         mm.setFolder("fakeFolder");
-        mm.setAttachments(Collections.EMPTY_LIST);
+        mm.setAttachments(Collections.emptyList());
 
         List<MailAttachment> attachmentMetadata = uut.readMetadata(mm);
 
@@ -73,7 +74,7 @@ public class AttachmentRepositoryTest {
     }
 
     @Test
-    public void testReadMetadata_hasNoAttachements() throws MessagingException, IOException {
+    public void testReadMetadata_hasNoAttachements() throws MessagingException {
         MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
 
         CompositeId id = new CompositeId("INBOX", m.getMessageID());
@@ -86,7 +87,7 @@ public class AttachmentRepositoryTest {
     }
 
     @Test
-    public void testReadMetadata() throws MessagingException, IOException {
+    public void testReadMetadata() throws MessagingException {
         MimeMessage m = new MimeMessageBuilder().setFolder("INBOX").build(TestConstants.MULTIPART_WITH_ATTACHMENT);
         CompositeId id = new CompositeId("INBOX", m.getMessageID());
         Mailbox inbox = new MailboxBuilder("testuser@localhost").mailbox("INBOX").subscribed().exists().build();
@@ -105,14 +106,14 @@ public class AttachmentRepositoryTest {
         CompositeId expected = new CompositeAttachmentId("INBOX", m.getMessageID(), mailAttachment1.getFileName());
 
         assertThat(expected.getId(), is(mailAttachment1.getId()));
-        assertThat(mailAttachment1.getMime(), is(equalToIgnoringWhiteSpace("image/png")));
+        assertThat(mailAttachment1.getMime(), is(equalToCompressingWhiteSpace("image/png")));
 
         assertThat(mailAttachment2.getFileName(), is("2.png"));
 
         expected = new CompositeAttachmentId("INBOX", m.getMessageID(), mailAttachment2.getFileName());
 
         assertThat(expected.getId(), is(mailAttachment2.getId()));
-        assertThat(mailAttachment2.getMime(), is(equalToIgnoringWhiteSpace("image/png")));
+        assertThat(mailAttachment2.getMime(), is(equalToCompressingWhiteSpace("image/png")));
     }
 
     @Test
@@ -127,7 +128,7 @@ public class AttachmentRepositoryTest {
 
         byte[] byteArray = IOUtils.toByteArray(readAttachmentPayload);
 
-        assertTrue(Arrays.equals(BODY_A, byteArray));
+        assertArrayEquals(BODY_A, byteArray);
     }
 
     @Test(expected = NotFoundException.class)
@@ -142,7 +143,7 @@ public class AttachmentRepositoryTest {
     }
 
     @Test
-    public void testAppendMultipartAttachment() throws MessagingException, InterruptedException {
+    public void testAppendMultipartAttachment() throws MessagingException {
         MimeMessage m = new MimeMessageBuilder().build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
 
         mockServer.prepareMailBox("INBOX.Drafts", m);
@@ -167,7 +168,7 @@ public class AttachmentRepositoryTest {
     }
 
     @Test
-    public void testAppendHtmlAttachment() throws MessagingException, InterruptedException {
+    public void testAppendHtmlAttachment() throws MessagingException {
         MimeMessage m = new MimeMessageBuilder().build(TestConstants.HTML);
 
         mockServer.prepareMailBox("INBOX.Drafts", m);
@@ -178,7 +179,7 @@ public class AttachmentRepositoryTest {
         List<MailAttachment> readMetadata2 = uut.readMetadata(appendAttachmentId);
         MailMessage read = mailRepository.read(id);
 
-        assertThat(read.getPlain(), isEmptyString());
+        assertThat(read.getPlain(), emptyString());
         assertThat(read.getHtml().length(), greaterThanOrEqualTo(173)); //ignore line endings
         assertThat(read.getHtml(), containsString("</body>"));
 
@@ -187,7 +188,7 @@ public class AttachmentRepositoryTest {
     }
 
     @Test
-    public void testAppendPlainAttachment() throws MessagingException, InterruptedException {
+    public void testAppendPlainAttachment() throws MessagingException {
         MimeMessage m = new MimeMessageBuilder().build(TestConstants.PLAIN);
 
         mockServer.prepareMailBox("INBOX.Drafts", m);
@@ -201,7 +202,7 @@ public class AttachmentRepositoryTest {
         assertThat(read.getPlain().length(), greaterThanOrEqualTo(70)); //ignore line endings
         assertTrue(read.getPlain().contains("row with text"));
 
-        assertThat(read.getHtml(), isEmptyString());
+        assertThat(read.getHtml(), emptyString());
 
         assertEquals(1, readMetadata2.size());
         assertEquals("folder.gif", readMetadata2.get(0).getFileName());

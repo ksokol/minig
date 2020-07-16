@@ -1,14 +1,12 @@
 package org.minig.server.service;
 
 import config.ServiceTestConfig;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.minig.server.MailFolder;
 import org.minig.server.TestConstants;
+import org.minig.test.WithAuthenticatedUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -18,12 +16,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.mail.internet.MimeMessage;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Import(ServiceTestConfig.class)
 @ActiveProfiles("test")
+@WithAuthenticatedUser
 public class FolderServiceTest {
 
     @Autowired
@@ -32,25 +31,12 @@ public class FolderServiceTest {
     @Autowired
     private SmtpAndImapMockServer mockServer;
 
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
-    }
-
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mockServer.reset();
         mockServer.createAndSubscribeMailBox("INBOX.Trash");
         mockServer.createAndSubscribeMailBox("INBOX.Sent");
         mockServer.createAndSubscribeMailBox("INBOX.Drafts");
-    }
-
-    @After
-    public void tearDown() throws Exception {
-
     }
 
     @Test
@@ -176,7 +162,7 @@ public class FolderServiceTest {
     }
 
     @Test
-    public void testUpdateFolder_unsubscribing() throws InterruptedException {
+    public void testUpdateFolder_unsubscribing() {
         mockServer.createAndSubscribeMailBox("INBOX.test");
 
         assertEquals(4, uut.findBySubscribed(true).size());
@@ -189,7 +175,7 @@ public class FolderServiceTest {
     }
 
     @Test
-    public void testUpdateFolder_movingFolderNoMessagesNoNestedFolders() throws InterruptedException {
+    public void testUpdateFolder_movingFolderNoMessagesNoNestedFolders() {
         mockServer.createAndSubscribeMailBox("INBOX.source");
         mockServer.createAndSubscribeMailBox("INBOX.source.folder");
 
@@ -205,7 +191,7 @@ public class FolderServiceTest {
     }
 
     @Test
-    public void testUpdateFolder_movingFolderNoMessagesWithNestedFolders() throws InterruptedException {
+    public void testUpdateFolder_movingFolderNoMessagesWithNestedFolders() {
         mockServer.createAndSubscribeMailBox("INBOX.source");
         mockServer.createAndSubscribeMailBox("INBOX.source.folder");
         mockServer.createAndSubscribeMailBox("INBOX.source.folder.nested1");
@@ -216,7 +202,7 @@ public class FolderServiceTest {
         mf.setParentFolderId("INBOX.target");
         uut.updateFolder(mf);
 
-        assertTrue(uut.findById("INBOX.source.folder") == null);
+        assertNull(uut.findById("INBOX.source.folder"));
         assertEquals(0, uut.findByParent("INBOX.source").size());
         assertEquals(1, uut.findByParent("INBOX.target").size());
         assertEquals("INBOX.target", uut.findById("INBOX.target.folder").getParentFolderId());
@@ -224,7 +210,7 @@ public class FolderServiceTest {
     }
 
     @Test
-    public void testUpdateFolder_movingFolderWithMessagesWithNestedFolders() throws InterruptedException {
+    public void testUpdateFolder_movingFolderWithMessagesWithNestedFolders() {
         MimeMessage msg = new MimeMessageBuilder().build(TestConstants.PLAIN);
 
         mockServer.createAndSubscribeMailBox("INBOX.source");
@@ -317,7 +303,7 @@ public class FolderServiceTest {
 
         uut.deleteFolder("INBOX.deleteme2");
 
-        assertTrue(uut.findById("INBOX.deleteme2") == null);
+        assertNull(uut.findById("INBOX.deleteme2"));
         assertEquals("INBOX.Trash.deleteme2", uut.findById("INBOX.Trash.deleteme2").getId());
     }
 
@@ -327,7 +313,7 @@ public class FolderServiceTest {
 
         uut.deleteFolder("INBOX.deleteme2");
 
-        assertTrue(uut.findById("INBOX.deleteme2") == null);
+        assertNull(uut.findById("INBOX.deleteme2"));
         assertEquals("INBOX.Trash.deleteme2", uut.findById("INBOX.Trash.deleteme2").getId());
         mockServer.verifyMessageCount("INBOX.Trash.deleteme2", 1);
     }
