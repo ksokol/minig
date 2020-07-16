@@ -38,7 +38,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>1.8</java.version>
+    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
     <javamail.version>1.5.2</javamail.version>
     <mime4j.version>0.8.0</mime4j.version>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -141,7 +142,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.7.201606060606</version>
+        <version>0.8.5</version>
         <executions>
           <execution>
             <id>prepare-agent</id>
