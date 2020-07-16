@@ -17,10 +17,10 @@ import java.util.Collections;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.argThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
@@ -63,7 +63,7 @@ public class AttachmentResourceTest {
 
         mockMvc.perform(get(PREFIX + "/attachment/INBOX%2Ftest%7C%3Cid@localhost%3E%7C1.png"))
                 .andExpect(status().isOk())
-                .andExpect(content().bytes("\"ZGF0YQ==\"".getBytes()))
+                .andExpect(content().string("data"))
                 .andExpect(header().string(CONTENT_DISPOSITION, "attachment; filename=\"1.png\""))
                 .andExpect(header().string(CONTENT_TYPE, TEXT_PLAIN_VALUE));
     }
@@ -83,7 +83,7 @@ public class AttachmentResourceTest {
 
         mockMvc.perform(get(PREFIX + "/attachment/INBOX%2Ftest%7C%3Cid@localhost%3E%7C1.png"))
                 .andExpect(status().isOk())
-                .andExpect(content().bytes("\"ZGF0YQ==\"".getBytes()))
+                .andExpect(content().string("data"))
                 .andExpect(header().string(CONTENT_DISPOSITION, "inline; filename=\"1.png\""))
                 .andExpect(header().string(CONTENT_TYPE, TEXT_PLAIN_VALUE));
     }
@@ -92,7 +92,7 @@ public class AttachmentResourceTest {
     public void shouldUploadAttachment() throws Exception {
         CompositeId compositeId = new CompositeId("INBOX/test", "id");
 
-        when(attachmentService.addAttachment(anyObject(), anyObject())).thenReturn(compositeId);
+        when(attachmentService.addAttachment(any(), any())).thenReturn(compositeId);
 
         MailAttachment mailAttachment = new MailAttachment(
                 new CompositeAttachmentId(compositeId.getFolder(), compositeId.getMessageId(), "file.html"),
@@ -115,7 +115,7 @@ public class AttachmentResourceTest {
                 .andExpect(jsonPath("$.attachments[0].fileName").value("file.html"))
                 .andExpect(jsonPath("$.attachments[0].mime").value(TEXT_HTML_VALUE));
 
-        verify(attachmentService).addAttachment(argThat(hasProperty("messageId", equalTo("id"))), anyObject());
+        verify(attachmentService).addAttachment(argThat(hasProperty("messageId", equalTo("id"))), any());
     }
 
     @Test
@@ -133,7 +133,7 @@ public class AttachmentResourceTest {
 
         mockMvc.perform(get(PREFIX + "/attachment/INBOX%2Ftest%7C1%7Cumlaut%20%C3%A4.png"))
                 .andExpect(status().isOk())
-                .andExpect(content().bytes("\"ZGF0YQ==\"".getBytes()))
+                .andExpect(content().string("data"))
                 .andExpect(header().string(CONTENT_DISPOSITION, "attachment; filename=\"umlaut ä.png\""))
                 .andExpect(header().string(CONTENT_TYPE, IMAGE_PNG_VALUE));
     }

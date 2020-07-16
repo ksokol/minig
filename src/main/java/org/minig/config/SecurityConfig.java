@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 /**
  * @author Kamill Sokol
@@ -33,7 +34,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurity webSecurity) throws Exception  {
+    public void configure(WebSecurity webSecurity) {
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowUrlEncodedPercent(true);
+        webSecurity.httpFirewall(firewall);
+
         webSecurity
                 .ignoring()
                 .antMatchers("/images/**", "/app/**", "/js/**", "/static/**", "/bower_components/**", "/css/**");

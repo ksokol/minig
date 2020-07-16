@@ -52,7 +52,7 @@ public class SecurityConfigTest {
     public MailboxRule mailboxRule = new MailboxRule(MOCK_USER);
 
     @Test
-    public void shouldDisableXFrameOptionsOnMessageHtmlEndpoint() throws Exception {
+    public void shouldDisableXFrameOptionsOnMessageHtmlEndpoint() {
         MimeMessage mimeMessage = new MimeMessageBuilder().setFolder("INBOX").setMessageId("1").mock();
         mailboxRule.append("INBOX", mimeMessage);
 
@@ -68,7 +68,7 @@ public class SecurityConfigTest {
     }
 
     @Test
-    public void shouldDisallowUntrustedJavascriptInMessageHtmlBody() throws Exception {
+    public void shouldDisallowUntrustedJavascriptInMessageHtmlBody() {
         MimeMessage mimeMessage = new MimeMessageBuilder().setFolder("INBOX").setMessageId("1").mock();
         mailboxRule.append("INBOX", mimeMessage);
 
@@ -79,7 +79,7 @@ public class SecurityConfigTest {
     }
 
     @Test
-    public void shouldPreventJavascriptFromReadingSessionCookie() throws Exception {
+    public void shouldPreventJavascriptFromReadingSessionCookie() {
         ResponseEntity<Void> afterProcessingLogin = restTemplate.exchange("/check", HttpMethod.POST, withUserCredentials(), Void.class);
 
         assertThat(afterProcessingLogin.getHeaders().get("Set-Cookie"), contains(containsString("HttpOnly")));

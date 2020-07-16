@@ -13,7 +13,6 @@ import org.minig.server.service.CompositeId;
 import org.minig.server.service.MimeMessageBuilder;
 import org.minig.server.service.NotFoundException;
 import org.minig.server.service.mail.MailService;
-import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,20 +23,20 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
-import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.minig.test.JsonRequestPostProcessors.jsonBody;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyListOf;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.http.MediaType.TEXT_HTML;
@@ -45,7 +44,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -68,19 +66,20 @@ public class MailResourceTest {
     @Ignore
     @Test
     public void testFindMessagesByFolder_invalidArguments() throws Exception {
-        mockMvc.perform(get(PREFIX + "/message")).andDo(print()).andExpect(status().isBadRequest());
+        mockMvc.perform(get(PREFIX + "/message"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     public void shouldReturnPagedMessageList() throws Exception {
         PartialMailMessage partialMailMessage = new PartialMailMessage(new MimeMessageBuilder().build(TestConstants.HTML));
         when(mailService.findMessagesByFolder(anyString(), anyInt(), anyInt()))
-                .thenReturn(new PageImpl<>(Collections.singletonList(partialMailMessage), new PageRequest(0, 1), 1));
+                .thenReturn(new PageImpl<>(singletonList(partialMailMessage), PageRequest.of(0, 1), 1));
 
         mockMvc.perform(get(PREFIX + "/message").param("folder", "INBOX"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.mailList[0].date").value("2013-07-20T16:33:20Z"))
+                .andExpect(jsonPath("$.mailList[0].date").value("2013-07-20T16:33:20.000+0000"))
                 .andExpect(jsonPath("$.mailList[0].folder").value("folder"))
                 .andExpect(jsonPath("$.mailList[0].messageId").value("<51EABBD0.3060000@localhost>"))
                 .andExpect(jsonPath("$.mailList[0].answered").value(false))
@@ -128,7 +127,8 @@ public class MailResourceTest {
 
     @Test
     public void testFindMessagesByFolder_defaultArguments() throws Exception {
-        when(mailService.findMessagesByFolder(anyString(), anyInt(), anyInt())).thenReturn(new PageImpl<>(Collections.emptyList(), new PageRequest(1, 1), 1));
+        when(mailService.findMessagesByFolder(anyString(), anyInt(), anyInt()))
+                .thenReturn(new PageImpl<>(Collections.emptyList(), PageRequest.of(1, 1), 1));
 
         mockMvc.perform(get(PREFIX + "/message").param("folder", "INBOX"));
 
@@ -137,9 +137,13 @@ public class MailResourceTest {
 
     @Test
     public void testFindMessagesByFolder_explicitArguments() throws Exception {
-        when(mailService.findMessagesByFolder(anyString(), anyInt(), anyInt())).thenReturn(new PageImpl<>(Collections.emptyList(), new PageRequest(3, 5), 5));
+        when(mailService.findMessagesByFolder(anyString(), anyInt(), anyInt()))
+                .thenReturn(new PageImpl<>(Collections.emptyList(), PageRequest.of(3, 5), 5));
 
-        mockMvc.perform(get(PREFIX + "/message").param("folder", "INBOX").param("page", "7").param("page_length", "11"));
+        mockMvc.perform(get(PREFIX + "/message")
+                .param("folder", "INBOX")
+                .param("page", "7")
+                .param("page_length", "11"));
 
         verify(mailService).findMessagesByFolder("INBOX", 7, 11);
     }
@@ -176,7 +180,7 @@ public class MailResourceTest {
 
     @Test
     public void testDeleteMessage() throws Exception {
-        doNothing().when(mailService).deleteMessage(anyObject());
+        doNothing().when(mailService).deleteMessage(any());
 
         mockMvc.perform(delete(PREFIX + "/message/INBOX%2Ffolder%7C1"))
                 .andExpect(status().isOk());
@@ -189,7 +193,7 @@ public class MailResourceTest {
 
     @Test
     public void testDeleteMessageDoubleEncodedId() throws Exception {
-        doNothing().when(mailService).deleteMessage(anyObject());
+        doNothing().when(mailService).deleteMessage(any());
 
         mockMvc.perform(delete(PREFIX + "/message/INBOX%25252Ffolder%25257C1"))
                 .andExpect(status().isOk());
@@ -217,33 +221,46 @@ public class MailResourceTest {
 
         doNothing().when(mailService).updateMessagesFlags(any(MailMessageList.class));
 
-        mockMvc.perform(put(PREFIX + "/message/flag").contentType(TestConstants.APPLICATION_JSON_UTF8).content(content)).andExpect(status().isOk());
+        mockMvc.perform(put(PREFIX + "/message/flag")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(status().isOk());
 
         verify(mailService).updateMessagesFlags(any(MailMessageList.class));
     }
 
     @Test
     public void testMoveMessagesToFolder() throws Exception {
-        String content = new ObjectMapper().writeValueAsString(new MessageCopyOrMoveRequest());
+        MessageCopyOrMoveRequest request = new MessageCopyOrMoveRequest();
+        request.setFolder("INBOX");
+        request.setMessageIdList(singletonList(new CompositeId("someFolder", "someMessageId")));
 
-        doNothing().when(mailService).moveMessagesToFolder(Matchers.<List<CompositeId>> anyObject(), anyString());
+        String content = new ObjectMapper().writeValueAsString(request);
 
-        mockMvc.perform(put(PREFIX + "/message/move").contentType(TestConstants.APPLICATION_JSON_UTF8).content(content)).andExpect(status().isOk());
+        doNothing().when(mailService).moveMessagesToFolder(any(), anyString());
 
-        verify(mailService).moveMessagesToFolder(Matchers.<List<CompositeId>> anyObject(), anyString());
+        mockMvc.perform(put(PREFIX + "/message/move")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(status().isOk());
+
+        verify(mailService).moveMessagesToFolder(singletonList(new CompositeId("someFolder", "someMessageId")), "INBOX");
     }
 
     @Test
     public void testCopyMessagesToFolder() throws Exception {
         MessageCopyOrMoveRequest request = new MessageCopyOrMoveRequest();
         request.setFolder("INBOX");
-        request.setMessageIdList(Collections.EMPTY_LIST);
+        request.setMessageIdList(Collections.emptyList());
 
         String content = new ObjectMapper().writeValueAsString(request);
 
-        doNothing().when(mailService).copyMessagesToFolder(any(List.class), anyString());
+        doNothing().when(mailService).copyMessagesToFolder(anyListOf(CompositeId.class), anyString());
 
-        mockMvc.perform(put(PREFIX + "/message/copy").contentType(TestConstants.APPLICATION_JSON_UTF8).content(content)).andExpect(status().isOk());
+        mockMvc.perform(put(PREFIX + "/message/copy")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(status().isOk());
 
         verify(mailService).copyMessagesToFolder(request.getMessageIdList(), "INBOX");
     }
@@ -251,13 +268,13 @@ public class MailResourceTest {
     @Test
     public void testDeleteMessagesToFolder() throws Exception {
         DeleteMessageRequest request = new DeleteMessageRequest();
-        request.setMessageIdList(Collections.EMPTY_LIST);
+        request.setMessageIdList(Collections.emptyList());
 
         String content = new ObjectMapper().writeValueAsString(request);
 
-        doNothing().when(mailService).deleteMessages(any(List.class));
+        doNothing().when(mailService).deleteMessages(anyListOf(CompositeId.class));
 
-        mockMvc.perform(put(PREFIX + "/message/delete").contentType(TestConstants.APPLICATION_JSON_UTF8).content(content))
+        mockMvc.perform(put(PREFIX + "/message/delete").contentType(MediaType.APPLICATION_JSON).content(content))
                 .andExpect(status().isOk());
 
         verify(mailService).deleteMessages(request.getMessageIdList());
@@ -274,8 +291,8 @@ public class MailResourceTest {
         id.setFolder("INBOX");
         id.setMessageId("1");
 
-        when(mailService.createDraftMessage(Matchers.<MailMessage> anyObject())).thenReturn(mm);
-        when(mailService.findMessage(Matchers.<CompositeId> anyObject())).thenReturn(mm);
+        when(mailService.createDraftMessage(any(MailMessage.class))).thenReturn(mm);
+        when(mailService.findMessage(any(CompositeId.class))).thenReturn(mm);
 
         mockMvc.perform(post(PREFIX + "/message/draft")
                 .contentType(APPLICATION_JSON)
@@ -289,8 +306,8 @@ public class MailResourceTest {
         MailMessage mailMessage = new MailMessage();
         mailMessage.setSubject("draft");
 
-        when(mailService.updateDraftMessage(anyObject())).thenReturn(mailMessage);
-        when(mailService.findMessage(anyObject())).thenReturn(mailMessage);
+        when(mailService.updateDraftMessage(any())).thenReturn(mailMessage);
+        when(mailService.findMessage(any())).thenReturn(mailMessage);
 
         mockMvc.perform(put(PREFIX + "/message/draft/INBOX%2FDrafts%7C1")
                 .with(jsonBody(mailMessage)))
