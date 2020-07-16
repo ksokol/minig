@@ -80,7 +80,7 @@ public class MailResourceTest {
         mockMvc.perform(get(PREFIX + "/message").param("folder", "INBOX"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(jsonPath("$.mailList[0].date").value("2013-07-20T16:33:20.000+0000"))
+                .andExpect(jsonPath("$.mailList[0].date").value("2013-07-20T16:33:20.000+00:00"))
                 .andExpect(jsonPath("$.mailList[0].folder").value("folder"))
                 .andExpect(jsonPath("$.mailList[0].messageId").value("<51EABBD0.3060000@localhost>"))
                 .andExpect(jsonPath("$.mailList[0].answered").value(false))
