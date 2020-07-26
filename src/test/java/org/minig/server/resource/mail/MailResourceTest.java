@@ -48,15 +48,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Kamill Sokol
- */
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = MailResource.class)
 @WithAuthenticatedUser
 public class MailResourceTest {
 
-    private static final String PREFIX = "/1";
+    private static final String PREFIX = "/api/1";
 
     @MockBean
     private MailService mailService;
@@ -73,7 +70,7 @@ public class MailResourceTest {
 
     @Test
     public void shouldReturnPagedMessageList() throws Exception {
-        PartialMailMessage partialMailMessage = new PartialMailMessage(new MimeMessageBuilder().build(TestConstants.HTML));
+        var partialMailMessage = new PartialMailMessage(new MimeMessageBuilder().build(TestConstants.HTML));
         when(mailService.findMessagesByFolder(anyString(), anyInt(), anyInt()))
                 .thenReturn(new PageImpl<>(singletonList(partialMailMessage), PageRequest.of(0, 1), 1));
 
@@ -166,7 +163,7 @@ public class MailResourceTest {
 
     @Test
     public void testFindMessageWhenFolderHasDotAsFolderSeparator() throws Exception {
-        FullMailMessage message = new FullMailMessage(MimeMessageBuilder.withSource(TestConstants.MULTIPART_WITH_ATTACHMENT)
+        var message = new FullMailMessage(MimeMessageBuilder.withSource(TestConstants.MULTIPART_WITH_ATTACHMENT)
                 .setFolder("INBOX.deep.folder.structure")
                 .setMessageId("1").spy());
 
@@ -218,7 +215,7 @@ public class MailResourceTest {
 
     @Test
     public void testUpdateMessagesFlags() throws Exception {
-        String content = new ObjectMapper().writeValueAsString(new MailMessageList());
+        var content = new ObjectMapper().writeValueAsString(new MailMessageList());
 
         doNothing().when(mailService).updateMessagesFlags(any(MailMessageList.class));
 
@@ -232,11 +229,11 @@ public class MailResourceTest {
 
     @Test
     public void testMoveMessagesToFolder() throws Exception {
-        MessageCopyOrMoveRequest request = new MessageCopyOrMoveRequest();
+        var request = new MessageCopyOrMoveRequest();
         request.setFolder("INBOX");
         request.setMessageIdList(singletonList(new CompositeId("someFolder", "someMessageId")));
 
-        String content = new ObjectMapper().writeValueAsString(request);
+        var content = new ObjectMapper().writeValueAsString(request);
 
         doNothing().when(mailService).moveMessagesToFolder(any(), anyString());
 
@@ -250,11 +247,11 @@ public class MailResourceTest {
 
     @Test
     public void testCopyMessagesToFolder() throws Exception {
-        MessageCopyOrMoveRequest request = new MessageCopyOrMoveRequest();
+        var request = new MessageCopyOrMoveRequest();
         request.setFolder("INBOX");
         request.setMessageIdList(Collections.emptyList());
 
-        String content = new ObjectMapper().writeValueAsString(request);
+        var content = new ObjectMapper().writeValueAsString(request);
 
         doNothing().when(mailService).copyMessagesToFolder(anyListOf(CompositeId.class), anyString());
 
@@ -268,10 +265,10 @@ public class MailResourceTest {
 
     @Test
     public void testDeleteMessagesToFolder() throws Exception {
-        DeleteMessageRequest request = new DeleteMessageRequest();
+        var request = new DeleteMessageRequest();
         request.setMessageIdList(Collections.emptyList());
 
-        String content = new ObjectMapper().writeValueAsString(request);
+        var content = new ObjectMapper().writeValueAsString(request);
 
         doNothing().when(mailService).deleteMessages(anyListOf(CompositeId.class));
 
@@ -283,12 +280,12 @@ public class MailResourceTest {
 
     @Test
     public void testCreateDraftMessage() throws Exception {
-        MailMessage mm = new MailMessage();
+        var mm = new MailMessage();
         mm.setSubject("draft");
 
-        String content = new ObjectMapper().writeValueAsString(mm);
+        var content = new ObjectMapper().writeValueAsString(mm);
 
-        CompositeId id = new CompositeId();
+        var id = new CompositeId();
         id.setFolder("INBOX");
         id.setMessageId("1");
 
@@ -304,7 +301,7 @@ public class MailResourceTest {
 
     @Test
     public void testUpdateDraftMessage() throws Exception {
-        MailMessage mailMessage = new MailMessage();
+        var mailMessage = new MailMessage();
         mailMessage.setSubject("draft");
 
         when(mailService.updateDraftMessage(any())).thenReturn(mailMessage);

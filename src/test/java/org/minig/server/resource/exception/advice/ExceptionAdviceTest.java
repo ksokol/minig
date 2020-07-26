@@ -22,15 +22,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Kamill Sokol
- */
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = FolderResource.class)
 @WithAuthenticatedUser
 public class ExceptionAdviceTest {
 
-    private static final String PREFIX = "/1";
+    private static final String PREFIX = "/api/1";
 
     @MockBean
     private FolderService folderService;
@@ -47,11 +44,11 @@ public class ExceptionAdviceTest {
     public void testCustomExceptionResolver() throws Exception {
         when(folderService.findBySubscribed(isNull())).thenThrow(new RuntimeException());
 
-        Map<String, Object> map = new HashMap<>();
+        var map = new HashMap<>();
         map.put("status", 500);
         map.put("message", "Internal Server Error");
 
-        String content = new ObjectMapper().writeValueAsString(map);
+        var content = new ObjectMapper().writeValueAsString(map);
 
         mockMvc.perform(get(PREFIX + "/folder"))
                 .andExpect(status().is(500))

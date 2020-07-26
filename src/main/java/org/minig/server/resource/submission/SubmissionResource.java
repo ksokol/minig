@@ -5,35 +5,35 @@ import org.minig.server.resource.Id;
 import org.minig.server.service.CompositeId;
 import org.minig.server.service.submission.DispositionService;
 import org.minig.server.service.submission.SubmissionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * @author Kamill Sokol
- */
-@Controller
-@RequestMapping(value = "1/submission")
+import java.util.Objects;
+
+import static org.minig.MinigConstants.API;
+
+@RestController
 public class SubmissionResource {
 
-    @Autowired
-    private SubmissionService mailSendService;
+    private final SubmissionService mailSendService;
+    private final DispositionService dispositionService;
 
-    @Autowired
-    private DispositionService dispositionService;
+    public SubmissionResource(SubmissionService mailSendService, DispositionService dispositionService) {
+        this.mailSendService = Objects.requireNonNull(mailSendService, "mailSendService is null");
+        this.dispositionService = Objects.requireNonNull(dispositionService, "dispositionService is null");
+    }
 
-    @ResponseStatus(value = HttpStatus.CREATED)
-    @RequestMapping(value = "", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(API + "/submission")
     public void send(@RequestBody MailMessage mailMessage) {
         mailSendService.sendMessage(mailMessage);
     }
 
-    @ResponseStatus(value = HttpStatus.CREATED)
-    @RequestMapping(value = "disposition/**", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(API + "/submission/disposition/**")
     public void send(@Id CompositeId id) {
         dispositionService.sendDisposition(id);
     }

@@ -1,11 +1,10 @@
 package org.minig;
 
-/**
- * @author Kamill Sokol
- */
 public final class MinigConstants {
 
     public static final String API_VERSION = "1";
+    public static final String API_PATH = "api";
+    public static final String API = "/" + API_PATH + "/" + API_VERSION;
     public static final String RESOURCE_ATTACHMENT = "attachment";
 
     public static final String PRIMARY_TYPE_TEXT = "text";

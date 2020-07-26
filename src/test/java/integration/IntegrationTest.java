@@ -23,23 +23,20 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import javax.mail.Flags;
-import javax.mail.Message;
-import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Collections;
-import java.util.List;
 
 import static com.jayway.jsonpath.JsonPath.read;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
 import static org.minig.server.TestConstants.MOCK_USER;
 import static org.minig.test.JsonRequestPostProcessors.jsonBody;
 import static org.minig.test.JsonRequestPostProcessors.jsonFromClasspath;
@@ -53,9 +50,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Kamill Sokol
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Starter.class, ServiceTestConfig.class})
 @AutoConfigureMockMvc(addFilters = false)
@@ -63,7 +57,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithAuthenticatedUser
 public class IntegrationTest {
 
-    private static final String PREFIX = "/1";
+    private static final String PREFIX = "/api/1";
     private static final String JSON_DRAFT_MESSAGE = "json/draft.json";
 
     @Autowired
@@ -74,7 +68,7 @@ public class IntegrationTest {
 
     @Test
     public void testFetchMailById() throws Exception {
-        MimeMessage mimeMessage = new MimeMessageBuilder().setFolder("INBOX").build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
+        var mimeMessage = new MimeMessageBuilder().setFolder("INBOX").build(TestConstants.MULTIPART_WITH_PLAIN_AND_HTML);
         mailboxRule.append("INBOX", mimeMessage);
 
         mockMvc.perform(get(PREFIX + "/message/INBOX|" + mimeMessage.getMessageID()))
@@ -92,22 +86,22 @@ public class IntegrationTest {
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andReturn();
 
-        String draftId = extractMessageId(draftCreated, "$.id");
+        var draftId = extractMessageId(draftCreated, "$.id");
 
         mockMvc.perform(get(PREFIX + "/message/" + draftId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(encode(draftId))));
 
-        MockMultipartFile attachment = new MockMultipartFile("draft.json", "draft.json", APPLICATION_JSON_VALUE, "attachment".getBytes());
+        var attachment = new MockMultipartFile("draft.json", "draft.json", APPLICATION_JSON_VALUE, "attachment".getBytes());
 
-        MvcResult attachmentAppended = mockMvc.perform(fileUpload(PREFIX + "/attachment/" + draftId)
+        var attachmentAppended = mockMvc.perform(fileUpload(PREFIX + "/attachment/" + draftId)
                 .file(attachment)
                 .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isCreated())
                 .andReturn();
 
-        String draftIdAfterAppendAttachment = extractMessageId(attachmentAppended, "$.id.id");
+        var draftIdAfterAppendAttachment = extractMessageId(attachmentAppended, "$.id.id");
 
         assertThat(draftIdAfterAppendAttachment, notNullValue());
         assertThat(draftIdAfterAppendAttachment, not(equalTo(draftId)));
@@ -115,17 +109,17 @@ public class IntegrationTest {
 
     @Test
     public void testSendDraftMessageWithAttachment() throws Exception {
-        MvcResult draftCreated = mockMvc.perform(post(PREFIX + "/message/draft")
+        var draftCreated = mockMvc.perform(post(PREFIX + "/message/draft")
                 .with(jsonFromClasspath(JSON_DRAFT_MESSAGE)))
                 .andReturn();
 
-        Message message = mailboxRule.getFirstInFolder("INBOX.Drafts").orElseThrow(() -> new AssertionError("expected draft message"));
-        Mime4jMessage mime4jMessage = new Mime4jMessage(message);
+        var message = mailboxRule.getFirstInFolder("INBOX.Drafts").orElseThrow(() -> new AssertionError("expected draft message"));
+        var mime4jMessage = new Mime4jMessage(message);
 
         assertThat(mime4jMessage.getSender(), is(MOCK_USER));
 
-        String draftId = extractMessageId(draftCreated, "$.id");
-        MailMessage mailMessage = new MailMessage();
+        var draftId = extractMessageId(draftCreated, "$.id");
+        var mailMessage = new MailMessage();
         mailMessage.setId(decode(draftId));
         mailMessage.setSender(new MailMessageAddress(MOCK_USER));
         mailMessage.setTo(Collections.singletonList(new MailMessageAddress("recipient@localhost")));
@@ -136,26 +130,26 @@ public class IntegrationTest {
 
         assertThat(mailboxRule.getAllInFolder("INBOX.Drafts"), hasSize(0));
 
-        List<Message> sentFolder = mailboxRule.getAllInFolder("INBOX.Sent");
+        var sentFolder = mailboxRule.getAllInFolder("INBOX.Sent");
         assertThat(sentFolder, hasSize(1));
         assertThat(sentFolder.get(0).getFlags().contains(Flags.Flag.SEEN), is(true));
     }
 
     @Test
     public void testDeleteAttachedFileFromDraftMessage() throws Exception {
-        MimeMessage mailWithAttachment = new MimeMessageBuilder().setFolder("INBOX.Drafts").build(TestConstants.MULTIPART_WITH_ATTACHMENT);
+        var mailWithAttachment = new MimeMessageBuilder().setFolder("INBOX.Drafts").build(TestConstants.MULTIPART_WITH_ATTACHMENT);
         mailboxRule.append("INBOX.Drafts", mailWithAttachment);
 
         mockMvc.perform(get(PREFIX + "/message/INBOX.Drafts|" + mailWithAttachment.getMessageID()))
                 .andExpect(jsonPath("$.attachments..fileName", contains("1.png", "2.png")));
 
-        String mailId = "INBOX.Drafts|" + mailWithAttachment.getMessageID();
-        String attachmentId = mailId + "|1.png";
+        var mailId = "INBOX.Drafts|" + mailWithAttachment.getMessageID();
+        var attachmentId = mailId + "|1.png";
 
-        MvcResult mvcResult = mockMvc.perform(delete(PREFIX + "/attachment/" + attachmentId))
+        var mvcResult = mockMvc.perform(delete(PREFIX + "/attachment/" + attachmentId))
                 .andReturn();
 
-        String mailIdAfterAttachmentDelete = extractMessageId(mvcResult, "$.id.id");
+        var mailIdAfterAttachmentDelete = extractMessageId(mvcResult, "$.id.id");
 
         mockMvc.perform(get(PREFIX + "/message/" + mailIdAfterAttachmentDelete))
                 .andExpect(jsonPath("$.attachments..fileName", contains("2.png")))

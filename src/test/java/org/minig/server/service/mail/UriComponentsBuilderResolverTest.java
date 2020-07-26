@@ -6,40 +6,36 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.util.UriComponentsBuilder;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
-/**
- * @author Kamill Sokol
- */
 public class UriComponentsBuilderResolverTest {
 
-    private UriComponentsBuilderResolver resolver = new UriComponentsBuilderResolver();
+    private final UriComponentsBuilderResolver resolver = new UriComponentsBuilderResolver();
 
     @Before
     @After
-    public void setUp() throws Exception {
+    public void setUp() {
         RequestContextHolder.resetRequestAttributes();
     }
 
     @Test
-    public void shouldResolveWithoutHttpServletRequest() throws Exception {
-        UriComponentsBuilder uriComponentsBuilder = resolver.resolveAttachmentUri();
+    public void shouldResolveWithoutHttpServletRequest() {
+        var uriComponentsBuilder = resolver.resolveAttachmentUri();
 
-        assertThat(uriComponentsBuilder.toUriString(), is("/1/attachment"));
+        assertThat(uriComponentsBuilder.toUriString(), is("/api/1/attachment"));
     }
 
     @Test
-    public void shouldResolveWithCurrentHttpServletRequest() throws Exception {
-        MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
+    public void shouldResolveWithCurrentHttpServletRequest() {
+        var mockHttpServletRequest = new MockHttpServletRequest();
         mockHttpServletRequest.setContextPath("/minig");
         mockHttpServletRequest.setServerPort(8080);
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockHttpServletRequest));
 
-        UriComponentsBuilder uriComponentsBuilder = resolver.resolveAttachmentUri();
+        var uriComponentsBuilder = resolver.resolveAttachmentUri();
 
-        assertThat(uriComponentsBuilder.toUriString(), is("http://localhost:8080/minig/1/attachment"));
+        assertThat(uriComponentsBuilder.toUriString(), is("http://localhost:8080/minig/api/1/attachment"));
     }
 }

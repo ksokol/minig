@@ -34,15 +34,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Kamill Sokol
- */
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = AttachmentResource.class)
 @WithAuthenticatedUser
 public class AttachmentResourceTest {
 
-    private static final String PREFIX = "/1";
+    private static final String PREFIX = "/api/1";
 
     @MockBean
     private AttachmentService attachmentService;
@@ -52,8 +49,8 @@ public class AttachmentResourceTest {
 
     @Test
     public void shouldDownloadAttachment() throws Exception {
-        CompositeAttachmentId compositeAttachmentId = new CompositeAttachmentId("INBOX/test", "<id@localhost>", "1.png");
-        MailAttachment mailAttachment = new MailAttachment(
+        var compositeAttachmentId = new CompositeAttachmentId("INBOX/test", "<id@localhost>", "1.png");
+        var mailAttachment = new MailAttachment(
                 compositeAttachmentId,
                 TEXT_PLAIN_VALUE,
                 null,
@@ -72,8 +69,8 @@ public class AttachmentResourceTest {
 
     @Test
     public void shouldDownloadInlineAttachment() throws Exception {
-        CompositeAttachmentId compositeAttachmentId = new CompositeAttachmentId("INBOX/test", "<id@localhost>", "1.png");
-        MailAttachment mailAttachment = new MailAttachment(
+        var compositeAttachmentId = new CompositeAttachmentId("INBOX/test", "<id@localhost>", "1.png");
+        var mailAttachment = new MailAttachment(
                 compositeAttachmentId,
                 TEXT_PLAIN_VALUE,
                 "contentId",
@@ -92,11 +89,11 @@ public class AttachmentResourceTest {
 
     @Test
     public void shouldUploadAttachment() throws Exception {
-        CompositeId compositeId = new CompositeId("INBOX/test", "id");
+        var compositeId = new CompositeId("INBOX/test", "id");
 
         when(attachmentService.addAttachment(any(), any())).thenReturn(compositeId);
 
-        MailAttachment mailAttachment = new MailAttachment(
+        var mailAttachment = new MailAttachment(
                 new CompositeAttachmentId(compositeId.getFolder(), compositeId.getMessageId(), "file.html"),
                 TEXT_HTML_VALUE,
                 null,
@@ -122,8 +119,8 @@ public class AttachmentResourceTest {
 
     @Test
     public void shouldDownloadAttachmentWithEncodedFilename() throws Exception {
-        CompositeAttachmentId compositeAttachmentId = new CompositeAttachmentId("INBOX/test", "1", "umlaut ä.png");
-        MailAttachment mailAttachment = new MailAttachment(
+        var compositeAttachmentId = new CompositeAttachmentId("INBOX/test", "1", "umlaut ä.png");
+        var mailAttachment = new MailAttachment(
                 compositeAttachmentId,
                 IMAGE_PNG_VALUE,
                 null,

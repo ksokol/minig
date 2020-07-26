@@ -24,6 +24,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,15 +33,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Kamill Sokol
- */
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = FolderResource.class)
 @WithAuthenticatedUser
 public class FolderResourceTest {
 
-    private static final String PREFIX = "/1";
+    private static final String PREFIX = "/api/1";
 
     @MockBean
     private FolderService folderService;
@@ -54,7 +52,7 @@ public class FolderResourceTest {
 
         mockMvc.perform(get(PREFIX + "/folder"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+                .andExpect(content().contentType(APPLICATION_JSON_VALUE));
 
         verify(folderService).findBySubscribed(null);
 
@@ -64,7 +62,7 @@ public class FolderResourceTest {
 
         mockMvc.perform(get(PREFIX + "/folder")
                 .param("subscribed", "true"))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
         verify(folderService).findBySubscribed(true);
 
@@ -73,7 +71,7 @@ public class FolderResourceTest {
 
         mockMvc.perform(get(PREFIX + "/folder")
                 .param("subscribed", "false"))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
         verify(folderService).findBySubscribed(false);
     }
@@ -90,7 +88,7 @@ public class FolderResourceTest {
         when(folderService.findById(anyString())).thenReturn(new MailFolder());
 
         mockMvc.perform(get(PREFIX + "/folder/INBOX.test"))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
         verify(folderService).findById("INBOX.test");
 
@@ -98,20 +96,20 @@ public class FolderResourceTest {
         when(folderService.findById(anyString())).thenReturn(new MailFolder());
 
         mockMvc.perform(get(PREFIX + "/folder/INBOX.test%20test"))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
         verify(folderService).findById("INBOX.test test");
     }
 
     @Test
     public void testFindById_hasJson() throws Exception {
-        MailFolder mailFolder = new MailFolder();
+        var mailFolder = new MailFolder();
         mailFolder.setId("INBOX");
 
         when(folderService.findById(anyString())).thenReturn(mailFolder);
 
         mockMvc.perform(get(PREFIX + "/folder/INBOX"))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("INBOX"));
         verify(folderService).findById("INBOX");
@@ -119,10 +117,10 @@ public class FolderResourceTest {
 
     @Test
     public void testCreateFolder() throws Exception {
-        CreateFolderRequest request = new CreateFolderRequest();
+        var request = new CreateFolderRequest();
         request.setFolder("INBOX/createme/nested1");
 
-        String content = new ObjectMapper().writeValueAsString(request);
+        var content = new ObjectMapper().writeValueAsString(request);
 
         mockMvc.perform(post(PREFIX + "/folder")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -133,14 +131,14 @@ public class FolderResourceTest {
 
     @Test
     public void testCreateFolderInParent() throws Exception {
-        CreateFolderRequest request = new CreateFolderRequest();
+        var request = new CreateFolderRequest();
         request.setFolder("nested2");
-        MailFolder mailFolder = new MailFolder();
+        var mailFolder = new MailFolder();
         mailFolder.setId("INBOX/createme/nested2");
 
         when(folderService.createFolderInParent("INBOX/createme", "nested2")).thenReturn(mailFolder);
 
-        String content = new ObjectMapper().writeValueAsString(request);
+        var content = new ObjectMapper().writeValueAsString(request);
 
         mockMvc.perform(post(PREFIX + "/folder/INBOX/createme")
                 .contentType(MediaType.APPLICATION_JSON).content(content))
@@ -150,10 +148,10 @@ public class FolderResourceTest {
 
     @Test
     public void testUpdateFolder() throws Exception {
-        MailFolder mf = new MailFolder();
+        var mf = new MailFolder();
         mf.setSubscribed(true);
 
-        String content = new ObjectMapper().writeValueAsString(mf);
+        var content = new ObjectMapper().writeValueAsString(mf);
 
         mockMvc.perform(put(PREFIX + "/folder/INBOX/createme/nested3")
                 .contentType(MediaType.APPLICATION_JSON).content(content))
